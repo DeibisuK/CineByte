@@ -1,0 +1,21 @@
+<div class="promociones-container">
+  <div class="promo-card" *ngFor="let promo of promociones" 
+    (mouseenter)="hoveredIndex = promo.id"
+    (mouseleave)="hoveredIndex = -1"
+    (click)="verDetalle(promo)"
+    [style.zIndex]="hoveredIndex === promo.id ? 2 : 1">
+    <img [src]="promo.img" [alt]="promo.titulo" />
+    <div class="promo-etiquetas">
+      <span class="promo-etiqueta" *ngFor="let et of promo.etiqueta">{{ et }}</span>
+    </div>
+    <div class="promo-info">
+      <h3>{{ promo.titulo }}</h3>
+      <p class="promo-desc">{{ promo.descripcion }}</p>
+      <div class="promo-fechas" *ngIf="promo.fechaInicio && promo.fechaFin">
+        <span>
+          {{ promo.fechaInicio | date:'dd/MM/yyyy' }} - {{ promo.fechaFin | date:'dd/MM/yyyy' }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

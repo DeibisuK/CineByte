@@ -1,0 +1,65 @@
+<div class="peliculas-container">
+  <!-- Botones de menú -->
+  <div class="menu-botones">
+    <button [class.activo]="menuActivo === 'formato'" (click)="cambiarMenu('formato')">Formatos</button>
+    <button [class.activo]="menuActivo === 'genero'" (click)="cambiarMenu('genero')">Géneros</button>
+    <button [class.activo]="menuActivo === 'idioma'" (click)="cambiarMenu('idioma')">Idiomas</button>
+    
+    <!-- Botón limpiar filtros -->
+    <button *ngIf="hayFiltrosActivos" class="btn-limpiar" (click)="limpiarFiltros()" title="Limpiar filtros">
+      <span class="material-icons">delete</span>
+    </button>
+  </div>
+
+  <div class="filtros-activos" *ngIf="hayFiltrosActivos">
+    <ng-container *ngFor="let cat of ['formato', 'genero', 'idioma']">
+      <span *ngFor="let valor of filtroActivo[cat]" class="filtro-chip">
+        {{ valor }}
+        <button class="chip-x" (click)="quitarFiltro(cat, valor)" title="Quitar filtro">&times;</button>
+      </span>
+    </ng-container>
+  </div>
+
+  <!-- Menú desplegable -->
+  <div class="menu-desplegable" [class.abierto]="menuAbierto">
+    <button class="btn-cerrar" (click)="cerrarMenu()">✕</button>
+    <h4 class="titulo-filtro">{{ menuActivo | titlecase }}</h4>
+    <p class="subtitulo-filtro">Elija una o más opciones</p>
+
+    <label *ngFor="let valor of filtros[menuActivo]">
+      <input
+        type="checkbox"
+        [checked]="filtroActivo[menuActivo].includes(valor)"
+        (change)="toggleFiltro(menuActivo, valor)"
+      />
+      {{ valor }}
+    </label>
+
+    <button class="btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
+  </div>
+
+  <!-- Grid de películas -->
+  <div class="grid-cartelera"
+     [ngClass]="{'solo-uno': peliculasFiltradas.length === 1, 'solo-dos': peliculasFiltradas.length === 2, 'solo-tres': peliculasFiltradas.length === 3, 'menu-abierto': menuAbierto}">
+    <div class="movie-card" *ngFor="let pelicula of peliculasFiltradas"
+        (mouseenter)="hoveredIndex = pelicula.id"
+        (mouseleave)="hoveredIndex = -1"
+        (click)="verDetalle(pelicula)"
+        [style.zIndex]="hoveredIndex === pelicula.id ? 2 : 1">
+      <div class="etiquetas">
+        <span class="etiqueta" *ngFor="let et of pelicula.etiqueta">{{ et }}</span>
+      </div>
+      <div class="edad-icono">
+        <app-edades [edad]="pelicula.edad"></app-edades>
+      </div>
+      <img [src]="pelicula.img" [alt]="pelicula.titulo" />
+      <div class="hover-overlay">
+        {{ pelicula.descripcion | slice: 0:150 }}{{ pelicula.descripcion.length > 150 ? '...' : '' }}
+      </div>
+      <div class="info">
+        <h3>{{ pelicula.titulo }}</h3>
+        <div class="generos">{{ pelicula.generos.join(' ▪ ') }}</div>
+      </div>
+    </div>
+  </div>
+</div>

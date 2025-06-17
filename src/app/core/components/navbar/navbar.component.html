@@ -1,0 +1,95 @@
+<nav [ngStyle]="{'margin-top.px': anuncioVisible ? 38 : 0}">
+  <nav class="navbar-container">
+    <div class="navbar-content">
+      <!-- Botón hamburguesa SOLO en móvil -->
+      <button class="menu-toggle" (click)="menuAbierto = !menuAbierto">
+        <span class="material-icons">menu</span>
+      </button>
+
+      <!-- Logo -->
+      <a class="logo" href="#">
+        <img src="Imagotipo Proyecto.png" alt="Logo" [class.logo-invertido]="!modoOscuro" />
+      </a>
+
+      <!-- Links SOLO en escritorio -->
+      <ul class="nav-links">
+        <li><a routerLink="inicio" routerLinkActive="active-link">INICIO</a></li>
+        <li><a routerLink="peliculas" routerLinkActive="active-link">PELÍCULAS</a></li>
+        <li><a routerLink="promociones" routerLinkActive="active-link">PROMOCIONES</a></li>
+      </ul>
+
+      <!-- Selector ciudad SOLO en escritorio -->
+      <div class="ubicacion">
+        <span class="material-icons">location_on</span>
+        <select [(ngModel)]="ubicacion">
+          <option>Machala</option>
+          <option>Guayaquil</option>
+          <option>Quito</option>
+        </select>
+      </div>
+
+      <!-- Buscador SOLO en escritorio -->
+      <div class="buscador">
+        <span class="material-icons">search</span>
+        <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+      </div>
+
+      <!-- Switch SOLO en escritorio -->
+      <div class="switch-container">
+        <label class="theme-switch">
+          <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+          <span class="slider round"></span>
+        </label>
+      </div>
+
+      <!-- Usuario -->
+      <button (click)="openLoginModal()" class="usuario">
+        <span class="material-icons">account_circle</span>
+      </button>
+    </div>
+
+    <!-- Segunda fila SOLO en móvil -->
+  <div class="navbar-mobile-row">
+    <div class="ubicacion">
+      <span class="material-icons">location_on</span>
+      <select [(ngModel)]="ubicacion">
+        <option>Machala</option>
+        <option>Guayaquil</option>
+        <option>Quito</option>
+      </select>
+    </div>
+    <div class="switch-container">
+      <label class="theme-switch">
+        <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+
+    <!-- Menú hamburguesa SOLO en móvil -->
+
+<div class="mobile-menu"
+     *ngIf="menuAbierto"
+     [ngClass]="{'closing': menuCerrando}">
+  <button class="close-menu" (click)="cerrarMenu()">
+    <span class="material-icons">close</span>
+  </button>
+  <hr class="mobile-menu-divider" />
+  <ul>
+    <li><a routerLink="inicio" (click)="navegarCerrarMenu()">INICIO</a></li>
+    <li><a routerLink="peliculas" (click)="navegarCerrarMenu()">PELÍCULAS</a></li>
+    <li><a routerLink="promociones" (click)="navegarCerrarMenu()">PROMOCIONES</a></li>
+  </ul>
+  <div class="buscador">
+    <span class="material-icons">search</span>
+    <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+  </div>
+</div>
+
+  </nav>
+</nav>
+
+<app-login
+  [showLoginRegisterModal]="showLoginModal"       
+  (cerrarLoginRegister)="closeLoginModal()">     <!-- Renombramos de (close) a (cerrarLoginRegister) -->
+</app-login>

@@ -1,0 +1,169 @@
+.estreno-carousel-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+.estreno-card {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 420px;
+  background: var(--footer-esp, var(--footer-bg));
+  color: var(--text-color);
+  border-radius: 14px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.13);
+  position: relative;
+  overflow: hidden;
+}
+
+.estreno-img-section {
+  flex: 2 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.estreno-img-section img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: 16/9;
+  min-height: 320px;
+  max-height: 420px;
+  border-radius: 0;
+}
+
+.estreno-info-section {
+  flex: 1 1 0;
+  background: var(--footer-esp, var(--footer-bg));
+  color: var(--text-color);
+  padding: 2.5rem 2rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1.2rem;
+  min-width: 340px;
+}
+
+.generos {
+  font-size: 0.75rem;
+  color: var(--footer-link);
+  margin-top: 12px;
+}
+
+.estreno-title {
+  font-size: 2.1rem;
+  font-weight: 800;
+  margin: 0 0 0.5rem 0;
+}
+
+.estreno-desc {
+  font-size: 1.08rem;
+  color: var(--text-color);
+  margin-bottom: 1.5rem;
+}
+
+.estreno-btn {
+  margin-top: auto;
+  align-self: flex-start;
+  background-color: #f7da00;
+  color: #111;
+  border: none;
+  border-radius: 12px;
+  padding: 0.7rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.estreno-btn:hover {
+  background-color: #e0bb03;
+}
+
+.carrusel-controles {
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+}
+
+.carrusel-flecha {
+  background-color: var(--footer-bg, #232323);
+  border: 2px solid var(--footer-link, #b0b0b0);
+  color: var(--footer-link, #b0b0b0);
+  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+  outline: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 0;
+}
+
+.carrusel-flecha:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.carrusel-flecha:hover:not(:disabled) {
+  background-color: var(--text-color);
+  color: var(--bg-color);
+}
+
+.carrusel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.indicator {
+  width: 32px;
+  height: 5px;
+  background: var(--text-color);
+  border: 1.5px solid var(--footer-link);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+  opacity: 0.5;
+  margin: 0;
+  padding: 0;
+}
+
+.indicator.active {
+  background: var(--text-color);
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .estreno-card {
+    flex-direction: column;
+    min-height: unset;
+    max-width: 100vw;
+    width: 100vw;
+    border-radius: 0;
+  }
+  .estreno-img-section img {
+    aspect-ratio: 16/9;
+    width: 100vw;
+    height: auto;
+    min-height: unset;
+    max-height: 50vw;
+    object-fit: cover;
+  }
+  .estreno-info-section {
+    width: 100vw;
+    min-width: unset;
+    padding: 1.2rem 1rem;
+  }
+}

@@ -1,0 +1,31 @@
+.anuncio-bar {
+  background-color: #f7cb5a;
+  color: var(--text-color); 
+  font-weight: bold;
+  font-size: 0.85rem; /* Reducido de 0.9rem */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2000;
+  min-height: 32px; /* Reducido de 38px */
+  padding: 0.25rem 1rem; /* Ajuste de padding vertical */
+}
+
+.btn-link {
+  text-decoration: none !important;
+  box-shadow: none !important;
+  color: var(--text-color); 
+  font-size: 1.35rem; /* Reducido de 1.5rem */
+  height: 32px; /* Ajustado a nueva altura */
+  width: 32px; /* Añadido para proporción */
+}
+
+.btn-link:hover {
+  color: var(--footer-bg); /* Mantiene el color al pasar el ratón */
+}
+
+.material-icons {
+  font-size: 1.35rem; /* Ajuste para el icono */
+  line-height: 1;
+}

@@ -1,0 +1,313 @@
+.page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  box-sizing: border-box;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.container {
+  display: flex;
+  width: 700px;
+  height: 460px;
+  border-radius: 20px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  transition: all 0.6s ease-in-out;
+}
+
+/* ANIMACIÓN MEJORADA */
+.container.right-active .left-section {
+  transform: translateX(150%);
+}
+
+.container.right-active .right-section {
+  transform: translateX(-67%);
+}
+
+
+/* Panel izquierdo (amarillo) - Ahora contiene los botones de cambio */
+.left-section {
+  background-color: #f4c842;
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: transform 0.6s ease-in-out;
+  z-index: 2;
+  position: relative;
+}
+
+.h1-iz {
+  color: white;
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+.p-iz {
+  color: white;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 0 10px;
+  margin-bottom: 20px;
+}
+
+.iniciar {
+  margin-top: 30px;
+  padding: 10px 25px;
+  border-radius: 20px;
+  border: 3px solid white;
+  background-color: #f4c842;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.iniciar:hover {
+  background-color: white;
+  color: #f4c842;
+}
+
+/* Panel derecho (negro) - Ahora contiene los formularios */
+.right-section {
+  background-color: #262626;
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 ;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+  transition: transform 0.6s ease-in-out;
+  z-index: 1;
+  position: relative;
+}
+
+.h1-der {
+  color: #f4c842;
+  font-size: 1.6em;
+  margin-bottom: 20px;
+}
+
+.input-container {
+  position: relative;
+  width: 250px;
+  margin-bottom: 15px;
+}
+
+.recu {
+  margin: 10px;
+  color: aliceblue;
+  font-size: 13px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.recu:hover {
+  color: #f4c842;
+  text-decoration: underline;
+}
+
+.input-container .icono {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+}
+
+.input-container input {
+  width: 100%;
+  height: 35px;
+  padding-left: 40px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  outline: none;
+  font-size: 14px;
+}
+
+.input-container input::placeholder {
+  color: #999;
+}
+
+.input-container input:focus {
+  border-color: #f4c842;
+}
+
+.registrar {
+  height: 40px;
+  width: 160px;
+  border-radius: 20px;
+  border: none;
+  background: #f4c842;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.inicioses{
+  height: 40px;
+  width: 160px;
+  border-radius: 20px;
+  margin-top: 10%;
+  border: none;
+  background: #f4c842;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.registrar:hover {
+  background: #e6b63a;
+}
+/* ... tus estilos existentes ... */
+
+.error-message {
+    color: #ff4c4c; /* Rojo para los mensajes de error */
+    font-size: 0.8em;
+    margin-top: 5px;
+    margin-bottom: 10px; /* Un poco de espacio debajo del error */
+    text-align: left; /* Alinea el texto a la izquierda debajo del input */
+    width: 250px; /* O el mismo ancho que tu input-container */
+}
+
+h6 {
+  color: white;
+  margin: 15px 0 10px 0;
+  font-size: 12px;
+  font-weight: normal;
+}
+
+.boton-img {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  width: 250px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: white;
+  color: #333;
+  margin: 5px 0;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.boton-img:hover {
+  background-color: #f5f5f5;
+}
+
+.boton-img img {
+  width: 20px;
+  height: 20px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: none;
+  font-size: 32px;
+  font-weight: bold;
+  color: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  z-index: 3;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ff4c4c;
+}
+
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        height: auto;
+        width: 95%;
+        max-width: 400px;
+    }
+
+    .left-section,
+    .right-section {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        transition: transform 0.6s ease-in-out;
+    }
+
+    .left-section {
+        border-radius: 0px 0px 20 20; 
+        order: 2; 
+    }
+
+    .right-section {
+        border-radius: 0px 0px 20px 20px; 
+        order: 1;
+    }
+
+    .container.right-active .left-section {
+        transform: translateY(-179%); 
+    }
+
+    .container.right-active .right-section {
+        transform: translateY(56%);
+    }
+
+    .input-container {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .boton-img {
+        width: 100%;
+        max-width: 250px;
+    }
+
+    .registrar {
+        width: 160px;
+        height: 40px;
+    }
+
+    .h1-iz,
+    .h1-der {
+        font-size: 1.5em;
+    }
+
+    .p-iz {
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+}

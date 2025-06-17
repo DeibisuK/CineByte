@@ -1,0 +1,37 @@
+<div class="cartelera-container">
+  <h2 *ngIf="resultados.length; else sinResultados">Resultados para "{{ termino }}"</h2>
+  <ng-template #sinResultados>
+    <h2>No se encontraron películas para "{{ termino }}"</h2>
+  </ng-template>
+
+<div class="grid-cartelera"
+     [ngClass]="{'solo-uno': resultados.length === 1, 'solo-dos': resultados.length === 2}">
+    <div
+      class="movie-card"
+      *ngFor="let pelicula of resultados"
+      (mouseenter)="hoveredIndex = pelicula.id"
+      (mouseleave)="hoveredIndex = null"
+      (click)="verDetalle(pelicula)"
+      [style.zIndex]="hoveredIndex === pelicula.id ? 2 : 1"
+    >
+      <img [src]="pelicula.img" [alt]="pelicula.titulo" />
+
+      <div class="hover-overlay" *ngIf="hoveredIndex === pelicula.id">
+        {{ pelicula.descripcion.length > 150 ? (pelicula.descripcion | slice:0:150) + '...' : pelicula.descripcion }}
+      </div>
+
+      <div class="etiquetas">
+        <span class="etiqueta" *ngFor="let et of pelicula.etiqueta">{{ et }}</span>
+      </div>
+
+      <div class="edad-icono">
+        <app-edades [edad]="pelicula.edad"></app-edades>
+      </div>
+
+      <div class="info">
+        <h3>{{ pelicula.titulo }}</h3>
+        <div class="generos">{{ pelicula.generos.join(' ▪ ') }}</div>
+      </div>
+    </div>
+  </div>
+</div>

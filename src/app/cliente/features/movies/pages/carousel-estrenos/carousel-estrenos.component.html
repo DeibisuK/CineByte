@@ -1,0 +1,34 @@
+<div class="carousel-container" style="position:relative;">
+  <div class="carrusel-controles">
+    <button class="carrusel-flecha" (click)="prev()" [disabled]="visibleStart === 0">&lt;</button>
+    <button class="carrusel-flecha" (click)="next()" [disabled]="visibleStart + visibleCount >= peliculasCartelera.length">&gt;</button>
+  </div>
+
+  <div class="grid-carousel">
+    <div class="movie-card" *ngFor="let movie of visibleMovies">
+      <img [src]="movie.img" alt="{{ movie.titulo }}" />
+      <div class="hover-overlay">
+        {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
+      </div>
+      <div class="etiquetas">
+        <span class="etiqueta" *ngFor="let et of movie.etiqueta">{{ et }}</span>
+      </div>
+      <div class="edad-icono">
+        <app-edades [edad]="movie.edad"></app-edades>
+      </div>
+      <div class="info">
+        <h3>{{ movie.titulo }}</h3>
+        <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="carrusel-indicators">
+    <div
+      class="indicator"
+      *ngFor="let i of indicators; let idx = index"
+      [class.active]="visibleStart === idx"
+      (click)="goTo(idx)">
+    </div>
+  </div>
+</div>

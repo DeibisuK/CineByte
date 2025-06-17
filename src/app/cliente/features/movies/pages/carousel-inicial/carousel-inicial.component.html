@@ -1,0 +1,31 @@
+<div class="estreno-carousel-container">
+    <div class="estreno-card" *ngFor="let movie of visibleMovies">
+    <div class="estreno-img-section">
+    <img [src]="(movie.img_dsc && movie.img_dsc.length > 0 ? movie.img_dsc[0] : movie.img)" [alt]="movie.titulo" />
+    </div>
+    <div class="estreno-info-section">
+      <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+      <h2 class="estreno-title">{{ movie.titulo }}</h2>
+      <p class="estreno-desc">
+        {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
+        </p>
+      <button class="estreno-btn"
+      (mouseenter)="hoveredIndex = movie.id"
+    (mouseleave)="hoveredIndex = -1"
+    (click)="verDetalle(movie)"
+    [style.zIndex]="hoveredIndex === movie.id ? 2 : 1">Ver más</button>
+    </div>
+    <div class="carrusel-controles">
+      <button class="carrusel-flecha" (click)="prev()">&lt;</button>
+      <button class="carrusel-flecha" (click)="next()">&gt;</button>
+    </div>
+  </div>
+  <div class="carrusel-indicators">
+    <div
+      class="indicator"
+      *ngFor="let i of indicators; let idx = index"
+      [class.active]="visibleStart === idx"
+      (click)="goTo(idx)">
+    </div>
+  </div>
+</div>

@@ -1,0 +1,170 @@
+/* Contenedor general */
+.cartelera-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  position: relative;
+  overflow-x: hidden; /* evita scroll horizontal al mostrar menú */
+}
+
+/* GRID para las cards - Versión mejorada */
+.grid-cartelera {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajusté a 180px */
+  gap: 1.5rem;
+  transition: filter 0.3s ease;
+}
+
+/* Efecto para oscurecer el grid cuando menú está activo */
+.grid-cartelera.menu-abierto {
+  filter: brightness(0.6);
+  pointer-events: none; /* evita clicks */
+}
+
+/* CARD - diseño como antes */
+.movie-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: var(--footer-bg);
+  color: var(--text-color);
+  transition: transform 0.3s;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  min-height: 350px; /* Altura uniforme */
+  width: 100%; /* Asegura que ocupe todo el espacio disponible */
+  max-width: 100%; /* Previene desbordamiento */
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+}
+
+.movie-card:hover .hover-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.movie-card img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Hover con descripción */
+.hover-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+/* Etiquetas */
+.etiquetas {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  z-index: 4;
+}
+
+.etiqueta {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.8rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+/* Edad */
+.edad-icono {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+}
+.edad-icono app-edades {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+}
+
+/* Parte inferior uniforme */
+.info {
+  padding: 0.25rem;
+  background-color: rgba(255, 255, 255, 0.05);
+  text-align: center;
+  margin-top: auto;
+  min-height: 100px; /* altura estándar */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.generos {
+  font-size: 0.75rem;
+  color: var(--footer-link);
+  margin-top: 12px;
+}
+
+
+/* Ajustes específicos para resoluciones pequeñas */
+@media (max-width: 600px) {
+  .grid-cartelera {
+    grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas */
+  }
+  
+  .movie-card {
+    min-width: 0; /* Permite que se ajusten mejor */
+  }
+}
+@media (max-width: 450px) {
+  .grid-cartelera {
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 360px) {
+  .grid-cartelera {
+    grid-template-columns: 1fr; /* 1 columna solo en móviles muy pequeños */
+  }
+}
+/* Para pantallas muy pequeñas (opcional) */
+@media (max-width: 350px) {
+  .grid-cartelera {
+    gap: 0.8rem; /* Reduce el espacio entre cards */
+  }
+  
+  .movie-card {
+    min-height: 300px; /* Reduce un poco la altura */
+  }
+  
+  .movie-card img {
+    height: 200px; /* Ajusta la imagen */
+  }
+}

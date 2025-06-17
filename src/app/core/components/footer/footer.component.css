@@ -1,0 +1,154 @@
+.footer {
+  margin-top: auto;
+  width: 100%;
+}
+
+.footer-background {
+  background-color: var(--footer-bg);
+  padding: 40px 0 20px;
+  width: 100%;
+}
+
+/* Fondo que se puede adaptar según el tema */
+.footer-background {
+  width: 100%;
+  background-color: var(--footer-bg);
+  padding: 40px 0 20px;
+}
+
+/* Contenido centrado y limitado */
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  color: var(--footer-text);
+}
+
+/* Columnas distribuidas horizontalmente */
+.footer-columns {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.footer-section {
+  flex: 1 1 200px;
+}
+
+.footer-section h4 {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.footer-section ul {
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-section ul li {
+  margin-bottom: 6px;
+}
+
+.footer-section ul li a {
+  text-decoration: none;
+  color: var(--footer-link);
+  font-size: 14px;
+}
+
+.footer-section ul li a:hover {
+  font-weight: 450;
+  color: var(--footer-text);
+}
+
+/* Iconos */
+.payment-icons img {
+  height: 24px;
+  margin-right: 10px;
+}
+
+/* Estilos para los iconos de redes sociales */
+.social-icons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.social-icons a {
+  color: var(--footer-link);
+  font-size: 20px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+/* Efecto hover para modo oscuro */
+.social-icons a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: var(--footer-text);
+  transform: translateY(-2px);
+}
+
+/* Efecto hover para modo claro */
+body.light-mode .social-icons a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: var(--footer-text);
+}
+
+
+
+
+/* Efecto de escala al hacer click */
+.social-icons a:active {
+  transform: scale(0.95);
+}
+/* HR bien alineado */
+.footer-content hr {
+  border: none;
+  height: 1px;
+  background-color: var(--footer-line);
+  margin: 30px 0 20px;
+  width: 100%;
+}
+
+.footer-top {
+  border-top: 1px solid var(--footer-line);
+}
+
+/* Parte inferior */
+.footer-bottom {
+  text-align: center;
+  font-size: 13px;
+}
+
+.footer-bottom img {
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+/* Responsivo */
+@media (max-width: 720px) {
+  .footer-columns {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .footer-section {
+    text-align: center;
+  }
+
+  .payment-icons, .social-icons {
+    justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+  }
+}

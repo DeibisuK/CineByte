@@ -1,0 +1,21 @@
+<div class="page-container">
+  <div class="container">
+   <button class="close-btn" (click)="cerrarModalRecuperacion()">×</button>
+
+    <div class="right-section">
+      <h1 class="h1-der">Recupera tu contraseña</h1>
+      <h4>Ingresa tu email para recuperar tu contraseña</h4>
+      <div class="input-container">
+        <img src="correo.png" class="icono" alt="icono correo" />
+        <input type="email" placeholder="Correo Electrónico" />
+      </div>
+
+      <p>
+        <span>¿Aun no eres mienbro? </span>
+        <a href="">Registrate aquí</a>
+      </p>
+
+      <button class="registrar" (click)="enviarSolicitudRecuperacion()">Enviar</button>
+    </div>
+  </div>
+</div>
