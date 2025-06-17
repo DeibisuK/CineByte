@@ -1,0 +1,14 @@
+<div class="page-wrapper d-flex flex-column min-vh-100">
+  <!-- Navbar -->
+  <app-anuncio *ngIf="mostrarAnuncio" (cerrar)="onCerrarAnuncio()"></app-anuncio>
+  <app-navbar [anuncioVisible]="mostrarAnuncio"></app-navbar>
+
+  <!-- Contenido principal -->
+  <main class="container flex-grow-1 py-4">
+    <router-outlet></router-outlet>
+    <app-scroll-top></app-scroll-top>
+  </main>
+
+  <!-- Footer -->
+  <app-footer></app-footer>
+</div>

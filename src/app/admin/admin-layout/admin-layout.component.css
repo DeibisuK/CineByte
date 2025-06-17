@@ -1,3 +1,4 @@
+
 .container {
     display: grid;
     grid-template-rows: auto 1fr;
@@ -5,9 +6,7 @@
     grid-template-areas:
         "header header"
         "sidebar content";
-    height: 100vh;
     transition: all 0.3s ease;
-
 }
 .container.no-sidebar {
   grid-template-columns: 65px 1fr;
@@ -23,7 +22,7 @@
   text-align: center;
 }
 
-.content-container {
+.content-container{
   grid-area: content;
   text-align: center;
 }
