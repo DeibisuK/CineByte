@@ -1,6 +1,6 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, HostBinding, Inject, Input, PLATFORM_ID } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Movie } from '../../models/movie.model';
 import { MovieService } from '../../../cliente/features/movies/services/movie.service';
 import { TemaService } from '../../../cliente/features/movies/services/tema.service';
@@ -9,10 +9,7 @@ import { LoginComponent } from '../../../acceso/login/login.component';
 
 @Component({
   selector: 'app-navbar',
-<<<<<<< HEAD
-  imports: [CommonModule, FormsModule,LoginComponent, RouterLink],
-  imports: [CommonModule, FormsModule,LoginComponent,RouterLink],
->>>>>>> 84b3e474325c9f8b78943741f3c1ffa44139d46b
+  imports: [CommonModule, FormsModule,LoginComponent, RouterLink, RouterLinkActive],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
