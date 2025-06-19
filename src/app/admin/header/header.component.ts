@@ -8,6 +8,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 
 })
 export class HeaderComponent {
+  
   toggleSidebar(){
     const layout = document.getElementById("sidebar");
     if (layout) {
