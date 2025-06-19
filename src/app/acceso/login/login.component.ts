@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // <-- Importaciones clave
 import { RecuperarContrasenaComponent } from '../recuperar-contrasena/recuperar-contrasena.component';
+import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-login',
@@ -17,20 +18,21 @@ import { RecuperarContrasenaComponent } from '../recuperar-contrasena/recuperar-
 })
 export class LoginComponent implements OnInit {
 
-  @Input() showLoginRegisterModal: boolean = false;
+   @Input() showLoginRegisterModal: boolean = false;
   @Output() cerrarLoginRegister = new EventEmitter<void>();
 
   isLoginActive: boolean = true;
   showRecoverPasswordModal: boolean = false;
 
-  // NUEVAS PROPIEDADES PARA FORMULARIOS REACTIVOS
-  loginForm!: FormGroup; // Define el FormGroup para el formulario de login
-  registerForm!: FormGroup; // Define el FormGroup para el formulario de registro
+  loginForm!: FormGroup;
+  registerForm!: FormGroup;
 
-  constructor() { }
+  // ✅ Usa readonly y NO this para inyección
+  readonly authService = inject(AuthService);
+
+  constructor() {}
 
   ngOnInit(): void {
-    // Inicializa los formularios en ngOnInit
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -45,17 +47,15 @@ export class LoginComponent implements OnInit {
 
   toggleView() {
     this.isLoginActive = !this.isLoginActive;
-    // Opcional: Resetear los formularios al cambiar de vista
-    if (this.isLoginActive) { // Si pasamos a registro
+    if (this.isLoginActive) {
       this.loginForm.reset();
-    } else { // Si pasamos a login
+    } else {
       this.registerForm.reset();
     }
   }
 
   cerrarLoginRegisterModal() {
     this.cerrarLoginRegister.emit();
-    // Opcional: Resetear formularios al cerrar el modal principal
     this.loginForm.reset();
     this.registerForm.reset();
   }
@@ -63,8 +63,10 @@ export class LoginComponent implements OnInit {
   abrirRecuperarContrasena(): void {
     this.showLoginRegisterModal = false;
     this.showRecoverPasswordModal = true;
-    this.loginForm.reset(); // Opcional: Resetear el formulario de login al ir a recuperar
+    this.loginForm.reset();
   }
+
+  
 
   cerrarRecuperarContrasena(): void {
     this.showRecoverPasswordModal = false;
@@ -72,33 +74,68 @@ export class LoginComponent implements OnInit {
     this.isLoginActive = true;
   }
 
-  // M\u00C9TODOS PARA MANEJAR EL ENV\u00CDO DE FORMULARIOS REACTIVOS
-
+  // ✅ Formulario de Login con AuthService
   onLoginSubmit(): void {
     if (this.loginForm.valid) {
-      console.log('Login Form Data:', this.loginForm.value);
-      // Aqu\u00ED llamar\u00EDas a tu servicio de autenticaci\u00F3n
-      alert('Login exitoso (simulado) para: ' + this.loginForm.value.email);
-      this.cerrarLoginRegisterModal(); // Cierra el modal despu\u00E9s del login exitoso
+      const { email, password } = this.loginForm.value;
+      this.authService.loginEmail( email, password)
+        .then(() => {
+          alert('Login exitoso');
+          this.cerrarLoginRegisterModal();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Error de login: ' + (err.message || err));
+        });
     } else {
-      console.log('Login Form is Invalid!');
-      alert('Por favor, completa el formulario de login correctamente.');
-      // Opcional: Marcar todos los controles como 'touched' para mostrar los errores
       this.loginForm.markAllAsTouched();
     }
   }
 
+  // ✅ Formulario de Registro con AuthService
   onRegisterSubmit(): void {
     if (this.registerForm.valid) {
-      console.log('Register Form Data:', this.registerForm.value);
-      // Aqu\u00ED llamar\u00EDas a tu servicio de registro de usuarios
-      alert('Registro exitoso (simulado) para: ' + this.registerForm.value.username);
-      this.cerrarLoginRegisterModal(); // Cierra el modal despu\u00E9s del registro exitoso
+      const {email, password } = this.registerForm.value;
+      this.authService.registerEmail(email, password)
+        .then(() => {
+          alert('Registro exitoso');
+          this.cerrarLoginRegisterModal();
+        })
+        .catch(err => {
+          console.error(err);
+          alert('Error de registro: ' + (err.message || err));
+        });
     } else {
-      console.log('Register Form is Invalid!');
-      alert('Por favor, completa el formulario de registro correctamente.');
-      // Opcional: Marcar todos los controles como 'touched' para mostrar los errores
       this.registerForm.markAllAsTouched();
     }
   }
+
+
+  
+  // ✅ Login con Google
+  loginWithGoogle(): void {
+    this.authService.loginGoogle()
+      .then(() => {
+        alert('Login con Google exitoso');
+        this.cerrarLoginRegisterModal();
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error con Google: ' + (err.message || err));
+      });
+  }
+
+  // ✅ Login con Facebook
+  loginWithFacebook(): void {
+    this.authService.loginFacebook()
+      .then(() => {
+        alert('Login con Facebook exitoso');
+        this.cerrarLoginRegisterModal();
+      })
+      .catch(err => {
+        console.error(err);
+        alert('Error con Facebook: ' + (err.message || err));
+      });
+  }
+  
 }

@@ -44,7 +44,7 @@
               >El correo es obligatorio.</span
             >
             <span *ngIf="loginForm.get('email')?.errors?.['email']"
-              >Introduce un correo v\u00E1lido.</span
+              >Introduce un correo valido.</span
             >
           </div>
 
@@ -65,10 +65,10 @@
             class="error-message"
           >
             <span *ngIf="loginForm.get('password')?.errors?.['required']"
-              >La contrase\u00F1a es obligatoria.</span
+              >La contraseña es obligatoria.</span
             >
             <span *ngIf="loginForm.get('password')?.errors?.['minlength']"
-              >La contrase\u00F1a debe tener al menos 6 caracteres.</span
+              >La contraseña debe tener al menos 6 caracteres.</span
             >
           </div>
 
@@ -129,7 +129,7 @@
               >El correo es obligatorio.</span
             >
             <span *ngIf="registerForm.get('email')?.errors?.['email']"
-              >Introduce un correo v\u00E1lido.</span
+              >Introduce un correo valido.</span
             >
           </div>
 
@@ -150,10 +150,10 @@
             class="error-message"
           >
             <span *ngIf="registerForm.get('password')?.errors?.['required']"
-              >La contrase\u00F1a es obligatoria.</span
+              >La contraseña es obligatoria.</span
             >
             <span *ngIf="registerForm.get('password')?.errors?.['minlength']"
-              >La contrase\u00F1a debe tener al menos 6 caracteres.</span
+              >La contraseña debe tener al menos 6 caracteres.</span
             >
           </div>
 
@@ -168,11 +168,11 @@
       </ng-container>
 
       <h6>o utiliza una cuenta para iniciar sesión</h6>
-      <button class="boton-img">
+      <button class="boton-img" (click)="loginWithFacebook()">
         <img src="facebook.png" alt="icono Facebook" />
         Iniciar sesión con Facebook
       </button>
-      <button class="boton-img">
+      <button class="boton-img" (click)="loginWithGoogle()">
         <img src="google.png" alt="icono Google" />
         Iniciar sesión con Google
       </button>
