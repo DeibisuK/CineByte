@@ -49,47 +49,44 @@
     </div>
 
     <!-- Segunda fila SOLO en móvil -->
-  <div class="navbar-mobile-row">
-    <div class="ubicacion">
-      <span class="material-icons">location_on</span>
-      <select [(ngModel)]="ubicacion">
-        <option>Machala</option>
-        <option>Guayaquil</option>
-        <option>Quito</option>
-      </select>
+    <div class="navbar-mobile-row">
+      <div class="ubicacion">
+        <span class="material-icons">location_on</span>
+        <select [(ngModel)]="ubicacion">
+          <option>Machala</option>
+          <option>Guayaquil</option>
+          <option>Quito</option>
+        </select>
+      </div>
+      <div class="switch-container">
+        <label class="theme-switch">
+          <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+          <span class="slider round"></span>
+        </label>
+      </div>
     </div>
-    <div class="switch-container">
-      <label class="theme-switch">
-        <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
-        <span class="slider round"></span>
-      </label>
-    </div>
-  </div>
 
     <!-- Menú hamburguesa SOLO en móvil -->
 
-<div class="mobile-menu"
-     *ngIf="menuAbierto"
-     [ngClass]="{'closing': menuCerrando}">
-  <button class="close-menu" (click)="cerrarMenu()">
-    <span class="material-icons">close</span>
-  </button>
-  <hr class="mobile-menu-divider" />
-  <ul>
-    <li><a routerLink="inicio" (click)="navegarCerrarMenu()">INICIO</a></li>
-    <li><a routerLink="peliculas" (click)="navegarCerrarMenu()">PELÍCULAS</a></li>
-    <li><a routerLink="promociones" (click)="navegarCerrarMenu()">PROMOCIONES</a></li>
-  </ul>
-  <div class="buscador">
-    <span class="material-icons">search</span>
-    <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
-  </div>
-</div>
+    <div class="mobile-menu" *ngIf="menuAbierto" [ngClass]="{'closing': menuCerrando}">
+      <button class="close-menu" (click)="cerrarMenu()">
+        <span class="material-icons">close</span>
+      </button>
+      <hr class="mobile-menu-divider" />
+      <ul>
+        <li><a routerLink="inicio" (click)="navegarCerrarMenu()">INICIO</a></li>
+        <li><a routerLink="peliculas" (click)="navegarCerrarMenu()">PELÍCULAS</a></li>
+        <li><a routerLink="promociones" (click)="navegarCerrarMenu()">PROMOCIONES</a></li>
+      </ul>
+      <div class="buscador">
+        <span class="material-icons">search</span>
+        <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+      </div>
+    </div>
 
   </nav>
 </nav>
 
-<app-login
-  [showLoginRegisterModal]="showLoginModal"       
-  (cerrarLoginRegister)="closeLoginModal()">     <!-- Renombramos de (close) a (cerrarLoginRegister) -->
+<app-login [showLoginRegisterModal]="showLoginModal" (cerrarLoginRegister)="closeLoginModal()">
+  <!-- Renombramos de (close) a (cerrarLoginRegister) -->
 </app-login>

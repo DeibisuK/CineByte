@@ -9,7 +9,10 @@ import { LoginComponent } from '../../../acceso/login/login.component';
 
 @Component({
   selector: 'app-navbar',
+<<<<<<< HEAD
   imports: [CommonModule, FormsModule,LoginComponent, RouterLink],
+  imports: [CommonModule, FormsModule,LoginComponent,RouterLink],
+>>>>>>> 84b3e474325c9f8b78943741f3c1ffa44139d46b
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
