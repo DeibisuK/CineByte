@@ -8,7 +8,6 @@ import { NavbarComponent } from '../navbar/navbar.component';
   imports: [RouterOutlet,HeaderComponent,NavbarComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
-  encapsulation:ViewEncapsulation.Emulated
 })
 export class AdminLayoutComponent {
 

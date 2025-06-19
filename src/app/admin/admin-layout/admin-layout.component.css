@@ -1,5 +1,15 @@
-
-.container {
+:host{
+  all:unset;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+}
+:host .container {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
     display: grid;
     grid-template-rows: auto 1fr;
     grid-template-columns: 200px 1fr;
@@ -8,21 +18,22 @@
         "sidebar content";
     transition: all 0.3s ease;
 }
-.container.no-sidebar {
+:host .container.no-sidebar {
   grid-template-columns: 65px 1fr;
 }
 
-.header-container {
+:host .header-container {
   grid-area: header;
   text-align: center;
 }
 
-.sidebar-container {
+:host .sidebar-container {
   grid-area: sidebar;
   text-align: center;
 }
 
-.content-container{
+:host .content-container{
+  width: 100vw;
   grid-area: content;
   text-align: center;
 }
