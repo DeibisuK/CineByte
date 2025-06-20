@@ -1,10 +1,9 @@
 /* Contenedor principal */
 .crear-pelicula-container {
-    max-width: 500px;
-    margin: 2rem auto;
-    padding: 2rem;
+    display: block;
+    height: 100%;
+    padding: 0 32rem;
     background: #181818;
-    border-radius: 12px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.15);
     color: #fff;
 }
@@ -23,12 +22,11 @@
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
-    background-color: aqua;
-    height: 100%;
 }
 
 /* Etiquetas */
 .crear-pelicula-form label {
+    left: 0;
     font-weight: 500;
     margin-bottom: 0.3rem;
 }
