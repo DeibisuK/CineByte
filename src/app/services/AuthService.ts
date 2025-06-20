@@ -27,8 +27,7 @@ export class AuthService {
     return this.auth.signOut();
   }
 
-  // ✅ Nuevo método para recuperar contraseña
   resetPassword(email: string) {
-    return sendPasswordResetEmail(this.auth, email);
+    return sendPasswordResetEmail(this.auth, email); // ✅ usa el mismo objeto
   }
 }

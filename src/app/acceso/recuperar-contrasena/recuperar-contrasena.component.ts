@@ -1,17 +1,21 @@
+// recuperar-contrasena.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
 import { AuthService } from '../../services/AuthService';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-recuperar-contrasena',
   templateUrl: './recuperar-contrasena.component.html',
-  styleUrls: ['./recuperar-contrasena.component.css']
+  styleUrls: ['./recuperar-contrasena.component.css'],
+  standalone: true,
+  imports: [CommonModule, FormsModule]  // <-- agrega esto si usas Standalone
 })
 export class RecuperarContrasenaComponent {
   @Output() cerrar = new EventEmitter<void>();
-
   email: string = '';
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
   cerrarModalRecuperacion(): void {
     this.cerrar.emit();
