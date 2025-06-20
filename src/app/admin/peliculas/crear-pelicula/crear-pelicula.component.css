@@ -1,0 +1,85 @@
+/* Contenedor principal */
+.crear-pelicula-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #181818;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+    color: #fff;
+}
+
+/* Título */
+.crear-pelicula-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+/* Formulario */
+.crear-pelicula-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    background-color: aqua;
+    height: 100%;
+}
+
+/* Etiquetas */
+.crear-pelicula-form label {
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+/* Inputs y selects */
+.crear-pelicula-form input,
+.crear-pelicula-form select,
+.crear-pelicula-form textarea {
+    padding: 0.7rem 1rem;
+    border: none;
+    border-radius: 6px;
+    background: #232323;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: background 0.2s;
+}
+
+.crear-pelicula-form input:focus,
+.crear-pelicula-form select:focus,
+.crear-pelicula-form textarea:focus {
+    background: #2d2d2d;
+}
+
+/* Botón */
+.crear-pelicula-form button {
+    padding: 0.8rem 0;
+    background: #ff9800;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.crear-pelicula-form button:hover {
+    background: #e68900;
+}
+
+/* Mensaje de error */
+.crear-pelicula-error {
+    color: #ff5252;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Mensaje de éxito */
+.crear-pelicula-success {
+    color: #4caf50;
+    text-align: center;
+    margin-bottom: 1rem;
+}

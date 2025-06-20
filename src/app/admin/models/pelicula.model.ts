@@ -2,6 +2,9 @@ export interface Pelicula {
     id: number;
     titulo: string;
     descripcion: string;
-    año: number;
-    genero: string;
+    duracion : number; 
+    edad: string;
+    fechaEstreno: Date;
+    imagen: string;
+    estado: string;
 }
