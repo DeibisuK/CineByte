@@ -28,6 +28,6 @@ export class AuthService {
   }
 
   resetPassword(email: string) {
-    return sendPasswordResetEmail(this.auth, email); // ✅ usa el mismo objeto
+    return sendPasswordResetEmail(this.auth, email); 
   }
 }

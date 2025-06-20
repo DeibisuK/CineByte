@@ -269,21 +269,21 @@ h6 {
     }
 
     .left-section {
-        border-radius: 0px 0px 20 20; 
+        border-radius: 0px; 
         order: 2; 
     }
 
     .right-section {
-        border-radius: 0px 0px 20px 20px; 
+        border-radius: 0px; 
         order: 1;
     }
 
     .container.right-active .left-section {
-        transform: translateY(-179%); 
+        transform: translateY(-169%); 
     }
 
     .container.right-active .right-section {
-        transform: translateY(56%);
+        transform: translateY(59%);
     }
 
     .input-container {

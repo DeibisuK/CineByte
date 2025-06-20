@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './recuperar-contrasena.component.html',
   styleUrls: ['./recuperar-contrasena.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule]  // <-- agrega esto si usas Standalone
+  imports: [CommonModule, FormsModule]  
 })
 export class RecuperarContrasenaComponent {
   @Output() cerrar = new EventEmitter<void>();
