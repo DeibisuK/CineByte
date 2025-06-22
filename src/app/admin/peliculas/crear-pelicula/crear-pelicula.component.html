@@ -1,25 +1,67 @@
 <div class="crear-pelicula-container">
-    <h2 class="crear-pelicula-title">Crear Película</h2>
     <form class="crear-pelicula-form" [formGroup]="peliculaForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-            <label for="titulo">Título</label>
-            <input id="titulo" formControlName="titulo" type="text" class="form-control" />
-            <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched" class="crear-pelicula-error">
-                El título es obligatorio.
-            </div>
+        <div class="form-img">
+            <label class="input-img">
+                <input type="file">
+                <i class="fa-solid fa-plus"></i>
+                <div class="text">Agregar Imagen</div>
+            </label>
         </div>
-        <div class="form-group">
-            <label for="titulo">Título</label>
-            <input id="titulo" formControlName="titulo" type="text" class="form-control" />
-            <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched" class="crear-pelicula-error">
-                El título es obligatorio.
+        <div class="form-container">
+            <div class="form-group">
+                <label for="titulo">Título</label>
+                <input id="titulo" formControlName="titulo" type="text" class="form-control" />
+                <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched"
+                    class="crear-pelicula-error">
+                    El título es obligatorio.
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            <label for="titulo">Título</label>
-            <input id="titulo" formControlName="titulo" type="text" class="form-control" />
-            <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched" class="crear-pelicula-error">
-                El título es obligatorio.
+            
+            <div class="form-group">
+                <label>Géneros</label>
+                <div class="custom-multiselect" (click)="toggleDropdownGeneros()" tabindex="0">
+                    <div class="selected-values">
+                        {{ selectedGeneros.length ? selectedGeneros.join(', ') : 'Seleccione uno o más géneros' }}
+                    </div>
+                    <div class="dropdown" *ngIf="dropdownGenerosOpen">
+                        <label *ngFor="let genero of generos" class="dropdown-option">
+                            <input type="checkbox" [checked]="selectedGeneros.includes(genero)"
+                                (change)="onGeneroChange(genero, $event)" />
+                            {{ genero }}
+                        </label>
+                    </div>
+                </div>
+                <div *ngIf="generosInvalid" class="crear-pelicula-error">
+                    Debe seleccionar al menos un género.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Etiquetas</label>
+                <div class="custom-multiselect" (click)="toggleDropdownEtiquetas()" tabindex="0">
+                    <div class="selected-values">
+                        {{ selectedEtiquetas.length ? selectedEtiquetas.join(', ') : 'Seleccione uno o más etiquetas' }}
+                    </div>
+                    <div class="dropdown" *ngIf="dropdownEtiquetasOpen">
+                        <label *ngFor="let etiqueta of etiquetas" class="dropdown-option">
+                            <input type="checkbox" [checked]="selectedEtiquetas.includes(etiqueta)"
+                                (change)="onEtiquetaChange(etiqueta, $event)" />
+                            {{ etiqueta }}
+                        </label>
+                    </div>
+                </div>
+                <div *ngIf="etiquetasInvalid" class="crear-pelicula-error">
+                    Debe seleccionar al menos una etiqueta.
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" formControlName="descripcion" class="form-control"></textarea>
+                <div *ngIf="peliculaForm.get('descripcion')?.invalid && peliculaForm.get('descripcion')?.touched"
+                    class="crear-pelicula-error">
+                    La descripción es obligatoria.
+                </div>
             </div>
         </div>
     </form>

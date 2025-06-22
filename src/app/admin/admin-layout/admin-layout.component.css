@@ -1,24 +1,26 @@
 :host{
   all:unset;
-  display: flex;
+  display: inline-block;
   margin: 0;
   padding: 0;
   height: 100vh;
-  width: 100vw;
+  width: 100%;
+  background-color: red;
 }
-:host .container {
+:host .containere {
+  width: 100%;
+  height: 100%;
   margin: 0;
   padding: 0;
-  width: 100vw;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    grid-template-columns: 200px 1fr;
-    grid-template-areas:
-        "header header"
-        "sidebar content";
-    transition: all 0.3s ease;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  grid-template-columns: 200px 1fr;
+  grid-template-areas:
+      "header header"
+      "sidebar content";
+  transition: all 0.3s ease;
 }
-:host .container.no-sidebar {
+:host .containere.no-sidebar {
   grid-template-columns: 65px 1fr;
 }
 
@@ -33,7 +35,6 @@
 }
 
 :host .content-container{
-  width: 100vw;
   grid-area: content;
   text-align: center;
 }
