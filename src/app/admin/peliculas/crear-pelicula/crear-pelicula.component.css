@@ -2,7 +2,6 @@
 .crear-pelicula-container {
     display:flex;
     flex-direction: column;
-    background-color:rgba(38,38,38,255);
     color: #fff;
     height: 100%;
 }
@@ -53,7 +52,6 @@
 
 .input-img input[type="file"] {
     display: none;
-    /* Oculta el input real */
 }
 
 .input-img i {
@@ -67,10 +65,27 @@
 
 .form-container {
     flex: 2;
-    margin: 0;
-    padding: 5px 10px;
+    margin: 0px;
+    padding: 0px 80px 5px 50px;
+    align-content: center;
 }
-
+.form-mid{
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.form-partial{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+}
+.form-partial .form-group {
+    flex: 1;
+}
+#descripcion{
+    height: 150px;
+}
 /* Etiquetas */
 .crear-pelicula-form label {
     left: 0;
@@ -85,8 +100,8 @@
     padding: 0.7rem 1rem;
     border: none;
     border-radius: 6px;
-    background: #232323;
-    color: #fff;
+    background: #eae7e7;
+    color: #000000;
     font-size: 1rem;
     outline: none;
     transition: background 0.2s;
@@ -95,13 +110,13 @@
 .crear-pelicula-form input:focus,
 .crear-pelicula-form select:focus,
 .crear-pelicula-form textarea:focus {
-    background: #2d2d2d;
+    background: #fff;
 }
 
 /* Botón */
 .crear-pelicula-form button {
     padding: 0.8rem 0;
-    background: #ff9800;
+    background: #ffee04;
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -109,6 +124,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s;
+    width: 100px;
 }
 
 .crear-pelicula-form button:hover {
@@ -131,10 +147,10 @@
 
 .custom-multiselect {
   position: relative;
-  background: #232323;
+  background: #ffffff;
   border-radius: 6px;
   padding: 0.7rem 1rem;
-  color: #fff;
+  color: #000000;
   cursor: pointer;
   user-select: none;
   min-height: 2.5rem;
@@ -149,7 +165,7 @@
   left: 0;
   right: 0;
   top: 100%;
-  background: #232323;
+  background: #ffffff;
   border: 1px solid #444;
   border-radius: 6px;
   z-index: 10;
@@ -167,5 +183,20 @@
 }
 
 .dropdown-option:hover {
-  background: #333;
+  background: #d6d6d6;
+}
+input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+.img-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+.form-group {
+    font-weight: 600;
+    text-align: start;
 }

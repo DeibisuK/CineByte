@@ -7,12 +7,10 @@ import { initializeApp } from 'firebase/app';
 import { environment } from './environments/environment';
 import { provideAuth } from '@angular/fire/auth';
 import { getAuth } from 'firebase/auth';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes), provideFirebaseApp(() => initializeApp(environment.firebase)),
-
-    // ✅ Firebase Auth (opcional: para login)
-    provideAuth(() => getAuth()),
-    ]
+  providers: [provideZoneChangeDetection({ eventCoalescing: true }),
+  provideRouter(routes), provideFirebaseApp(() => initializeApp(environment.firebase)),
+  provideAuth(() => getAuth()), provideHttpClient()]
 };

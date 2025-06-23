@@ -2,6 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pelicula } from '../../models/pelicula.model';
+import { PeliculaService } from '../../../services/pelicula.service';
+import { GenerosService } from '../../../services/generos.service';
+import { EtiquetasService } from '../../../services/etiquetas.service';
+import { ImgbbService } from '../../../services/imgbb.service';
 
 @Component({
   selector: 'app-crear-pelicula',
@@ -12,59 +16,98 @@ import { Pelicula } from '../../models/pelicula.model';
 export class CrearPeliculaComponent {
 
   peliculaForm: FormGroup;
-  generos: string[] = ['Acción', 'Comedia', 'Drama', 'Terror', 'Ciencia Ficción'];
-  etiquetas: string[] = ['Clasico', 'Exclusivo', 'Estreno', '3D'];
+  generos: string[] = [];
+  etiquetas: string[] = [];
+  clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
+  peliculas: Pelicula[] = [];
   dropdownGenerosOpen = false;
   dropdownEtiquetasOpen = false;
   selectedGeneros: string[] = [];
   selectedEtiquetas: string[] = [];
+  imagenSeleccionada!: File;
+  imagenPreview: string = '';
 
-  constructor() {
+  constructor(private peliculaService: PeliculaService,
+    private generosService: GenerosService,
+    private etiquetasService: EtiquetasService,
+    private imgbbService: ImgbbService) {
+    this.etiquetasService.getEtiquetas().subscribe(data => {
+      this.etiquetas = data.map((e: any) => e.nombre);
+    });
+    this.generosService.getGeneros().subscribe(data => {
+      this.generos = data.map((e: any) => e.nombre);
+    });
     this.peliculaForm = new FormGroup({
-      id: new FormControl('', Validators.required),
       titulo: new FormControl('', Validators.required),
       descripcion: new FormControl('', Validators.required),
-      duracion: new FormControl('', Validators.required),
-      edad: new FormControl('', Validators.required),
-      fechaEstreno: new FormControl('', Validators.required),
-      imagen: new FormControl('', Validators.required),
-      estado: new FormControl('', Validators.required)
+      duracion_minutos: new FormControl('', Validators.required),
+      fecha_estreno: new FormControl('', Validators.required),
+      estado: new FormControl('', Validators.required),
+      clasificacion: new FormControl('', Validators.required),
+      imagen: new FormControl('', Validators.required)
     });
+
   }
-  onSubmit() {
+  async onSubmit() {
     if (this.peliculaForm.valid) {
       const pelicula: Pelicula = this.peliculaForm.value as Pelicula;
-      // Aquí puedes manejar el envío del formulario
-      console.log('Formulario enviado:', pelicula);
+      const file = this.imagenSeleccionada;
+      if (!file) {
+        alert('Debes seleccionar una imagen.');
+        return;
+      }
+      try {
+        const url = await this.imgbbService.subirImagen(file);
+        pelicula.imagen = url; // Asignar la URL de la imagen subida
+        debugger;
+        this.peliculaService.guardarPelicula(pelicula);
+
+      } catch (error) {
+        console.error('Error al subir imagen o guardar película:', error);
+        alert('Hubo un error al guardar la película.');
+      }
+
     } else {
-      console.log('Formulario inválido');
+      console.log('Formulario inválido', this.peliculaForm.value);
     }
   }
 
-  toggleDropdownGeneros() {
-    this.dropdownGenerosOpen = !this.dropdownGenerosOpen;
-    if (this.dropdownGenerosOpen) this.dropdownEtiquetasOpen = false;
-  }
-  toggleDropdownEtiquetas() {
-    this.dropdownEtiquetasOpen = !this.dropdownEtiquetasOpen;
-    if (this.dropdownEtiquetasOpen) this.dropdownGenerosOpen = false;
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      this.imagenSeleccionada = file;
+      this.peliculaForm.get('imagen')?.setValue(file.name); // O file si necesitas el archivo completo
+      this.peliculaForm.get('imagen')?.markAsTouched();
+      // Opcional: mostrar preview local
+      const reader = new FileReader();
+      reader.onload = () => this.imagenPreview = reader.result as string;
+      reader.readAsDataURL(file);
+
+    }
+
   }
 
-  onGeneroChange(genero: string, event: any) {
-    if (event.target.checked) {
-      this.selectedGeneros.push(genero);
-    } else {
-      this.selectedGeneros = this.selectedGeneros.filter(g => g !== genero);
+
+  toggleDropdown(type: 'generos' | 'etiquetas') {
+    if (type === 'generos') {
+      this.dropdownGenerosOpen = !this.dropdownGenerosOpen;
+      if (this.dropdownGenerosOpen) this.dropdownEtiquetasOpen = false;
+    } else if (type === 'etiquetas') {
+      this.dropdownEtiquetasOpen = !this.dropdownEtiquetasOpen;
+      if (this.dropdownEtiquetasOpen) this.dropdownGenerosOpen = false;
     }
-    this.peliculaForm.get('genero')?.setValue(this.selectedGeneros);
   }
-  onEtiquetaChange(etiqueta: string, event: any) {
+
+  onCheckboxChange(type: 'genero' | 'etiqueta', value: string, event: any) {
+    const selectedArray = type === 'genero' ? this.selectedGeneros : this.selectedEtiquetas;
     if (event.target.checked) {
-      this.selectedEtiquetas.push(etiqueta);
+      selectedArray.push(value);
     } else {
-      this.selectedEtiquetas = this.selectedEtiquetas.filter(e => e !== etiqueta);
+      const idx = selectedArray.indexOf(value);
+      if (idx > -1) selectedArray.splice(idx, 1);
     }
-    this.peliculaForm.get('etiquetas')?.setValue(this.selectedEtiquetas);
+    this.peliculaForm.get(type === 'genero' ? 'genero' : 'etiquetas')?.setValue(selectedArray);
   }
 
   get generosInvalid() {

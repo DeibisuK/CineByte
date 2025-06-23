@@ -1,0 +1,31 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Título</th>
+            <th>Descripción</th>
+            <th>Duración</th>
+            <th>Clasificación</th>
+            <th>Fecha Estreno</th>
+            <th>Imagen</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let pelicula of peliculas">
+            <td>{{ pelicula.id_pelicula }}</td>
+            <td>{{ pelicula.titulo }}</td>
+            <td>{{ pelicula.descripcion }}</td>
+            <td>{{ pelicula.duracion_minutos }} min</td>
+            <td>{{ pelicula.clasificacion }}</td>
+            <td>{{ pelicula.fecha_estreno | date:'yyyy-MM-dd' }}</td>
+            <td>
+                <img [src]="pelicula.imagen" alt="Imagen" width="60" height="90">
+            </td>
+            <td>
+                <button class="btn btn-primary btn-sm">Editar</button>
+                <button class="btn btn-danger btn-sm" >Eliminar</button>
+            </td>
+        </tr>
+    </tbody>
+</table>
