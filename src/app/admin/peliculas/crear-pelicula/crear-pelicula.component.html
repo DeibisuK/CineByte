@@ -1,133 +1,156 @@
-<div class="crear-pelicula-container">
-    <form class="crear-pelicula-form" [formGroup]="peliculaForm" (ngSubmit)="onSubmit()">
-        <div class="form-img">
-            <label class="input-img">
-                <input type="file" accept="image/*" (change)="onImageSelected($event)">
-                <ng-container *ngIf="imagenPreview; else uploadIcon">
-                    <img [src]="imagenPreview" alt="Vista previa" class="img-preview" />
-                </ng-container>
-                <ng-template #uploadIcon>
-                    <i class="fa-solid fa-plus"></i>
-                    <div class="text">Agregar Imagen</div>
-                </ng-template>
-            </label>
+<div class="main-content">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h2>Crear Nueva Película</h2>
+            <p>Agrega una nueva película a tu catálogo cinematográfico</p>
         </div>
+
         <div class="form-container">
-            <h2>Crear Película</h2>
-            <div class="form-mid">
-                <div class="form-group">
-                    <label for="titulo">Título</label>
-                    <input id="titulo" formControlName="titulo" type="text" class="form-control"
-                        placeholder="Ingrese el título de la pelicula" />
-                    <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched"
-                        class="crear-pelicula-error">
-                        El título es obligatorio.
-                    </div>
+            <form [formGroup]="peliculaForm" (ngSubmit)="onSubmit()" class="form-grid">
+
+                <div class="image-upload-section">
+                    <label class="image-upload">
+                        <input type="file" accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                        <ng-container *ngIf="imagenPreview; else uploadIcon">
+                            <img [src]="imagenPreview" alt="Vista previa" class="img-preview" />
+                        </ng-container>
+                        <ng-template #uploadIcon>
+                            <i class="fa-solid fa-plus"></i>
+                            <div class="text">Agregar Imagen</div>
+                        </ng-template>
+                    </label>
                 </div>
-                <div class="form-partial">
-                    <div class="form-group">
-                        <label for="duracion_minutos">Duración</label>
-                        <input id="duracion_minutos" formControlName="duracion_minutos" type="number" class="form-control"
-                            placeholder="Ingrese la duración de la pelicula" />
-                        <div *ngIf="peliculaForm.get('duracion_minutos')?.invalid && peliculaForm.get('duracion_minutos')?.touched"
+
+                <div class="form-fields">
+                    <div class="form-field">
+                        <label for="titulo">Título</label>
+                        <input type="text" id="titulo" formControlName="titulo"
+                            placeholder="Ingrese el título de la película">
+                        <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched"
                             class="crear-pelicula-error">
-                            La duración es obligatoria y debe ser un número positivo.
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="clasificacion">Clasificación</label>
-                        <select id="clasificacion" formControlName="clasificacion" class="form-control">
-                            <option value="" disabled selected>Seleccione una clasificación</option>
-                            <option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">{{
-                                clasificacion
-                                }}
-                            </option>
-                        </select>
-                        <div *ngIf="peliculaForm.get('clasificacion')?.invalid && peliculaForm.get('clasificacion')?.touched"
-                            class="crear-pelicula-error">
-                            La clasificación es obligatoria.
+                            El título es obligatorio.
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label>Etiquetas</label>
-                        <div class="custom-multiselect" (click)="toggleDropdown('etiquetas')" tabindex="0">
-                            <div class="selected-values">
-                                {{ selectedEtiquetas.length ? selectedEtiquetas.join(', ') : 'Seleccione uno o más etiquetas'}}
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="duracion_minutos">Duración (min)</label>
+                            <input type="number" id="duracion_minutos" formControlName="duracion_minutos"
+                                placeholder="120" min="1" required>
+                            <div *ngIf="peliculaForm.get('duracion_minutos')?.invalid && peliculaForm.get('duracion_minutos')?.touched"
+                                class="crear-pelicula-error">
+                                La duración es obligatoria y debe ser un número positivo.
                             </div>
-                            <div class="dropdown" *ngIf="dropdownEtiquetasOpen">
-                                <label *ngFor="let etiqueta of etiquetas" class="dropdown-option">
-                                    <input type="checkbox" [checked]="selectedEtiquetas.includes(etiqueta)"
-                                        (change)="onCheckboxChange('etiqueta', etiqueta, $event)" />
-                                    {{ etiqueta }}
-                                </label>
+
+                        </div>
+                        <div class="form-field">
+                            <label for="clasificacion">Clasificación</label>
+                            <select id="clasificacion" formControlName="clasificacion" required>
+                                <option value="" disabled selected>Seleccione una clasificación</option>
+                                <option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">
+                                    {{ clasificacion }}
+                                </option>
+                            </select>
+                            <div *ngIf="peliculaForm.get('clasificacion')?.invalid && peliculaForm.get('clasificacion')?.touched"
+                                class="crear-pelicula-error">
+                                La clasificación es obligatoria.
                             </div>
                         </div>
-                        <div *ngIf="etiquetasInvalid" class="crear-pelicula-error">
-                            Debe seleccionar al menos una etiqueta.
-                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" formControlName="descripcion" class="form-control"
-                        placeholder="Ingrese la descripción de la pelicula"></textarea>
-                    <div *ngIf="peliculaForm.get('descripcion')?.invalid && peliculaForm.get('descripcion')?.touched"
-                        class="crear-pelicula-error">
-                        La descripción es obligatoria.
-                    </div>
-                </div>
-
-                <div class="form-partial">
-                    <div class="form-group">
-                        <label for="fecha_estreno">Fecha de Estreno</label>
-                        <input id="fecha_estreno" formControlName="fecha_estreno" type="date" class="form-control" />
-                        <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
+                    <div class="form-field">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" formControlName="descripcion"
+                            placeholder="Ingrese una descripción detallada de la película..." required></textarea>
+                        <div *ngIf="peliculaForm.get('descripcion')?.invalid && peliculaForm.get('descripcion')?.touched"
                             class="crear-pelicula-error">
-                            La fecha de estreno es obligatoria.
+                            La descripción es obligatoria.
                         </div>
+
                     </div>
-                    <div class="form-group">
-                        <label>Géneros</label>
-                        <div class="custom-multiselect" (click)="toggleDropdown('generos')" tabindex="0">
-                            <div class="selected-values">
-                                {{ selectedGeneros.length ? selectedGeneros.join(', ') : 'Seleccione uno o más géneros'
-                                }}
+
+                    <div class="field-row-three">
+                        <div class="form-field">
+                            <label for="fecha_estreno">Fecha de Estreno</label>
+                            <input type="date" id="fecha_estreno" formControlName="fecha_estreno" required>
+                            <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
+                                class="crear-pelicula-error">
+                                La fecha de estreno es obligatoria.
                             </div>
-                            <div class="dropdown" *ngIf="dropdownGenerosOpen">
-                                <label *ngFor="let genero of generos" class="dropdown-option">
-                                    <input type="checkbox" [checked]="selectedGeneros.includes(genero)"
-                                        (change)="onCheckboxChange('genero', genero, $event)" />
+
+                        </div>
+
+                        <div class="form-field">
+                            <label for="generos">Agregar Género</label>
+                            <select id="generos" name="generos" >
+                                <option value="" disabled>Seleccione un genero</option>
+                                <option *ngFor="let genero of generos" [value]="genero">
                                     {{ genero }}
-                                </label>
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="estado">Estado</label>
+                            <select id="estado" name="estado" required>
+                                <option value="">Seleccione un estado</option>
+                                <option value="Estreno">🔥 En Estreno</option>
+                                <option value="Cartelera">🎬 En Cartelera</option>
+                                <option value="Próximamente">⏳ Próximamente</option>
+                                <option value="Finalizada">✅ Finalizada</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="multi-select">
+                        <label>Géneros Seleccionados</label>
+                        <div class="tags-container" id="genresTags">
+                            <div *ngIf="selectedGenres.length === 0" class="empty-state">No hay géneros seleccionados</div>
+                            <div *ngFor="let genre of selectedGenres" class="tag">
+                                {{ genre }}
+                                <span class="tag-remove" (click)="removeGenre(genre)">×</span>
                             </div>
                         </div>
-                        <div *ngIf="generosInvalid" class="crear-pelicula-error">
-                            Debe seleccionar al menos un género.
-                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="estado">Estado</label>
-                        <select id="estado" formControlName="estado" class="form-control">
-                            <option value="">Seleccione un estado</option>
-                            <option value="activo">Activo</option>
-                            <option value="proximamente">Próximamente</option>
-                            <option value="retirada">Retirada</option>
-                        </select>
-                        <div *ngIf="peliculaForm.get('estado')?.invalid && peliculaForm.get('estado')?.touched"
-                            class="crear-pelicula-error">
-                            El estado es obligatorio.
-                        </div>
-                    </div>
-                </div>
 
-                <div class="form-actions">
-                    <button type="submit" [disabled]="!peliculaForm.valid" class="btn btn-primary">Crear
-                        Película</button>
+                    <div class="field-row">
+                        <div class="form-field">
+                            <label for="etiquetas">Agregar Etiqueta</label>
+                            <select id="etiquetas" name="etiquetas" onchange="addTag(this.value)">
+                                <option value="">Seleccione etiquetas</option>
+                                <option value="Favorita">⭐ Favorita</option>
+                                <option value="Clásico">🏆 Clásico</option>
+                                <option value="Cult">🎭 Cult</option>
+                                <option value="Blockbuster">💥 Blockbuster</option>
+                                <option value="Indie">🎨 Indie</option>
+                                <option value="Oscar">🏅 Oscar</option>
+                                <option value="Taquillera">💰 Taquillera</option>
+                                <option value="Imprescindible">💎 Imprescindible</option>
+                                <option value="Nostálgica">🕰️ Nostálgica</option>
+                                <option value="Controversial">⚡ Controversial</option>
+                                <option value="Familia">👨‍👩‍👧‍👦 Familia</option>
+                                <option value="Secuela">🔄 Secuela</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="director">Director</label>
+                            <input type="text" id="director" name="director" placeholder="Nombre del director">
+                        </div>
+                    </div>
+
+                    <div class="multi-select">
+                        <label>Etiquetas Seleccionadas</label>
+                        <div class="tags-container" id="tagsTags">
+                            <div class="empty-state">No hay etiquetas seleccionadas</div>
+                        </div>
+                    </div>
                 </div>
+            </form>
+
+            <div class="submit-section">
+                <button type="submit" class="submit-btn" onclick="createMovie()">
+                    Crear Película
+                </button>
             </div>
         </div>
-
-    </form>
+    </div>
 </div>
