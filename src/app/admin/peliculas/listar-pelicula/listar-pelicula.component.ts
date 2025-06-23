@@ -2,10 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Pelicula } from '../../models/pelicula.model';
 import { PeliculaService } from '../../../services/pelicula.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-listar-pelicula',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './listar-pelicula.component.html',
   styleUrl: './listar-pelicula.component.css'
 })
