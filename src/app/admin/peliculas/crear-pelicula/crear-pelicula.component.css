@@ -4,6 +4,7 @@
     flex-direction: column;
     color: #fff;
     height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Título */
@@ -31,8 +32,8 @@
 .input-img {
     position: relative;
     display: inline-block;
-    width: 450px;
-    height: 650px;
+    width: 350px;
+    height: 550px;
     border: 4px dashed white;
     border-radius: 10px;
     background-color: #515151;
