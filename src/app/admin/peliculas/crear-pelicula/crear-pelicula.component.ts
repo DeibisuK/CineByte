@@ -6,7 +6,7 @@ import { PeliculaService } from '../../../services/pelicula.service';
 import { GenerosService } from '../../../services/generos.service';
 import { EtiquetasService } from '../../../services/etiquetas.service';
 import { ImgbbService } from '../../../services/imgbb.service';
-
+import Swal from 'sweetalert2'
 @Component({
   selector: 'app-crear-pelicula',
   imports: [ReactiveFormsModule, CommonModule],
@@ -58,9 +58,13 @@ export class CrearPeliculaComponent {
       }
       try {
         const url = await this.imgbbService.subirImagen(file);
-        pelicula.imagen = url; // Asignar la URL de la imagen subida
-        debugger;
+        pelicula.imagen = url;
         this.peliculaService.guardarPelicula(pelicula);
+        Swal.fire({
+          title: "Pelicula guardada",
+          text: "La película se ha guardado correctamente.",
+          icon: "success"
+        });
 
       } catch (error) {
         console.error('Error al subir imagen o guardar película:', error);
