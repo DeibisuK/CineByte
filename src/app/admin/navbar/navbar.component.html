@@ -1,42 +1,120 @@
-<div class="sidebar">
-    <nav>
-        <ul>
-            <li>
-                <a routerLink="/admin/dashboard">
-                    <i class="fa-solid fa-table-columns"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a routerLink="/admin/listar-peliculas">
-                    <i class="fa-solid fa-film"></i>
-                    <span>Peliculas</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="fa-solid fa-rectangle-ad"></i>
-                    <span>Promociones</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="fa-solid fa-tv"></i>
-                    <span>Salas</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="fa-solid fa-house"></i>
-                    <span>Funciones</span>
-                </a>
-            </li>
-            <li>
-                <a href="">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Usuarios</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+<nav class="sidebar" [class.closed]="sidebarClosed">
+  <!-- Header con logo y botón hamburguesa -->
+  <div class="sidebar-header">
+    <a class="logo">
+      <button 
+        class="toggle-btn" 
+        (click)="toggleSidebar()" 
+        [attr.aria-label]="sidebarClosed ? 'Abrir menú' : 'Cerrar menú'"
+        [attr.aria-expanded]="!sidebarClosed"
+      >
+        <i class="fa-solid" [class.fa-bars]="sidebarClosed" [class.fa-xmark]="!sidebarClosed"></i>
+      </button>
+      <img 
+        *ngIf="!sidebarClosed" 
+        src="Imagotipo Proyecto.png" 
+        alt="Logo de la empresa" 
+        [class.logo-invertido]="!modoOscuro"
+      />
+    </a>
+  </div>
+
+  <!-- Menú de navegación -->
+  <ul class="sidebar-menu">
+    <li>
+      <a 
+        routerLink="/admin/dashboard" 
+        routerLinkActive="active-link"
+        data-tooltip="Dashboard"
+        [attr.aria-label]="'Ir a Dashboard' + (!sidebarClosed ? '' : ' - Dashboard')"
+      >
+        <i class="fa-solid fa-chart-line"></i>
+        <span *ngIf="!sidebarClosed">Dashboard</span>
+      </a>
+    </li>
+    <li>
+      <a 
+        routerLink="/admin/listar-peliculas" 
+        routerLinkActive="active-link"
+        data-tooltip="Películas"
+        [attr.aria-label]="'Gestionar Películas' + (!sidebarClosed ? '' : ' - Películas')"
+      >
+        <i class="fa-solid fa-film"></i>
+        <span *ngIf="!sidebarClosed">Películas</span>
+      </a>
+    </li>
+    <li>
+      <a 
+        routerLink="/admin/promociones" 
+        routerLinkActive="active-link"
+        data-tooltip="Promociones"
+        [attr.aria-label]="'Gestionar Promociones' + (!sidebarClosed ? '' : ' - Promociones')"
+      >
+        <i class="fa-solid fa-tags"></i>
+        <span *ngIf="!sidebarClosed">Promociones</span>
+      </a>
+    </li>
+    <li>
+      <a 
+        routerLink="/admin/salas" 
+        routerLinkActive="active-link"
+        data-tooltip="Salas"
+        [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')"
+      >
+        <i class="fa-solid fa-door-open"></i>
+        <span *ngIf="!sidebarClosed">Salas</span>
+      </a>
+    </li>
+    <li>
+      <a 
+        routerLink="/admin/funciones" 
+        routerLinkActive="active-link"
+        data-tooltip="Funciones"
+        [attr.aria-label]="'Gestionar Funciones' + (!sidebarClosed ? '' : ' - Funciones')"
+      >
+        <i class="fa-solid fa-calendar-days"></i>
+        <span *ngIf="!sidebarClosed">Funciones</span>
+      </a>
+    </li>
+    <li>
+      <a 
+        routerLink="/admin/usuarios" 
+        routerLinkActive="active-link"
+        data-tooltip="Usuarios"
+        [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')"
+      >
+        <i class="fa-solid fa-users"></i>
+        <span *ngIf="!sidebarClosed">Usuarios</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- Footer con switch de tema y logout -->
+  <div class="sidebar-footer">
+    <!-- Switch de tema -->
+    <div class="switch-container">
+      <label class="theme-switch" [attr.aria-label]="'Cambiar a modo ' + (modoOscuro ? 'claro' : 'oscuro')">
+        <input 
+          type="checkbox" 
+          [checked]="!modoOscuro" 
+          (change)="cambiarTema()"
+          [attr.aria-label]="'Alternar modo ' + (modoOscuro ? 'claro' : 'oscuro')"
+        />
+        <span class="slider"></span>
+      </label>
+      <span class="switch-label" *ngIf="!sidebarClosed">
+        {{ modoOscuro ? 'Modo Oscuro' : 'Modo Claro' }}
+      </span>
+    </div>
+
+    <!-- Botón de logout -->
+    <button 
+      class="logout-btn" 
+      (click)="logout()"
+      [attr.aria-label]="'Cerrar sesión' + (!sidebarClosed ? '' : ' - Logout')"
+    >
+      <i class="fa-solid fa-right-from-bracket"></i>
+      <span *ngIf="!sidebarClosed">Cerrar Sesión</span>
+    </button>
+  </div>
+</nav>

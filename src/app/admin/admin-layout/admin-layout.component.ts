@@ -5,10 +5,10 @@ import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterOutlet,HeaderComponent,NavbarComponent],
+  imports: [RouterOutlet,NavbarComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })
 export class AdminLayoutComponent {
-
+  sidebarClosed = false; // <-- Agrega esta propiedad
 }
