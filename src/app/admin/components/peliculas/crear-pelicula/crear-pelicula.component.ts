@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Pelicula } from '../../models/pelicula.model';
-import { PeliculaService } from '../../../services/pelicula.service';
-import { GenerosService } from '../../../services/generos.service';
-import { EtiquetasService } from '../../../services/etiquetas.service';
-import { ImgbbService } from '../../../services/imgbb.service';
+import { Pelicula } from '../../../models/pelicula.model';
+import { PeliculaService } from '../../../../services/pelicula.service';
+import { GenerosService } from '../../../../services/generos.service';
+import { EtiquetasService } from '../../../../services/etiquetas.service';
+import { ImgbbService } from '../../../../services/imgbb.service';
 import Swal from 'sweetalert2'
 @Component({
   selector: 'app-crear-pelicula',

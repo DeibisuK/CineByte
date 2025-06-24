@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Pelicula } from '../../models/pelicula.model';
-import { PeliculaService } from '../../../services/pelicula.service';
+import { Pelicula } from '../../../models/pelicula.model';
+import { PeliculaService } from '../../../../services/pelicula.service';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -21,7 +21,6 @@ export class ListarPeliculaComponent {
      this.peliculaService.obtenerPeliculas().subscribe({
       next: (data) => {
         this.peliculas = data;
-        console.log('Películas:', this.peliculas);
       },
       error: (error) => {
         console.error('Error al obtener películas', error);

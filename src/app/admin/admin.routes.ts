@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { CrearPeliculaComponent } from './peliculas/crear-pelicula/crear-pelicula.component';
-import { ListarPeliculaComponent } from './peliculas/listar-pelicula/listar-pelicula.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { CrearPeliculaComponent } from './components/peliculas/crear-pelicula/crear-pelicula.component';
+import { ListarPeliculaComponent } from './components/peliculas/listar-pelicula/listar-pelicula.component';
 
 export const adminRoutes: Routes = [
   
