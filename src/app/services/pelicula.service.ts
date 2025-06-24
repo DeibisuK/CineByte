@@ -7,15 +7,15 @@ import { Observable } from 'rxjs/internal/Observable';
   providedIn: 'root'
 })
 export class PeliculaService {
-
+  apiURL = 'http://localhost:3000/api/peliculas';
   constructor(private http: HttpClient) { }
 
   obtenerPeliculas(): Observable<Pelicula[]> {
-    return this.http.get<Pelicula[]>('http://localhost:3000/api/peliculas');
+    return this.http.get<Pelicula[]>(this.apiURL);
   }
   
   guardarPelicula(peliculaForm: Pelicula) {
-    this.http.post('http://localhost:3000/api/peliculas', peliculaForm)
+    this.http.post(this.apiURL, peliculaForm)
       .subscribe(response => {console.log('Película guardada:', response);});
   }
 
