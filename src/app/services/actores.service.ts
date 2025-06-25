@@ -1,14 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Generos } from '../admin/models/generos.model';
+import { Actores } from '../admin/models/actores.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class GenerosService {
+export class ActoresService {
+
   constructor(private http: HttpClient) { }
-  getGeneros(): Observable<Generos[]> {
-      return this.http.get<Generos[]>('http://localhost:3000/api/generos');
-    }
+
+  getActor(): Observable<Actores[]> {
+    return this.http.get<Actores[]>('http://localhost:3000/api/actores');
+  }
 }

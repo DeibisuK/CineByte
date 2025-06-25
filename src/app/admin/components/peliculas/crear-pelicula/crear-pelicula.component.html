@@ -1,8 +1,7 @@
 <div class="main-content">
     <div class="content-wrapper">
         <div class="page-header">
-            <h2>Crear Nueva Película</h2>
-            <p>Agrega una nueva película a tu catálogo cinematográfico</p>
+            <h2>Agregar Nueva Película</h2>
         </div>
 
         <div class="form-container">
@@ -32,7 +31,15 @@
                         </div>
                     </div>
 
-                    <div class="field-row">
+                    <div class="field-row-three">
+                        <div class="form-field">
+                            <label for="fecha_estreno">Fecha de Estreno</label>
+                            <input type="date" id="fecha_estreno" formControlName="fecha_estreno" required>
+                            <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
+                                class="crear-pelicula-error">
+                                La fecha de estreno es obligatoria.
+                            </div>
+                        </div>
                         <div class="form-field">
                             <label for="duracion_minutos">Duración (min)</label>
                             <input type="number" id="duracion_minutos" formControlName="duracion_minutos"
@@ -46,7 +53,7 @@
                         <div class="form-field">
                             <label for="clasificacion">Clasificación</label>
                             <select id="clasificacion" formControlName="clasificacion" required>
-                                <option value="" disabled selected>Seleccione una clasificación</option>
+                                <option value="" >Seleccione una clasificación</option>
                                 <option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">
                                     {{ clasificacion }}
                                 </option>
@@ -66,26 +73,27 @@
                             class="crear-pelicula-error">
                             La descripción es obligatoria.
                         </div>
-
                     </div>
 
                     <div class="field-row-three">
                         <div class="form-field">
-                            <label for="fecha_estreno">Fecha de Estreno</label>
-                            <input type="date" id="fecha_estreno" formControlName="fecha_estreno" required>
-                            <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
-                                class="crear-pelicula-error">
-                                La fecha de estreno es obligatoria.
-                            </div>
-
+                            <label for="idiomas">Agregar Idiomas</label>
+                            <select id="idiomas" formControlName="idiomas" #idiomaSelect
+                                (change)="addIdioma(idiomas[idiomaSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un idioma</option>
+                                <option *ngFor="let idioma of idiomas" [value]="idioma">
+                                    {{ idioma.nombre }}
+                                </option>
+                            </select>
                         </div>
 
                         <div class="form-field">
                             <label for="generos">Agregar Género</label>
-                            <select id="generos" formControlName="generos" #generoSelect (change)="addGenre(generoSelect.value)">
+                            <select id="generos" formControlName="generos" #generoSelect
+                                (change)="addGenre(generos[generoSelect.selectedIndex - 1])">
                                 <option value="">Seleccione un genero</option>
                                 <option *ngFor="let genero of generos" [value]="genero">
-                                    {{ genero }}
+                                    {{ genero.nombre }}
                                 </option>
                             </select>
                         </div>
@@ -100,53 +108,100 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="multi-select">
-                        <label>Géneros Seleccionados</label>
-                        <div id="genresTags" class="tags-container" [class.has-tags]="selectedGenres.length > 0">
-                            <div *ngIf="selectedGenres.length === 0" class="empty-state">
-                                No hay géneros seleccionados
+                    <div class="field-row">
+                        <div class="multi-select">
+                            <label>Idiomas Seleccionados</label>
+                            <div id="idiomasTags" class="tags-container" [class.has-tags]="selectedIdiomas.length > 0">
+                                <div *ngIf="selectedIdiomas.length === 0" class="empty-state">
+                                    No hay idiomas seleccionados
+                                </div>
+                                <div *ngFor="let idioma of selectedIdiomas" class="tag">
+                                    {{ idioma.nombre }}
+                                    <span class="tag-remove" (click)="removeIdioma(idioma)">×</span>
+                                </div>
                             </div>
-                            <div *ngFor="let genre of selectedGenres" class="tag">
-                                {{ genre }}
-                                <span class="tag-remove" (click)="removeGenre(genre)">×</span>
+                        </div>
+                        <div class="multi-select">
+                            <label>Géneros Seleccionados</label>
+                            <div id="genresTags" class="tags-container" [class.has-tags]="selectedGenres.length > 0">
+                                <div *ngIf="selectedGenres.length === 0" class="empty-state">
+                                    No hay géneros seleccionados
+                                </div>
+                                <div *ngFor="let genre of selectedGenres" class="tag">
+                                    {{ genre.nombre }}
+                                    <span class="tag-remove" (click)="removeGenre(genre)">×</span>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="field-row">
+
+                    <div class="field-row-three">
                         <div class="form-field">
-                            <label for="etiquetas">Agregar Etiqueta</label>
-                            <select id="etiquetas" formControlName="etiquetas" #etiquetasSelect (change)="addTag(etiquetasSelect.value)">
-                                <option value="">Seleccione un genero</option>
-                                <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta">
-                                    {{ etiqueta }}
+                            <label for="actores">Actores</label>
+                            <select id="actores" formControlName="actores" #actoresSelect
+                                (change)="addActor(actores[actoresSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un actor</option>
+                                <option *ngFor="let actor of actores" [value]="actor">
+                                    {{ actor.nombre }}
                                 </option>
                             </select>
                         </div>
                         <div class="form-field">
-                            <label for="director">Director</label>
-                            <input type="text" id="director" name="director" placeholder="Nombre del director">
+                            <label for="etiquetas">Etiqueta</label>
+                            <select id="etiquetas" formControlName="etiquetas" #etiquetasSelect
+                                (change)="addTag(etiquetas[etiquetasSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un etiquieta</option>
+                                <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta">
+                                    {{ etiqueta.nombre }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="distribuidor">Distribuidor</label>
+                            <select id="distribuidor" formControlName="distribuidor">
+                                <option value="0" disabled>Seleccione un distribuidor</option>
+                                <option *ngFor="let distru of distribuidor" [value]="distru.id_distribuidora">
+                                    {{ distru.nombre }}
+                                </option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="multi-select">
-                        <label>Etiquetas Seleccionadas</label>
-                        <div id="tag" class="tags-container" [class.has-tags]="selectedTags.length > 0">
-                            <div *ngIf="selectedTags.length === 0" class="empty-state">
-                                No hay géneros seleccionados
-                            </div>
-                            <div *ngFor="let tag of selectedTags" class="tag">
-                                {{ tag }}
-                                <span class="tag-remove" (click)="removeTag(tag)">×</span>
+
+                    <div class="field-row">
+                        <div class="multi-select">
+                            <label>Actores Seleccionados</label>
+                            <div id="actoresTag" class="tags-container" [class.has-tags]="selectedActores.length > 0">
+                                <div *ngIf="selectedActores.length === 0" class="empty-state">
+                                    No hay actores seleccionados
+                                </div>
+                                <div *ngFor="let actor of selectedActores" class="tag">
+                                    {{ actor.nombre }}
+                                    <span class="tag-remove" (click)="removeActor(actor)">×</span>
+                                </div>
                             </div>
                         </div>
+
+                        <div class="multi-select">
+                            <label>Etiquetas Seleccionadas</label>
+                            <div id="tag" class="tags-container" [class.has-tags]="selectedTags.length > 0">
+                                <div *ngIf="selectedTags.length === 0" class="empty-state">
+                                    No hay etiquetas seleccionadas
+                                </div>
+                                <div *ngFor="let tag of selectedTags" class="tag">
+                                    {{ tag.nombre }}
+                                    <span class="tag-remove" (click)="removeTag(tag)">×</span>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </form>
 
             <div class="submit-section">
-                <button type="submit" class="submit-btn" onclick="createMovie()">
+                <button type="submit" class="submit-btn">
                     Crear Película
                 </button>
             </div>

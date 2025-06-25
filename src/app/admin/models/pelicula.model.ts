@@ -5,10 +5,11 @@ export interface Pelicula {
     duracion_minutos : number; 
     fecha_estreno: Date;
     estado: string;
-    generos:string[];
-    etiquetas:string[];
-    actores:string[];
+    generos:number[];
+    etiquetas:number[];
+    actores:number[];
+    idiomas:number[];
     clasificacion: string;
     imagen: string;
-    distribuidor: string;
+    distribuidor: number;
 };

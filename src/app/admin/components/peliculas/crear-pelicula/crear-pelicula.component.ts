@@ -6,7 +6,16 @@ import { PeliculaService } from '../../../../services/pelicula.service';
 import { GenerosService } from '../../../../services/generos.service';
 import { EtiquetasService } from '../../../../services/etiquetas.service';
 import { ImgbbService } from '../../../../services/imgbb.service';
+import { DistribuidorService } from '../../../../services/distribuidor.service';
+import { ActoresService } from '../../../../services/actores.service';
+import { IdiomasService } from '../../../../services/idiomas.service';
+import { Etiquetas } from '../../../models/etiquetas.model';
+import { Generos } from '../../../models/generos.model';
+import { Distribuidor } from '../../../models/distribuidor.model';
+import { Idiomas } from '../../../models/idiomas.model';
+import { Actores } from '../../../models/actores.model';
 import Swal from 'sweetalert2'
+
 @Component({
   selector: 'app-crear-pelicula',
   imports: [ReactiveFormsModule, CommonModule],
@@ -16,51 +25,36 @@ import Swal from 'sweetalert2'
 export class CrearPeliculaComponent {
 
   peliculaForm: FormGroup;
-  generos: string[] = [];
-  etiquetas: string[] = [];
+  generos: Generos[] = [];
+  etiquetas: Etiquetas[] = [];
+  distribuidor: Distribuidor[] = [];
+  actores: Actores[] = [];
+  idiomas: Idiomas[] = [];
+  selectedGenres: Generos[] = [];
+  selectedTags: Etiquetas[] = [];
+  selectedActores: Actores[] = [];
+  selectedIdiomas: Idiomas[] = [];
   clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
   imagenSeleccionada!: File;
   imagenPreview: string = '';
-  selectedGenres: string[] = [];
-  selectedTags: string[] = [];
-
-  addGenre(genre: string) {
-    if (genre && !this.selectedGenres.includes(genre)) {
-      this.selectedGenres.push(genre);
-      const generosInput = document.getElementById('generos') as HTMLInputElement | null;
-      if (generosInput) {
-        generosInput.value = '';
-      }
-    }
-  }
-  removeGenre(genre: string) {
-    this.selectedGenres = this.selectedGenres.filter((g: string) => g !== genre);
-  }
-
-  addTag(tag: string) {
-    if (tag && !this.selectedTags.includes(tag)) {
-      this.selectedTags.push(tag);
-      const etiquetasInput = document.getElementById('etiquetas') as HTMLInputElement | null;
-      if (etiquetasInput) {
-        etiquetasInput.value = '';
-      }
-    }
-    
-  }
-  removeTag(tag:string) {
-    
-    this.selectedTags = this.selectedTags.filter((t: string) => t !== tag);
-    console.log(this.selectedTags[0])
-  }
 
   constructor(private peliculaService: PeliculaService, private generosService: GenerosService,
-    private etiquetasService: EtiquetasService, private imgbbService: ImgbbService) {
+    private etiquetasService: EtiquetasService, private distribuidorService:DistribuidorService,
+    private actoresService:ActoresService, private idiomaService:IdiomasService, private imgbbService: ImgbbService) {
     this.etiquetasService.getEtiquetas().subscribe(data => {
-      this.etiquetas = data.map((e: any) => e.nombre);
+      this.etiquetas = data;
     });
-
     this.generosService.getGeneros().subscribe(data => {
-      this.generos = data.map((e: any) => e.nombre);
+      this.generos = data;
+    });
+    this.distribuidorService.getDistribuidor().subscribe(data => {
+      this.distribuidor = data;
+    });
+    this.actoresService.getActor().subscribe(data => {
+      this.actores = data;
+    });
+    this.idiomaService.getIdiomas().subscribe(data => {
+      this.idiomas = data;
     });
 
     this.peliculaForm = new FormGroup({
@@ -68,13 +62,68 @@ export class CrearPeliculaComponent {
       descripcion: new FormControl('', Validators.required),
       duracion_minutos: new FormControl('', Validators.required),
       fecha_estreno: new FormControl('', Validators.required),
-      generos: new FormControl('', Validators.required),
       estado: new FormControl('', Validators.required),
-      etiquetas:  new FormControl('', Validators.required),
+      generos: new FormControl('', Validators.required),
+      etiquetas: new FormControl('', Validators.required),
+      actores: new FormControl('', Validators.required),
+      idiomas:new FormControl('', Validators.required),
       clasificacion: new FormControl('', Validators.required),
-      imagen: new FormControl('', Validators.required)
+      imagen: new FormControl('', Validators.required),
+      distribuidor: new FormControl<number>(0, Validators.required)
     });
+  }
 
+  addGenre(genre: Generos) {
+    if (genre && !this.selectedGenres.includes(genre)) {
+      this.selectedGenres.push(genre);
+      const generosInput = document.getElementById('generos') as HTMLInputElement | null;
+      if (generosInput) {
+        generosInput.value = '';
+      }
+    }
+    console.log(this.selectedGenres)
+  }
+  removeGenre(genre: Generos) {
+    this.selectedGenres = this.selectedGenres.filter((g: Generos) => g !== genre);
+  }
+
+  addTag(tag: Etiquetas) {
+    if (tag && !this.selectedTags.includes(tag)) {
+      this.selectedTags.push(tag);
+      const etiquetasInput = document.getElementById('etiquetas') as HTMLInputElement | null;
+      if (etiquetasInput) {
+        etiquetasInput.value = '';
+      }
+    }
+  }
+  removeTag(tag: Etiquetas) {
+    this.selectedTags = this.selectedTags.filter((t: Etiquetas) => t !== tag);
+  }
+
+  addActor(actor: Actores) {
+    if (actor && !this.selectedActores.includes(actor)) {
+      this.selectedActores.push(actor);
+      const actorInput = document.getElementById('actores') as HTMLInputElement | null;
+      if (actorInput) {
+        actorInput.value = '';
+      }
+    }
+  }
+  removeActor(actor: Actores) {
+    this.selectedActores = this.selectedActores.filter((a: Actores) => a !== actor);
+  }
+
+  addIdioma(idioma: Idiomas) {
+    if (idioma && !this.selectedIdiomas.includes(idioma)) {
+      this.selectedIdiomas.push(idioma);
+      const idiomaInput = document.getElementById('idiomas') as HTMLInputElement | null;
+      if (idiomaInput) {
+        idiomaInput.value = '';
+      }
+    }
+  }
+  removeIdioma(idioma: Idiomas) {
+    this.selectedIdiomas = this.selectedIdiomas.filter((a: Idiomas) => a !== idioma);
   }
 
   async onSubmit() {
@@ -118,6 +167,4 @@ export class CrearPeliculaComponent {
 
     }
   }
-
-
 }
