@@ -82,29 +82,31 @@
 
                         <div class="form-field">
                             <label for="generos">Agregar Género</label>
-                            <select id="generos" name="generos" >
-                                <option value="" disabled>Seleccione un genero</option>
+                            <select id="generos" formControlName="generos" #generoSelect (change)="addGenre(generoSelect.value)">
+                                <option value="">Seleccione un genero</option>
                                 <option *ngFor="let genero of generos" [value]="genero">
                                     {{ genero }}
                                 </option>
                             </select>
                         </div>
+
                         <div class="form-field">
                             <label for="estado">Estado</label>
-                            <select id="estado" name="estado" required>
+                            <select id="estado" formControlName="estado">
                                 <option value="">Seleccione un estado</option>
-                                <option value="Estreno">🔥 En Estreno</option>
-                                <option value="Cartelera">🎬 En Cartelera</option>
-                                <option value="Próximamente">⏳ Próximamente</option>
-                                <option value="Finalizada">✅ Finalizada</option>
+                                <option value="activo">Estreno</option>
+                                <option value="proximamente">Próximamente</option>
+                                <option value="retirada">Retirada</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="multi-select">
                         <label>Géneros Seleccionados</label>
-                        <div class="tags-container" id="genresTags">
-                            <div *ngIf="selectedGenres.length === 0" class="empty-state">No hay géneros seleccionados</div>
+                        <div id="genresTags" class="tags-container" [class.has-tags]="selectedGenres.length > 0">
+                            <div *ngIf="selectedGenres.length === 0" class="empty-state">
+                                No hay géneros seleccionados
+                            </div>
                             <div *ngFor="let genre of selectedGenres" class="tag">
                                 {{ genre }}
                                 <span class="tag-remove" (click)="removeGenre(genre)">×</span>
@@ -115,20 +117,11 @@
                     <div class="field-row">
                         <div class="form-field">
                             <label for="etiquetas">Agregar Etiqueta</label>
-                            <select id="etiquetas" name="etiquetas" onchange="addTag(this.value)">
-                                <option value="">Seleccione etiquetas</option>
-                                <option value="Favorita">⭐ Favorita</option>
-                                <option value="Clásico">🏆 Clásico</option>
-                                <option value="Cult">🎭 Cult</option>
-                                <option value="Blockbuster">💥 Blockbuster</option>
-                                <option value="Indie">🎨 Indie</option>
-                                <option value="Oscar">🏅 Oscar</option>
-                                <option value="Taquillera">💰 Taquillera</option>
-                                <option value="Imprescindible">💎 Imprescindible</option>
-                                <option value="Nostálgica">🕰️ Nostálgica</option>
-                                <option value="Controversial">⚡ Controversial</option>
-                                <option value="Familia">👨‍👩‍👧‍👦 Familia</option>
-                                <option value="Secuela">🔄 Secuela</option>
+                            <select id="etiquetas" formControlName="etiquetas" #etiquetasSelect (change)="addTag(etiquetasSelect.value)">
+                                <option value="">Seleccione un genero</option>
+                                <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta">
+                                    {{ etiqueta }}
+                                </option>
                             </select>
                         </div>
                         <div class="form-field">
@@ -139,8 +132,14 @@
 
                     <div class="multi-select">
                         <label>Etiquetas Seleccionadas</label>
-                        <div class="tags-container" id="tagsTags">
-                            <div class="empty-state">No hay etiquetas seleccionadas</div>
+                        <div id="tag" class="tags-container" [class.has-tags]="selectedTags.length > 0">
+                            <div *ngIf="selectedTags.length === 0" class="empty-state">
+                                No hay géneros seleccionados
+                            </div>
+                            <div *ngFor="let tag of selectedTags" class="tag">
+                                {{ tag }}
+                                <span class="tag-remove" (click)="removeTag(tag)">×</span>
+                            </div>
                         </div>
                     </div>
                 </div>
