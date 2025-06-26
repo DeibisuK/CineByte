@@ -137,15 +137,26 @@
 
 
                     <div class="field-row-three">
-                        <div class="form-field">
-                            <label for="actores">Actores</label>
-                            <select id="actores" formControlName="actores" #actoresSelect
-                                (change)="addActor(actores[actoresSelect.selectedIndex - 1])">
-                                <option value="">Seleccione un actor</option>
-                                <option *ngFor="let actor of actores" [value]="actor">
-                                    {{ actor.nombre }}
-                                </option>
-                            </select>
+                        <div class="form-double">
+                            <div class="form-field">
+                                <label for="actores">Actores</label>
+                                <select id="actores" formControlName="actores" #actoresSelect
+                                    (change)="addActor(actores[actoresSelect.selectedIndex - 1])">
+                                    <option value="">Seleccione un actor</option>
+                                    <option *ngFor="let actor of actores" [value]="actor">
+                                        {{ actor.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div tabindex="0" class="plusButton" (click)="abrirModal('actor')">
+                                <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                                    <g mask="url(#mask0_21_345)">
+                                        <path
+                                            d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
                         </div>
                         <div class="form-field">
                             <label for="etiquetas">Etiqueta</label>
@@ -157,14 +168,25 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-field">
-                            <label for="id_distribuidor">Distribuidor</label>
-                            <select id="id_distribuidor" formControlName="id_distribuidor">
-                                <option value="" disabled>Seleccione un distribuidor</option>
-                                <option *ngFor="let distru of distribuidor" [value]="distru.id_distribuidora">
-                                    {{ distru.nombre }}
-                                </option>
-                            </select>
+                        <div class="form-double">
+                            <div class="form-field">
+                                <label for="id_distribuidor">Distribuidor</label>
+                                <select id="id_distribuidor" formControlName="id_distribuidor">
+                                    <option value="" disabled>Seleccione un distribuidor</option>
+                                    <option *ngFor="let distru of distribuidor" [value]="distru.id_distribuidora">
+                                        {{ distru.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div tabindex="0" class="plusButton" (click)="abrirModal('distribuidor')">
+                                <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                                    <g mask="url(#mask0_21_345)">
+                                        <path
+                                            d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
                         </div>
                     </div>
 
@@ -203,6 +225,9 @@
                         Crear Película
                     </button>
                 </div>
+                <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
+                <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor"
+                    (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
             </form>
         </div>
     </div>

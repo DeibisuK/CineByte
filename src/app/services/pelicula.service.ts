@@ -14,13 +14,8 @@ export class PeliculaService {
     return this.http.get<Pelicula[]>(this.apiURL);
   }
   
-  guardarPelicula(peliculaForm: Pelicula) {
-    const jsonString = JSON.stringify(peliculaForm);
-    console.log(jsonString);
-    debugger;
-    
+  guardarPelicula(peliculaForm: Pelicula) {    
     this.http.post(this.apiURL, peliculaForm)
       .subscribe(response => {console.log('Película guardada:');});
   }
-
 }

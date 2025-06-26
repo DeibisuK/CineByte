@@ -4,5 +4,4 @@ export interface Actores {
     apellidos: string;
     fecha_nacimiento: Date;
     nacionalidad: string;
-    fecha_registro: Date;
 }

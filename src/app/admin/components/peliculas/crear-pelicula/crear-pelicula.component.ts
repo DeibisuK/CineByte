@@ -14,13 +14,16 @@ import { Generos } from '../../../models/generos.model';
 import { Distribuidor } from '../../../models/distribuidor.model';
 import { Idiomas } from '../../../models/idiomas.model';
 import { Actores } from '../../../models/actores.model';
-import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
 import { AlertaService } from '../../../../services/alerta.service';
+import { CrearActorComponent } from "../../actores/crear-actor/crear-actor.component";
+import { CrearDistribuidorComponent } from '../../distribuidor/crear-distribuidor/crear-distribuidor.component';
 
 @Component({
   selector: 'app-crear-pelicula',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, CrearActorComponent, CrearActorComponent,
+    CrearDistribuidorComponent
+  ],
   templateUrl: './crear-pelicula.component.html',
   styleUrl: './crear-pelicula.component.css'
 })
@@ -39,27 +42,32 @@ export class CrearPeliculaComponent {
   clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
   imagenSeleccionada!: File;
   imagenPreview: string = '';
+  mostrarModalActor = false;
+  mostrarModalDistribuidor = false;
 
+  abrirModal(tipo: 'actor' | 'distribuidor') {
+    if (tipo === 'actor') {
+      this.mostrarModalActor = true;
+    } else {
+      this.mostrarModalDistribuidor = true;
+    }
+  }
+
+  cerrarModal(tipo: 'actor' | 'distribuidor') {
+    if (tipo === 'actor') {
+      this.mostrarModalActor = false;
+    } else {
+      this.mostrarModalDistribuidor = false;
+    }
+    this.cargarDatos();
+    this.reset();
+  }
   constructor(private peliculaService: PeliculaService, private generosService: GenerosService,
     private etiquetasService: EtiquetasService, private distribuidorService: DistribuidorService,
     private actoresService: ActoresService, private router: Router
     , private idiomaService: IdiomasService, private imgbbService: ImgbbService,
     private alerta: AlertaService) {
-    this.etiquetasService.getEtiquetas().subscribe(data => {
-      this.etiquetas = data;
-    });
-    this.generosService.getGeneros().subscribe(data => {
-      this.generos = data;
-    });
-    this.distribuidorService.getDistribuidor().subscribe(data => {
-      this.distribuidor = data;
-    });
-    this.actoresService.getActor().subscribe(data => {
-      this.actores = data;
-    });
-    this.idiomaService.getIdiomas().subscribe(data => {
-      this.idiomas = data;
-    });
+    this.cargarDatos();
 
     this.peliculaForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
@@ -78,53 +86,44 @@ export class CrearPeliculaComponent {
   }
 
   addGenre(genre: Generos) {
-    if (genre && !this.selectedGenres.includes(genre)) {
+    if (genre && !this.selectedGenres.some(a => a.id_genero === genre.id_genero)) {
       this.selectedGenres.push(genre);
-      const generosInput = document.getElementById('generos') as HTMLInputElement | null;
-      if (generosInput) {
-        generosInput.value = '';
-      }
     }
-    console.log(this.selectedGenres)
+    // Siempre resetea el select visualmente
+    this.peliculaForm.get('generos')?.setValue('');
   }
   removeGenre(genre: Generos) {
     this.selectedGenres = this.selectedGenres.filter((g: Generos) => g !== genre);
   }
 
   addTag(tag: Etiquetas) {
-    if (tag && !this.selectedTags.includes(tag)) {
+    if (tag && !this.selectedTags.some(a => a.id_etiqueta === tag.id_etiqueta)) {
       this.selectedTags.push(tag);
-      const etiquetasInput = document.getElementById('etiquetas') as HTMLInputElement | null;
-      if (etiquetasInput) {
-        etiquetasInput.value = '';
-      }
     }
+    // Siempre resetea el select visualmente
+    this.peliculaForm.get('etiquetas')?.setValue('');
   }
   removeTag(tag: Etiquetas) {
     this.selectedTags = this.selectedTags.filter((t: Etiquetas) => t !== tag);
   }
 
   addActor(actor: Actores) {
-    if (actor && !this.selectedActores.includes(actor)) {
+    if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
       this.selectedActores.push(actor);
-      const actorInput = document.getElementById('actores') as HTMLInputElement | null;
-      if (actorInput) {
-        actorInput.value = '';
-      }
     }
+    // Siempre resetea el select visualmente
+    this.peliculaForm.get('actores')?.setValue('');
   }
   removeActor(actor: Actores) {
     this.selectedActores = this.selectedActores.filter((a: Actores) => a !== actor);
   }
 
   addIdioma(idioma: Idiomas) {
-    if (idioma && !this.selectedIdiomas.includes(idioma)) {
+    if (idioma && !this.selectedIdiomas.some(a => a.id_idioma === idioma.id_idioma)) {
       this.selectedIdiomas.push(idioma);
-      const idiomaInput = document.getElementById('idiomas') as HTMLInputElement | null;
-      if (idiomaInput) {
-        idiomaInput.value = '';
-      }
     }
+    // Siempre resetea el select visualmente
+    this.peliculaForm.get('idiomas')?.setValue('');
   }
   removeIdioma(idioma: Idiomas) {
     this.selectedIdiomas = this.selectedIdiomas.filter((a: Idiomas) => a !== idioma);
@@ -170,5 +169,32 @@ export class CrearPeliculaComponent {
       reader.readAsDataURL(file);
 
     }
+  }
+
+  cargarDatos() {
+    this.etiquetasService.getEtiquetas().subscribe(data => {
+      this.etiquetas = data;
+    });
+    this.generosService.getGeneros().subscribe(data => {
+      this.generos = data;
+    });
+    this.distribuidorService.getDistribuidor().subscribe(data => {
+      this.distribuidor = data;
+    });
+    this.actoresService.getActor().subscribe(data => {
+      this.actores = data;
+    });
+    this.idiomaService.getIdiomas().subscribe(data => {
+      this.idiomas = data;
+    });
+  }
+
+  reset() {
+    this.peliculaForm.patchValue({
+      etiquetas: '',
+      generos: '',
+      idiomas: '',
+      actores: '',
+    });
   }
 }

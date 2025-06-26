@@ -7,10 +7,16 @@ import { Actores } from '../admin/models/actores.model';
   providedIn: 'root'
 })
 export class ActoresService {
+    apiURL = 'http://localhost:3000/api/actores';
 
   constructor(private http: HttpClient) { }
 
   getActor(): Observable<Actores[]> {
-    return this.http.get<Actores[]>('http://localhost:3000/api/actores');
+    return this.http.get<Actores[]>(this.apiURL);
+  }
+
+  createActor(actorForm:Actores){
+    this.http.post(this.apiURL,actorForm)
+          .subscribe(response => {console.log('Actor guardado',response);});
   }
 }
