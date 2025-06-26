@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AlertaService {
+
+  constructor(private router:Router){}
 
   success(titulo: string, mensaje: string) {
     Swal.fire({
@@ -12,6 +15,18 @@ export class AlertaService {
       text: mensaje,
       icon: 'success',
       confirmButtonColor: '#4CAF50'
+    });
+  }
+
+  successRoute(titulo: string, mensaje: string, ruta: string) {
+    
+    Swal.fire({
+      title: titulo,
+      text: mensaje,
+      icon: 'success',
+      confirmButtonColor: '#4CAF50'
+    }).then(() => {
+      this.router.navigate(['/'+ruta]);
     });
   }
 

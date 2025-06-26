@@ -149,7 +149,7 @@ export class CrearPeliculaComponent {
       pelicula.imagen = await this.imgbbService.subirImagen(file);
 
       this.peliculaService.guardarPelicula(pelicula);
-      this.alerta.success("Película creada", "La película se guardó correctamente");
+      this.alerta.successRoute("Película creada", "La película se guardó correctamente","listar-peliculas");
       this.peliculaForm.reset();
     } catch (error) {
       this.alerta.error("Error", "Error al guardar la película");
