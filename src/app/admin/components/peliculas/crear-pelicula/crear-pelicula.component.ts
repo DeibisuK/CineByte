@@ -41,8 +41,8 @@ export class CrearPeliculaComponent {
 
   constructor(private peliculaService: PeliculaService, private generosService: GenerosService,
     private etiquetasService: EtiquetasService, private distribuidorService: DistribuidorService,
-    private actoresService: ActoresService, private router:Router
-    ,private idiomaService: IdiomasService, private imgbbService: ImgbbService) {
+    private actoresService: ActoresService, private router: Router
+    , private idiomaService: IdiomasService, private imgbbService: ImgbbService) {
     this.etiquetasService.getEtiquetas().subscribe(data => {
       this.etiquetas = data;
     });
@@ -130,14 +130,16 @@ export class CrearPeliculaComponent {
 
   async onSubmit() {
     const pelicula: Pelicula = this.peliculaForm.value as Pelicula;
+
     pelicula.generos = this.selectedGenres.map(g => g.id_genero);
     pelicula.etiquetas = this.selectedTags.map(g => g.id_etiqueta);
     pelicula.idiomas = this.selectedIdiomas.map(g => g.id_idioma);
     pelicula.actores = this.selectedActores.map(g => g.id_actor);
-    
+
     if (typeof pelicula.id_distribuidor === 'string') {
       pelicula.id_distribuidor = Number(pelicula.id_distribuidor);
     }
+    
     if (this.peliculaForm.valid) {
       const file = this.imagenSeleccionada;
       try {
@@ -149,13 +151,12 @@ export class CrearPeliculaComponent {
           text: "La película se ha guardado correctamente.",
           icon: "success"
         }).then(() => {
-  this.router.navigate(['/admin/peliculas']); // Cambia la ruta según tu necesidad
-});
+          this.router.navigate(['/admin/listar-peliculas']); // Cambia la ruta según tu necesidad
+        });
         this.peliculaForm.reset();
       } catch (error) {
         alert('Hubo un error al guardar la película.');
       }
-
     } else {
       alert('Formulario inválido');
     }
