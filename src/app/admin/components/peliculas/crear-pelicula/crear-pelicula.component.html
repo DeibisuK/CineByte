@@ -158,9 +158,9 @@
                             </select>
                         </div>
                         <div class="form-field">
-                            <label for="distribuidor">Distribuidor</label>
-                            <select id="distribuidor" formControlName="distribuidor">
-                                <option value="0" disabled>Seleccione un distribuidor</option>
+                            <label for="id_distribuidor">Distribuidor</label>
+                            <select id="id_distribuidor" formControlName="id_distribuidor">
+                                <option value="" disabled>Seleccione un distribuidor</option>
                                 <option *ngFor="let distru of distribuidor" [value]="distru.id_distribuidora">
                                     {{ distru.nombre }}
                                 </option>
@@ -199,7 +199,7 @@
                     </div>
                 </div>
                 <div class="submit-section">
-                    <button type="submit" class="" [disabled]="peliculaForm.invalid">
+                    <button type="submit" class="submit-btn">
                         Crear Película
                     </button>
                 </div>
