@@ -16,6 +16,7 @@ import { Idiomas } from '../../../models/idiomas.model';
 import { Actores } from '../../../models/actores.model';
 import Swal from 'sweetalert2'
 import { Router } from '@angular/router';
+import { AlertaService } from '../../../../services/alerta.service';
 
 @Component({
   selector: 'app-crear-pelicula',
@@ -42,7 +43,8 @@ export class CrearPeliculaComponent {
   constructor(private peliculaService: PeliculaService, private generosService: GenerosService,
     private etiquetasService: EtiquetasService, private distribuidorService: DistribuidorService,
     private actoresService: ActoresService, private router: Router
-    , private idiomaService: IdiomasService, private imgbbService: ImgbbService) {
+    , private idiomaService: IdiomasService, private imgbbService: ImgbbService,
+    private alerta: AlertaService) {
     this.etiquetasService.getEtiquetas().subscribe(data => {
       this.etiquetas = data;
     });
@@ -129,39 +131,32 @@ export class CrearPeliculaComponent {
   }
 
   async onSubmit() {
-    const pelicula: Pelicula = this.peliculaForm.value as Pelicula;
-
-    pelicula.generos = this.selectedGenres.map(g => g.id_genero);
-    pelicula.etiquetas = this.selectedTags.map(g => g.id_etiqueta);
-    pelicula.idiomas = this.selectedIdiomas.map(g => g.id_idioma);
-    pelicula.actores = this.selectedActores.map(g => g.id_actor);
-
-    if (typeof pelicula.id_distribuidor === 'string') {
-      pelicula.id_distribuidor = Number(pelicula.id_distribuidor);
+    if (!this.peliculaForm.valid) {
+      this.alerta.error("Formulario Inválido", "Rellene todos los campos");
+      return;
     }
-    
-    if (this.peliculaForm.valid) {
+
+    const pelicula: Pelicula = {
+      ...this.peliculaForm.value,
+      generos: this.selectedGenres.map(g => g.id_genero),
+      etiquetas: this.selectedTags.map(t => t.id_etiqueta),
+      idiomas: this.selectedIdiomas.map(i => i.id_idioma),
+      actores: this.selectedActores.map(a => a.id_actor),
+      id_distribuidor: Number(this.peliculaForm.value.id_distribuidor)
+    };
+
+    try {
       const file = this.imagenSeleccionada;
-      try {
-        const url = await this.imgbbService.subirImagen(file);
-        pelicula.imagen = url;
-        this.peliculaService.guardarPelicula(pelicula);
-        Swal.fire({
-          title: "Pelicula guardada",
-          text: "La película se ha guardado correctamente.",
-          icon: "success"
-        }).then(() => {
-          this.router.navigate(['/admin/listar-peliculas']); // Cambia la ruta según tu necesidad
-        });
-        this.peliculaForm.reset();
-      } catch (error) {
-        alert('Hubo un error al guardar la película.');
-      }
-    } else {
-      alert('Formulario inválido');
-    }
+      pelicula.imagen = await this.imgbbService.subirImagen(file);
 
+      this.peliculaService.guardarPelicula(pelicula);
+      this.alerta.success("Película creada", "La película se guardó correctamente");
+      this.peliculaForm.reset();
+    } catch (error) {
+      this.alerta.error("Error", "Error al guardar la película");
+    }
   }
+
   onImageSelected(event: Event) {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {

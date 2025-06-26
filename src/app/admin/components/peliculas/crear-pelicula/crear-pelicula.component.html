@@ -26,7 +26,7 @@
                         <input type="text" id="titulo" formControlName="titulo"
                             placeholder="Ingrese el título de la película">
                         <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched"
-                            class="crear-pelicula-error">
+                            class="validation-error">
                             El título es obligatorio.
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                             <label for="fecha_estreno">Fecha de Estreno</label>
                             <input type="date" id="fecha_estreno" formControlName="fecha_estreno" required>
                             <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
-                                class="crear-pelicula-error">
+                                class="validation-error">
                                 La fecha de estreno es obligatoria.
                             </div>
                         </div>
@@ -45,7 +45,7 @@
                             <input type="number" id="duracion_minutos" formControlName="duracion_minutos"
                                 placeholder="120" min="1" required>
                             <div *ngIf="peliculaForm.get('duracion_minutos')?.invalid && peliculaForm.get('duracion_minutos')?.touched"
-                                class="crear-pelicula-error">
+                                class="validation-error">
                                 La duración es obligatoria y debe ser un número positivo.
                             </div>
 
@@ -59,7 +59,7 @@
                                 </option>
                             </select>
                             <div *ngIf="peliculaForm.get('clasificacion')?.invalid && peliculaForm.get('clasificacion')?.touched"
-                                class="crear-pelicula-error">
+                                class="validation-error">
                                 La clasificación es obligatoria.
                             </div>
                         </div>
@@ -70,7 +70,7 @@
                         <textarea id="descripcion" formControlName="descripcion"
                             placeholder="Ingrese una descripción detallada de la película..." required></textarea>
                         <div *ngIf="peliculaForm.get('descripcion')?.invalid && peliculaForm.get('descripcion')?.touched"
-                            class="crear-pelicula-error">
+                            class="validation-error">
                             La descripción es obligatoria.
                         </div>
                     </div>

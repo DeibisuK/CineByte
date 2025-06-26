@@ -1,7 +1,6 @@
 .main-content {
     grid-area: main;
     padding: 40px;
-    background: #0a0a0a;
     overflow-y: auto;
     position: relative;
 }
@@ -78,6 +77,7 @@
 }
 
 .image-upload-section {
+    margin-top: 2px;
     position: relative;
 }
 
@@ -311,6 +311,7 @@
 }
 
 .submit-section {
+        grid-column: 1 / -1; /* Hace que la sección ocupe ambas columnas del grid */
     margin-top: 50px;
     text-align: center;
 }
@@ -459,4 +460,24 @@
     .form-container {
         padding: 30px 20px;
     }
+}
+
+.validation-error {
+  color: #ff6b6b; /* Rojo suave, bien visible */
+  font-size: 0.9rem;
+  margin-top: 4px;
+  padding-left: 4px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
