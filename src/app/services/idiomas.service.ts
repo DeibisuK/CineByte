@@ -7,9 +7,9 @@ import { Idiomas } from '../admin/models/idiomas.model';
   providedIn: 'root'
 })
 export class IdiomasService {
-
+apiURL = 'https://api-cinebyte.onrender.com/api/idiomas';
   constructor(private http: HttpClient) { }
   getIdiomas(): Observable<Idiomas[]> {
-      return this.http.get<Idiomas[]>('http://localhost:3000/api/idiomas');
+      return this.http.get<Idiomas[]>(this.apiURL);
     }
 }

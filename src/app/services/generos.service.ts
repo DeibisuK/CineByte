@@ -7,7 +7,7 @@ import { Generos } from '../admin/models/generos.model';
   providedIn: 'root'
 })
 export class GenerosService {
-  apiURL = 'http://localhost:3000/api/generos';
+  apiURL = 'https://api-cinebyte.onrender.com/api/generos';
 
   constructor(private http: HttpClient) { }
 

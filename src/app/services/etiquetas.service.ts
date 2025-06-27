@@ -7,10 +7,10 @@ import { Etiquetas } from '../admin/models/etiquetas.model';
   providedIn: 'root'
 })
 export class EtiquetasService {
-
+ apiURL= 'https://api-cinebyte.onrender.com/api/etiquetas';
   constructor(private http: HttpClient) { }
 
   getEtiquetas(): Observable<Etiquetas[]> {
-    return this.http.get<Etiquetas[]>('http://localhost:3000/api/etiquetas');
+    return this.http.get<Etiquetas[]>(this.apiURL);
   }
 }

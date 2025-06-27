@@ -7,7 +7,7 @@ import { Distribuidor } from '../admin/models/distribuidor.model';
   providedIn: 'root'
 })
 export class DistribuidorService {
-  apiURL = 'http://localhost:3000/api/distribuidor';
+  apiURL = 'https://api-cinebyte.onrender.com/api/distribuidor';
   constructor(private http: HttpClient) { }
 
   getDistribuidor(): Observable<Distribuidor[]> {

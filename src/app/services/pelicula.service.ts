@@ -7,7 +7,7 @@ import { Observable } from 'rxjs/internal/Observable';
   providedIn: 'root'
 })
 export class PeliculaService {
-  apiURL = 'http://localhost:3000/api/peliculas';
+  apiURL = 'https://api-cinebyte.onrender.com/api/peliculas';
   constructor(private http: HttpClient) { }
 
   obtenerPeliculas(): Observable<Pelicula[]> {

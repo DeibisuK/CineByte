@@ -7,7 +7,7 @@ import { Actores } from '../admin/models/actores.model';
   providedIn: 'root'
 })
 export class ActoresService {
-    apiURL = 'http://localhost:3000/api/actores';
+    apiURL = 'https://api-cinebyte.onrender.com/api/actores';
 
   constructor(private http: HttpClient) { }
 
