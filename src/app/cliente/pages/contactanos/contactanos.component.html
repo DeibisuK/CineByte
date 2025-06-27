@@ -1,0 +1,58 @@
+<h2>CONTÁCTATE CON NOSOTROS</h2>
+
+<div class="contacto-container">
+<form (ngSubmit)="enviarContacto()" #contactoForm="ngForm">
+  <div class="row">
+    <div class="field">
+      <label>Nombres:</label>
+      <input name="nombres" type="text" required [(ngModel)]="contacto.nombres" />
+    </div>
+    <div class="field">
+      <label>Apellidos:</label>
+      <input name="apellidos" type="text" required [(ngModel)]="contacto.apellidos" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Teléfono:</label>
+      <input name="telefono" type="text" required [(ngModel)]="contacto.telefono" />
+    </div>
+    <div class="field">
+      <label>Email:</label>
+      <input name="email" type="email" required [(ngModel)]="contacto.email" />
+    </div>
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>Cine:</label>
+      <select name="cine" required [(ngModel)]="contacto.cine">
+        <option value="">Selecciona un cine</option>
+        <option>Machala</option>
+        <option>Guayaquil</option>
+        <option>Quito</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Tipo:</label>
+      <select name="tipo" required [(ngModel)]="contacto.tipo">
+        <option value="">Selecciona un tipo de mensaje</option>
+        <option>Sugerencia</option>
+        <option>Queja</option>
+        <option>Felicitación</option>
+        <option>Otro</option>
+      </select>
+    </div>
+  </div>
+  <div class="field full">
+    <label>Comentario:</label>
+    <textarea name="comentario" rows="5" maxlength="500" required [(ngModel)]="contacto.comentario"></textarea>
+  </div>
+  <input type="hidden" name="_captcha" value="true">
+
+  <div class="actions">
+    <button type="submit">Enviar</button>
+  </div>
+</form>
+</div>
+
+<hr>

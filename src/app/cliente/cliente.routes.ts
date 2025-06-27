@@ -6,6 +6,7 @@ import { PeliculasComponent } from './pages/peliculas/peliculas.component';
 import { DetallePeliculaComponent } from './features/movies/pages/detalle-pelicula/detalle-pelicula.component';
 import { DetallePromocionComponent } from './features/promotions/pages/detalle-promocion/detalle-promocion.component';
 import { BuscarComponent } from './features/movies/pages/buscar/buscar.component';
+import { ContactanosComponent } from './pages/contactanos/contactanos.component';
 
 
 export const clienteRoutes: Routes = [
@@ -17,4 +18,5 @@ export const clienteRoutes: Routes = [
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
   {path: 'promocion/:id/:titulo', component: DetallePromocionComponent},
   {path: 'buscar/:termino', component: BuscarComponent},
+  {path: 'contactanos', component: ContactanosComponent}
 ];
