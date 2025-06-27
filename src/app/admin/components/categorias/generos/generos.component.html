@@ -1,34 +1,40 @@
-
-
-
- <div class="generos-container">
-        <h2>Administrar Géneros</h2>
-
-        <form class="genero-form" onsubmit="buscarGenero(event)">
-            <div class="genero-input">
-                <label for="nombre">Buscar género</label>
-                <input 
-                    type="text" 
-                    id="nombre" 
-                    name="nombre" 
-                    placeholder="Ej: Acción, Drama, Comedia..."
-                    required
-                />
-            </div>
-            <button type="submit" class="btn-add" title="Agregar género">
-                <svg class="add-icon" viewBox="0 0 24 24">
-                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-            </button>
-        </form>
-
-        <hr class="my-divider">
-
-        <ul class="generos-list" id="generosList">
-            <!-- Los géneros se mostrarán aquí dinámicamente -->
-        </ul>
-
-        <div class="sin-generos" id="sinGeneros" style="display: none;">
-            <p>No hay géneros registrados.</p>
+<div class="generos-container">
+    <h2>Administrar Géneros</h2>
+    <div class="genero-form">
+        <div class="genero-input">
+            <label for="nombre">Buscar género</label>
+            <input type="text" id="nombre" name="nombre" placeholder="Ej: Acción, Drama, Comedia..." required />
         </div>
+        <button class="btn-add">
+            <svg class="add-icon" viewBox="0 0 24 24">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
+        </button>
     </div>
+
+    <hr class="my-divider">
+
+    <div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>ID Género</th>
+        <th>Nombre</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let genero of generos">
+        <td>{{ genero.id_genero }}</td>
+        <td>{{ genero.nombre }}</td>
+      </tr>
+    </tbody>
+    <tfoot *ngIf="generos.length === 0">
+      <tr>
+        <td colspan="2">No hay géneros para mostrar.</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <p *ngIf="generos.length === 0" class="no-data-message">Cargando géneros o no se encontraron datos.</p>
+</div>
+</div>

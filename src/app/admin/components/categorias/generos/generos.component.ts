@@ -11,14 +11,14 @@ import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-generos',
-  imports: [CommonModule,ReactiveFormsModule,MatFormFieldModule,MatInputModule,
-    MatDividerModule,MatListModule,MatIconModule
+  imports: [CommonModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule,
+    MatDividerModule, MatListModule, MatIconModule
   ],
   templateUrl: './generos.component.html',
   styleUrl: './generos.component.css'
 })
 export class GenerosComponent {
-   generos: Generos[] = [];
+  generos: Generos[] = [];
   formGenero: FormGroup;
 
   constructor(private generoService: GenerosService) {
@@ -38,12 +38,12 @@ export class GenerosComponent {
   }
 
   crearGenero(): void {
-    
+
   }
 
   eliminar(id: string): void {
-  //  this.generosService.eliminar(id).subscribe(() => {
+    //  this.generosService.eliminar(id).subscribe(() => {
     //  this.cargarGeneros();
-   // });
+    // });
   }
 }
