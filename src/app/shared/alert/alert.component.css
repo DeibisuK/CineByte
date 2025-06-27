@@ -1,0 +1,53 @@
+.alert-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.alert-box {
+  background: #fff;
+  color: #222;
+  padding: 2rem;
+  border-radius: 10px;
+  min-width: 260px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  text-align: center;
+  animation: fadeInUp 0.3s;
+}
+.alert-box.dark {
+  background: #222;
+  color: #fff;
+}
+.icon-container {
+  margin-bottom: 1rem;
+}
+.icon {
+  width: 48px;
+  height: 48px;
+  display: block;
+  margin: 0 auto;
+}
+.icon.success {
+  animation: popSuccess 0.5s;
+}
+@keyframes popSuccess {
+  0% { transform: scale(0.2); opacity: 0; }
+  70% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.alert-box button {
+  margin-top: 1rem;
+  background: #f7cb5a;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+}

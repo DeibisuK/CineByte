@@ -1,58 +1,82 @@
 <h2>CONTÁCTATE CON NOSOTROS</h2>
-
 <div class="contacto-container">
-<form (ngSubmit)="enviarContacto()" #contactoForm="ngForm">
-  <div class="row">
-    <div class="field">
-      <label>Nombres:</label>
-      <input name="nombres" type="text" required [(ngModel)]="contacto.nombres" />
+  <form [formGroup]="contactoForm" (ngSubmit)="enviarContacto()">
+    <div class="row">
+      <div class="field">
+        <label>Nombres:</label>
+        <input type="text" formControlName="nombres" />
+        <div class="error" *ngIf="contactoForm.get('nombres')?.invalid && contactoForm.get('nombres')?.touched">
+          El nombre es obligatorio.
+        </div>
+      </div>
+      <div class="field">
+        <label>Apellidos:</label>
+        <input type="text" formControlName="apellidos" />
+        <div class="error" *ngIf="contactoForm.get('apellidos')?.invalid && contactoForm.get('apellidos')?.touched">
+          El apellido es obligatorio.
+        </div>
+      </div>
     </div>
-    <div class="field">
-      <label>Apellidos:</label>
-      <input name="apellidos" type="text" required [(ngModel)]="contacto.apellidos" />
+    <div class="row">
+      <div class="field">
+        <label>Teléfono:</label>
+        <input type="text" formControlName="telefono" />
+        <div class="error" *ngIf="contactoForm.get('telefono')?.invalid && contactoForm.get('telefono')?.touched">
+          Ingrese un teléfono válido (solo números, 7-15 dígitos).
+        </div>
+      </div>
+      <div class="field">
+        <label>Email:</label>
+        <input type="email" formControlName="email" />
+        <div class="error" *ngIf="contactoForm.get('email')?.invalid && contactoForm.get('email')?.touched">
+          Ingrese un correo válido.
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label>Teléfono:</label>
-      <input name="telefono" type="text" required [(ngModel)]="contacto.telefono" />
+    <div class="row">
+      <div class="field">
+        <label>Cine:</label>
+        <select formControlName="cine">
+          <option value="">Selecciona un cine</option>
+          <option>Machala</option>
+          <option>Guayaquil</option>
+          <option>Quito</option>
+        </select>
+        <div class="error" *ngIf="contactoForm.get('cine')?.invalid && contactoForm.get('cine')?.touched">
+          Seleccione un cine.
+        </div>
+      </div>
+      <div class="field">
+        <label>Tipo:</label>
+        <select formControlName="tipo">
+          <option value="">Selecciona un tipo de mensaje</option>
+          <option>Sugerencia</option>
+          <option>Queja</option>
+          <option>Felicitación</option>
+          <option>Otro</option>
+        </select>
+        <div class="error" *ngIf="contactoForm.get('tipo')?.invalid && contactoForm.get('tipo')?.touched">
+          Seleccione un tipo de mensaje.
+        </div>
+      </div>
     </div>
-    <div class="field">
-      <label>Email:</label>
-      <input name="email" type="email" required [(ngModel)]="contacto.email" />
+    <div class="field full">
+      <label>Comentario:</label>
+      <textarea rows="5" maxlength="500" formControlName="comentario"></textarea>
+      <div class="error" *ngIf="contactoForm.get('comentario')?.invalid && contactoForm.get('comentario')?.touched">
+        El comentario es obligatorio (máx. 500 caracteres).
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="field">
-      <label>Cine:</label>
-      <select name="cine" required [(ngModel)]="contacto.cine">
-        <option value="">Selecciona un cine</option>
-        <option>Machala</option>
-        <option>Guayaquil</option>
-        <option>Quito</option>
-      </select>
+    <div class="actions">
+      <button type="submit">Enviar</button>
     </div>
-    <div class="field">
-      <label>Tipo:</label>
-      <select name="tipo" required [(ngModel)]="contacto.tipo">
-        <option value="">Selecciona un tipo de mensaje</option>
-        <option>Sugerencia</option>
-        <option>Queja</option>
-        <option>Felicitación</option>
-        <option>Otro</option>
-      </select>
-    </div>
-  </div>
-  <div class="field full">
-    <label>Comentario:</label>
-    <textarea name="comentario" rows="5" maxlength="500" required [(ngModel)]="contacto.comentario"></textarea>
-  </div>
-  <input type="hidden" name="_captcha" value="true">
-
-  <div class="actions">
-    <button type="submit">Enviar</button>
-  </div>
-</form>
+  </form>
 </div>
 
-<hr>
+<app-alert
+  *ngIf="showAlert"
+  [message]="alertMessage"
+  [theme]="alertTheme"
+  [type]="alertType"
+  (closed)="showAlert = false">
+</app-alert>

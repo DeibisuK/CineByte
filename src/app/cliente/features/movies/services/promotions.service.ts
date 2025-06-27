@@ -62,7 +62,7 @@ private promociones: Promotions[] = [
     img: 'Promociones/Promo-Superman.jpg',
     etiqueta: ['PRÓXIMAMENTE', 'DC'],
     titulo: 'Próximamente: El Nuevo Superman',
-    descripcion: 'Reserva tus boletos con 1 mes de anticipación y gana merchandising exclusivo. Pre-venta disponible desde el 15 de agosto.',
+    descripcion: 'Reserva tus boletos con 1 mes de anticipación. Pre-venta disponible desde el 15 de agosto.',
     img_dsc: [''],
     fechaInicio: new Date('2025-08-15'),
     fechaFin: new Date('2025-09-15')
