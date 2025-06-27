@@ -47,7 +47,7 @@ export class ContactanosComponent {
           this.alertMessage = 'Mensaje enviado correctamente';
           this.alertTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
           this.showAlert = true;
-          this.alertType = 'info';
+          this.alertType = 'success';
           this.contactoForm.reset();
         },
         error: () => {

@@ -151,9 +151,8 @@
 
 /* Estados del menú */
 .sidebar-menu a:hover {
-  background: var(--sidebar-hover);
+  background: var(--footer-esp);
   transform: translateX(2px);
-  box-shadow: 0 4px 12px rgba(247, 218, 0, 0.15);
 }
 
 .sidebar-menu a.active-link {
