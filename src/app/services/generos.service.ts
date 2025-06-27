@@ -7,8 +7,9 @@ import { Generos } from '../admin/models/generos.model';
   providedIn: 'root'
 })
 export class GenerosService {
+  apiURL = 'http://localhost:3000/api/generos';
   constructor(private http: HttpClient) { }
   getGeneros(): Observable<Generos[]> {
-      return this.http.get<Generos[]>('http://localhost:3000/api/generos');
+      return this.http.get<Generos[]>(this.apiURL);
     }
 }

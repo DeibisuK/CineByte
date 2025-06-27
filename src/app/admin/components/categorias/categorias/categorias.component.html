@@ -1,0 +1,13 @@
+<div class="tabs-container">
+  <div class="tabs">
+    <button [class.active]="pestanaActiva === 0" (click)="cambiarPestana(0)">Géneros</button>
+    <button [class.active]="pestanaActiva === 1" (click)="cambiarPestana(1)">Etiquetas</button>
+    <button [class.active]="pestanaActiva === 2" (click)="cambiarPestana(2)">Idiomas</button>
+  </div>
+
+  <div class="tab-content">
+    <app-generos *ngIf="pestanaActiva === 0"></app-generos>
+    <app-etiquetas *ngIf="pestanaActiva === 1"></app-etiquetas>
+    <app-idiomas *ngIf="pestanaActiva === 2"></app-idiomas>
+  </div>
+</div>

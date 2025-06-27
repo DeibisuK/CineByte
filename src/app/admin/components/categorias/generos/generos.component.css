@@ -1,0 +1,187 @@
+.generos-container {
+            margin: 0 auto;
+            padding: 24px;
+            height: 100%;
+        }
+
+        .generos-container h2 {
+            color: #ffffff;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        /* Formulario */
+        .genero-form {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .genero-input {
+            flex: 1;
+            position: relative;
+        }
+
+        .genero-input label {
+            display: block;
+            color: #ffffff;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .genero-input input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #fafafa;
+        }
+
+        .genero-input input:focus {
+            outline: none;
+            border-color: #1976d2;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+        }
+
+        .genero-input input::placeholder {
+            color: #999;
+        }
+
+        /* Botón agregar redondo */
+        .btn-add {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .btn-add:hover {
+            background-color: #1565c0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .btn-add:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transform: none;
+        }
+
+        .add-icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* Divisor */
+        .my-divider {
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 24px 0;
+            border: none;
+        }
+
+        /* Lista de géneros */
+        .generos-list {
+            list-style: none;
+        }
+
+        .genero-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+
+        .genero-item:hover {
+            background-color: #f8f9fa;
+            margin: 0 -16px;
+            padding-left: 16px;
+            padding-right: 16px;
+            border-radius: 4px;
+        }
+
+        .genero-item:last-child {
+            border-bottom: none;
+        }
+
+        .genero-nombre {
+            font-size: 16px;
+            color: #333;
+            flex: 1;
+        }
+
+        /* Botón de eliminar */
+        .btn-delete {
+            background-color: transparent;
+            border: none;
+            color: #d32f2f;
+            padding: 8px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+        }
+
+        .btn-delete:hover {
+            background-color: #ffebee;
+            color: #c62828;
+        }
+
+        .delete-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Mensaje sin géneros */
+        .sin-generos {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px 20px;
+            background-color: #fafafa;
+            border-radius: 4px;
+        }
+
+        /* Responsivo */
+        @media (max-width: 600px) {
+            .genero-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-add {
+                width: 100%;
+                height: 48px;
+                border-radius: 24px;
+                margin-top: 8px;
+            }
+
+            .generos-container {
+                margin: 10px;
+                padding: 16px;
+            }
+        }
