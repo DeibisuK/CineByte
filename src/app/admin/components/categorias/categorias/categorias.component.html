@@ -1,13 +1,33 @@
-<div class="tabs-container">
-  <div class="tabs">
-    <button [class.active]="pestanaActiva === 0" (click)="cambiarPestana(0)">Géneros</button>
-    <button [class.active]="pestanaActiva === 1" (click)="cambiarPestana(1)">Etiquetas</button>
-    <button [class.active]="pestanaActiva === 2" (click)="cambiarPestana(2)">Idiomas</button>
-  </div>
-
-  <div class="tab-content">
-    <app-generos *ngIf="pestanaActiva === 0"></app-generos>
-    <app-etiquetas *ngIf="pestanaActiva === 1"></app-etiquetas>
-    <app-idiomas *ngIf="pestanaActiva === 2"></app-idiomas>
+<div class="principal">
+  <div class="container">
+  <div class="tabs-container">
+    <div class="tabs" id="tabsContainer">
+      <button class="tab-button active" [class.active]="pestanaActiva === 0" (click)="cambiarPestana(0)">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+        </svg>
+        Géneros
+      </button>
+      <button class="tab-button" [class.active]="pestanaActiva === 1" (click)="cambiarPestana(1)">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path
+            d="M5.5 7A1.5 1.5 0 0 1 4 5.5A1.5 1.5 0 0 1 5.5 4A1.5 1.5 0 0 1 7 5.5A1.5 1.5 0 0 1 5.5 7m15.91 4.58l-9.42-9.42c-.78-.78-2.05-.78-2.83 0L8.5 2.83c-.78.78-.78 2.05 0 2.83l9.42 9.42c.78.78 2.05.78 2.83 0l.66-.66c.78-.78.78-2.05 0-2.84Z" />
+        </svg>
+        Etiquetas
+      </button>
+      <button class="tab-button" [class.active]="pestanaActiva === 2" (click)="cambiarPestana(2)">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path
+            d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.01-4.65.51-6.67C9.87 4.24 6.16 3.65 4.27 5.55c-1.89 1.89-1.3 5.6.24 7.13c1.57 1.57 4.05 1.9 6.02.74L12.11 15l.76-.93zm-3.54-2.26c-.78-.78-.78-2.05 0-2.83c.78-.78 2.05-.78 2.83 0c.78.78.78 2.05 0 2.83c-.78.78-2.05.78-2.83 0z" />
+          <path d="M14.27 14.27L18.07 18.07c.78.78 2.05.78 2.83 0s.78-2.05 0-2.83L16.2 10.54" />
+        </svg>
+        Idiomas
+      </button>
+    </div>
+    <div class="tab-content">
+      <app-generos *ngIf="pestanaActiva === 0"></app-generos>
+      <app-etiquetas *ngIf="pestanaActiva === 1"></app-etiquetas>
+      <app-idiomas *ngIf="pestanaActiva === 2"></app-idiomas>
+    </div>
   </div>
 </div>

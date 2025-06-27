@@ -1,39 +1,114 @@
-.tabs-container {
-  width: 100%;
+:host {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #ffffff;
   height: 100%;
-  display: flex;
-  flex-direction: column;
+}
+.principal{
+  height: 100%;
+  align-content: center;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(45, 45, 45, 0.8);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  padding: 0;
+}
+
+/* Improved Tabs */
+.tabs-container {
+  position: relative;
 }
 
 .tabs {
   display: flex;
-  background-color: gray;
+  background: rgba(30, 30, 30, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
 }
 
-.tabs button {
+.tabs::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 33.333%;
+  height: 3px;
+  background: linear-gradient(90deg, #FFD700, #FFA500);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.tabs.tab-1::before {
+  transform: translateX(100%);
+}
+
+.tabs.tab-2::before {
+  transform: translateX(200%);
+}
+
+.tab-button {
   flex: 1;
-  padding: 10px;
-  font-size: 16px;
-  background-color: #000000;
+  padding: 18px 24px;
+  background: none;
   border: none;
+  color: #9ca3af;
+  font-size: 16px;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.5s;
-  color: white;
-  border-radius: 0 0 15px 15px;
-
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
-.tabs button:hover {
-  background-color: #d6d6d6;
+.tab-button:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
 }
 
-.tabs button.active {
-  font-weight: bold;
-  border-radius: 15px 15px 0 0;
-  background-color: yellow;
+.tab-button.active {
+  color: #FFD700;
+  background: rgba(255, 215, 0, 0.1);
 }
 
+.tab-button .icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+/* Tab Content */
 .tab-content {
-  flex: 1;
-  padding: 0 150px;
+  min-height: 600px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Géneros Container */
+.generos-container {
+  padding: 30px;
 }

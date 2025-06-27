@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-categorias',
   imports: [GenerosComponent,
-    EtiquetasComponent,IdiomasComponent,CommonModule
+    EtiquetasComponent, IdiomasComponent, CommonModule
   ],
   templateUrl: './categorias.component.html',
   styleUrl: './categorias.component.css'
@@ -15,7 +15,18 @@ import { CommonModule } from '@angular/common';
 export class CategoriasComponent {
   pestanaActiva = 0;
 
-  cambiarPestana(index: number) {
-    this.pestanaActiva = index;
+  cambiarPestana(tabIndex: number) {
+    document.querySelectorAll('.tab-button').forEach((btn, index) => {
+      btn.classList.toggle('active', index === tabIndex);
+    });
+    // Update tab indicator
+    const tabsContainer = document.getElementById('tabsContainer');
+    if (tabsContainer) {
+      tabsContainer.className = `tabs tab-${tabIndex}`;
+
+    }
+    this.pestanaActiva = tabIndex;
   }
+
+
 }

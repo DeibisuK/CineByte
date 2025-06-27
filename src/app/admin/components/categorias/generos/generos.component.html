@@ -1,40 +1,76 @@
 <div class="generos-container">
-    <h2>Administrar Géneros</h2>
-    <div class="genero-form">
-        <div class="genero-input">
-            <label for="nombre">Buscar género</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Ej: Acción, Drama, Comedia..." required />
-        </div>
-        <button class="btn-add">
-            <svg class="add-icon" viewBox="0 0 24 24">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-            </svg>
-        </button>
+  <div class="generos-header">
+    <h2 class="generos-title">Administrar Géneros</h2>
+    <div class="stats-container">
+      <div class="stat-item">
+        <div class="stat-number">{{totalGeneros()}}</div>
+        <div class="stat-label">Total</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="genero-form">
+    <form [formGroup]="formGenero" class="form-row" (ngSubmit)="addGenero()">
+      <div class="form-group">
+        <label class="form-label" for="nombre">Nombre del Género</label>
+        <input formControlName="nombre" type="text" id="nombre" class="form-input"
+          placeholder="Ej: Acción, Drama, Comedia..." />
+      </div>
+      <button class="btn-primary" type="submit">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        </svg>
+        Agregar Género
+      </button>
+    </form>
+  </div>
+  <div class="table-section">
+    <div class="table-header">
+      <h3 class="table-title">Lista de Géneros</h3>
+      <div class="search-container">
+        <svg class="search-icon" viewBox="0 0 24 24">
+          <path
+            d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+        </svg>
+        <input type="text" class="search-input" placeholder="Buscar género..." [(ngModel)]="filtroGenero"
+          (input)="aplicarFiltro()" />
+      </div>
     </div>
 
-    <hr class="my-divider">
-
     <div class="table-container">
-  <table>
-    <thead>
-      <tr>
-        <th>ID Género</th>
-        <th>Nombre</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let genero of generos">
-        <td>{{ genero.id_genero }}</td>
-        <td>{{ genero.nombre }}</td>
-      </tr>
-    </tbody>
-    <tfoot *ngIf="generos.length === 0">
-      <tr>
-        <td colspan="2">No hay géneros para mostrar.</td>
-      </tr>
-    </tfoot>
-  </table>
-
-  <p *ngIf="generos.length === 0" class="no-data-message">Cargando géneros o no se encontraron datos.</p>
-</div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Películas</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="generos-tbody">
+          <tr *ngFor="let genero of generosFiltrados" class="genre-row">
+            <td class="genre-id">{{genero.id_genero}}</td>
+            <td class="genre-name">{{genero.nombre}}</td>
+            <td>{{totalPorGenero[genero.id_genero]}}</td>
+            <td>
+              <div class="genre-actions">
+                <button class="action-btn" onclick="editGenero(1)" title="Editar">
+                  <svg class="action-icon" viewBox="0 0 24 24">
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                  </svg>
+                </button>
+                <button class="action-btn delete" (click)="deleteGenero(genero.id_genero,genero.nombre)"
+                  title="Eliminar">
+                  <svg class="action-icon" viewBox="0 0 24 24">
+                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
