@@ -81,16 +81,22 @@
   <!-- Footer con switch de tema y logout -->
   <div class="sidebar-footer">
     <!-- Switch de tema -->
-    <div class="switch-container">
-      <label class="theme-switch" [attr.aria-label]="'Cambiar a modo ' + (modoOscuro ? 'claro' : 'oscuro')">
-        <input type="checkbox" [checked]="!modoOscuro" (change)="cambiarTema()"
-          [attr.aria-label]="'Alternar modo ' + (modoOscuro ? 'claro' : 'oscuro')" />
-        <span class="slider"></span>
-      </label>
-      <span class="switch-label" *ngIf="!sidebarClosed">
-        {{ modoOscuro ? 'Modo Oscuro' : 'Modo Claro' }}
+  <div class="switch-container">
+    <!-- Switch completo solo si sidebar abierto -->
+    <label *ngIf="!sidebarClosed" class="theme-switch" [attr.aria-label]="'Cambiar a modo ' + (modoOscuro ? 'claro' : 'oscuro')">
+      <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+      <span class="slider round"></span>
+    </label>
+    <!-- Solo icono si sidebar cerrado -->
+    <button *ngIf="sidebarClosed" class="theme-icon-btn" (click)="cambiarTema()" [attr.aria-label]="'Cambiar a modo ' + (modoOscuro ? 'claro' : 'oscuro')">
+      <span class="material-icons" [ngClass]="modoOscuro ? 'dark-icon' : 'light-icon'">
+        {{ modoOscuro ? 'dark_mode' : 'light_mode' }}
       </span>
-    </div>
+    </button>
+    <span class="switch-label" *ngIf="!sidebarClosed">
+      {{ modoOscuro ? 'Modo Oscuro' : 'Modo Claro' }}
+    </span>
+  </div>
 
     <!-- Botón de logout -->
     <button class="logout-btn" (click)="logout()"

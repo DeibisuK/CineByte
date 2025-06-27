@@ -1,5 +1,5 @@
 .anuncio-bar {
-  background-color: #f7cb5a;
+  background: linear-gradient(to right, #ffd966, #ffb347); /* Degradé de amarillo-anaranjado a naranja */
   color: var(--text-color); 
   font-weight: bold;
   font-size: 0.85rem; /* Reducido de 0.9rem */
