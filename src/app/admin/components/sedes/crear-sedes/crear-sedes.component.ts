@@ -1,11 +1,10 @@
 import {
   Component,
   OnInit,
-  ChangeDetectorRef,
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import { Sede, SedeService } from '../../../../services/sede.service';
+import {SedeService } from '../../../../services/sede.service';
 import {
   FormBuilder,
   FormGroup,
@@ -34,7 +33,6 @@ import { TemaService } from '../../../../cliente/features/movies/services/tema.s
 })
 export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm: FormGroup;
-
   ciudades: any[] = [];
   map!: L.Map;
   marker!: L.Marker;

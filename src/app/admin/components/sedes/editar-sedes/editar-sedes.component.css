@@ -63,6 +63,8 @@
   transform: scale(1.04);
 }
 
+
+
 #map {
   height: 300px;
   margin-top: 1rem;
@@ -97,4 +99,12 @@
   margin-bottom: 0.5rem;
   font-size: 1rem;
   transition: border 0.2s;
+}
+
+.error-message {
+  color: #ff4343;
+  text-align: justify;
+  font-size: 0.95em;
+  margin-top: 2px;
+  margin-bottom: 4px;
 }
