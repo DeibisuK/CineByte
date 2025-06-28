@@ -4,10 +4,12 @@ import {
   ChangeDetectorRef,
   AfterViewInit,
 } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Sede, SedeService } from '../../../../services/sede.service';
 import { FormsModule } from '@angular/forms';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
+import { CommonModule } from '@angular/common';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -15,15 +17,14 @@ L.Icon.Default.mergeOptions({
   iconUrl: 'leaflet/marker-icon.png',
   shadowUrl: 'leaflet/marker-shadow.png',
 });
-import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-crear-sedes',
+  selector: 'app-editar-sedes',
   imports: [FormsModule, CommonModule],
-  templateUrl: './crear-sedes.component.html',
-  styleUrl: './crear-sedes.component.css',
+  templateUrl: './editar-sedes.component.html',
+  styleUrl: './editar-sedes.component.css'
 })
-export class CrearSedesComponent implements OnInit, AfterViewInit {
+export class EditarSedesComponent implements OnInit, AfterViewInit {
   sede: Sede = {
     id_sede: 0,
     nombre: '',
@@ -58,29 +59,43 @@ export class CrearSedesComponent implements OnInit, AfterViewInit {
 
   constructor(
     private sedeService: SedeService,
+    private route: ActivatedRoute,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
-    this.sedeService.getCiudades().subscribe((data) => {
-      this.ciudades = data;
-      console.log('Ciudades cargadas:', this.ciudades);
-    });
+ngOnInit(): void {
+  this.sedeService.getCiudades().subscribe((data) => {
+    this.ciudades = data;
+  });
+
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (!idParam) {
+    alert('ID de sede no válido');
+    this.router.navigate(['/admin/sedes']);
+    return;
   }
+  const id = Number(idParam);
+
+  this.sedeService.getSedeById(id).subscribe((data) => {
+    this.sede = data;
+    if (this.map) {
+      this.map.setView([this.sede.latitud ?? 0, this.sede.longitud ?? 0], 14);
+      this.marker.setLatLng([this.sede.latitud ?? 0, this.sede.longitud ?? 0]);
+    }
+  });
+}
 
   ngAfterViewInit(): void {
-    this.map = L.map('map').setView([-3.258, -79.955], 13);
-    this.marker = L.marker([-3.258, -79.955], { draggable: true }).addTo(
-      this.map
-    );
+    // Si la sede ya tiene lat/lng, usar esos valores, si no, usar Machala
+    const lat = this.sede.latitud || -3.258;
+    const lng = this.sede.longitud || -79.955;
+    this.map = L.map('map').setView([lat, lng], 13);
+    this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
-
-    this.sede.latitud = -3.258;
-    this.sede.longitud = -79.955;
-    this.cdr.detectChanges(); // <--- AGREGAR ESTO
 
     this.marker.on('dragend', () => {
       const { lat, lng } = this.marker.getLatLng();
@@ -93,6 +108,8 @@ export class CrearSedesComponent implements OnInit, AfterViewInit {
       this.sede.latitud = e.latlng.lat;
       this.sede.longitud = e.latlng.lng;
     });
+
+    this.cdr.detectChanges();
   }
 
   onCiudadChange(id_ciudad: number) {
@@ -108,9 +125,12 @@ export class CrearSedesComponent implements OnInit, AfterViewInit {
   }
 
   onSubmit() {
-    this.sedeService.crearSede(this.sede).subscribe({
-      next: () => alert('Sede creada correctamente'),
-      error: () => alert('Error al crear la sede'),
+    this.sedeService.editarSede(this.sede.id_sede ?? 0, this.sede).subscribe({
+      next: () => {
+        alert('Sede editada correctamente');
+        this.router.navigate(['/admin/sedes']);
+      },
+      error: () => alert('Error al editar la sede'),
     });
   }
 }

@@ -6,6 +6,7 @@ import { CategoriasComponent } from './components/categorias/categorias/categori
 import { ListarSedesComponent } from './components/sedes/listar-sedes/listar-sedes.component';
 import { ListarPromocionesComponent } from './components/promociones/listar-promociones/listar-promociones.component';
 import { CrearSedesComponent } from './components/sedes/crear-sedes/crear-sedes.component';
+import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sedes.component';
 
 export const adminRoutes: Routes = [
   
@@ -36,5 +37,9 @@ export const adminRoutes: Routes = [
   {
     path: 'add-sede',
     component: CrearSedesComponent
+  },
+  {
+    path: 'edit-sede/:id',
+    component: EditarSedesComponent
   }
 ];

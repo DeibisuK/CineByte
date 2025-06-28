@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { SedeService, Sede } from '../../../../services/sede.service';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-listar-sedes',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './listar-sedes.component.html',
   styleUrls: ['./listar-sedes.component.css']
 })
@@ -30,7 +31,8 @@ export class ListarSedesComponent implements OnInit {
 
   constructor(
     private sedeService: SedeService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,19 +56,22 @@ export class ListarSedesComponent implements OnInit {
   }
 
   editarSede(sede: Sede) {
-    console.log('Editar', sede);
+    if (sede.id_sede !== undefined) {
+      this.router.navigate(['/admin/edit-sede', sede.id_sede]);
+    }
   }
 
-  eliminarSede(id: number) {
-      if (confirm('¿Estás seguro de eliminar esta sede?')) {
-        this.sedeService.eliminarSede(id).subscribe({
-          next: () => {
-            this.sedes = this.sedes.filter(s => s.id_sede !== id);
-          },
-          error: (err) => {
-            alert('No se pudo eliminar la sede: ' + (err.error?.mensaje || 'Error desconocido'));
-          }
-        });
-      }
+  eliminarSede(id?: number) {
+    if (id === undefined) return;
+    if (confirm('¿Estás seguro de eliminar esta sede?')) {
+      this.sedeService.eliminarSede(id).subscribe({
+        next: () => {
+          this.sedes = this.sedes.filter(s => s.id_sede !== id);
+        },
+        error: (err) => {
+          alert('No se pudo eliminar la sede: ' + (err.error?.mensaje || 'Error desconocido'));
+        }
+      });
     }
+  }
 }

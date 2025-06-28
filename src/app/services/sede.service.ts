@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 export interface Sede {
-  id_sede: number;
+  id_sede?: number;
   nombre: string;
   id_ciudad: number;
   direccion: string;
@@ -34,6 +34,14 @@ export class SedeService {
   getSedes(): Observable<Sede[]> {
     return this.http.get<Sede[]>(this.apiUrl);
   }
+
+  getSedeById(id: number): Observable<Sede> {
+  return this.http.get<Sede>(`${this.apiUrl}/${id}`);
+}
+
+editarSede(id: number, sede: Sede): Observable<any> {
+  return this.http.put(`${this.apiUrl}/${id}`, sede);
+}
 
   eliminarSede(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
