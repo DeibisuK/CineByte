@@ -4,10 +4,12 @@ import { AlertaService } from '../../../../services/alerta.service';
 import { Distribuidor } from '../../../models/distribuidor.model';
 import { DistribuidorService } from '../../../../services/distribuidor.service';
 import { CommonModule } from '@angular/common';
+import { Pais } from '../../../models/paises.model';
+import { PaisesService } from '../../../../services/paises.service';
 
 @Component({
   selector: 'app-crear-distribuidor',
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './crear-distribuidor.component.html',
   styleUrl: './crear-distribuidor.component.css'
 })
@@ -15,11 +17,14 @@ export class CrearDistribuidorComponent {
   @Input() mostrar = false;
   @Output() cerrar = new EventEmitter<void>();
   distribuidorform: FormGroup;
+  paises: Pais[] = [];
 
-  constructor(private service: DistribuidorService, private alerta: AlertaService) {
+  constructor(private service: DistribuidorService, private alerta: AlertaService,
+    private paisService: PaisesService
+  ) {
     this.distribuidorform = new FormGroup({
       nombre: new FormControl('', Validators.required),
-      pais_origen: new FormControl('', Validators.required),
+      id_pais_origen: new FormControl('', Validators.required),
       ano_fundacion: new FormControl('', Validators.required),
       sitio_web: new FormControl('', Validators.required),
     });
@@ -40,5 +45,13 @@ export class CrearDistribuidorComponent {
   }
   cerrarModal() {
     this.cerrar.emit();
+  }
+  getPaisOrigen(): Pais[] {
+    this.paisService.getPais().subscribe({
+      next: (data) => {
+        this.paises = data;
+      }
+    });
+    return this.paises;
   }
 }

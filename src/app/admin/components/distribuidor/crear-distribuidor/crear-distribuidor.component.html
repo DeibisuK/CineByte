@@ -13,9 +13,13 @@
       </div>
 
       <div class="form-group">
-        <label for="pais_origen" class="form-label">Pais Origen</label>
-        <input type="text" id="pais_origen" formControlName="pais_origen" class="form-input" placeholder="Ej: Ecuador"
-          required>
+        <label for="id_pais_origen" class="form-label">Pais Origen</label>
+        <select id="id_pais_origen" formControlName="id_pais_origen">
+          <option value="" disabled>Seleccione un pais</option>
+          <option *ngFor="let distru of getPaisOrigen()" [value]="distru.id_pais">
+            {{ distru.nombre }}
+          </option>
+        </select>
         <div *ngIf="distribuidorform.get('pais_origen')?.invalid && distribuidorform.get('pais_origen')?.touched" class="validation-error">
           El pais es obligatorio.
         </div>
