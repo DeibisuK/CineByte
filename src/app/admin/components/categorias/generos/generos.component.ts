@@ -22,39 +22,56 @@ export class GenerosComponent {
   generos: Generos[] = [];
   generosFiltrados: Generos[] = [];
   filtroGenero: string = '';
-
   formGenero: FormGroup;
   total: number = 0;
-  totalPorGenero: { [key: number]: number } = {};
+  generoEditando: number | null = null;
+  nombreTemporal: string = '';
 
   constructor(private generoService: GenerosService,
     private alerta: AlertaService) {
-    
-      this.formGenero = new FormGroup({
+
+    this.formGenero = new FormGroup({
       nombre: new FormControl('', Validators.required)
     });
   }
 
   ngOnInit(): void {
     this.cargarGeneros();
-    this.generoService.getGeneros().subscribe((generos) => {
-      this.generos = generos;
-
-      // Para cada género, obtener su total una sola vez
-      generos.forEach((g) => {
-        this.generoService.getFilms(g.id_genero).subscribe({
-          next: (data) => {
-            this.totalPorGenero[g.id_genero] = data[0]?.total ?? 0;
-          },
-          error: () => {
-            this.totalPorGenero[g.id_genero] = 0;
-            this.alerta.error("Error", "Error al obtener total de películas");
-          },
-        });
-      });
-    });
+  }
+  // Activar modo edición
+  activarEdicion(genero: any) {
+    this.generoEditando = genero.id_genero;
+    this.nombreTemporal = genero.nombre;
   }
 
+  // Guardar cambios
+  guardarEdicion(genero: any) {
+    if (this.nombreTemporal.trim()) {
+      genero.nombre = this.nombreTemporal.trim();
+      this.updateGenero(genero);
+      this.cancelarEdicion();
+    }
+  }
+
+  // Cancelar edición
+  cancelarEdicion() {
+    this.generoEditando = null;
+    this.nombreTemporal = '';
+  }
+
+  // Actualizar en el backend
+  updateGenero(genero: Generos) {
+    console.log(genero.id_genero, '   ', genero.nombre);
+    this.generoService.updateGenero(genero)
+      .subscribe({
+        next: () => {
+          this.alerta.success('', 'Género actualizado correctamente');
+        },
+        error: () => {
+          this.alerta.error('', 'Error al actualizar el género');
+        }
+      });
+  }
   cargarGeneros(): void {
     this.generoService.getGeneros().subscribe({
       next: (data) => {
@@ -62,6 +79,7 @@ export class GenerosComponent {
         this.aplicarFiltro(); // Inicializa la lista filtrada
       }
     });
+
   }
   aplicarFiltro() {
     const termino = this.filtroGenero.toLowerCase().trim();
@@ -69,7 +87,9 @@ export class GenerosComponent {
     this.generosFiltrados = this.generos.filter(g =>
       g.nombre.toLowerCase().includes(termino)
     );
+    this.generosFiltrados = this.generosFiltrados.sort((a, b) => a.id_genero - b.id_genero);
   }
+
   totalGeneros(): number {
     return this.total = this.generos.length;
   }

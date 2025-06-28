@@ -174,7 +174,7 @@
 }
 
 .data-table th {
-  background: rgba(20, 20, 20, 0.8);
+  background: rgb(20, 20, 20);
   color: #e5e7eb;
   font-weight: 600;
   padding: 16px;
@@ -208,6 +208,11 @@
 .genre-name {
   font-weight: 500;
   color: #ffffff;
+  max-width: 305px;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  justify-items: center;
 }
 
 .genre-actions {
@@ -348,4 +353,68 @@
   .tab-button .icon {
     display: none;
   }
+}
+
+.inline-edit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 305px;
+}
+
+.edit-input {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 16px;
+  outline: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  flex: 1;
+  transition: border-color 0.3s;
+  background: rgba(30, 30, 30, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.edit-input:focus {
+  border-color: #FFD700;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+.edit-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #1e1e1e;
+  border: none;
+}
+
+.btn-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.btn-cancel {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-cancel:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
 }

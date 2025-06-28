@@ -17,16 +17,10 @@ export class GenerosService {
   addGenero(formGenero: Generos): Observable<any> {
     return this.http.post(this.apiURL, formGenero);
   }
+  updateGenero(genero: Generos): Observable<any> {
+    return this.http.put(`${this.apiURL}/${genero.id_genero}`, genero);
+  }
   deleteGenero(id: number): Observable<any> {
     return this.http.delete(`${this.apiURL}/${id}`);
   }
-
-  getFilms(id: number): Observable<total[]> {
-    return this.http.get<total[]>(`${this.apiURL}/total/${id}`);
-  }
-}
-
-interface total {
-  id_genero: number;
-  total: number;
 }
