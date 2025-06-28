@@ -6,6 +6,8 @@ import { MovieService } from '../../../cliente/features/movies/services/movie.se
 import { TemaService } from '../../../cliente/features/movies/services/tema.service';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../../../acceso/login/login.component';
+import { Sede, SedeService } from '../../../services/sede.service';
+
 
 @Component({
   selector: 'app-navbar',
@@ -20,8 +22,12 @@ export class NavbarComponent {
   menuAbierto = false;
   menuCerrando = false;
   busqueda = '';
-  ubicacion = 'Machala';
   esNavegador = false;
+  menuSedesAbierto = false;
+  sedeSeleccionada: Sede | null = null;
+  sedes: Sede[] = [];
+  ciudadesConSedes: { nombre: string, sedes: Sede[] }[] = [];
+
 
   ciudades = [
     { value: 'Machala', label: 'Machala' },
@@ -34,6 +40,7 @@ export class NavbarComponent {
   constructor(
     private router: Router,
     private movieService: MovieService,
+    private sedeService: SedeService, // <-- Asegúrate de inyectar el servicio
     @Inject(PLATFORM_ID) private plataforma: Object,
     private temaService: TemaService
   ) {
@@ -46,6 +53,57 @@ export class NavbarComponent {
       this.modoOscuro = temaGuardado !== 'claro';
       this.aplicarTema(this.modoOscuro);
     }
+    this.cargarSedes();
+  }
+
+  cargarSedes() {
+    this.sedeService.getSedes().subscribe(sedes => {
+      this.sedes = sedes;
+      this.ciudadesConSedes = this.agruparSedesPorCiudad(sedes);
+    });
+  }
+
+    agruparSedesPorCiudad(sedes: Sede[]) {
+    const ciudadesMap: { [id: number]: { nombre: string, sedes: Sede[] } } = {};
+    for (const sede of sedes) {
+      const ciudadId = sede.id_ciudad;
+      const ciudadNombre = this.getNombreCiudad(ciudadId);
+      if (!ciudadesMap[ciudadId]) {
+        ciudadesMap[ciudadId] = { nombre: ciudadNombre, sedes: [] };
+      }
+      ciudadesMap[ciudadId].sedes.push(sede);
+    }
+    return Object.values(ciudadesMap);
+  }
+
+    getNombreCiudad(id: number): string {
+    // Puedes usar tu ciudadesMap o traerlo del backend
+    const ciudadesMap: { [id: number]: string } = {
+      1: 'Quito',
+      2: 'Guayaquil',
+      3: 'Cuenca',
+      4: 'Manta',
+      5: 'Machala',
+      6: 'Ambato',
+      7: 'Riobamba',
+      8: 'Loja',
+      9: 'Ibarra',
+      10: 'Esmeraldas',
+      11: 'Babahoyo',
+      12: 'Santa Elena',
+      13: 'Santo Domingo'
+    };
+    return ciudadesMap[id] || 'Ciudad';
+  }
+
+  abrirMenuSedes() {
+    this.menuSedesAbierto = !this.menuSedesAbierto;
+  }
+
+  seleccionarSede(sede: Sede) {
+    this.sedeSeleccionada = sede;
+    this.menuSedesAbierto = false;
+    // Aquí puedes guardar la sede seleccionada en localStorage o emitir un evento
   }
 
   cambiarTema(): void {

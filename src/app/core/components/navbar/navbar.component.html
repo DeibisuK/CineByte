@@ -19,13 +19,27 @@
       </ul>
 
       <!-- Selector ciudad SOLO en escritorio -->
-      <div class="ubicacion">
-        <span class="material-icons">location_on</span>
-        <select [(ngModel)]="ubicacion">
-          <option>Machala</option>
-          <option>Guayaquil</option>
-          <option>Quito</option>
-        </select>
+      <div class="selector-sede" [class.abierto]="menuSedesAbierto">
+        <button class="btn-selector-sede" (click)="abrirMenuSedes()">
+          <span class="material-icons">location_on</span>
+          <span>
+            {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
+          </span>
+          <span class="material-icons flecha" [class.abierto]="menuSedesAbierto">expand_more</span>
+        </button>
+
+        <div class="menu-sedes" *ngIf="menuSedesAbierto">
+          <div *ngFor="let ciudad of ciudadesConSedes">
+            <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
+            <hr class="linea-ciudad" />
+            <button
+              class="sede-opcion"
+              *ngFor="let sede of ciudad.sedes"
+              (click)="seleccionarSede(sede)">
+              {{ sede.nombre }} - {{ sede.direccion }}
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Buscador SOLO en escritorio -->
@@ -50,13 +64,27 @@
 
     <!-- Segunda fila SOLO en móvil -->
     <div class="navbar-mobile-row">
-      <div class="ubicacion">
-        <span class="material-icons">location_on</span>
-        <select [(ngModel)]="ubicacion">
-          <option>Machala</option>
-          <option>Guayaquil</option>
-          <option>Quito</option>
-        </select>
+      <div class="selector-sede-movil" [class.abierto]="menuSedesAbierto">
+        <button class="btn-selector-sede" (click)="abrirMenuSedes()">
+          <span class="material-icons">location_on</span>
+          <span>
+            {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
+          </span>
+          <span class="material-icons flecha" [class.abierto]="menuSedesAbierto">expand_more</span>
+        </button>
+
+        <div class="menu-sedes" *ngIf="menuSedesAbierto">
+          <div *ngFor="let ciudad of ciudadesConSedes">
+            <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
+            <hr class="linea-ciudad" />
+            <button
+              class="sede-opcion"
+              *ngFor="let sede of ciudad.sedes"
+              (click)="seleccionarSede(sede)">
+              {{ sede.nombre }} - {{ sede.direccion }}
+            </button>
+          </div>
+        </div>
       </div>
       <div class="switch-container">
         <label class="theme-switch">
