@@ -222,10 +222,6 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     this.alertMessage = message;
     this.alertType = type;
     this.showAlert = true;
-
-    setTimeout(() => {
-      this.showAlert = false;
-    }, 5000);
   }
 
   private resetForm(): void {

@@ -41,7 +41,7 @@ export class ContactanosComponent {
       this.contactoForm.markAllAsTouched();
       return;
     }
-    this.http.post('http://localhost:3000/api/contacto', this.contactoForm.value)
+    this.http.post('https://api-cinebyte.onrender.com/api/contacto', this.contactoForm.value)
       .subscribe({
         next: () => {
           this.alertMessage = 'Mensaje enviado correctamente';
