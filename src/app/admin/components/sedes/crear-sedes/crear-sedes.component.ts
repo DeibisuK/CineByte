@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CrearSedesComponent implements OnInit, AfterViewInit {
   sede: Sede = {
+    id_sede: 0,
     nombre: '',
     id_ciudad: 1,
     direccion: '',

@@ -1,0 +1,113 @@
+/* Margen superior e inferior para separar del borde de la pantalla */
+.contenedor-sedes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  width: 100%;
+  margin: 2.5rem 0 2.5rem 0; /* margen arriba y abajo */
+}
+
+/* Tarjeta más ancha y menos gruesa la fuente */
+.sede-card {
+  background: var(--footer-esp);
+  color: var(--text-color);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  padding: 2rem 2rem 1.5rem 2rem;
+  width: 100%;
+  max-width: 750px; /* más ancho */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  transition: box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.sede-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.sede-header h3 {
+  color: #f7da00;
+  font-size: 1.7rem;
+  margin: 0;
+  font-weight: 600; /* menos grueso */
+  letter-spacing: 0.01em;
+}
+
+.sede-card p {
+  margin: 0 0 1rem 0;
+  font-size: 1.08rem;
+  color: var(--text-color);
+  font-weight: 400;
+}
+
+/* Botones de acción */
+.acciones {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.action-btn {
+  padding: 6px;
+  background: rgba(45, 45, 45, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: rgba(25, 0, 255, 0.1);
+  border-color: rgba(25, 0, 255, 0.3);
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.action-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Mapa más cuadrado */
+.mapa {
+  margin: 1.2rem 0 0.5rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  display: flex;
+  justify-content: center;
+}
+
+.mapa iframe {
+  width: 320px;
+  height: 220px;
+  max-width: 100%;
+  border-radius: 12px;
+  border: none;
+  background: #222;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .sede-card {
+    max-width: 98vw;
+    padding: 1.2rem 0.5rem;
+  }
+  .mapa iframe {
+    width: 98vw;
+    min-width: 0;
+  }
+}
