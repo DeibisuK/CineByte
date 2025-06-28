@@ -70,6 +70,13 @@
       </a>
     </li>
     <li>
+      <a routerLink="/admin/add-sede" routerLinkActive="active-link" data-tooltip="Sedes"
+        [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
+        <i class="fa-solid fa-location-dot"></i> 
+        <span *ngIf="!sidebarClosed">Sedes</span>
+      </a>
+    </li>
+    <li>
       <a routerLink="/admin/usuarios" routerLinkActive="active-link" data-tooltip="Usuarios"
         [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')">
         <i class="fa-solid fa-users"></i>

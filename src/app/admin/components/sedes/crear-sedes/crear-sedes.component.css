@@ -1,0 +1,20 @@
+form {
+  max-width: 600px;
+  margin: auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+}
+
+input, select, button {
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+}
+
+#map {
+  height: 300px;
+  margin-top: 1rem;
+  border-radius: 8px;
+}

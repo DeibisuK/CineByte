@@ -1,0 +1,25 @@
+<form (ngSubmit)="onSubmit()">
+  <label>Nombre</label>
+  <input type="text" [(ngModel)]="sede.nombre" name="nombre" required>
+
+  <label>Ciudad</label>
+  <select [(ngModel)]="sede.id_ciudad" name="id_ciudad" (change)="onCiudadChange(sede.id_ciudad)">
+  <option *ngFor="let ciudad of ciudades" [ngValue]="ciudad.id_ciudad">
+    {{ ciudad.nombre }}
+  </option>
+  </select>
+
+  <label>Dirección</label>
+  <input type="text" [(ngModel)]="sede.direccion" name="direccion" required>
+
+  <label>Teléfono</label>
+  <input type="text" [(ngModel)]="sede.telefono" name="telefono">
+
+  <label>Email</label>
+  <input type="email" [(ngModel)]="sede.email" name="email">
+
+  <div id="map"></div>
+  <p>Ubicación: Lat {{ sede.latitud }} | Lng {{ sede.longitud }}</p>
+
+  <button type="submit">Guardar</button>
+</form>
