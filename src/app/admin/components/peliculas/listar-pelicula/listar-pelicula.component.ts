@@ -18,7 +18,7 @@ export class ListarPeliculaComponent {
     this.obtenerPeliculas();
   }
   obtenerPeliculas(): void {
-     this.peliculaService.obtenerPeliculas().subscribe({
+     this.peliculaService.getPeliculas().subscribe({
       next: (data) => {
         this.peliculas = data;
       },

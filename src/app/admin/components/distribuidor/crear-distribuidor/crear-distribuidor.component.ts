@@ -31,7 +31,7 @@ export class CrearDistribuidorComponent {
     }
     try {
       const distri: Distribuidor = this.distribuidorform.value
-      this.service.creatDisitribuidor(distri);
+      this.service.addDisitribuidor(distri);
       this.alerta.success("Distribuidor creado", "El distribuidor se guardó correctamente");
 
     } catch (error) {

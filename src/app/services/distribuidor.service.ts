@@ -13,8 +13,7 @@ export class DistribuidorService {
   getDistribuidor(): Observable<Distribuidor[]> {
     return this.http.get<Distribuidor[]>(this.apiURL);
   }
-  creatDisitribuidor(distri: Distribuidor) {
-    this.http.post(this.apiURL, distri)
-      .subscribe(response => { console.log('Distribuidor guardado', response); });
+  addDisitribuidor(distri: Distribuidor):Observable<any> {
+    return this.http.post(this.apiURL, distri);
   }
 }

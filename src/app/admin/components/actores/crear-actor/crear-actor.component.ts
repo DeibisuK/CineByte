@@ -4,6 +4,8 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActoresService } from '../../../../services/actores.service';
 import { AlertaService } from '../../../../services/alerta.service';
 import { Actores } from '../../../models/actores.model';
+import { Pais } from '../../../models/paises.model';
+import { PaisesService } from '../../../../services/paises.service';
 
 @Component({
   selector: 'app-crear-actor',
@@ -15,13 +17,14 @@ export class CrearActorComponent {
   @Input() mostrar = false;
   @Output() cerrar = new EventEmitter<void>();
   actorform: FormGroup;
+  paises:Pais[] = [];
 
-  constructor(private service: ActoresService, private alerta: AlertaService) {
+  constructor(private service: ActoresService, private alerta: AlertaService, private paisService:PaisesService) {
     this.actorform = new FormGroup({
       nombre: new FormControl('', Validators.required),
       apellidos: new FormControl('', Validators.required),
       fecha_nacimiento: new FormControl('', Validators.required),
-      nacionalidad: new FormControl('', Validators.required),
+      id_nacionalidad: new FormControl('', Validators.required),
     });
   }
   saveActor() {
@@ -31,7 +34,7 @@ export class CrearActorComponent {
     }
     try {
       const actor: Actores = this.actorform.value
-      this.service.createActor(actor);
+      this.service.addActor(actor);
       this.alerta.success("Actor creado", "El actor se guardó correctamente");
 
     } catch (error) {
@@ -41,5 +44,14 @@ export class CrearActorComponent {
   }
   cerrarModal() {
     this.cerrar.emit();
+  }
+
+  getNacionalidad():Pais[]{
+    this.paisService.getPais().subscribe({
+      next: (data) => {
+        this.paises = data;
+      }
+    });
+    return this.paises;
   }
 }
