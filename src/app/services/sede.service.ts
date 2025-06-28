@@ -19,16 +19,16 @@ export interface Sede {
 })
 
 export class SedeService {
-  private apiUrl = 'http://localhost:3000/api/sedes';
+  private apiUrl = 'https://api-cinebyte.onrender.com/api/sedes';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   crearSede(sede: Sede): Observable<any> {
     return this.http.post(this.apiUrl, sede);
   }
 
   getCiudades(): Observable<any[]> {
-    return this.http.get<any[]>('http://localhost:3000/api/ciudades');
+    return this.http.get<any[]>('https://api-cinebyte.onrender.com/api/ciudades');
   }
 
   getSedes(): Observable<Sede[]> {
@@ -36,12 +36,12 @@ export class SedeService {
   }
 
   getSedeById(id: number): Observable<Sede> {
-  return this.http.get<Sede>(`${this.apiUrl}/${id}`);
-}
+    return this.http.get<Sede>(`${this.apiUrl}/${id}`);
+  }
 
-editarSede(id: number, sede: Sede): Observable<any> {
-  return this.http.put(`${this.apiUrl}/${id}`, sede);
-}
+  editarSede(id: number, sede: Sede): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, sede);
+  }
 
   eliminarSede(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
