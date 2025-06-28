@@ -56,8 +56,8 @@
 
 .action-btn {
   padding: 6px;
-  background: rgba(45, 45, 45, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -129,7 +129,7 @@
 .btn-agregar-sede,
 .form-sede button[type="submit"] {
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #1e1e1e;
+  color: var(--text-color);
   font-weight: 600;
   border: none;
   border-radius: 999px;
