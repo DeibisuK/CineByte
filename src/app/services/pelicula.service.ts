@@ -10,12 +10,17 @@ export class PeliculaService {
   apiURL = 'https://api-cinebyte.onrender.com/api/peliculas';
   constructor(private http: HttpClient) { }
 
-  obtenerPeliculas(): Observable<Pelicula[]> {
+  getPeliculas(): Observable<Pelicula[]> {
     return this.http.get<Pelicula[]>(this.apiURL);
   }
-  
-  guardarPelicula(peliculaForm: Pelicula) {    
-    this.http.post(this.apiURL, peliculaForm)
-      .subscribe(response => {console.log('Película guardada:');});
+
+  addPelicula(peliculaForm: Pelicula): Observable<any> {
+    return this.http.post(this.apiURL, peliculaForm);
+  }
+  updateGenero(pelicula: Pelicula): Observable<any> {
+    return this.http.put(`${this.apiURL}/${pelicula.id_pelicula}`, pelicula);
+  }
+  deleteGenero(id: number): Observable<any> {
+    return this.http.delete(`${this.apiURL}/${id}`);
   }
 }

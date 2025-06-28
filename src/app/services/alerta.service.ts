@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 })
 export class AlertaService {
 
-  constructor(private router:Router){}
+  constructor(private router: Router) { }
 
   success(titulo: string, mensaje: string) {
     Swal.fire({
@@ -19,14 +19,14 @@ export class AlertaService {
   }
 
   successRoute(titulo: string, mensaje: string, ruta: string) {
-    
+
     Swal.fire({
       title: titulo,
       text: mensaje,
       icon: 'success',
       confirmButtonColor: '#4CAF50'
     }).then(() => {
-      this.router.navigate(['/'+ruta]);
+      this.router.navigate(['/' + ruta]);
     });
   }
 

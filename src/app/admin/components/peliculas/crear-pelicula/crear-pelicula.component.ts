@@ -111,6 +111,7 @@ export class CrearPeliculaComponent {
     if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
       this.selectedActores.push(actor);
     }
+    console.log(this.actores)
     // Siempre resetea el select visualmente
     this.peliculaForm.get('actores')?.setValue('');
   }
@@ -148,7 +149,7 @@ export class CrearPeliculaComponent {
       const file = this.imagenSeleccionada;
       pelicula.imagen = await this.imgbbService.subirImagen(file);
 
-      this.peliculaService.guardarPelicula(pelicula);
+      this.peliculaService.addPelicula(pelicula);
       this.alerta.successRoute("Película creada", "La película se guardó correctamente","listar-peliculas");
       this.peliculaForm.reset();
     } catch (error) {

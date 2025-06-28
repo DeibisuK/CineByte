@@ -3,5 +3,6 @@ export interface Actores {
     nombre: string;
     apellidos: string;
     fecha_nacimiento: Date;
-    nacionalidad: string;
+    fecha_registro:Date;
+    id_nacionalidad: number;
 }

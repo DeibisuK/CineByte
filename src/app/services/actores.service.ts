@@ -7,7 +7,7 @@ import { Actores } from '../admin/models/actores.model';
   providedIn: 'root'
 })
 export class ActoresService {
-    apiURL = 'https://api-cinebyte.onrender.com/api/actores';
+  apiURL = 'https://api-cinebyte.onrender.com/api/actores';
 
   constructor(private http: HttpClient) { }
 
@@ -15,8 +15,8 @@ export class ActoresService {
     return this.http.get<Actores[]>(this.apiURL);
   }
 
-  createActor(actorForm:Actores){
-    this.http.post(this.apiURL,actorForm)
-          .subscribe(response => {console.log('Actor guardado',response);});
+  addActor(actorForm: Actores) {
+    this.http.post(this.apiURL, actorForm)
+      .subscribe(response => { console.log('Actor guardado', response); });
   }
 }
