@@ -6,12 +6,13 @@
   background: var(--footer-esp);
   color: var(--text-color);
   border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.13);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
   font-family: inherit;
 }
 
 .form-sede label {
   display: block;
+  text-align: justify;
   margin-top: 1.1rem;
   margin-bottom: 0.3rem;
   font-weight: 500;
@@ -38,7 +39,8 @@
 }
 
 .form-sede button[type="submit"] {
-  width: 100%; /* <-- Añade esta línea */
+  width: 100%;
+  /* <-- Añade esta línea */
   background: linear-gradient(135deg, #FFD700, #FFA500);
   color: var(--text-color);
   font-weight: 600;
@@ -47,7 +49,7 @@
   font-size: 1.08rem;
   cursor: pointer;
   transition: background 0.2s, transform 0.2s;
-  box-shadow: 0 2px 8px rgba(255,215,0,0.08);
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.08);
   outline: none;
   gap: 0.5rem;
   display: flex;
@@ -62,6 +64,14 @@
   transform: scale(1.04);
 }
 
+.error-message {
+  color: #ff4343;
+  text-align: justify;
+  font-size: 0.95em;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
 #map {
   height: 300px;
   margin-top: 1rem;
@@ -74,17 +84,20 @@
   grid-template-columns: 1fr 1fr;
   gap: 1.2rem;
 }
+
 @media (max-width: 700px) {
   .form-sede .form-grid {
     grid-template-columns: 1fr;
   }
 }
+
 .form-sede label {
   margin-top: 0.7rem;
   margin-bottom: 0.3rem;
   font-weight: 500;
   color: var(--text-color);
 }
+
 .form-sede input,
 .form-sede select {
   width: 100%;

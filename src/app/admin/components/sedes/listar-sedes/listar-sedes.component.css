@@ -129,7 +129,7 @@
 .btn-agregar-sede,
 .form-sede button[type="submit"] {
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: #1e1e1e;
+  color: var(--text-color);
   font-weight: 600;
   border: none;
   border-radius: 999px;

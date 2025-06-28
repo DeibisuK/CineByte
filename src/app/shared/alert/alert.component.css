@@ -1,53 +1,101 @@
 .alert-backdrop {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
 }
+
 .alert-box {
   background: #fff;
   color: #222;
   padding: 2rem;
   border-radius: 10px;
   min-width: 260px;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.2);
   text-align: center;
   animation: fadeInUp 0.3s;
+  /* Borde genérico (será sobrescrito por los tipos específicos) */
+  border: 2px solid transparent;
 }
+
+/* Tema oscuro - fondo y texto */
 .alert-box.dark {
-  background: #222;
-  color: #fff;
+  background: var(--bg-color);
+  color: var(--text-color);
 }
+
+/* Colores de borde según tipo de alerta */
+.alert-box.success {
+  border-color: #43a047; /* Verde para éxito */
+}
+.alert-box.error {
+  border-color: #e53935; /* Rojo para error */
+}
+.alert-box.warning {
+  border-color: #ff9800; /* Naranja para warning */
+}
+.alert-box.info {
+  border-color: #1976d2; /* Azul para info */
+}
+
+/* Tema oscuro - bordes más suaves */
+.alert-box.dark.success {
+  border-color: #388e3c;
+}
+.alert-box.dark.error {
+  border-color: #d32f2f;
+}
+.alert-box.dark.warning {
+  border-color: #ffa000;
+}
+.alert-box.dark.info {
+  border-color: #1565c0;
+}
+
 .icon-container {
   margin-bottom: 1rem;
 }
+
 .icon {
   width: 48px;
   height: 48px;
   display: block;
   margin: 0 auto;
 }
+
+/* Animaciones (las mantuvimos igual que las tuyas) */
 .icon.success {
   animation: popSuccess 0.5s;
 }
+
 @keyframes popSuccess {
   0% { transform: scale(0.2); opacity: 0; }
   70% { transform: scale(1.2); opacity: 1; }
   100% { transform: scale(1); }
 }
+
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(30px);}
-  to { opacity: 1; transform: translateY(0);}
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+
 .alert-box button {
   margin-top: 1rem;
-  background: #f7cb5a;
-  color: #fff;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: var(--text-color);
   border: none;
   padding: 0.5rem 1.5rem;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.alert-box button:hover {
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
 }

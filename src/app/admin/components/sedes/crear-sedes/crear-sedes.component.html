@@ -1,33 +1,58 @@
-<!-- Usa la clase form-sede y form-grid -->
-<form class="form-sede" (ngSubmit)="onSubmit()">
+<form class="form-sede" [formGroup]="sedeForm" (ngSubmit)="onSubmit()">
   <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Agregar Sede</h2>
   <div class="form-grid">
     <div>
       <label>Nombre</label>
-      <input type="text" [(ngModel)]="sede.nombre" name="nombre" required>
+      <input type="text" formControlName="nombre">
+      <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="error-message">
+        <div *ngIf="nombre.errors?.['required']">El nombre es requerido</div>
+        <div *ngIf="nombre.errors?.['minlength']">Debe tener al menos 3 caracteres</div>
+      </div>
     </div>
     <div>
       <label>Ciudad</label>
-      <select [(ngModel)]="sede.id_ciudad" name="id_ciudad" (change)="onCiudadChange(sede.id_ciudad)">
+      <select formControlName="id_ciudad" (change)="onCiudadChange(sedeForm.value.id_ciudad)">
         <option *ngFor="let ciudad of ciudades" [ngValue]="ciudad.id_ciudad">
           {{ ciudad.nombre }}
         </option>
       </select>
+      <div *ngIf="id_ciudad.invalid && (id_ciudad.dirty || id_ciudad.touched)" class="error-message">
+        <div *ngIf="id_ciudad.errors?.['required']">Debe seleccionar una ciudad</div>
+      </div>
     </div>
     <div>
       <label>Dirección</label>
-      <input type="text" [(ngModel)]="sede.direccion" name="direccion" required>
+      <input type="text" formControlName="direccion">
+      <div *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)" class="error-message">
+        <div *ngIf="direccion.errors?.['required']">La dirección es requerida</div>
+        <div *ngIf="direccion.errors?.['minlength']">Debe tener al menos 5 caracteres</div>
+      </div>
     </div>
     <div>
       <label>Teléfono</label>
-      <input type="text" [(ngModel)]="sede.telefono" name="telefono">
+      <input type="text" formControlName="telefono">
+      <div *ngIf="telefono.invalid && (telefono.dirty || telefono.touched)" class="error-message">
+        <div *ngIf="telefono.errors?.['pattern']">Solo números, guiones y espacios</div>
+        <div *ngIf="telefono.errors?.['maxlength']">Máximo 15 caracteres</div>
+      </div>
     </div>
     <div>
       <label>Email</label>
-      <input type="email" [(ngModel)]="sede.email" name="email">
+      <input type="email" formControlName="email">
+      <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error-message">
+        <div *ngIf="email.errors?.['email']">Ingrese un email válido</div>
+      </div>
     </div>
   </div>
   <div id="map"></div>
-  <p>Ubicación: Lat {{ sede.latitud }} | Lng {{ sede.longitud }}</p>
-  <button type="submit">Guardar</button>
+  <p>Ubicación: Lat {{ sedeForm.value.latitud }} | Lng {{ sedeForm.value.longitud }}</p>
+  <button type="submit" [disabled]="sedeForm.invalid">Guardar</button>
 </form>
+
+<app-alert
+  *ngIf="showAlert"
+  [message]="alertMessage"
+  [theme]="alertTheme"
+  [type]="alertType"
+  (closed)="showAlert = false">
+</app-alert>
