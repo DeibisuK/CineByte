@@ -132,30 +132,27 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initMap(): void {
-    this.map = L.map('map').setView([-3.258, -79.955], 13);
-    this.marker = L.marker([-3.258, -79.955], { draggable: true }).addTo(
-      this.map
-    );
-
+    const idCiudad = this.sedeForm.value.id_ciudad;
+    const coords = this.coordCiudades[idCiudad] || [-0.22985, -78.52495]; // Quito como fallback
+  
+    this.map = L.map('map').setView(coords, 13);
+    this.marker = L.marker(coords, { draggable: true }).addTo(this.map);
+  
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
-
+  
     this.marker.on('dragend', () => {
       const { lat, lng } = this.marker.getLatLng();
-      this.sedeForm.patchValue({
-        latitud: lat,
-        longitud: lng,
-      });
+      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
     });
-
+  
     this.map.on('click', (e: L.LeafletMouseEvent) => {
       this.marker.setLatLng(e.latlng);
-      this.sedeForm.patchValue({
-        latitud: e.latlng.lat,
-        longitud: e.latlng.lng,
-      });
+      this.sedeForm.patchValue({ latitud: e.latlng.lat, longitud: e.latlng.lng });
     });
+  
+    this.sedeForm.patchValue({ latitud: coords[0], longitud: coords[1] });
   }
 
   onCiudadChange(id_ciudad: number): void {
@@ -229,7 +226,7 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
       latitud: 0,
       longitud: 0,
     });
-    this.map.setView([-3.258, -79.955], 13);
-    this.marker.setLatLng([-3.258, -79.955]);
+    this.map.setView([-0.22985, -78.52495], 13);
+    this.marker.setLatLng([-0.22985, -78.52495]);
   }
 }
