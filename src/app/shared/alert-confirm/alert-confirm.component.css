@@ -1,3 +1,13 @@
+:host-context(body.light-mode) .alert-box {
+  background: #fff;
+  color: #121212;
+}
+:host-context(body.light-mode) .btn-cancel {
+  color: #121212;
+  border-color: #888;
+}
+
+
 .icon-container {
   margin-bottom: 1rem;
 }
@@ -45,7 +55,7 @@
 }
 
 .btn-confirm {
-  background: linear-gradient(135deg, #ff5900, #ff0000);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   color: var(--text-color);
   border: none;
   border-radius: 5px;
@@ -56,13 +66,13 @@
 }
 
 .btn-confirm:hover {
-  background: linear-gradient(135deg, #ff0000, #ff5900);
+  background: linear-gradient(135deg, #FFA500, #FFD700);
   transform: scale(1.04);
 }
 
 .btn-cancel {
   background: none;
-  color: var(--text-color, #222);
+  color: var(--text-color);
   border: 1px solid #aaa;
   border-radius: 5px;
   padding: 0.5rem 1.5rem;

@@ -7,7 +7,7 @@ import { NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/commo
   imports: [NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault],
   template: `
     <div class="alert-backdrop">
-      <div class="alert-box" [ngClass]="[theme, type]">
+      <div class="alert-box" [ngClass]="{ 'dark': theme === 'dark' }">
         <div class="icon-container">
           <ng-container [ngSwitch]="type">
             <svg *ngSwitchCase="'success'" class="icon success" viewBox="0 0 24 24">
@@ -38,7 +38,10 @@ import { NgClass, NgSwitch, NgSwitchCase, NgSwitchDefault } from '@angular/commo
   `,
   styleUrls: ['./alert-confirm.component.css']
 })
+
+
 export class AlertConfirmComponent {
+  
   @Input() message = '';
   @Input() theme: 'light' | 'dark' = 'light';
   @Input() type: 'success' | 'error' | 'warning' | 'info' = 'warning';

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, SimpleChanges } from '@angular/core';
 import { SedeService, Sede } from '../../../../services/sede.service';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -41,19 +41,31 @@ export class ListarSedesComponent implements OnInit {
     private sedeService: SedeService,
     private sanitizer: DomSanitizer,
     private router: Router,
-    private temaService: TemaService
+    private temaService: TemaService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.cargarSedes();
     this.temaSub = this.temaService.modoOscuro$.subscribe(modoOscuro => {
-      this.alertTheme = modoOscuro ? 'dark' : 'light';
+      this.alertTheme = 'light'; // se cambia aquí primero
+      setTimeout(() => {
+        this.alertTheme = modoOscuro ? 'dark' : 'light'; // se reestablece
+      }, 0);
     });
   }
 
   ngOnDestroy(): void {
     if (this.temaSub) this.temaSub.unsubscribe();
   }
+
+  ngOnChanges(changes: SimpleChanges): void {
+  if (changes['theme']) {
+    // Forzar redibujado para que se apliquen las variables
+    this.cdr.detectChanges();
+  }
+}
+
 
   cargarSedes() {
     this.sedeService.getSedes().subscribe(data => {
