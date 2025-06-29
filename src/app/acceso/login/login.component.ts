@@ -14,11 +14,11 @@ import { AuthService } from '../../services/AuthService';
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
-  encapsulation:ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom
 })
 export class LoginComponent implements OnInit {
 
-   @Input() showLoginRegisterModal: boolean = false;
+  @Input() showLoginRegisterModal: boolean = false;
   @Output() cerrarLoginRegister = new EventEmitter<void>();
 
   isLoginActive: boolean = true;
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
   // ✅ Usa readonly y NO this para inyección
   readonly authService = inject(AuthService);
 
-  constructor() {}
+  constructor() { }
 
   ngOnInit(): void {
     this.loginForm = new FormGroup({
@@ -66,7 +66,7 @@ export class LoginComponent implements OnInit {
     this.loginForm.reset();
   }
 
-  
+
 
   cerrarRecuperarContrasena(): void {
     this.showRecoverPasswordModal = false;
@@ -78,7 +78,7 @@ export class LoginComponent implements OnInit {
   onLoginSubmit(): void {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      this.authService.loginEmail( email, password)
+      this.authService.loginEmail(email, password)
         .then(() => {
           alert('Login exitoso');
           this.cerrarLoginRegisterModal();
@@ -95,7 +95,7 @@ export class LoginComponent implements OnInit {
   // ✅ Formulario de Registro con AuthService
   onRegisterSubmit(): void {
     if (this.registerForm.valid) {
-      const {email, password } = this.registerForm.value;
+      const { email, password } = this.registerForm.value;
       this.authService.registerEmail(email, password)
         .then(() => {
           alert('Registro exitoso');
@@ -111,7 +111,7 @@ export class LoginComponent implements OnInit {
   }
 
 
-  
+
   // ✅ Login con Google
   loginWithGoogle(): void {
     this.authService.loginGoogle()
@@ -137,5 +137,5 @@ export class LoginComponent implements OnInit {
         alert('Error con Facebook: ' + (err.message || err));
       });
   }
-  
+
 }
