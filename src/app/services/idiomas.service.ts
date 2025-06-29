@@ -14,6 +14,9 @@ export class IdiomasService {
   getIdiomas(): Observable<Idiomas[]> {
     return this.http.get<Idiomas[]>(this.apiURL);
   }
+  getIdiomasID(id:number): Observable<Idiomas[]> {
+    return this.http.get<Idiomas[]>(`${this.apiURL}/${id}`);
+  }
   addIdiomas(form: Idiomas): Observable<any> {
     return this.http.post(this.apiURL, form);
   }

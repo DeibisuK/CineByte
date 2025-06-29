@@ -17,10 +17,10 @@ export class PeliculaService {
   addPelicula(peliculaForm: Pelicula): Observable<any> {
     return this.http.post(this.apiURL, peliculaForm);
   }
-  updateGenero(pelicula: Pelicula): Observable<any> {
+  updatePelicula(pelicula: Pelicula): Observable<any> {
     return this.http.put(`${this.apiURL}/${pelicula.id_pelicula}`, pelicula);
   }
-  deleteGenero(id: number): Observable<any> {
+  deletePelicula(id: number): Observable<any> {
     return this.http.delete(`${this.apiURL}/${id}`);
   }
 }
