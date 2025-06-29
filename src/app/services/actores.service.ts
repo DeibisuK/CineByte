@@ -15,8 +15,7 @@ export class ActoresService {
     return this.http.get<Actores[]>(this.apiURL);
   }
 
-  addActor(actorForm: Actores) {
-    this.http.post(this.apiURL, actorForm)
-      .subscribe(response => { console.log('Actor guardado', response); });
+  addActor(actorForm: Actores): Observable<any> {
+    return this.http.post(this.apiURL, actorForm);
   }
 }

@@ -78,9 +78,9 @@
                     <div class="field-row-three">
                         <div class="form-field">
                             <label for="idiomas">Agregar Idiomas</label>
-                            <select id="idiomas" formControlName="idiomas" #idiomaSelect
+                            <select id="idiomas" #idiomaSelect
                                 (change)="addIdioma(idiomas[idiomaSelect.selectedIndex - 1])">
-                                <option value="">Seleccione un idioma</option>
+                                <option value="" >Seleccione un idioma</option>
                                 <option *ngFor="let idioma of idiomas" [value]="idioma">
                                     {{ idioma.nombre }}
                                 </option>
@@ -89,9 +89,9 @@
 
                         <div class="form-field">
                             <label for="generos">Agregar Género</label>
-                            <select id="generos" formControlName="generos" #generoSelect
+                            <select id="generos" #generoSelect
                                 (change)="addGenre(generos[generoSelect.selectedIndex - 1])">
-                                <option value="">Seleccione un genero</option>
+                                <option value="" >Seleccione un genero</option>
                                 <option *ngFor="let genero of generos" [value]="genero">
                                     {{ genero.nombre }}
                                 </option>
@@ -140,7 +140,7 @@
                         <div class="form-double">
                             <div class="form-field">
                                 <label for="actores">Actores</label>
-                                <select id="actores" formControlName="actores" #actoresSelect
+                                <select id="actores" #actoresSelect
                                     (change)="addActor(actores[actoresSelect.selectedIndex - 1])">
                                     <option value="">Seleccione un actor</option>
                                     <option *ngFor="let actor of actores" [value]="actor">
@@ -160,7 +160,7 @@
                         </div>
                         <div class="form-field">
                             <label for="etiquetas">Etiqueta</label>
-                            <select id="etiquetas" formControlName="etiquetas" #etiquetasSelect
+                            <select id="etiquetas" #etiquetasSelect
                                 (change)="addTag(etiquetas[etiquetasSelect.selectedIndex - 1])">
                                 <option value="">Seleccione un etiquieta</option>
                                 <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta">

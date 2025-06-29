@@ -75,10 +75,6 @@ export class CrearPeliculaComponent {
       duracion_minutos: new FormControl('', Validators.required),
       fecha_estreno: new FormControl('', Validators.required),
       estado: new FormControl('', Validators.required),
-      generos: new FormControl('', Validators.required),
-      etiquetas: new FormControl('', Validators.required),
-      actores: new FormControl('', Validators.required),
-      idiomas: new FormControl('', Validators.required),
       clasificacion: new FormControl('', Validators.required),
       imagen: new FormControl('', Validators.required),
       id_distribuidor: new FormControl('', Validators.required)
@@ -89,8 +85,11 @@ export class CrearPeliculaComponent {
     if (genre && !this.selectedGenres.some(a => a.id_genero === genre.id_genero)) {
       this.selectedGenres.push(genre);
     }
-    // Siempre resetea el select visualmente
-    this.peliculaForm.get('generos')?.setValue('');
+
+    const select = document.getElementById('generos') as HTMLSelectElement | null;
+    if (select) {
+      select.value = '';
+    }
   }
   removeGenre(genre: Generos) {
     this.selectedGenres = this.selectedGenres.filter((g: Generos) => g !== genre);
@@ -101,7 +100,10 @@ export class CrearPeliculaComponent {
       this.selectedTags.push(tag);
     }
     // Siempre resetea el select visualmente
-    this.peliculaForm.get('etiquetas')?.setValue('');
+    const select = document.getElementById('etiquetas') as HTMLSelectElement | null;
+    if (select) {
+      select.value = '';
+    }
   }
   removeTag(tag: Etiquetas) {
     this.selectedTags = this.selectedTags.filter((t: Etiquetas) => t !== tag);
@@ -111,9 +113,10 @@ export class CrearPeliculaComponent {
     if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
       this.selectedActores.push(actor);
     }
-    console.log(this.actores)
-    // Siempre resetea el select visualmente
-    this.peliculaForm.get('actores')?.setValue('');
+    const select = document.getElementById('actores') as HTMLSelectElement | null;
+    if (select) {
+      select.value = '';
+    }
   }
   removeActor(actor: Actores) {
     this.selectedActores = this.selectedActores.filter((a: Actores) => a !== actor);
@@ -124,7 +127,10 @@ export class CrearPeliculaComponent {
       this.selectedIdiomas.push(idioma);
     }
     // Siempre resetea el select visualmente
-    this.peliculaForm.get('idiomas')?.setValue('');
+   const select = document.getElementById('idiomas') as HTMLSelectElement | null;
+    if (select) {
+      select.value = '';
+    }
   }
   removeIdioma(idioma: Idiomas) {
     this.selectedIdiomas = this.selectedIdiomas.filter((a: Idiomas) => a !== idioma);
@@ -132,6 +138,15 @@ export class CrearPeliculaComponent {
 
   async onSubmit() {
     if (!this.peliculaForm.valid) {
+      this.alerta.error("Formulario Inválido", "Rellene todos los campos");
+      return;
+    }
+    if (
+      this.selectedGenres.length === 0 ||
+      this.selectedTags.length === 0 ||
+      this.selectedIdiomas.length === 0 ||
+      this.selectedActores.length === 0
+    ) {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
     }
@@ -149,9 +164,14 @@ export class CrearPeliculaComponent {
       const file = this.imagenSeleccionada;
       pelicula.imagen = await this.imgbbService.subirImagen(file);
 
-      this.peliculaService.addPelicula(pelicula);
-      this.alerta.successRoute("Película creada", "La película se guardó correctamente","listar-peliculas");
-      this.peliculaForm.reset();
+      this.peliculaService.addPelicula(pelicula).subscribe({
+        next: () => {
+          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "list-peliculas");
+        },
+        error: () => {
+          this.alerta.error("Error", "Error al guardar la pelicula");
+        }
+      });
     } catch (error) {
       this.alerta.error("Error", "Error al guardar la película");
     }

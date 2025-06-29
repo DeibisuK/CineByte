@@ -24,9 +24,9 @@ export class CrearDistribuidorComponent {
   ) {
     this.distribuidorform = new FormGroup({
       nombre: new FormControl('', Validators.required),
-      id_pais_origen: new FormControl('', Validators.required),
       ano_fundacion: new FormControl('', Validators.required),
       sitio_web: new FormControl('', Validators.required),
+      id_pais_origen: new FormControl('', Validators.required)
     });
   }
   saveDistribuidor() {
@@ -35,10 +35,16 @@ export class CrearDistribuidorComponent {
       return;
     }
     try {
-      const distri: Distribuidor = this.distribuidorform.value
-      this.service.addDisitribuidor(distri);
-      this.alerta.success("Distribuidor creado", "El distribuidor se guardó correctamente");
-
+      const distri: Distribuidor = this.distribuidorform.value as Distribuidor
+      this.service.addDisitribuidor(distri).subscribe({
+        next: () => {
+          this.alerta.success("Distribuidor creado", "El distribuidor se guardó correctamente");
+          this.cerrarModal();
+        },
+        error: () => {
+          this.alerta.error("Error", "Error al guardar el distribuidor");
+        }
+      });
     } catch (error) {
       this.alerta.error("Error", "Error al guardar el distribuidor");
     }

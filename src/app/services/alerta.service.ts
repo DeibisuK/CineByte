@@ -26,7 +26,7 @@ export class AlertaService {
       icon: 'success',
       confirmButtonColor: '#4CAF50'
     }).then(() => {
-      this.router.navigate(['/' + ruta]);
+      this.router.navigate(['/admin/' + ruta]);
     });
   }
 

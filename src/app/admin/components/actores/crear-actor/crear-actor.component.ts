@@ -34,9 +34,15 @@ export class CrearActorComponent {
     }
     try {
       const actor: Actores = this.actorform.value
-      this.service.addActor(actor);
-      this.alerta.success("Actor creado", "El actor se guardó correctamente");
-
+      this.service.addActor(actor).subscribe({
+        next: () => {
+          this.alerta.success("Actor creado", "El actor se guardó correctamente");
+          this.cerrarModal();
+        },
+        error: () => {
+          this.alerta.error("Error", "Error al guardar el actor");
+        }
+      });
     } catch (error) {
       this.alerta.error("Error", "Error al guardar el actor");
 
