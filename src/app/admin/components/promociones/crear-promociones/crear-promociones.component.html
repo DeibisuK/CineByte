@@ -1,1 +1,151 @@
-<p>crear-promociones works!</p>
+<form class="form-promocion" [formGroup]="promocionForm" (ngSubmit)="onSubmit()" novalidate>
+  <h2>Crear Nueva Promoción</h2>
+  
+  <div class="form-grid">
+    <div>
+      <label>Título</label>
+      <input type="text" formControlName="titulo">
+      <div *ngIf="promocionForm.get('titulo')?.invalid && (promocionForm.get('titulo')?.dirty || promocionForm.get('titulo')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('titulo')?.errors?.['required']">El título es requerido</div>
+      </div>
+    </div>
+    
+    <div>
+      <label>Tipo de Promoción</label>
+      <select formControlName="tipo_promocion">
+        <option *ngFor="let tipo of tiposPromocion" [value]="tipo">{{tipo}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div>
+    <label>Descripción</label>
+    <textarea formControlName="descripcion" rows="3"></textarea>
+    <div *ngIf="promocionForm.get('descripcion')?.invalid && (promocionForm.get('descripcion')?.dirty || promocionForm.get('descripcion')?.touched)" 
+         class="error-message">
+      <div *ngIf="promocionForm.get('descripcion')?.errors?.['required']">La descripción es requerida</div>
+    </div>
+  </div>
+
+<div class="form-grid">
+    <div>
+      <label>Fecha Inicio</label>
+      <input type="date" formControlName="fecha_inicio">
+      <div *ngIf="promocionForm.get('fecha_inicio')?.invalid && (promocionForm.get('fecha_inicio')?.dirty || promocionForm.get('fecha_inicio')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('fecha_inicio')?.errors?.['required']">La fecha de inicio es requerida</div>
+      </div>
+    </div>
+    
+    <div>
+      <label>Fecha Fin</label>
+      <input type="date" formControlName="fecha_fin">
+      <div *ngIf="promocionForm.get('fecha_fin')?.invalid && (promocionForm.get('fecha_fin')?.dirty || promocionForm.get('fecha_fin')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('fecha_fin')?.errors?.['required']">La fecha de fin es requerida</div>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <label>Estado</label>
+    <select formControlName="estado">
+      <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
+    </select>
+  </div>
+
+  <!-- Campos dinámicos según tipo -->
+  <div *ngIf="promocionForm.get('tipo_promocion')?.value === 'Descuento'" class="form-grid">
+    <div>
+      <label>Porcentaje de Descuento</label>
+      <input type="number" formControlName="porcentaje_descuento" min="1" max="100">
+      <div *ngIf="promocionForm.get('porcentaje_descuento')?.invalid && (promocionForm.get('porcentaje_descuento')?.dirty || promocionForm.get('porcentaje_descuento')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['required']">El porcentaje es requerido</div>
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['min']">El mínimo es 1%</div>
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['max']">El máximo es 100%</div>
+      </div>
+    </div>
+    <div>
+      <label>Día Válido</label>
+      <select formControlName="dia_valido">
+        <option *ngFor="let dia of diasSemana" [value]="dia">{{dia}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="promocionForm.get('tipo_promocion')?.value === 'Multiplicador'" class="form-grid">
+    <div>
+      <label>Número de Boletos</label>
+      <input type="number" formControlName="nro_boletos" min="2">
+      <div *ngIf="promocionForm.get('nro_boletos')?.invalid && (promocionForm.get('nro_boletos')?.dirty || promocionForm.get('nro_boletos')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('nro_boletos')?.errors?.['required']">El número de boletos es requerido</div>
+        <div *ngIf="promocionForm.get('nro_boletos')?.errors?.['min']">El mínimo es 2 boletos</div>
+      </div>
+    </div>
+    <div>
+      <label>Día Válido</label>
+      <select formControlName="dia_valido">
+        <option *ngFor="let dia of diasSemana" [value]="dia">{{dia}}</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="promocionForm.get('tipo_promocion')?.value === 'Cupon'" class="form-grid">
+    <div>
+      <label>Código del Cupón</label>
+      <input type="text" formControlName="codigo_cupon">
+      <div *ngIf="promocionForm.get('codigo_cupon')?.invalid && (promocionForm.get('codigo_cupon')?.dirty || promocionForm.get('codigo_cupon')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('codigo_cupon')?.errors?.['required']">El código es requerido</div>
+      </div>
+    </div>
+    <div>
+      <label>Porcentaje de Descuento</label>
+      <input type="number" formControlName="porcentaje_descuento" min="1" max="100">
+      <div *ngIf="promocionForm.get('porcentaje_descuento')?.invalid && (promocionForm.get('porcentaje_descuento')?.dirty || promocionForm.get('porcentaje_descuento')?.touched)" 
+           class="error-message">
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['required']">El porcentaje es requerido</div>
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['min']">El mínimo es 1%</div>
+        <div *ngIf="promocionForm.get('porcentaje_descuento')?.errors?.['max']">El máximo es 100%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Área de subida de imágenes -->
+  <div class="image-upload-container">
+    <label class="image-upload-label">
+      <input type="file" (change)="onImageSelected($event)" accept="image/*" style="display: none;">
+      <div class="image-upload-content" *ngIf="!imagenPreview">
+        <div class="image-upload-icon">+</div>
+        <span>Agregar imagen</span>
+      </div>
+      <img *ngIf="imagenPreview" [src]="imagenPreview" class="image-preview" />
+    </label>
+  </div>
+
+  <div>
+    <label>URL de Enlace</label>
+    <input type="text" formControlName="url_link">
+  </div>
+
+  <div class="button-group">
+    <button type="button" class="btn-secondary" (click)="router.navigate(['/admin/promociones'])">
+      Cancelar
+    </button>
+    <!-- Temporalmente sin [disabled] para debug -->
+    <button type="submit" class="btn-primary">
+      Guardar
+    </button>
+  </div>
+</form>
+
+<app-alert
+  *ngIf="showAlert"
+  [message]="alertMessage"
+  [theme]="alertTheme"
+  [type]="alertType"
+  (closed)="showAlert = false">
+</app-alert>

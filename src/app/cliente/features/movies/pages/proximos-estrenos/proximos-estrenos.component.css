@@ -146,6 +146,8 @@
   outline: none;
   box-shadow: 0 2px 8px rgba(0,0,0,0.10);
   padding: 0;
+  line-height: 1; /* Elimina espacio adicional en textos */
+  position: relative; /* Para ajustes finos si es necesario */
 }
 
 .carrusel-flecha:disabled {
@@ -180,8 +182,20 @@
 }
 
 .indicator.active {
+  animation: indicatorActive 0.3s ease;
   background: var(--text-color);
   opacity: 1;
+}
+
+@keyframes indicatorActive {
+  from {
+    transform: scaleX(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
 }
 
 /* Carrusel grid: siempre una sola fila */
@@ -191,13 +205,18 @@
   gap: 1.5rem;
   overflow-x: hidden;
   width: 100%;
+  scroll-behavior: smooth; /* Desplazamiento suave */
+  scroll-snap-type: x mandatory; /* Para un desplazamiento más preciso */
+  transition: transform 0.5s ease-in-out; /* ¡Esta línea es la magia! */
 }
 
 .movie-card {
   flex: 0 0 calc(25% - 1.125rem);
+  scroll-snap-align: start; /* Alineación para el scroll snapping */
   min-width: 0;
   max-width: 100%;
 }
+
 
 /* Responsive: ajusta cantidad visible pero siempre una fila */
 @media (max-width: 900px) {
