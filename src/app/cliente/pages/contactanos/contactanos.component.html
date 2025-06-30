@@ -1,4 +1,4 @@
-<h2>CONTÁCTATE CON NOSOTROS</h2>
+<h2 style="text-align: center;">CONTÁCTATE CON NOSOTROS</h2>
 <div class="contacto-container">
   <form [formGroup]="contactoForm" (ngSubmit)="enviarContacto()">
     <div class="row">
@@ -72,6 +72,7 @@
     </div>
   </form>
 </div>
+<hr style="margin-top: 5rem;">
 
 <app-alert
   *ngIf="showAlert"

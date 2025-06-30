@@ -19,14 +19,19 @@
                         <div class="input-group">
                             <div class="input-container">
                                 <svg class="input-icon" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                                        clip-rule="evenodd"></path>
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                                    clip-rule="evenodd"></path>
                                 </svg>
                                 <input formControlName="username" type="text" class="form-input" placeholder="Nombre de usuario" id="regUsername"
-                                    required>
+                                required maxlength="30"> <!-- Agrega maxlength para limitar físicamente la entrada -->
                             </div>
-                            <div class="error-message" id="regUsernameError" style="display: none;"></div>
-                        </div>
+                            <div class="error-message" id="regUsernameError" *ngIf="registerForm.get('username')?.errors?.['maxlength']">
+                                El nombre de usuario no puede exceder los 30 caracteres
+                            </div>
+                            <div class="error-message" id="regUsernameError" *ngIf="registerForm.get('username')?.errors?.['required'] && registerForm.get('username')?.touched">
+                                El nombre de usuario es requerido
+                            </div>
+                            </div>
 
                         <div class="input-group">
                             <div class="input-container">

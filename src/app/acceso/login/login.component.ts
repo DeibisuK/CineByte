@@ -13,7 +13,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [
     CommonModule,
-    RecuperarContrasenaComponent,
+    //RecuperarContrasenaComponent,
     ReactiveFormsModule
   ],
   templateUrl: './login.component.html',
@@ -46,7 +46,10 @@ export class LoginComponent {
     });
 
     this.registerForm = new FormGroup({
-      username: new FormControl('', Validators.required),
+      username: new FormControl('', [
+        Validators.required, 
+        Validators.maxLength(30)
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
     });
@@ -129,6 +132,18 @@ export class LoginComponent {
   }
 
   async onRegisterSubmit(): Promise<void> {
+    if (!this.registerForm.valid) {
+      if (this.registerForm.get('username')?.value?.length > 30) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Nombre de usuario demasiado largo',
+          text: 'El nombre de usuario no puede exceder los 30 caracteres'
+        });
+        return;
+      }
+      this.registerForm.markAllAsTouched();
+      return;
+    }
     if (!this.registerForm.valid) {
       this.registerForm.markAllAsTouched();
       return;

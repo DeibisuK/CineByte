@@ -97,19 +97,20 @@ textarea {
 }
 
 button[type="submit"] {
-  background: #2952a3;
-  color: #fff;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000000;
   border: none;
   border-radius: 10px;
   padding: 0.7rem 2.2rem;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.2s;
 }
 
 button[type="submit"]:hover:not(:disabled) {
-  background: #1a3570;
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
 }
 
 button[type="submit"]:disabled {

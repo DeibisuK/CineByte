@@ -7,10 +7,11 @@ import { DetallePeliculaComponent } from './features/movies/pages/detalle-pelicu
 import { DetallePromocionComponent } from './features/promotions/pages/detalle-promocion/detalle-promocion.component';
 import { BuscarComponent } from './features/movies/pages/buscar/buscar.component';
 import { ContactanosComponent } from './pages/contactanos/contactanos.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
 
 
 export const clienteRoutes: Routes = [
-  { path: '', redirectTo: 'inicio', pathMatch: 'full' },
+  {path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {path: 'inicio', component:InicioComponent},
   {path: 'promociones', component:PromocionesComponent},
   {path: 'carrusel', component:CarouselPromosComponent},
@@ -18,5 +19,6 @@ export const clienteRoutes: Routes = [
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
   {path: 'promocion/:id/:titulo', component: DetallePromocionComponent},
   {path: 'buscar/:termino', component: BuscarComponent},
-  {path: 'contactanos', component: ContactanosComponent}
+  {path: 'contactanos', component: ContactanosComponent},
+  {path: 'perfil', component: PerfilComponent}
 ];

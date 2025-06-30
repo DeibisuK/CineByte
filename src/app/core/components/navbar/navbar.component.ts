@@ -186,8 +186,7 @@ export class NavbarComponent {
     this.showLoginModal = false;
   }
   verPerfil() {
-    this.menuAbierto = false;
-    alert("en proceso xdddd")
+    this.router.navigate(['/perfil']);
   }
 
   async cerrarSesion() {
