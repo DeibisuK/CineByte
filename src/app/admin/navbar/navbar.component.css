@@ -413,30 +413,7 @@ input:checked + .slider:before {
 }
 
 /* Responsive mejorado */
-@media (max-width: 900px) {
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100vh;
-    z-index: 2000;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
-  }
-  
-  .sidebar.closed {
-    width: 0;
-    min-width: 0;
-    overflow: hidden;
-    box-shadow: none;
-  }
-  
-  .toggle-btn {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    z-index: 2001;
-  }
-}
+
 
 /* Animaciones adicionales - Removidas para evitar el "brinco" */
 .sidebar-menu li {

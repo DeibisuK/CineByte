@@ -10,4 +10,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 })
 export class AdminLayoutComponent {
   sidebarClosed = false; // <-- Agrega esta propiedad
+  toggleMobileSidebar(): void {
+    this.sidebarClosed = !this.sidebarClosed;
+  }
 }
