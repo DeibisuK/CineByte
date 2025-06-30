@@ -1,7 +1,3 @@
-/* You can add global styles to this file, and also import other style files */
-
-
-/* --- Scrollbar modo oscuro (por defecto) --- */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -49,6 +45,12 @@ html, body {
   --footer-line: #555; /* cambiado de #000 a #333 para mejor contraste en oscuro */
   --btn-bg-crud: rgba(51, 51, 51, 0.8);
   --btn-line-crud: rgba(255, 255, 255, 0.5);
+   --dropdown-bg: #222;
+        --dropdown-border: #333;
+        --dropdown-item-hover-bg: #3a3a3a;
+        --dropdown-item-text: var(--text-color);
+        --dropdown-logout-color: #e74c3c; /* Rojo para cerrar sesión */
+  
 }
 
 /* Tema claro */
@@ -64,6 +66,12 @@ body.light-mode {
   --footer-line: #777; /* cambiado a negro para modo claro */
   --btn-bg-crud: rgba(215, 215, 215, 0.8);
   --btn-line-crud: rgba(34, 34, 34, 0.5);
+  --dropdown-bg: #ffffff;
+        --dropdown-border: #ccc;
+        --dropdown-item-hover-bg: #f0f0f0;
+        --dropdown-item-text: var(--text-color);
+        --dropdown-logout-color: #c0392b; /* Rojo para cerrar sesión en modo claro */
+
 }
 
 hr {

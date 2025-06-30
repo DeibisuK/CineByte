@@ -7,11 +7,11 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  private auth = getAuth();
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
-  constructor(private autho: Auth) {
-    this.init();
+  constructor(private auth: Auth) {
+    this.auth = getAuth();
+    this.init();;
 
   }
 
@@ -52,27 +52,31 @@ export class AuthService {
   }
 
   loginEmail(email: string, password: string) {
-    return signInWithEmailAndPassword(this.autho, email, password);
+    return signInWithEmailAndPassword(this.auth, email, password);
   }
 
   registerEmail(email: string, password: string) {
-    return createUserWithEmailAndPassword(this.autho, email, password);
+    return createUserWithEmailAndPassword(this.auth, email, password);
   }
 
   loginGoogle() {
-    return signInWithPopup(this.autho, new GoogleAuthProvider());
+    return signInWithPopup(this.auth, new GoogleAuthProvider());
   }
 
   loginFacebook() {
-    return signInWithPopup(this.autho, new FacebookAuthProvider());
+    return signInWithPopup(this.auth, new FacebookAuthProvider());
   }
 
   logout() {
-    return this.autho.signOut();
+    return this.auth.signOut();
   }
 
   resetPassword(email: string) {
-    return sendPasswordResetEmail(this.autho, email);
+    return sendPasswordResetEmail(this.auth, email);
+  }
+
+  getUsuarioActual(): User | null {
+    return this.auth.currentUser;
   }
 
 }

@@ -8,6 +8,7 @@ import { ListarPromocionesComponent } from './components/promociones/listar-prom
 import { CrearSedesComponent } from './components/sedes/crear-sedes/crear-sedes.component';
 import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sedes.component';
 import { CreatePromocionComponent } from './components/promociones/crear-promociones/crear-promociones.component';
+import { ListUsersComponent } from './components/usuarios/list-users/list-users.component';
 
 export const adminRoutes: Routes = [
   
@@ -50,5 +51,9 @@ export const adminRoutes: Routes = [
   {
     path: 'add-promocion',
     component: CreatePromocionComponent
+  },
+  {
+    path: 'users',
+    component: ListUsersComponent
   }
 ];

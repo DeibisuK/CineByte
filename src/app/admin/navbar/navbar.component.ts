@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import Swal from 'sweetalert2';
+import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink,CommonModule],
+  imports: [RouterLink, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
@@ -16,7 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   @Output() sidebarState = new EventEmitter<boolean>();
 
-  constructor(private router: Router) {
+  constructor(private router: Router,private authService:AuthService) {
     // Detectar preferencia de sistema para modo oscuro
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   }
@@ -24,13 +26,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Cargar preferencias guardadas
     this.loadPreferences();
-    
+
     // Aplicar tema inicial
     this.applyTheme();
-    
+
     // Escuchar cambios en las preferencias del sistema
     this.mediaQuery.addEventListener('change', this.handleSystemThemeChange.bind(this));
-    
+
     // Auto-cerrar sidebar en móvil si se navega
     this.router.events.subscribe(() => {
       if (window.innerWidth <= 900) {
@@ -66,7 +68,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       const target = event.target as HTMLElement;
       const sidebar = document.querySelector('.sidebar');
       const toggleBtn = document.querySelector('.toggle-btn');
-      
+
       if (sidebar && !sidebar.contains(target) && !toggleBtn?.contains(target)) {
         this.sidebarClosed = true;
         this.sidebarState.emit(this.sidebarClosed);
@@ -79,7 +81,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.sidebarClosed = !this.sidebarClosed;
     this.sidebarState.emit(this.sidebarClosed);
     this.savePreferences();
-    
+
     // Feedback haptico en dispositivos móviles
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
@@ -91,7 +93,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.modoOscuro = !this.modoOscuro;
     this.applyTheme();
     this.savePreferences();
-    
+
     // Animación de transición suave
     document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
     setTimeout(() => {
@@ -102,7 +104,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Aplicar tema
   private applyTheme() {
     document.body.classList.toggle('light-mode', !this.modoOscuro);
-    
+
     // Cambiar meta theme-color para móviles
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
@@ -125,11 +127,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     try {
       const savedSidebarState = localStorage.getItem('sidebarClosed');
       const savedTheme = localStorage.getItem('modoOscuro');
-      
+
       if (savedSidebarState !== null) {
         this.sidebarClosed = JSON.parse(savedSidebarState);
       }
-      
+
       if (savedTheme !== null) {
         this.modoOscuro = JSON.parse(savedTheme);
         localStorage.setItem('userThemePreference', 'true');
@@ -154,32 +156,26 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   // Logout con confirmación
-  logout() {
-    // Mostrar confirmación
-    if (confirm('¿Estás seguro de que deseas cerrar sesión?')) {
+  async logout() {
+    const resultado = await Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¿Quieres cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Sí, cerrar sesión',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (resultado.isConfirmed) {
       try {
-        // Limpiar datos de sesión (mantener preferencias de UI)
-        const sidebarState = localStorage.getItem('sidebarClosed');
-        const themeState = localStorage.getItem('modoOscuro');
-        const userThemePreference = localStorage.getItem('userThemePreference');
-        
-        // Limpiar localStorage
-        localStorage.clear();
-        
-        // Restaurar preferencias de UI
-        if (sidebarState) localStorage.setItem('sidebarClosed', sidebarState);
-        if (themeState) localStorage.setItem('modoOscuro', themeState);
-        if (userThemePreference) localStorage.setItem('userThemePreference', userThemePreference);
-        
-        // Navegar al login
-        this.router.navigate(['/login']);
-        
-        // Feedback visual
-        this.showLogoutFeedback();
-        
-      } catch (error) {
-        console.error('Error durante el logout:', error);
-        alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.');
+        await this.authService.logout();
+        await Swal.fire('Sesión cerrada', 'Has salido correctamente.', 'success');
+        this.router.navigate(['/']); // o a login o home
+      } catch (err) {
+        console.error(err);
+        Swal.fire('Error', 'No se pudo cerrar la sesión.', 'error');
       }
     }
   }

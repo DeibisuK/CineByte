@@ -7,11 +7,15 @@ import { TemaService } from '../../../cliente/features/movies/services/tema.serv
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../../../acceso/login/login.component';
 import { Sede, SedeService } from '../../../services/sede.service';
+import { AuthService } from '../../../services/AuthService';
+import { Users } from '../../models/user.model';
+import { User } from 'firebase/auth';
+import Swal from 'sweetalert2';
 
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, FormsModule,LoginComponent, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, LoginComponent, RouterLink, RouterLinkActive],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
@@ -27,7 +31,7 @@ export class NavbarComponent {
   sedeSeleccionada: Sede | null = null;
   sedes: Sede[] = [];
   ciudadesConSedes: { nombre: string, sedes: Sede[] }[] = [];
-
+  usuario: User | null = null;
 
   ciudades = [
     { value: 'Machala', label: 'Machala' },
@@ -42,7 +46,8 @@ export class NavbarComponent {
     private movieService: MovieService,
     private sedeService: SedeService, // <-- Asegúrate de inyectar el servicio
     @Inject(PLATFORM_ID) private plataforma: Object,
-    private temaService: TemaService
+    private temaService: TemaService,
+    private authService: AuthService
   ) {
     this.esNavegador = isPlatformBrowser(this.plataforma);
   }
@@ -54,6 +59,10 @@ export class NavbarComponent {
       this.aplicarTema(this.modoOscuro);
     }
     this.cargarSedes();
+    this.authService.role$.subscribe(() => {
+      this.usuario = this.authService.getUsuarioActual();
+    });
+
   }
 
   cargarSedes() {
@@ -63,7 +72,7 @@ export class NavbarComponent {
     });
   }
 
-    agruparSedesPorCiudad(sedes: Sede[]) {
+  agruparSedesPorCiudad(sedes: Sede[]) {
     const ciudadesMap: { [id: number]: { nombre: string, sedes: Sede[] } } = {};
     for (const sede of sedes) {
       const ciudadId = sede.id_ciudad;
@@ -76,7 +85,7 @@ export class NavbarComponent {
     return Object.values(ciudadesMap);
   }
 
-    getNombreCiudad(id: number): string {
+  getNombreCiudad(id: number): string {
     // Puedes usar tu ciudadesMap o traerlo del backend
     const ciudadesMap: { [id: number]: string } = {
       1: 'Quito',
@@ -172,5 +181,31 @@ export class NavbarComponent {
 
   closeLoginModal() {
     this.showLoginModal = false;
+  }
+  verPerfil() {
+    this.menuAbierto = false;
+    alert("en proceso xdddd")
+  }
+
+  async cerrarSesion() {
+    this.menuAbierto = false;
+    const result = await Swal.fire({
+      title: '¿Cerrar sesión?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'Cancelar'
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await this.authService.logout();
+        await Swal.fire('Cerraste sesión', '', 'success');
+        this.router.navigate(['/']);
+      } catch (error) {
+        console.error(error);
+        Swal.fire('Error', 'No se pudo cerrar la sesión', 'error');
+      }
+    }
   }
 }

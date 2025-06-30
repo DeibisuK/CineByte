@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // <-- Importaciones clave
 import { RecuperarContrasenaComponent } from '../recuperar-contrasena/recuperar-contrasena.component';
 import { AuthService } from '../../services/AuthService';
+import { Route, Router } from '@angular/router';
+import { updateProfile } from 'firebase/auth';
+import { AlertaService } from '../../services/alerta.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -16,23 +20,26 @@ import { AuthService } from '../../services/AuthService';
   styleUrl: './login.component.css',
   encapsulation: ViewEncapsulation.ShadowDom
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
   @Input() showLoginRegisterModal: boolean = false;
   @Output() cerrarLoginRegister = new EventEmitter<void>();
 
   isLoginActive: boolean = true;
   showRecoverPasswordModal: boolean = false;
-
   loginForm!: FormGroup;
   registerForm!: FormGroup;
+  isRegisterMode = true;
+  leftTitle: string = '¡Bienvenido!';
+  leftText: string = 'Regístrate con tus datos para poder unirte a nuestro proyecto de Cinebyte';
+  switchBtnText: string = 'INICIAR SESIÓN';
+  rightTitle: string = 'Crear Cuenta';
 
-  // ✅ Usa readonly y NO this para inyección
   readonly authService = inject(AuthService);
 
-  constructor() { }
 
-  ngOnInit(): void {
+
+  constructor(private router: Router, private alerta: AlertaService) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -45,12 +52,22 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  toggleView() {
-    this.isLoginActive = !this.isLoginActive;
-    if (this.isLoginActive) {
-      this.loginForm.reset();
+  toggleForm() {
+    this.isRegisterMode = !this.isRegisterMode;
+    this.updateFormContent(this.isRegisterMode);
+  }
+
+  updateFormContent(toRegister: boolean) {
+    if (toRegister) {
+      this.leftTitle = '¡Bienvenido!';
+      this.leftText = 'Regístrate con tus datos para poder unirte a nuestro proyecto de Cinebyte';
+      this.switchBtnText = 'INICIAR SESIÓN';
+      this.rightTitle = 'Crear Cuenta';
     } else {
-      this.registerForm.reset();
+      this.leftTitle = '¡Hola de nuevo!';
+      this.leftText = 'Ingresa tus datos para acceder a tu cuenta y seguir disfrutando de Cinebyte';
+      this.switchBtnText = 'REGISTRARSE';
+      this.rightTitle = 'Iniciar Sesión';
     }
   }
 
@@ -66,76 +83,143 @@ export class LoginComponent implements OnInit {
     this.loginForm.reset();
   }
 
-
-
   cerrarRecuperarContrasena(): void {
     this.showRecoverPasswordModal = false;
     this.showLoginRegisterModal = true;
     this.isLoginActive = true;
   }
 
-  // ✅ Formulario de Login con AuthService
-  onLoginSubmit(): void {
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      this.authService.loginEmail(email, password)
-        .then(() => {
-          alert('Login exitoso');
-          this.cerrarLoginRegisterModal();
-        })
-        .catch(err => {
-          console.error(err);
-          alert('Error de login: ' + (err.message || err));
-        });
-    } else {
+  async onLoginSubmit(): Promise<void> {
+    if (!this.loginForm.valid) {
       this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    const { email, password } = this.loginForm.value;
+
+    try {
+      await this.authService.loginEmail(email, password);
+      await this.authService.refreshRole();
+
+      const role = this.authService.getRole();
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Bienvenido!',
+        text: `Has iniciado sesión correctamente`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.cerrarLoginRegisterModal();
+
+      if (role === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/']);
+      }
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al iniciar sesión',
+        text: err.message || err
+      });
     }
   }
 
-  // ✅ Formulario de Registro con AuthService
-  onRegisterSubmit(): void {
-    if (this.registerForm.valid) {
-      const { email, password } = this.registerForm.value;
-      this.authService.registerEmail(email, password)
-        .then(() => {
-          alert('Registro exitoso');
-          this.cerrarLoginRegisterModal();
-        })
-        .catch(err => {
-          console.error(err);
-          alert('Error de registro: ' + (err.message || err));
-        });
-    } else {
+  async onRegisterSubmit(): Promise<void> {
+    if (!this.registerForm.valid) {
       this.registerForm.markAllAsTouched();
+      return;
+    }
+
+    const { username, email, password } = this.registerForm.value;
+
+    try {
+      const cred = await this.authService.registerEmail(email, password);
+      await updateProfile(cred.user, {
+        displayName: username
+      });
+
+      Swal.fire({
+        icon: 'success',
+        title: '¡Registro exitoso!',
+        text: `Bienvenido, ${username}`,
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.cerrarLoginRegisterModal();
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al registrarse',
+        text: err.message || err
+      });
+    }
+  }
+  async loginWithGoogle(): Promise<void> {
+    try {
+      await this.authService.loginGoogle();
+      await this.authService.refreshRole();
+
+      const role = this.authService.getRole();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Login con Google exitoso',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.cerrarLoginRegisterModal();
+
+      if (role === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/']);
+      }
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error con Google',
+        text: err.message || err
+      });
+    }
+  }
+  async loginWithFacebook(): Promise<void> {
+    try {
+      await this.authService.loginFacebook();
+      await this.authService.refreshRole();
+
+      const role = this.authService.getRole();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Login con Facebook exitoso',
+        timer: 2000,
+        showConfirmButton: false
+      });
+
+      this.cerrarLoginRegisterModal();
+
+      if (role === 'admin') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/']);
+      }
+    } catch (err: any) {
+      console.error(err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error con Facebook',
+        text: err.message || err
+      });
     }
   }
 
-
-
-  // ✅ Login con Google
-  loginWithGoogle(): void {
-    this.authService.loginGoogle()
-      .then(() => {
-        alert('Login con Google exitoso');
-        this.cerrarLoginRegisterModal();
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Error con Google: ' + (err.message || err));
-      });
-  }
-
-  // ✅ Login con Facebook
-  loginWithFacebook(): void {
-    this.authService.loginFacebook()
-      .then(() => {
-        alert('Login con Facebook exitoso');
-        this.cerrarLoginRegisterModal();
-      })
-      .catch(err => {
-        console.error(err);
-        alert('Error con Facebook: ' + (err.message || err));
-      });
-  }
 
 }
