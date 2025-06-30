@@ -32,6 +32,8 @@ export class NavbarComponent {
   sedes: Sede[] = [];
   ciudadesConSedes: { nombre: string, sedes: Sede[] }[] = [];
   usuario: User | null = null;
+  timeoutAbierto: any;
+  timeoutCerrado: any;
 
   ciudades = [
     { value: 'Machala', label: 'Machala' },
@@ -169,6 +171,7 @@ export class NavbarComponent {
     }, 250); // Debe coincidir con la duración de la animación
   }
 
+
   navegarCerrarMenu() {
     this.cerrarMenu();
   }
@@ -208,4 +211,5 @@ export class NavbarComponent {
       }
     }
   }
+
 }

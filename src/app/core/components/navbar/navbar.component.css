@@ -64,7 +64,7 @@
 }
 
 body.light-mode .nav-links a:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+  background-color: rgb(0, 0, 0);
 }
 
 body.light-mode .nav-links a.active-link {
@@ -199,7 +199,7 @@ body.light-mode .usuario.active-link .material-icons {
 /* Selector de sede */
 .selector-sede {
   position: relative;
-  display: flex;
+  display: inline-block;
   align-items: center;
   z-index: 100;
 }
@@ -221,6 +221,13 @@ body.light-mode .usuario.active-link .material-icons {
     width: 100%;
   }
 }
+.selector-sede {
+  position: relative;
+  display: inline-block;
+  min-width: 220px;
+  cursor: pointer;
+  user-select: none;
+}
 
 .btn-selector-sede {
   display: flex;
@@ -233,35 +240,69 @@ body.light-mode .usuario.active-link .material-icons {
   padding: 0.4rem 1.2rem 0.4rem 0.7rem;
   font-size: 1rem;
   cursor: pointer;
-  min-width: 220px;
-  transition: border 0.2s;
   width: 100%;
   justify-content: space-between;
+  transition: all 0.3s ease;
+}
+
+/* Efecto hover similar al otro menú */
+.selector-sede:hover .btn-selector-sede {
+  background-color: var(--btn-bg-crud);
+  border-color: var(--btn-bg-crud);
 }
 
 .btn-selector-sede .flecha {
   margin-left: auto;
-  transition: transform 0.3s;
+  transition: transform 0.3s ease;
 }
 
-.btn-selector-sede .flecha.abierto {
+.selector-sede:hover .flecha {
   transform: rotate(180deg);
 }
 
 .menu-sedes {
   position: absolute;
-  top: 110%;
+  top: calc(100% + 10px);
   left: 0;
   min-width: 320px;
   background: var(--footer-bg);
+  border: 1px solid var(--dropdown-border);
   border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   padding: 1rem 0.7rem;
   z-index: 999;
   max-height: 60vh;
   overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
 }
 
+/* Mostrar el menú al hacer hover */
+.selector-sede:hover .menu-sedes {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* También para focus (accesibilidad) */
+.selector-sede:focus-within .menu-sedes {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.selector-sede:focus-within .flecha {
+  transform: rotate(180deg);
+}
+
+.selector-sede:focus-within .btn-selector-sede {
+  background-color: var(--btn-bg-crud);
+  border-color: var(--btn-bg-crud);
+}
+
+/* Resto de estilos (se mantienen igual) */
 .ciudad-titulo {
   font-weight: 700;
   color: #f7cb5a;
@@ -291,8 +332,7 @@ body.light-mode .usuario.active-link .material-icons {
 
 .sede-opcion:hover,
 .sede-opcion:focus {
-  background: rgba(255, 215, 0, 0.09);
-  color: #f7cb5a;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 .slider {
@@ -619,7 +659,6 @@ input:checked+.slider:before {
 
 
 .menu-container.usuario {
-    
         position: relative;
         display: inline-block;
         cursor: pointer;
@@ -659,7 +698,7 @@ input:checked+.slider:before {
         position: absolute;
         top: calc(100% + 10px);
         right: 0;
-        background-color: var(--dropdown-bg);
+        background: var(--footer-bg);
         border: 1px solid var(--dropdown-border);
         border-radius: 8px;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -711,7 +750,7 @@ input:checked+.slider:before {
     }
 
     .dropdown-item:hover {
-        background-color: var(--dropdown-item-hover-bg);
+        background-color: rgba(255, 255, 255, 0.1);
     }
 
     .dropdown-item .icon {
