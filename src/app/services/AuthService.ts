@@ -10,7 +10,7 @@ import { BehaviorSubject, from, Observable, switchMap } from 'rxjs';
 export class AuthService {
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
-  private apiUrl = 'http://localhost:3000/api/users'
+  private apiUrl = 'https://api-cinebyte.onrender.com/api/users'
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();
