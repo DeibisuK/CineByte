@@ -1,1 +1,131 @@
-<p>list-users works!</p>
+<div class="container">
+    <div class="header">
+        <h1>Gestión de Usuarios</h1>
+        <p>Administra usuarios y asigna roles de administrador</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-number" id="totalUsers">{{usuario.length}}</div>
+            <div class="stat-label">Total Usuarios</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="totalAdmins">{{filtradosAD.length}}</div>
+            <div class="stat-label">Administradores</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number" id="totalRegularUsers">{{filtradosCL.length}}</div>
+            <div class="stat-label">Usuarios Regulares</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="search-container">
+            <input type="text" [formControl]="searchControl" class="search-input"
+                placeholder="Buscar usuarios por nombre o email...">
+
+            <span class="search-icon">🔍</span>
+        </div>
+        <button class="btn btn-primary" (click)="openModal('createUserModal')">
+            Nuevo Admin
+        </button>
+    </div>
+
+    <div id="usersContainer" class="users-grid">
+        <div *ngIf="loading">Cargando...</div>
+        <div *ngIf="!loading && usuario.length === 0 && searchControl.value">No existe el usuario</div>
+        <div *ngIf="errorMsg">{{ errorMsg }}</div>
+        <div *ngFor="let user of usuario" class="user-card">
+            <img class="user-avatar" src="{{user.photoURL}}">
+            <div class="user-info">
+                <h3>{{user.displayName}}</h3>
+                <p class="user-email">{{user.email}}</p>
+                <span class="user-role role-{{user.customClaims?.role}}">
+                    {{user.customClaims?.role === 'admin' ? '👑 Administrador' : '👤 Usuario'}}
+                </span>
+            </div>
+            <div class="user-actions">
+                <button *ngIf="(user.customClaims?.role === 'admin')" (click)="abrirModalEdicion(user)" class="btn btn-small" title="Editar usuario">
+                    ✏️ Editar
+                </button>
+                <button *ngIf="!(user.customClaims?.role === 'admin')" (click)="asignarAdminUsuario(user.uid)"
+                    class="btn btn-small btn-primary" title=" Hacer administrador">
+                    👑 Hacer Admin
+                </button>
+                <button *ngIf="(user.customClaims?.role === 'admin')" (click)="quitarAdminUsuario(user.uid)"
+                    class="btn btn-small" title="Quitar privilegios de admin">
+                    👤 Quitar Admin
+                </button>
+
+                <button class="btn btn-small btn-danger" title="Eliminar usuario" (click)="elimianrUsuario(user.uid)">
+                    🗑️ Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear usuario -->
+    <div #createUserModal class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Crear Nuevo Admin</h2>
+                <button class="close-btn" (click)="closeModal('createUserModal')">&times;</button>
+            </div>
+            <form [formGroup]="registerForm" (ngSubmit)="crearAdmin()">
+                <div class="form-group">
+                    <label for="userName">Nombre Completo</label>
+                    <input formControlName="username" type="text" id="userName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input formControlName="email" type="email" id="userEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Contraseña</label>
+                    <input formControlName="password" type="password" id="userPassword" class="form-control" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" (click)="closeModal('createUserModal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        Crear Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar usuario -->
+    <div #editUserModal class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Editar Usuario</h2>
+                <button class="close-btn" (click)="closeModal('editUserModal')">&times;</button>
+            </div>
+            <form [formGroup]="editForm" (ngSubmit)="editarAdmin()" id="editUserForm">
+                <input type="hidden" id="editUserId">
+                <div class="form-group">
+                    <label for="editUserName">Nombre Completo</label>
+                    <input formControlName="username" type="text" id="editUserName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">Email</label>
+                    <input formControlName="email" type="email" id="editUserEmail" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editUserEmail">Email</label>
+                    <input formControlName="passwordE" type="password" id="editUserPass" class="form-control">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn" (click)="closeModal('editUserModal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

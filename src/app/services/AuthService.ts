@@ -1,7 +1,8 @@
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, sendPasswordResetEmail } from '@angular/fire/auth';
 import { getAuth, getIdTokenResult, User } from 'firebase/auth';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, from, Observable, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,9 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
-  constructor(private auth: Auth) {
+  private apiUrl = 'http://localhost:3000/api/users'
+
+  constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();
     this.init();;
 
@@ -25,7 +28,7 @@ export class AuthService {
     });
   }
 
-  private async updateUserRole(user: User) {
+  async updateUserRole(user: User) {
     try {
       const idTokenResult = await getIdTokenResult(user, true);
       const role = (idTokenResult.claims['role'] as string) || 'cliente';
@@ -79,6 +82,70 @@ export class AuthService {
     return this.auth.currentUser;
   }
 
+  asignarAdmin(uid: string, token: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/add-admin`, { uid }, { headers });
+  }
+
+  removerAdmin(uid: string, token: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/delete-admin/`, { uid }, { headers });
+  }
+
+  obtenerUsuarios(): Observable<any> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+    // 🔁 Convertimos la promesa del token a un observable con `from()`
+    return from(user.getIdToken()).pipe(
+      switchMap(token => {
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.get(`${this.apiUrl}/`, { headers });
+      })
+    );
+  }
+
+  buscarUsuarios(texto: string): Observable<any> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+
+    return from(user.getIdToken()).pipe(
+      switchMap(token => {
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+
+        let params = new HttpParams();
+        if (texto.trim() !== '') {
+          params = params.set('search', texto.trim());
+        }
+        return this.http.get(`${this.apiUrl}/`, { headers, params });
+      })
+    );
+  }
+
+  eliminarUsuario(id: string): Observable<any> {
+    const user = this.auth.currentUser;
+    if (!user) throw new Error('Usuario no autenticado');
+
+    return from(user.getIdToken()).pipe(
+      switchMap(token => {
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.delete(`${this.apiUrl}/${id}`, { headers });
+      })
+    );
+  }
+
+  crearAdmin(email: string, password: string, displayName: string, token: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/crear-admin`, {
+      email,
+      password,
+      displayName
+    }, { headers });
+  }
+
+  actualizarUsuario(uid: string, data: any, token: string): Observable<any> {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.put(`${this.apiUrl}/${uid}`, data, { headers });
+  }
 }
 
 (window as any).getIdToken = () => {
