@@ -4,6 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
+  /*  Efecto para contraste con el modal */
   background: rgba(0, 0, 0, 0.747);
   display: flex;
   align-items: center;
@@ -54,7 +55,7 @@
   border: none;
   border-radius: 50%;
   font-size: 20px;
-  background: rgba(255, 255, 255, 0.3);
+  background: var(--bg-color);
 
   color: #ff0000;
   cursor: pointer;
@@ -67,7 +68,7 @@
 }
 
 .close-btn:hover {
-  background: rgba(211, 66, 66, 0.2);
+  background: rgba(114, 114, 114, 0.21);
 
   transform: rotate(90deg);
 }
@@ -83,7 +84,7 @@
   align-items: center;
   text-align: center;
   padding: 60px 40px;
-  color: white;
+  color: var(--text-color);
   position: relative;
   overflow: hidden;
 }
@@ -145,7 +146,7 @@
 
 .switch-btn {
   background: rgba(255, 255, 255, 0.2);
-  color: white;
+  color: var(--text-color);
   border: 2px solid rgba(255, 255, 255, 0.3);
   padding: 12px 30px;
   border-radius: 50px;
@@ -171,13 +172,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: #000000;
+  /* Fondo del lado derecho */
+  background: var(--bg-color);
   transition: all 0.5s ease;
 }
 
 .right-section h1 {
   font-size: 2rem;
-  color: #ffffff;
+  color: var(--text-color);
   margin-bottom: 30px;
   text-align: center;
   font-weight: 700;
@@ -209,7 +211,7 @@
   position: relative;
   display: flex;
   align-items: center;
-  background: #f8f9fa;
+  background: var(--btn-bg-crud);
   border-radius: 12px;
   padding: 15px;
   transition: all 0.3s ease;
@@ -217,11 +219,8 @@
 }
 
 .input-container:focus-within {
-  background: #fff;
-  border-color: #FFD700;
-  /* Nuevo color de borde */
-  box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
-  /* Nuevo color de sombra */
+  background: var(--btn-bg-crud);
+  border-color: var(--yellow);
   transform: translateY(-2px);
 }
 
@@ -236,8 +235,8 @@
 
 .input-container:focus-within .input-icon {
   opacity: 1;
-  color: #FFD700;
-
+  /* color del icon del input */
+  color: var(--yellow);
   /* Nuevo color del icono */
 }
 
@@ -256,7 +255,7 @@
 }
 
 .input-container:focus-within .form-input::placeholder {
-  color: #FFD700;
+  color: var(--yellow);
   /* Nuevo color del placeholder */
 }
 
@@ -302,7 +301,7 @@
   width: 100%;
   background: linear-gradient(135deg, #FFD700, #FFA500);
   /* Nuevo gradiente */
-  color: white;
+  color: var(--text-color);
   border: none;
   padding: 15px;
   border-radius: 12px;
@@ -310,7 +309,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 25px;
+  margin-bottom: 10px;
   position: relative;
   overflow: hidden;
 }
@@ -343,7 +342,7 @@
 
 .divider {
   text-align: center;
-  margin: 25px 0;
+  margin: 10px 0;
   position: relative;
   font-size: 0.9rem;
   color: #ffffff;
@@ -360,7 +359,8 @@
 }
 
 .divider span {
-  background: #000000;
+  background: var(--bg-color);
+  color: var(--text-color);
   padding: 0 15px;
   position: relative;
 }
@@ -370,28 +370,45 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 12px;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
-  background: #fff;
-  color: #333;
+  background: var(--btn-bg-crud);
+  color: var(--text-color);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 530;
   margin-bottom: 15px;
   transition: all 0.3s ease;
+  gap: 12px; /* Esto asegura un espacio consistente */
+  padding: 12px 15px; /* Aumenté el padding horizontal */
 }
 
 .social-btn:hover {
-  border-color: #FFD700;
-  /* Nuevo color de borde hover */
+  border-color: var(--yellow);
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.social-btn svg {
+  width: 20px;
+  height: 20px;
+  min-width: 20px; /* Evita que se comprima */
+  margin-right: 0; /* Anulamos cualquier margen previo */
+}
+
+.social-btn span {
+  padding-left: 10px; /* Espacio adicional */
 }
 
 .social-btn img {
   width: 20px;
   height: 20px;
-  margin-right: 10px;
+  margin-right: 30px !important;
+}
+
+.social-btn::after {
+  content: "";
+  display: inline-block;
+  width: 8px; /* Espacio adicional si gap no es suficiente */
 }
 
 /* Animación de cambio entre login y register */
@@ -413,10 +430,6 @@
 
 .modal-container.is-register .right-section #loginForm {
   display: none;
-}
-
-.modal-container.is-login .left-section {
-  /* Podemos añadir una animación diferente si se desea */
 }
 
 .modal-container.is-login .right-section #loginForm {
@@ -496,47 +509,4 @@
   .right-section {
     padding: 30px 20px;
   }
-}
-
-/* Tema oscuro */
-.dark-theme .modal-container {
-  background: #1a1a1a;
-  color: #fff;
-}
-
-.dark-theme .right-section {
-  background: #1a1a1a;
-}
-
-.dark-theme .right-section h1 {
-  color: #fff;
-}
-
-.dark-theme .input-container {
-  background: #2d2d2d;
-  border-color: #444;
-}
-
-.dark-theme .input-container:focus-within {
-  background: #333;
-  border-color: #28a745;
-  /* Nuevo color de borde oscuro */
-}
-
-.dark-theme .form-input {
-  color: #fff;
-}
-
-.dark-theme .form-input::placeholder {
-  color: #999;
-}
-
-.dark-theme .social-btn {
-  background: #2d2d2d;
-  border-color: #444;
-  color: #fff;
-}
-
-.dark-theme .divider span {
-  background: #1a1a1a;
 }

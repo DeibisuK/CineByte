@@ -305,7 +305,7 @@ body.light-mode .usuario.active-link .material-icons {
 /* Resto de estilos (se mantienen igual) */
 .ciudad-titulo {
   font-weight: 700;
-  color: #f7cb5a;
+  color: var(--yellow);
   margin: 0.7rem 0 0.2rem 0.2rem;
   font-size: 1.08rem;
 }
