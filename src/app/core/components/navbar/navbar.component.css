@@ -659,29 +659,35 @@ input:checked+.slider:before {
 
 
 .menu-container.usuario {
-        position: relative;
-        display: inline-block;
-        cursor: pointer;
-        user-select: none;
-        padding: 10px 15px;
-        border-radius: 8px;
-        transition: background-color 0.2s ease;
-    }
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+  max-width: 180px; /* Nuevo: Limita el ancho máximo */
+}
 
-    .user-display-name {
-        display: flex;
-        align-items: center;
-        font-weight: 600;
-        gap: 8px;
-    }
+.user-display-name {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  gap: 8px;
+  max-width: 150px; /* Ajuste para el texto */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
     /* Flecha del dropdown */
-    .dropdown-arrow {
-        width: 16px;
-        height: 16px;
-        transition: transform 0.3s ease;
-        color: var(--text-color);
-    }
+.dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+  color: var(--text-color);
+  flex-shrink: 0; /* Evita que la flecha se vea afectada */
+}
 
     /* MENOR CAMBIO: Rotar flecha y cambiar color de fondo del contenedor al hacer hover */
     .menu-container.usuario:hover .dropdown-arrow {
@@ -693,25 +699,26 @@ input:checked+.slider:before {
     }
 
     /* Menú desplegable */
-    .dropdown-menu {
-      color: white;
-        position: absolute;
-        top: calc(100% + 10px);
-        right: 0;
-        background: var(--footer-bg);
-        border: 1px solid var(--dropdown-border);
-        border-radius: 8px;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        min-width: 180px;
-        z-index: 100;
-        opacity: 0;
-        visibility: hidden;
-        transform: translateY(10px);
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        padding: 8px 0;
-    }
+.dropdown-menu {
+  color: white;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--footer-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  min-width: 180px;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  padding: 8px 0;
+  white-space: nowrap; /* Previene wraps no deseados */
+}
 
     /* CAMBIO CLAVE: Mostrar el dropdown-menu cuando se hace hover sobre el menu-container */
     .menu-container.usuario:hover .dropdown-menu {

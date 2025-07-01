@@ -171,6 +171,10 @@ export class NavbarComponent {
     }, 250); // Debe coincidir con la duración de la animación
   }
 
+  truncateUsername(name: string | null, limit: number = 12): string {
+    if (!name) return 'Usuario';
+    return name.length > limit ? name.substring(0, limit) + '...' : name;
+  }
 
   navegarCerrarMenu() {
     this.cerrarMenu();
