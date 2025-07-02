@@ -262,7 +262,7 @@
   /* Separacion entre items */
   gap: 1rem;
   transform: translateX(100%);
-  transition: transform 0.7s ease;
+  transition: transform 0.5s ease;
   z-index: 10;
   overflow-y: auto;
 }

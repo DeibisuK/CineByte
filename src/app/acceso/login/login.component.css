@@ -245,7 +245,7 @@
   border: none;
   background: transparent;
   font-size: 1rem;
-  color: #333;
+  color: var(--footer-text);
   outline: none;
 }
 

@@ -66,6 +66,7 @@ export class NavbarComponent {
     });
 
   }
+  
 
   cargarSedes() {
     this.sedeService.getSedes().subscribe(sedes => {
