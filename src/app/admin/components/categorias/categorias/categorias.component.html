@@ -1,7 +1,7 @@
 <div class="principal">
   <div class="container">
   <div class="tabs-container">
-    <div class="tabs" id="tabsContainer">
+    <div class="tabs" id="tabsContainer" >
       <button class="tab-button active" [class.active]="pestanaActiva === 0" (click)="cambiarPestana(0)">
         <svg class="icon" viewBox="0 0 24 24">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
@@ -24,7 +24,7 @@
         Idiomas
       </button>
     </div>
-    <div class="tab-content">
+    <div class="tab-content" >
       <app-generos *ngIf="pestanaActiva === 0"></app-generos>
       <app-etiquetas *ngIf="pestanaActiva === 1"></app-etiquetas>
       <app-idiomas *ngIf="pestanaActiva === 2"></app-idiomas>

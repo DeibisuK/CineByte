@@ -73,7 +73,7 @@ input:focus,
 select:focus, 
 textarea:focus,
 .btn-selector-sede:focus {
-  border: 1.5px solid var(--yellow, #FFD700);
+  border: 2px solid var(--yellow, #FFD700);
   outline: none;
 }
 

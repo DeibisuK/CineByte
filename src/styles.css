@@ -77,7 +77,7 @@ body.light-mode {
   /* fondo claro */
   --footer-esp: #f0f0f0;
   --footer-text: #222;
-  --footer-link: #333;
+  --footer-link: #3e3e3e;
   --footer-line: #777;
   /* cambiado a negro para modo claro */
   --btn-bg-crud: rgba(215, 215, 215, 0.8);
