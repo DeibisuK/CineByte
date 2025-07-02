@@ -24,5 +24,8 @@ export const routes: Routes = [
         loadChildren: () => import('./admin/admin.routes').then(m => m.adminRoutes),
       }
     ]
+  },
+  {
+    path: '**', redirectTo: 'inicio'
   }
 ];

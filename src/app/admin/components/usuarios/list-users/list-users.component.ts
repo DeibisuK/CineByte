@@ -196,16 +196,16 @@ export class ListUsersComponent implements OnInit {
 
   openModal(modal: string) {
     if (modal === 'createUserModal') {
-      this.modalRef.nativeElement.classList.add('active');
+      return this.modalRef.nativeElement.classList.add('active');
     }
-    this.modalEdit.nativeElement.classList.add('active');
+    return this.modalEdit.nativeElement.classList.add('active');
   }
 
   closeModal(modal: string) {
     if (modal === 'createUserModal') {
-      this.modalRef.nativeElement.classList.remove('active');
+     return  this.modalRef.nativeElement.classList.remove('active');
     }
-    this.modalEdit.nativeElement.classList.remove('active');
+    return this.modalEdit.nativeElement.classList.remove('active');
 
   }
   abrirModalEdicion(user: UserProfile): void {

@@ -25,7 +25,7 @@ export class ScrollTopComponent {
   }
 
   scrollToTop() {
-    const duration = 600; // Duración en milisegundos
+    const duration = 500; // Duración en milisegundos
     const start = window.pageYOffset;
     const startTime = performance.now();
 
