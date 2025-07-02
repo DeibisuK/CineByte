@@ -2,14 +2,14 @@
   background: linear-gradient(to right, #ffd966, #ffb347);
   color: var(--text-color); 
   font-weight: bold;
-  font-size: 0.8rem; /* Texto más pequeño */
+  font-size: 0.85rem;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 1000; /* Es como la prioridad, estaba muy alta */
-  min-height: 1.25rem; /* 20px/16px = 1.25rem */
-  padding: 0.25em 1em; /* em se basa en el font-size del elemento */
+  min-height: 1.25rem;
+  padding: 0.25em 1em;
   transition: all 0.3s ease;
   transform-origin: top;
   overflow: hidden;
@@ -19,25 +19,16 @@
   text-decoration: none !important;
   box-shadow: none !important;
   color: var(--text-color); 
-  font-size: 0.5rem; /* Texto mucho más pequeño (de 1.5rem a 0.5rem) */
-  height: 32px; /* Altura fija para el botón */
-  width: 32px; /* Ancho fijo para mantener proporción cuadrada */
+  font-size: 0.5rem; 
+  height: 32px;
+  width: 32px;
 }
 
 .btn-link:hover {
-  color: var(--footer-bg); /* Mantiene el color al pasar el ratón */
+  color: var(--footer-bg);
 }
 
 .material-icons {
-  font-size: 1.35rem; /* Redujiste el tamaño del icono */
-  line-height: 1; /* Elimina espacio extra vertical */
-}
-
-.anuncio-bar.cerrando {
-  opacity: 0;
-  transform: scaleY(0);
-  min-height: 0;
-  padding-top: 0;
-  padding-bottom: 0;
-  margin-bottom: 0;
+  font-size: 1.35rem;
+  line-height: 1;
 }

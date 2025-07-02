@@ -63,6 +63,7 @@ body {
   --dropdown-item-text: var(--text-color);
   --dropdown-logout-color: #e74c3c;
   --yellow: #FFD700;
+  --hover-link: rgba(64, 64, 64, 0.3);
   /* Rojo para cerrar sesión */
 }
 
@@ -87,6 +88,7 @@ body.light-mode {
   --dropdown-item-text: var(--text-color);
   --dropdown-logout-color: #c0392b;
   --yellow: #FFA500;
+  --hover-link: rgba(192, 192, 192, 0.3);
   /* Rojo para cerrar sesión en modo claro */
 }
 

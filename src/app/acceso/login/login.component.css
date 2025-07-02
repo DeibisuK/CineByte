@@ -69,8 +69,6 @@
 
 .close-btn:hover {
   background: rgba(114, 114, 114, 0.21);
-
-  transform: rotate(90deg);
 }
 
 .left-section {

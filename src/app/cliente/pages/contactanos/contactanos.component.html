@@ -34,18 +34,36 @@
       </div>
     </div>
     <div class="row">
+      <!-- Reemplaza el select actual por este componente -->
       <div class="field">
-        <label>Cine:</label>
-        <select formControlName="cine">
-          <option value="">Selecciona un cine</option>
-          <option>Machala</option>
-          <option>Guayaquil</option>
-          <option>Quito</option>
-        </select>
+        <label>Sede:</label>
+        <div class="selector-sede" [class.abierto]="menuSedesAbiertoContacto">
+          <button type="button" class="btn-selector-sede" (click)="toggleMenuSedesContacto()">
+            <span class="material-icons">location_on</span>
+            <span>
+              {{ contactoForm.get('cine')?.value?.nombre || 'Selecciona un cine' }}
+            </span>
+            <span class="material-icons flecha" [class.rotada]="menuSedesAbiertoContacto">expand_more</span>
+          </button>
+
+          <div class="menu-sedes" *ngIf="menuSedesAbiertoContacto">
+            <div *ngFor="let ciudad of ciudadesConSedes">
+              <div class="ciudad-titulo">
+                {{ ciudad.nombre }}
+              </div>
+              <hr class="linea-ciudad" />
+              <button type="button" class="sede-opcion" *ngFor="let sede of ciudad.sedes"
+                (click)="seleccionarSedeContacto(sede)">
+                <span class="sede-nombre">{{ sede.nombre }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
         <div class="error" *ngIf="contactoForm.get('cine')?.invalid && contactoForm.get('cine')?.touched">
-          Seleccione un cine.
+          Seleccione una sede.
         </div>
       </div>
+
       <div class="field">
         <label>Tipo:</label>
         <select formControlName="tipo">
@@ -73,11 +91,3 @@
   </form>
 </div>
 <hr style="margin-top: 5rem;">
-
-<app-alert
-  *ngIf="showAlert"
-  [message]="alertMessage"
-  [theme]="alertTheme"
-  [type]="alertType"
-  (closed)="showAlert = false">
-</app-alert>

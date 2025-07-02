@@ -1,60 +1,140 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { NgIf } from '@angular/common';
-import { AlertComponent } from '../../../shared/alert/alert.component';
+import { CommonModule } from '@angular/common';
+import { SedeService } from '../../../services/sede.service'; // Asegúrate de tener este servicio
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-contactanos',
   templateUrl: './contactanos.component.html',
-  styleUrl: './contactanos.component.css',
+  styleUrls: ['./contactanos.component.css'],
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    NgIf,
-    AlertComponent
+    CommonModule
   ]
 })
-
-export class ContactanosComponent {
+export class ContactanosComponent implements OnInit {
   contactoForm: FormGroup;
-  showAlert = false;
-  alertMessage = '';
-  alertTheme: 'light' | 'dark' = 'light';
-  alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
+  menuSedesAbiertoContacto = false;
+  ciudadesConSedes: { nombre: string, sedes: any[] }[] = [];
 
-
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(
+    private fb: FormBuilder,
+    private http: HttpClient,
+    private sedeService: SedeService
+  ) {
     this.contactoForm = this.fb.group({
       nombres: ['', [Validators.required]],
       apellidos: ['', [Validators.required]],
       telefono: ['', [Validators.required, Validators.pattern(/^[0-9]{7,15}$/)]],
       email: ['', [Validators.required, Validators.email]],
-      cine: ['', [Validators.required]],
+      cine: [null, [Validators.required]], // Cambiado a null para objeto
       tipo: ['', [Validators.required]],
       comentario: ['', [Validators.required, Validators.maxLength(500)]]
     });
   }
 
+  ngOnInit(): void {
+    this.cargarSedes();
+  }
+
+  cargarSedes() {
+    this.sedeService.getSedes().subscribe({
+      next: (sedes) => {
+        this.ciudadesConSedes = this.agruparSedesPorCiudad(sedes);
+      },
+      error: (error) => {
+        console.error('Error al cargar sedes:', error);
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudieron cargar las sedes disponibles',
+          icon: 'error',
+          confirmButtonColor: '#FFD700'
+        });
+      }
+    });
+  }
+
+  agruparSedesPorCiudad(sedes: any[]): { nombre: string, sedes: any[] }[] {
+    const ciudadesMap: { [key: string]: { nombre: string, sedes: any[] } } = {};
+    
+    sedes.forEach(sede => {
+      const ciudadNombre = this.getNombreCiudad(sede.id_ciudad);
+      if (!ciudadesMap[ciudadNombre]) {
+        ciudadesMap[ciudadNombre] = { nombre: ciudadNombre, sedes: [] };
+      }
+      ciudadesMap[ciudadNombre].sedes.push(sede);
+    });
+    
+    return Object.values(ciudadesMap);
+  }
+
+  getNombreCiudad(id: number): string {
+    const ciudadesMap: { [id: number]: string } = {
+      1: 'Quito', 2: 'Guayaquil', 3: 'Cuenca', 4: 'Manta',
+      5: 'Machala', 6: 'Ambato', 7: 'Riobamba', 8: 'Loja',
+      9: 'Ibarra', 10: 'Esmeraldas', 11: 'Babahoyo',
+      12: 'Santa Elena', 13: 'Santo Domingo'
+    };
+    return ciudadesMap[id] || 'Ciudad';
+  }
+
+  toggleMenuSedesContacto() {
+    this.menuSedesAbiertoContacto = !this.menuSedesAbiertoContacto;
+  }
+
+  seleccionarSedeContacto(sede: any) {
+    this.contactoForm.get('cine')?.setValue(sede);
+    this.menuSedesAbiertoContacto = false;
+  }
+
   enviarContacto() {
     if (this.contactoForm.invalid) {
       this.contactoForm.markAllAsTouched();
+      Swal.fire({
+        title: 'Formulario incompleto',
+        text: 'Por favor complete todos los campos requeridos correctamente',
+        icon: 'warning',
+        confirmButtonColor: '#FFD700'
+      });
       return;
     }
-    this.http.post('https://api-cinebyte.onrender.com/api/contacto', this.contactoForm.value)
+
+    const formData = {
+      ...this.contactoForm.value,
+      cine: this.contactoForm.value.cine.nombre,
+      ciudad: this.getNombreCiudad(this.contactoForm.value.cine.id_ciudad)
+    };
+
+    Swal.fire({
+      title: 'Enviando mensaje...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    this.http.post('https://api-cinebyte.onrender.com/api/contacto', formData)
       .subscribe({
         next: () => {
-          this.alertMessage = 'Mensaje enviado correctamente';
-          this.alertTheme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-          this.showAlert = true;
-          this.alertType = 'success';
+          Swal.fire({
+            title: '¡Mensaje enviado!',
+            text: 'Hemos recibido tu mensaje correctamente',
+            icon: 'success',
+            confirmButtonColor: '#FFD700'
+          });
           this.contactoForm.reset();
         },
-        error: () => {
-          this.alertMessage = 'Error al enviar el mensaje';
-          this.alertTheme = 'dark';
-          this.alertType = 'error';
-          this.showAlert = true;
+        error: (error) => {
+          console.error('Error al enviar:', error);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo enviar el mensaje. Por favor intente nuevamente',
+            icon: 'error',
+            confirmButtonColor: '#FFD700'
+          });
         }
       });
   }
