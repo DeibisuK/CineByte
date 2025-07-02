@@ -4,10 +4,11 @@ import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { CommonModule } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-catalogo',
-  imports: [CommonModule,EdadesComponent],
+  imports: [CommonModule,EdadesComponent,RouterModule],
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.css'
 })

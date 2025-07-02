@@ -11,6 +11,7 @@
   font-weight: 500;
   letter-spacing: 0.01em;
   user-select: none;
+  text-decoration: none;
 }
 .breadcrumb-link {
   color: var(--footer-link);
@@ -19,8 +20,7 @@
   transition: color 0.2s;
 }
 .breadcrumb-link:hover {
-  color: #2956d3;
-  text-decoration: underline;
+  color: #ffffffd6;
 }
 .breadcrumb-sep {
   color: var(--footer-link);

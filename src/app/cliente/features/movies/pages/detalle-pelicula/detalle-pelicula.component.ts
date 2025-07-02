@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
 import { Movie } from '../../../../../core/models/movie.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MovieService } from '../../services/movie.service';
 import { CommonModule } from '@angular/common';
 import { CarouselEstrenosComponent } from '../carousel-estrenos/carousel-estrenos.component';
 
 @Component({
   selector: 'app-detalle-pelicula',
-  imports: [CommonModule,CarouselEstrenosComponent],
+  imports: [CommonModule,CarouselEstrenosComponent,RouterModule],
   templateUrl: './detalle-pelicula.component.html',
   styleUrl: './detalle-pelicula.component.css'
 })
