@@ -35,6 +35,7 @@ export class PerfilComponent implements OnInit {
   providerData: any[] = [];
   lastSignInTime: string = '';
   creationTime: string = '';
+  showDefaultAvatar = false;
 
   constructor(
     private auth: Auth,
@@ -125,7 +126,10 @@ export class PerfilComponent implements OnInit {
         return 'Autenticacion/user-authentication.svg';
     }
   }
-
+  handleImageError(event: any) {
+    event.target.style.display = 'none';
+    this.showDefaultAvatar = true;
+  }
   canChangePassword(): boolean {
     return this.providerData.some(
       (provider) => provider.providerId === 'password'

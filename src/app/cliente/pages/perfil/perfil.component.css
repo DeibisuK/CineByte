@@ -19,7 +19,6 @@
   background: var(--footer-bg);
   border-bottom: 1px solid var(--footer-line);
   position: relative;
-  overflow: hidden;
 }
 
 .profile-avatar::before {
@@ -37,20 +36,39 @@
   z-index: 0;
 }
 
-.profile-avatar img {
+.avatar-container {
+  position: relative;
   width: 120px;
   height: 120px;
+  margin: 0 auto;
   border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #FFA500;
-  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
-  position: relative;
-  z-index: 1;
-  transition: transform 0.3s ease;
+  border: 4px solid var(--yellow);
+  overflow: hidden;
 }
 
-.profile-avatar:hover img {
-  transform: scale(1.05);
+.avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.default-avatar-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--footer-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.default-avatar-icon {
+  width: 60%;
+  height: 60%;
+  color: var(--text-color);
+  opacity: 0.7;
 }
 
 .profile-info {
@@ -91,8 +109,7 @@
   padding: 0.2rem 0;
 }
 
-
-h4{
+h4 {
   margin-bottom: 1rem;
 }
 
@@ -105,15 +122,8 @@ h4{
   border-radius: 999px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s;
   margin-top: 1.5rem;
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.1);
-}
-
-.btn-edit:hover, 
-.btn-change-password:hover {
-  background: linear-gradient(135deg, #FFA500, #FFD700);
-  transform: scale(1.04);
 }
 
 .form-group {
@@ -127,7 +137,6 @@ h4{
   font-weight: 500;
 }
 
-/* Estilos para el formulario de edición */
 .edit-form-container {
   border: 2px solid;
   border-image: linear-gradient(135deg, #FFD700, #FFA500) 1;
@@ -149,7 +158,6 @@ h4{
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
   border: none;
   display: flex;
   align-items: center;
@@ -169,16 +177,6 @@ h4{
   box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
 
-.btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.btn-save:hover {
-  background: linear-gradient(135deg, #FFA500, #FFD700);
-  transform: scale(1.04);
-}
-
-/* Estilos para los inputs */
 .form-group input {
   width: 100%;
   padding: 0.7rem;
@@ -190,7 +188,6 @@ h4{
   margin-top: 0.5rem;
 }
 
-/* Contenedor de proveedores de autenticación */
 .auth-providers-container {
   margin-top: 1.5rem;
 }
@@ -218,6 +215,7 @@ h4{
   width: 24px;
   height: 24px;
 }
+
 .user-role {
   background: var(--btn-bg-crud);
   color: #222;
@@ -229,7 +227,6 @@ h4{
   margin-left: 0.5rem;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
   .profile-avatar {
     padding: 1.5rem;
