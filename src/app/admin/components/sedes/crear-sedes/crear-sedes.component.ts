@@ -4,7 +4,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import {SedeService } from '../../../../services/sede.service';
+import { SedeService } from '../../../../services/sede.service';
 import {
   FormBuilder,
   FormGroup,
@@ -42,22 +42,6 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
   private temaSubscription!: Subscription;
 
-  coordCiudades: { [id: number]: [number, number] } = {
-    1: [-0.22985, -78.52495], // Quito
-    2: [-2.170998, -79.922359], // Guayaquil
-    3: [-2.90055, -79.00453], // Cuenca
-    4: [-0.96769, -80.70891], // Manta
-    5: [-3.258, -79.955], // Machala
-    6: [-1.25434, -78.62289], // Ambato
-    7: [-1.66472, -78.65459], // Riobamba
-    8: [-3.99313, -79.20422], // Loja
-    9: [0.35171, -78.12233], // Ibarra
-    10: [0.96818, -79.65172], // Esmeraldas
-    11: [-1.80217, -79.53447], // Babahoyo
-    12: [-2.22494, -80.85949], // Santa Elena
-    13: [-0.25342, -79.17195], // Santo Domingo
-  };
-
   constructor(
     private sedeService: SedeService,
     private temaService: TemaService,
@@ -65,32 +49,23 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {
     this.sedeForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      id_ciudad: [1, Validators.required],
+      ciudad: ['', Validators.required],
       direccion: ['', [Validators.required, Validators.minLength(5)]],
-      telefono: [
-        '',
-        [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)],
-      ],
+      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
       email: ['', Validators.email],
       latitud: [0],
       longitud: [0],
       estado: ['Activo'],
     });
+
   }
 
-  // Getters para acceder fácilmente a los controles del formulario
-  // Getters con comprobación de nulidad
   get nombre() {
     const control = this.sedeForm.get('nombre');
     if (!control) throw new Error('Control "nombre" no encontrado');
     return control;
   }
 
-  get id_ciudad() {
-    const control = this.sedeForm.get('id_ciudad');
-    if (!control) throw new Error('Control "id_ciudad" no encontrado');
-    return control;
-  }
 
   get direccion() {
     const control = this.sedeForm.get('direccion');
@@ -109,6 +84,14 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!control) throw new Error('Control "email" no encontrado');
     return control;
   }
+  get latitud(): number {
+    return this.sedeForm.get('latitud')?.value || 0;
+  }
+
+  get longitud(): number {
+    return this.sedeForm.get('longitud')?.value || 0;
+  }
+
 
   ngOnInit(): void {
     this.temaSubscription = this.temaService.modoOscuro$.subscribe(
@@ -116,9 +99,6 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.alertTheme = modoOscuro ? 'dark' : 'light';
       }
     );
-    this.sedeService.getCiudades().subscribe((data) => {
-      this.ciudades = data;
-    });
   }
 
   ngOnDestroy(): void {
@@ -132,39 +112,34 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private initMap(): void {
-    const idCiudad = this.sedeForm.value.id_ciudad;
-    const coords = this.coordCiudades[idCiudad] || [-0.22985, -78.52495]; // Quito como fallback
-  
+    const coords: [number, number] = [-0.22985, -78.52495]; // Fallback Quito
+
     this.map = L.map('map').setView(coords, 13);
     this.marker = L.marker(coords, { draggable: true }).addTo(this.map);
-  
+
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors',
     }).addTo(this.map);
-  
+
+    const updateLocation = (lat: number, lng: number) => {
+      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+      this.getDireccionDesdeCoordenadas(lat, lng);
+    };
+
     this.marker.on('dragend', () => {
       const { lat, lng } = this.marker.getLatLng();
-      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+      updateLocation(lat, lng);
     });
-  
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      this.marker.setLatLng(e.latlng);
-      this.sedeForm.patchValue({ latitud: e.latlng.lat, longitud: e.latlng.lng });
-    });
-  
-    this.sedeForm.patchValue({ latitud: coords[0], longitud: coords[1] });
-  }
 
-  onCiudadChange(id_ciudad: number): void {
-    const coords = this.coordCiudades[id_ciudad];
-    if (coords) {
-      this.map.setView(coords, 14);
-      this.marker.setLatLng(coords);
-      this.sedeForm.patchValue({
-        latitud: coords[0],
-        longitud: coords[1],
-      });
-    }
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      this.marker.setLatLng(e.latlng);
+      updateLocation(lat, lng);
+    });
+
+    // Inicial
+    this.sedeForm.patchValue({ latitud: coords[0], longitud: coords[1] });
+    this.getDireccionDesdeCoordenadas(coords[0], coords[1]);
   }
 
   onSubmit(): void {
@@ -221,12 +196,36 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private resetForm(): void {
     this.sedeForm.reset({
-      id_ciudad: 1,
+      ciudad: '',
+      direccion: '',
       estado: 'Activo',
       latitud: 0,
       longitud: 0,
     });
-    this.map.setView([-0.22985, -78.52495], 13);
-    this.marker.setLatLng([-0.22985, -78.52495]);
+    const defaultCoords: [number, number] = [-0.22985, -78.52495];
+    this.map.setView(defaultCoords, 13);
+    this.marker.setLatLng(defaultCoords);
+    this.getDireccionDesdeCoordenadas(defaultCoords[0], defaultCoords[1]);
+  }
+
+  private getDireccionDesdeCoordenadas(lat: number, lon: number): void {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.address) {
+          const direccion = data.display_name;
+          const ciudad = data.address.city || data.address.town || data.address.village || data.address.county;
+
+          this.sedeForm.patchValue({
+            direccion: direccion,
+            ciudad: ciudad || '',
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener dirección desde coordenadas', error);
+      });
   }
 }

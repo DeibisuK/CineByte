@@ -12,7 +12,11 @@ export class AuthService {
   role$ = this.roleSubject.asObservable();
 
   user$: Observable<User | null>;
+<<<<<<< HEAD
   private apiUrl = 'https://api-cinebyte.onrender.com/api/users'
+=======
+  private apiUrl = ' https://api-cinebyte.onrender.com/api/users'
+>>>>>>> a1a0f0aaf07cb23f03da003a88e7907dbce7333e
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();

@@ -21,29 +21,13 @@ export class ListarSedesComponent implements OnInit {
   alertTheme: 'light' | 'dark' = 'light';
   private temaSub!: Subscription;
 
-  ciudadesMap: { [id: number]: string } = {
-    1: 'Quito',
-    2: 'Guayaquil',
-    3: 'Cuenca',
-    4: 'Manta',
-    5: 'Machala',
-    6: 'Ambato',
-    7: 'Riobamba',
-    8: 'Loja',
-    9: 'Ibarra',
-    10: 'Esmeraldas',
-    11: 'Babahoyo',
-    12: 'Santa Elena',
-    13: 'Santo Domingo'
-  };
-
   constructor(
     private sedeService: SedeService,
     private sanitizer: DomSanitizer,
     private router: Router,
     private temaService: TemaService,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.cargarSedes();
@@ -60,21 +44,16 @@ export class ListarSedesComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-  if (changes['theme']) {
-    // Forzar redibujado para que se apliquen las variables
-    this.cdr.detectChanges();
+    if (changes['theme']) {
+      // Forzar redibujado para que se apliquen las variables
+      this.cdr.detectChanges();
+    }
   }
-}
-
 
   cargarSedes() {
     this.sedeService.getSedes().subscribe(data => {
       this.sedes = data;
     });
-  }
-
-  getNombreCiudad(id: number): string {
-    return this.ciudadesMap[id] || 'Ciudad desconocida';
   }
 
   getMapaUrl(lat: number = 0, lng: number = 0): SafeResourceUrl {

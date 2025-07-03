@@ -5,13 +5,13 @@ import { Observable } from 'rxjs';
 export interface Sede {
   id_sede?: number;
   nombre: string;
-  id_ciudad: number;
   direccion: string;
   estado?: string;
   latitud?: number;
   longitud?: number;
   telefono?: string;
   email?: string;
+  ciudad: string;
 }
 
 @Injectable({
@@ -25,10 +25,6 @@ export class SedeService {
 
   crearSede(sede: Sede): Observable<any> {
     return this.http.post(this.apiUrl, sede);
-  }
-
-  getCiudades(): Observable<any[]> {
-    return this.http.get<any[]>('https://api-cinebyte.onrender.com/api/ciudades');
   }
 
   getSedes(): Observable<Sede[]> {
