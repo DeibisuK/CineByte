@@ -8,7 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../../../acceso/login/login.component';
 import { Sede, SedeService } from '../../../services/sede.service';
 import { AuthService } from '../../../services/AuthService';
-import { Users } from '../../models/user.model';
 import { User } from 'firebase/auth';
 import Swal from 'sweetalert2';
 
@@ -65,13 +64,39 @@ export class NavbarComponent {
       this.usuario = this.authService.getUsuarioActual();
     });
 
+    
+
+
   }
-  
+
 
   cargarSedes() {
     this.sedeService.getSedes().subscribe(sedes => {
       this.sedes = sedes;
       this.ciudadesConSedes = this.agruparSedesPorCiudad(sedes);
+
+      navigator.geolocation.getCurrentPosition(
+      position => {
+        const userLat = position.coords.latitude;
+        const userLon = position.coords.longitude;
+
+        let puntoMasCercano = this.sedes[0];
+        let distanciaMinima = this.sedeService.calcularDistancia(userLat, userLon, this.sedes[0].latitud!, this.sedes[0].longitud!);
+
+
+        for (const punto of this.sedes.slice(1)) {
+          const distancia = this.sedeService.calcularDistancia(userLat, userLon, punto.latitud!, punto.longitud!);
+          if (distancia < distanciaMinima) {
+            distanciaMinima = distancia;
+            puntoMasCercano = punto;
+          }
+        }
+        this.sedeSeleccionada = puntoMasCercano;
+      },
+      error => {
+        console.error('No se pudo obtener la ubicación:', error);
+      }
+    );
     });
   }
 

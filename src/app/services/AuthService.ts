@@ -1,6 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, sendPasswordResetEmail } from '@angular/fire/auth';
+import { Auth, signInWithEmailAndPassword, createUserWithEmailAndPassword, GoogleAuthProvider, FacebookAuthProvider, signInWithPopup, sendPasswordResetEmail, authState } from '@angular/fire/auth';
 import { getAuth, getIdTokenResult, User } from 'firebase/auth';
 import { BehaviorSubject, from, Observable, switchMap } from 'rxjs';
 
@@ -10,12 +10,14 @@ import { BehaviorSubject, from, Observable, switchMap } from 'rxjs';
 export class AuthService {
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
+
+  user$: Observable<User | null>;
   private apiUrl = 'https://api-cinebyte.onrender.com/api/users'
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();
     this.init();;
-
+    this.user$ = authState(this.auth);
   }
 
   private init() {
