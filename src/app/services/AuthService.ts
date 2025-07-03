@@ -12,7 +12,7 @@ export class AuthService {
   role$ = this.roleSubject.asObservable();
 
   user$: Observable<User | null>;
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/users'
+  private apiUrl = ' http://localhost:3000/api/users'
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();
@@ -142,14 +142,14 @@ export class AuthService {
       password,
       displayName
     }, { headers });
-  }
+  } 
 
   actualizarUsuario(uid: string, data: any, token: string): Observable<any> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
   
-    return this.http.patch(`${this.apiUrl}/users/${uid}`, data, { headers });
+    return this.http.put(`${this.apiUrl}/${uid}`, data, { headers });
   }
 }
 

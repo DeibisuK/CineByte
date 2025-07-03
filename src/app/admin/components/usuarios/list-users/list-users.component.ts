@@ -17,7 +17,7 @@ import {
 import { UserProfile } from '../../../models/users.model';
 import { AlertaService } from '../../../../services/alerta.service';
 import Swal from 'sweetalert2';
-import { getAuth, updateProfile } from 'firebase/auth';
+import { getAuth } from 'firebase/auth';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
 @Pipe({ name: 'authProvider' })
