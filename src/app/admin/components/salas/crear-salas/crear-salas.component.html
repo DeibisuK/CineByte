@@ -1,65 +1,92 @@
 <div class="container">
-    <div class="header">
-        <h1>Crear Nueva Sala</h1>
-        <p>Administración de Salas de Cine</p>
-    </div>
+  <div class="header">
+    <h1>Crear Nueva Sala</h1>
+    <p>Administración de Salas de Cine</p>
+  </div>
 
-    <div class="form-container">
-        <form id="crearSalaForm">
-            <div class="form-group">
-                <label for="nombre">Nombre de la Sala <span class="required">*</span></label>
-                <input type="text" id="nombre" name="nombre" required>
-                <div class="validation-error" id="nombre-error">El nombre es requerido</div>
-            </div>
+  <div class="form-container">
+    <form [formGroup]="crearSalaForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="nombre">Nombre de la Sala <span class="required">*</span></label>
+        <input type="text" id="nombre" formControlName="nombre" required />
+        <div class="validation-error" *ngIf="crearSalaForm.get('nombre')?.invalid && crearSalaForm.get('nombre')?.touched">
+          El nombre es requerido
+        </div>
+      </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="tipo_sala">Tipo de Sala</label>
-                    <select id="tipo_sala" name="tipo_sala">
-                        <option value="">Seleccionar tipo</option>
-                        <option value="2D">2D</option>
-                        <option value="3D">3D</option>
-                        <option value="IMAX">IMAX</option>
-                        <option value="4DX">4DX</option>
-                        <option value="VIP">VIP</option>
-                        <option value="Premium">Premium</option>
-                    </select>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="tipo_sala">Tipo de Sala</label>
+          <select id="tipo_sala" formControlName="tipo_sala">
+            <option value="">Seleccionar tipo</option>
+            <option value="2D">2D</option>
+            <option value="3D">3D</option>
+            <option value="IMAX">IMAX</option>
+            <option value="4DX">4DX</option>
+            <option value="VIP">VIP</option>
+            <option value="Premium">Premium</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="cantidad_asientos">Cantidad de Asientos <span class="required">*</span></label>
+          <input
+            type="number"
+            id="cantidad_asientos"
+            formControlName="cantidad_asientos"
+            min="2"
+            step="2"
+            (input)="onCantidadAsientosChange()"
+            required
+          />
+          <div class="validation-error" *ngIf="crearSalaForm.get('cantidad_asientos')?.value % 2 !== 0">
+            La cantidad debe ser un número par
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="espacios">Configuración de Asientos</label>
+        <div class="espacios-container">
+          <div class="espacios-info">
+            <strong>Instrucciones:</strong> Haz clic en los asientos para marcarlos como NO UTILIZADOS (espacios
+            vacíos). Los asientos rojos no estarán disponibles para venta.
+          </div>
+
+          <div class="espacios-controls">
+            <button type="button" class="btn-small btn-warning" (click)="limpiarEspacios()">Limpiar Selección</button>
+            <span class="espacios-count">Asientos no utilizados: <span>{{ asientosNoUtilizados.length }}</span></span>
+          </div>
+
+          <div class="espacios-preview" id="espacios-preview">
+            <div *ngFor="let fila of vistaPrevia" class="fila-asientos">
+              <div class="fila-label">{{ fila.letra }}</div>
+              <div class="asientos-fila">
+                <div
+                  *ngFor="let numero of fila.asientos"
+                  class="asiento"
+                  [class.no-utilizado]="asientoEsInactivo(fila.letra, numero)"
+                  (click)="toggleAsiento(fila.letra, numero)"
+                  [title]="asientoEsInactivo(fila.letra, numero) ? 'NO UTILIZADO - Clic para habilitar' : 'Clic para marcar como NO UTILIZADO'"
+                >
+                  {{ numero }}
                 </div>
-                <div class="form-group">
-                    <label for="cantidad_asientos">Cantidad de Asientos <span class="required">*</span></label>
-                    <input type="number" id="cantidad_asientos" name="cantidad_asientos" min="2" step="2" required>
-                    <div class="validation-error" id="asientos-error">La cantidad debe ser un número par</div>
-                </div>
-
+              </div>
             </div>
+          </div>
 
-            <div class="form-group">
-                <label for="espacios">Configuración de Asientos</label>
-                <div class="espacios-container">
-                    <div class="espacios-info">
-                        <strong>Instrucciones:</strong> Haz clic en los asientos para marcarlos como NO UTILIZADOS
-                        (espacios vacíos). Los asientos rojos no estarán disponibles para venta.
-                    </div>
-                    <div class="espacios-controls">
-                        <button type="button" class="btn-small btn-warning" onclick="limpiarEspacios()">Limpiar
-                            Selección</button>
-                        <span class="espacios-count">Asientos no utilizados: <span id="count-espacios">0</span></span>
-                    </div>
-                    <div class="espacios-preview" id="espacios-preview">
-                        <!-- Los asientos se generarán aquí -->
-                    </div>
-                    <div class="espacios-json">
-                        <label for="espacios-json">JSON de espacios no utilizados:</label>
-                        <textarea id="espacios" name="espacios" readonly></textarea>
-                    </div>
-                </div>
-            </div>
+          <div class="espacios-json">
+            <label for="espacios-json">JSON de espacios no utilizados:</label>
+            <textarea id="espacios" formControlName="espacios" readonly></textarea>
+          </div>
+        </div>
+      </div>
 
-            <div class="btn-container">
-                <button type="submit" class="btn btn-primary">Crear Sala</button>
-                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Limpiar</button>
-                <a href="#" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
-    </div>
+      <div class="btn-container">
+        <button type="submit" class="btn btn-primary">Crear Sala</button>
+        <button type="button" class="btn btn-secondary" (click)="limpiarFormulario()">Limpiar</button>
+        <a href="#" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
 </div>
