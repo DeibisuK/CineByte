@@ -143,8 +143,11 @@ export class AuthService {
   }
 
   actualizarUsuario(uid: string, data: any, token: string): Observable<any> {
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.put(`${this.apiUrl}/${uid}`, data, { headers });
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+  
+    return this.http.patch(`${this.apiUrl}/users/${uid}`, data, { headers });
   }
 }
 

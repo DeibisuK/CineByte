@@ -76,12 +76,9 @@ export class ListUsersComponent implements OnInit {
     });
 
     this.editForm = new FormGroup({
-      username: new FormControl('', [
-        Validators.required,
-        Validators.maxLength(30),
-      ]),
+      username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      passwordE: new FormControl(''),
+      passwordE: new FormControl(''), // Opcional
     });
   }
 
@@ -288,69 +285,81 @@ export class ListUsersComponent implements OnInit {
     return this.modalEdit.nativeElement.classList.remove('active');
   }
 
-  abrirModalEdicion(user: UserProfile): void {
-    if (!this.modalEdit) {
-      console.error('Modal de edición no inicializado');
-      return;
-    }
-    this.selectedUserUid = user.uid;
-    this.editForm.patchValue({
-      username: user.displayName || '',
-      email: user.email || '',
-      passwordE: '',
-    });
-    this.openModal('editUserModal');
+abrirModalEdicion(user: UserProfile): void {
+  if (!this.modalEdit) {
+    console.error('Modal de edición no encontrado');
+    return;
   }
+  
+  this.selectedUserUid = user.uid;
+  this.editForm.reset(); // Limpia el formulario primero
+  
+  this.editForm.patchValue({
+    username: user.displayName || '',
+    email: user.email || '',
+    passwordE: ''
+  });
+
+  // Forzar la detección de cambios (por si acaso)
+  setTimeout(() => {
+    this.openModal('editUserModal');
+  }, 0);
+}
 
   async editarAdmin() {
-    try {
-      const auth = getAuth();
-      const user = auth.currentUser;
-
-      if (!user) {
-        this.alerta.error('Error', 'No hay usuario autenticado');
-        return;
-      }
-
-      if (!this.editForm.valid || !this.selectedUserUid) {
-        this.alerta.error('Error', 'Formulario inválido');
-        return;
-      }
-
-      const token = await user.getIdToken();
-      const { username, email, passwordE } = this.editForm.value;
-
-      this.loading = true;
-      this.usuariosService
-        .actualizarUsuario(
-          this.selectedUserUid,
-          { username, email, passwordE },
-          token
-        )
-        .subscribe({
-          next: () => {
-            this.alerta.autoClose(
-              'Éxito',
-              'Usuario actualizado con éxito',
-              'success',
-              1500
-            );
-            this.closeModal('editUserModal');
-            this.obtenerUsuarios(); // Esto debería actualizar la lista sin necesidad de recargar
-          },
-          error: (err) => {
-            this.loading = false;
-            this.alerta.error(
-              'Error',
-              err.message || 'Error al actualizar usuario'
-            );
-            console.error(err);
-          },
-        });
-    } catch (error) {
-      this.loading = false;
-      this.alerta.error('Error', 'Error al obtener token de autenticación');
-      console.error(error);
+  try {
+    if (!this.selectedUserUid) {
+      this.alerta.error('Error', 'No se seleccionó ningún usuario');
+      return;
     }
+
+    if (this.editForm.invalid) {
+      this.alerta.error('Error', 'Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      this.alerta.error('Error', 'No hay usuario autenticado');
+      return;
+    }
+
+    const token = await currentUser.getIdToken();
+    const { username, email, passwordE } = this.editForm.value;
+
+    this.loading = true;
+    
+    const updateData: any = { 
+      username, 
+      email 
+    };
+    
+    if (passwordE && passwordE.length >= 6) {
+      updateData.password = passwordE;
+    }
+
+    this.usuariosService.actualizarUsuario(
+      this.selectedUserUid,
+      updateData,
+      token
+    ).subscribe({
+      next: () => {
+        this.alerta.autoClose('Éxito', 'Usuario actualizado', 'success', 1500);
+        this.closeModal('editUserModal');
+        this.obtenerUsuarios();
+      },
+      error: (err) => {
+        this.loading = false;
+        const errorMsg = err.error?.message || 'Error al actualizar usuario';
+        this.alerta.error('Error', errorMsg);
+      }
+    });
+  } catch (error) {
+    this.loading = false;
+    this.alerta.error('Error', 'Error inesperado');
+    console.error(error);
   }
+}
 }
