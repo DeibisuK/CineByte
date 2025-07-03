@@ -2,7 +2,8 @@
   <h1 class="titulo-sedes">Sedes del Cine</h1>
   <button routerLink="/admin/add-sede" class="btn-agregar-sede">
     <svg class="icono-mas" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+      <path
+        d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
     </svg>
     <span>Agregar Sede</span>
   </button>
@@ -11,49 +12,35 @@
 <div class="contenedor-sedes">
   <div class="sede-card" *ngFor="let sede of sedes">
     <div class="sede-header">
-      <h3>{{ sede.nombre }} - {{ getNombreCiudad(sede.id_ciudad) }}</h3>
-        <div class="acciones">
+      <h3>{{ sede.nombre }} - {{ sede.ciudad || "No existe ciudad" }}</h3>
+      <div class="acciones">
         <button class="action-btn" *ngIf="sede.id_sede !== undefined" (click)="editarSede(sede)" title="Editar">
-            <svg class="action-icon" viewBox="0 0 24 24">
+          <svg class="action-icon" viewBox="0 0 24 24">
             <path
-                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-            </svg>
+              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+          </svg>
         </button>
-        <button
-          class="action-btn delete"
-          *ngIf="sede.id_sede !== undefined"
-          (click)="eliminarSede(sede)"
+        <button class="action-btn delete" *ngIf="sede.id_sede !== undefined" (click)="eliminarSede(sede)"
           title="Eliminar">
-            <svg class="action-icon" viewBox="0 0 24 24">
+          <svg class="action-icon" viewBox="0 0 24 24">
             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-            </svg>
+          </svg>
         </button>
-        </div>
+      </div>
     </div>
     <p>
-      <strong>{{ getNombreCiudad(sede.id_ciudad) }}</strong>
+      <strong>{{sede.ciudad }}</strong>
       {{ sede.direccion }}
     </p>
     <div class="mapa">
-      <iframe
-        width="100%"
-        height="200"
-        style="border-radius: 10px;"
-
-        loading="lazy"
-        allowfullscreen
-        referrerpolicy="no-referrer-when-downgrade"
-        [attr.src]="getMapaUrl(sede.latitud, sede.longitud)">
+      <iframe width="100%" height="200" style="border-radius: 10px;" loading="lazy" allowfullscreen
+        referrerpolicy="no-referrer-when-downgrade" [attr.src]="getMapaUrl(sede.latitud, sede.longitud)">
       </iframe>
     </div>
   </div>
 </div>
 
-<app-alert-confirm
-  *ngIf="showConfirm"
-  [message]="'¿Estás seguro de eliminar la sede ' + (sedeAEliminar?.nombre || '') + '?'"
-  [theme]="alertTheme"
-  type="warning"
-  (confirm)="confirmarEliminar()"
-  (close)="cancelarEliminar()">
+<app-alert-confirm *ngIf="showConfirm"
+  [message]="'¿Estás seguro de eliminar la sede ' + (sedeAEliminar?.nombre || '') + '?'" [theme]="alertTheme"
+  type="warning" (confirm)="confirmarEliminar()" (close)="cancelarEliminar()">
 </app-alert-confirm>

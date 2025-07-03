@@ -10,14 +10,9 @@
       </div>
     </div>
     <div>
-      <label>Ciudad</label>
-      <select formControlName="id_ciudad" (change)="onCiudadChange(sedeForm.value.id_ciudad)">
-        <option *ngFor="let ciudad of ciudades" [ngValue]="ciudad.id_ciudad">
-          {{ ciudad.nombre }}
-        </option>
-      </select>
-      <div *ngIf="id_ciudad.invalid && (id_ciudad.dirty || id_ciudad.touched)" class="error-message">
-        <div *ngIf="id_ciudad.errors?.['required']">Debe seleccionar una ciudad</div>
+      <div>
+        <label>Ciudad</label>
+        <input type="text" formControlName="ciudad" readonly />
       </div>
     </div>
     <div>
@@ -49,10 +44,6 @@
   <button type="submit">Guardar Cambios</button>
 </form>
 
-<app-alert
-  *ngIf="showAlert"
-  [message]="alertMessage"
-  [theme]="alertTheme"
-  [type]="alertType"
+<app-alert *ngIf="showAlert" [message]="alertMessage" [theme]="alertTheme" [type]="alertType"
   (closed)="showAlert = false">
 </app-alert>

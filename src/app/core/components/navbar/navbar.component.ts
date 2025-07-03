@@ -63,10 +63,6 @@ export class NavbarComponent {
     this.authService.role$.subscribe(() => {
       this.usuario = this.authService.getUsuarioActual();
     });
-
-    
-
-
   }
 
 
@@ -76,61 +72,44 @@ export class NavbarComponent {
       this.ciudadesConSedes = this.agruparSedesPorCiudad(sedes);
 
       navigator.geolocation.getCurrentPosition(
-      position => {
-        const userLat = position.coords.latitude;
-        const userLon = position.coords.longitude;
+        position => {
+          const userLat = position.coords.latitude;
+          const userLon = position.coords.longitude;
 
-        let puntoMasCercano = this.sedes[0];
-        let distanciaMinima = this.sedeService.calcularDistancia(userLat, userLon, this.sedes[0].latitud!, this.sedes[0].longitud!);
+          let puntoMasCercano = this.sedes[0];
+          let distanciaMinima = this.sedeService.calcularDistancia(userLat, userLon, this.sedes[0].latitud!, this.sedes[0].longitud!);
 
 
-        for (const punto of this.sedes.slice(1)) {
-          const distancia = this.sedeService.calcularDistancia(userLat, userLon, punto.latitud!, punto.longitud!);
-          if (distancia < distanciaMinima) {
-            distanciaMinima = distancia;
-            puntoMasCercano = punto;
+          for (const punto of this.sedes.slice(1)) {
+            const distancia = this.sedeService.calcularDistancia(userLat, userLon, punto.latitud!, punto.longitud!);
+            if (distancia < distanciaMinima) {
+              distanciaMinima = distancia;
+              puntoMasCercano = punto;
+            }
           }
+          this.sedeSeleccionada = puntoMasCercano;
+        },
+        error => {
+          console.error('No se pudo obtener la ubicación:', error);
         }
-        this.sedeSeleccionada = puntoMasCercano;
-      },
-      error => {
-        console.error('No se pudo obtener la ubicación:', error);
-      }
-    );
+      );
     });
   }
 
   agruparSedesPorCiudad(sedes: Sede[]) {
-    const ciudadesMap: { [id: number]: { nombre: string, sedes: Sede[] } } = {};
-    for (const sede of sedes) {
-      const ciudadId = sede.id_ciudad;
-      const ciudadNombre = this.getNombreCiudad(ciudadId);
-      if (!ciudadesMap[ciudadId]) {
-        ciudadesMap[ciudadId] = { nombre: ciudadNombre, sedes: [] };
-      }
-      ciudadesMap[ciudadId].sedes.push(sede);
-    }
-    return Object.values(ciudadesMap);
-  }
+    const ciudadesMap: { [ciudad: string]: { nombre: string, sedes: Sede[] } } = {};
 
-  getNombreCiudad(id: number): string {
-    // Puedes usar tu ciudadesMap o traerlo del backend
-    const ciudadesMap: { [id: number]: string } = {
-      1: 'Quito',
-      2: 'Guayaquil',
-      3: 'Cuenca',
-      4: 'Manta',
-      5: 'Machala',
-      6: 'Ambato',
-      7: 'Riobamba',
-      8: 'Loja',
-      9: 'Ibarra',
-      10: 'Esmeraldas',
-      11: 'Babahoyo',
-      12: 'Santa Elena',
-      13: 'Santo Domingo'
-    };
-    return ciudadesMap[id] || 'Ciudad';
+    for (const sede of sedes) {
+      const ciudadNombre = sede.ciudad?.trim() || 'Sin ciudad';
+
+      if (!ciudadesMap[ciudadNombre]) {
+        ciudadesMap[ciudadNombre] = { nombre: ciudadNombre, sedes: [] };
+      }
+
+      ciudadesMap[ciudadNombre].sedes.push(sede);
+    }
+
+    return Object.values(ciudadesMap);
   }
 
   abrirMenuSedes() {

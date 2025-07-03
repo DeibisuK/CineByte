@@ -28,7 +28,6 @@ L.Icon.Default.mergeOptions({
 })
 export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm!: FormGroup;
-  ciudades: any[] = [];
   map!: L.Map;
   marker!: L.Marker;
   showAlert = false;
@@ -37,22 +36,6 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
   private temaSubscription!: Subscription;
 
-  coordCiudades: { [id: number]: [number, number] } = {
-    1: [-0.22985, -78.52495], // Quito
-    2: [-2.170998, -79.922359], // Guayaquil
-    3: [-2.90055, -79.00453], // Cuenca
-    4: [-0.96769, -80.70891], // Manta
-    5: [-3.258, -79.955], // Machala
-    6: [-1.25434, -78.62289], // Ambato
-    7: [-1.66472, -78.65459], // Riobamba
-    8: [-3.99313, -79.20422], // Loja
-    9: [0.35171, -78.12233], // Ibarra
-    10: [0.96818, -79.65172], // Esmeraldas
-    11: [-1.80217, -79.53447], // Babahoyo
-    12: [-2.22494, -80.85949], // Santa Elena
-    13: [-0.25342, -79.17195], // Santo Domingo
-  };
-
   constructor(
     private sedeService: SedeService,
     private route: ActivatedRoute,
@@ -60,7 +43,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private temaService: TemaService // <-- AGREGA ESTO
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.temaSubscription = this.temaService.modoOscuro$.subscribe(
@@ -70,20 +53,14 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     );
     this.sedeForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
-      id_ciudad: [1, Validators.required],
       direccion: ['', [Validators.required, Validators.minLength(5)]],
-      telefono: [
-        '',
-        [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)],
-      ],
+      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
       email: ['', Validators.email],
       latitud: [0],
       longitud: [0],
       estado: ['Activo'],
-    });
+      ciudad: ['', Validators.required],  // ahora string
 
-    this.sedeService.getCiudades().subscribe((data) => {
-      this.ciudades = data;
     });
 
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -93,14 +70,18 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
     const id = Number(idParam);
-
     this.sedeService.getSedeById(id).subscribe((data) => {
       this.sedeForm.patchValue(data);
+
+      // Centrar mapa si ya se cargó
       if (this.map) {
         this.map.setView([data.latitud ?? 0, data.longitud ?? 0], 14);
         this.marker.setLatLng([data.latitud ?? 0, data.longitud ?? 0]);
       }
     });
+
+
+
   }
 
   ngOnDestroy(): void {
@@ -128,26 +109,19 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.map.on('click', (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
       this.marker.setLatLng(e.latlng);
-      this.sedeForm.patchValue({
-        latitud: e.latlng.lat,
-        longitud: e.latlng.lng,
-      });
+      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+      this.getDireccionDesdeCoordenadas(lat, lng);
+    });
+
+    this.marker.on('dragend', () => {
+      const { lat, lng } = this.marker.getLatLng();
+      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+      this.getDireccionDesdeCoordenadas(lat, lng);
     });
 
     this.cdr.detectChanges();
-  }
-
-  onCiudadChange(id_ciudad: number): void {
-    const coords = this.coordCiudades[id_ciudad];
-    if (coords) {
-      this.map.setView(coords, 14);
-      this.marker.setLatLng(coords);
-      this.sedeForm.patchValue({
-        latitud: coords[0],
-        longitud: coords[1],
-      });
-    }
   }
 
   onSubmit(): void {
@@ -162,6 +136,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const id = this.route.snapshot.paramMap.get('id');
+    console.log(this.sedeForm.value);
     this.sedeService.editarSede(Number(id), this.sedeForm.value).subscribe({
       next: () => {
         this.showAlertMessage('Sede editada correctamente', 'success');
@@ -200,4 +175,24 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   get direccion() { return this.sedeForm.get('direccion')!; }
   get telefono() { return this.sedeForm.get('telefono')!; }
   get email() { return this.sedeForm.get('email')!; }
+
+  private getDireccionDesdeCoordenadas(lat: number, lon: number): void {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+    fetch(url)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.address) {
+          const direccion = data.display_name;
+          const ciudad = data.address.city || data.address.town || data.address.village || data.address.county;
+          this.sedeForm.patchValue({
+            direccion: direccion,
+            ciudad: ciudad || '',
+          });
+        }
+      })
+      .catch((error) => {
+        console.error('Error al obtener dirección desde coordenadas', error);
+      });
+  }
+
 }

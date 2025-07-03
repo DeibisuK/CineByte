@@ -9,25 +9,21 @@
         <div *ngIf="nombre.errors?.['minlength']">Debe tener al menos 3 caracteres</div>
       </div>
     </div>
+
     <div>
       <label>Ciudad</label>
-      <select formControlName="id_ciudad" (change)="onCiudadChange(sedeForm.value.id_ciudad)">
-        <option *ngFor="let ciudad of ciudades" [ngValue]="ciudad.id_ciudad">
-          {{ ciudad.nombre }}
-        </option>
-      </select>
-      <div *ngIf="id_ciudad.invalid && (id_ciudad.dirty || id_ciudad.touched)" class="error-message">
-        <div *ngIf="id_ciudad.errors?.['required']">Debe seleccionar una ciudad</div>
-      </div>
+      <input type="text" formControlName="ciudad" readonly>
     </div>
+
     <div>
       <label>Dirección</label>
-      <input type="text" formControlName="direccion">
+      <input type="text" formControlName="direccion" readonly>
       <div *ngIf="direccion.invalid && (direccion.dirty || direccion.touched)" class="error-message">
         <div *ngIf="direccion.errors?.['required']">La dirección es requerida</div>
         <div *ngIf="direccion.errors?.['minlength']">Debe tener al menos 5 caracteres</div>
       </div>
     </div>
+
     <div>
       <label>Teléfono</label>
       <input type="text" formControlName="telefono">
@@ -36,6 +32,7 @@
         <div *ngIf="telefono.errors?.['maxlength']">Máximo 15 caracteres</div>
       </div>
     </div>
+
     <div>
       <label>Email</label>
       <input type="email" formControlName="email">
@@ -44,8 +41,12 @@
       </div>
     </div>
   </div>
+
   <div id="map"></div>
-  <p>Ubicación: Lat {{ sedeForm.value.latitud }} | Lng {{ sedeForm.value.longitud }}</p>
+
+  <!-- Corregido para evitar NG0100 -->
+  <p>Ubicación: Lat {{ latitud }} | Lng {{ longitud }}</p>
+
   <button type="submit">Guardar</button>
 </form>
 
