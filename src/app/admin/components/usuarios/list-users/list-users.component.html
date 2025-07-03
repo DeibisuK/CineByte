@@ -1,7 +1,7 @@
 <div class="container">
     <div class="header">
         <h1>Gestión de Usuarios</h1>
-        <p>Administra usuarios y asigna roles de administrador</p>
+        <p>Administra los usuarios y sus permisos de administrador</p>
     </div>
 
     <div class="stats">
@@ -21,111 +21,145 @@
 
     <div class="controls">
         <div class="search-container">
-            <input type="text" [formControl]="searchControl" class="search-input"
-                placeholder="Buscar usuarios por nombre o email...">
-
-            <span class="search-icon">🔍</span>
+            <svg class="search-icon" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 0 0 1.48-5.34c-.47-2.78-2.79-5-5.59-5.34a6.505 6.505 0 0 0-7.27 7.27c.34 2.8 2.56 5.12 5.34 5.59a6.5 6.5 0 0 0 5.34-1.48l.27.28v.79l4.25 4.25c.41.41 1.08.41 1.49 0 .41-.41.41-1.08 0-1.49L15.5 14zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            </svg>
+            <input type="text" [formControl]="searchControl" class="search-input" placeholder="Buscar usuarios...">
         </div>
         <button class="btn btn-primary" (click)="openModal('createUserModal')">
+            <svg class="icon" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            </svg>
             Nuevo Admin
         </button>
     </div>
 
-    <div id="usersContainer" class="users-grid">
-        <div *ngIf="loading">Cargando...</div>
-        <div *ngIf="!loading && usuario.length === 0 && searchControl.value">No existe el usuario</div>
-        <div *ngIf="errorMsg">{{ errorMsg }}</div>
-        <div *ngFor="let user of usuario" class="user-card">
-            <img class="user-avatar" src="{{user.photoURL}}">
-            <div class="user-info">
-                <h3>{{user.displayName}}</h3>
-                <p class="user-email">{{user.email}}</p>
-                <span class="user-role role-{{user.customClaims?.role}}">
-                    {{user.customClaims?.role === 'admin' ? '👑 Administrador' : '👤 Usuario'}}
-                </span>
-            </div>
-            <div class="user-actions">
-                <button *ngIf="(user.customClaims?.role === 'admin')" (click)="abrirModalEdicion(user)" class="btn btn-small" title="Editar usuario">
-                    ✏️ Editar
-                </button>
-                <button *ngIf="!(user.customClaims?.role === 'admin')" (click)="asignarAdminUsuario(user.uid)"
-                    class="btn btn-small btn-primary" title=" Hacer administrador">
-                    👑 Hacer Admin
-                </button>
-                <button *ngIf="(user.customClaims?.role === 'admin')" (click)="quitarAdminUsuario(user.uid)"
-                    class="btn btn-small" title="Quitar privilegios de admin">
-                    👤 Quitar Admin
-                </button>
-
-                <button class="btn btn-small btn-danger" title="Eliminar usuario" (click)="elimianrUsuario(user.uid)">
-                    🗑️ Eliminar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para crear usuario -->
+    <!-- Modal de Creación -->
     <div #createUserModal class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Crear Nuevo Admin</h2>
-                <button class="close-btn" (click)="closeModal('createUserModal')">&times;</button>
-            </div>
+            <span class="close" (click)="closeModal('createUserModal')">&times;</span>
+            <h2>Crear Nuevo Administrador</h2>
             <form [formGroup]="registerForm" (ngSubmit)="crearAdmin()">
                 <div class="form-group">
-                    <label for="userName">Nombre Completo</label>
-                    <input formControlName="username" type="text" id="userName" class="form-control" required>
+                    <label for="username">Nombre de usuario</label>
+                    <input type="text" id="username" formControlName="username" placeholder="Nombre">
                 </div>
                 <div class="form-group">
-                    <label for="userEmail">Email</label>
-                    <input formControlName="email" type="email" id="userEmail" class="form-control" required>
+                    <label for="email">Correo electrónico</label>
+                    <input type="email" id="email" formControlName="email" placeholder="Correo">
                 </div>
                 <div class="form-group">
-                    <label for="userPassword">Contraseña</label>
-                    <input formControlName="password" type="password" id="userPassword" class="form-control" required>
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" formControlName="password" placeholder="Mínimo 6 caracteres">
                 </div>
-                <div class="form-actions">
-                    <button type="button" class="btn" (click)="closeModal('createUserModal')">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        Crear Usuario
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="registerForm.invalid">
+                    Crear Administrador
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Modal para editar usuario -->
+    <!-- Modal de Edición (NUEVO) -->
     <div #editUserModal class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2>Editar Usuario</h2>
-                <button class="close-btn" (click)="closeModal('editUserModal')">&times;</button>
-            </div>
-            <form [formGroup]="editForm" (ngSubmit)="editarAdmin()" id="editUserForm">
-                <input type="hidden" id="editUserId">
+            <span class="close" (click)="closeModal('editUserModal')">&times;</span>
+            <h2>Editar Usuario</h2>
+            <form [formGroup]="editForm" (ngSubmit)="editarAdmin()">
                 <div class="form-group">
-                    <label for="editUserName">Nombre Completo</label>
-                    <input formControlName="username" type="text" id="editUserName" class="form-control" required>
+                    <label>Nombre</label>
+                    <input type="text" formControlName="username" required>
                 </div>
                 <div class="form-group">
-                    <label for="editUserEmail">Email</label>
-                    <input formControlName="email" type="email" id="editUserEmail" class="form-control" required>
+                    <label>Email</label>
+                    <input type="email" formControlName="email" required>
                 </div>
                 <div class="form-group">
-                    <label for="editUserEmail">Email</label>
-                    <input formControlName="passwordE" type="password" id="editUserPass" class="form-control">
+                    <label>Nueva Contraseña (opcional)</label>
+                    <input type="password" formControlName="passwordE" minlength="6">
                 </div>
-                <div class="form-actions">
-                    <button type="button" class="btn" (click)="closeModal('editUserModal')">
-                        Cancelar
-                    </button>
-                    <button type="submit" class="btn btn-success">
-                        Guardar Cambios
-                    </button>
-                </div>
+                <button type="submit" [disabled]="editForm.invalid">Guardar</button>
             </form>
+        </div>
+    </div>
+
+    <div class="users-grid">
+        <div *ngIf="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>Cargando usuarios...</p>
+        </div>
+
+        <div *ngIf="!loading && usuario.length === 0 && searchControl.value" class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+            </svg>
+            <h3>No se encontraron usuarios</h3>
+        </div>
+
+        <div *ngIf="errorMsg" class="error-state">
+            <svg class="error-icon" viewBox="0 0 24 24">
+                <path fill="currentColor"
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+            </svg>
+            <p>{{ errorMsg }}</p>
+        </div>
+
+        <div *ngFor="let user of usuario" class="user-card">
+            <div class="user-avatar-container">
+                <img class="user-avatar" [src]="user.photoURL || 'Autenticacion/default-avatar.jpg'"
+                    [alt]="user.displayName" (error)="handleImageError($event)">
+                <div *ngIf="!user.photoURL" class="default-avatar">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                    </svg>
+                </div>
+            </div>
+
+            <div class="user-info">
+                <h3>{{user.displayName || 'Usuario sin nombre'}}</h3>
+                <p class="user-email">{{user.email}}</p>
+                <div class="user-role" [class.role-admin]="user.customClaims?.role === 'admin'">
+                    {{user.customClaims?.role === 'admin' ? 'Administrador' : 'Usuario'}}
+                </div>
+            </div>
+
+            <div class="user-actions">
+                <button (click)="abrirModalEdicion(user)" class="btn-action edit">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                    Editar
+                </button>
+
+                <button *ngIf="!(user.customClaims?.role === 'admin')" (click)="asignarAdminUsuario(user.uid)"
+                    class="btn-action promote">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm0 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm1.65-2.65L11.5 12.2V9h1v2.79l1.85 1.85-.7.71z" />
+                    </svg>
+                    Hacer Admin
+                </button>
+
+                <button *ngIf="user.customClaims?.role === 'admin'" (click)="quitarAdminUsuario(user.uid)"
+                    class="btn-action demote">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                    </svg>
+                    Quitar Admin
+                </button>
+
+                <button (click)="elimianrUsuario(user.uid)" class="btn-action delete">
+                    <svg viewBox="0 0 24 24">
+                        <path fill="currentColor"
+                            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                    </svg>
+                    Eliminar
+                </button>
+            </div>
         </div>
     </div>
 </div>

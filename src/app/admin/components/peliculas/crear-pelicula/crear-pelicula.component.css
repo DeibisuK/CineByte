@@ -217,9 +217,8 @@
 .form-field select:focus,
 .form-field textarea:focus {
   outline: none;
-  border-color: #ffd700;
+  border-color: var(--yellow);
   background: var(--footer-esp);
-  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
   transform: translateY(-2px);
 }
 
@@ -546,11 +545,11 @@
 }
 
 .plusButton:hover>.plusIcon {
-  fill: black;
+  fill: var(--bg-color);
   transform: rotate(180deg);
 }
 
 .plusButton:focus-visible>.plusIcon {
-  fill: black;
+  fill: var(--bg-color);
   transform: rotate(180deg);
 }

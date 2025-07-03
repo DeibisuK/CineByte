@@ -1,6 +1,6 @@
 :host {
   margin: 0;
-  padding: 0;
+  padding: 20px 0;
   box-sizing: border-box;
   background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -10,15 +10,16 @@
 .principal{
   height: 100%;
   align-content: center;
+  padding-bottom: 20px;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  background: rgba(45, 45, 45, 0.8);
+  max-width: 1000px;
+  margin: 20px auto;
+  background: var(--dropdown-border);
   border-radius: 20px;
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--dropdown-item-hover-bg);
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   padding: 0;
@@ -31,8 +32,8 @@
 
 .tabs {
   display: flex;
-  background: rgba(30, 30, 30, 0.9);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-color);
+  border-bottom: 2px solid var(--dropdown-item-hover-bg);
   position: relative;
   overflow: hidden;
 }
@@ -62,7 +63,7 @@
   padding: 18px 24px;
   background: none;
   border: none;
-  color: #9ca3af;
+  color: var(--text-color);
   font-size: 16px;
   font-weight: 500;
   cursor: pointer;
@@ -75,12 +76,12 @@
 }
 
 .tab-button:hover {
-  color: #ffffff;
+  color: var(--footer-link);
   background: rgba(255, 255, 255, 0.05);
 }
 
 .tab-button.active {
-  color: #FFD700;
+  color: var(--yellow);
   background: rgba(255, 215, 0, 0.1);
 }
 

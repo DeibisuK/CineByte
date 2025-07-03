@@ -1,18 +1,50 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  Pipe,
+  PipeTransform,
+  ViewChild,
+} from '@angular/core';
 import { AuthService } from '../../../../services/AuthService';
 import { CommonModule } from '@angular/common';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { UserProfile } from '../../../models/users.model';
 import { AlertaService } from '../../../../services/alerta.service';
 import Swal from 'sweetalert2';
 import { getAuth, updateProfile } from 'firebase/auth';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 
+@Pipe({ name: 'authProvider' })
+export class AuthProviderPipe implements PipeTransform {
+  transform(user: UserProfile): string {
+    if (!user.providerData || user.providerData.length === 0) {
+      return 'Email'; // Asumimos que es email/password si no hay providerData
+    }
+
+    switch (user.providerData[0].providerId) {
+      case 'password':
+        return 'Email';
+      case 'google.com':
+        return 'Google';
+      case 'facebook.com':
+        return 'Facebook';
+      default:
+        return user.providerData[0].providerId;
+    }
+  }
+}
+
 @Component({
   selector: 'app-list-users',
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './list-users.component.html',
-  styleUrl: './list-users.component.css'
+  styleUrl: './list-users.component.css',
 })
 export class ListUsersComponent implements OnInit {
   @ViewChild('createUserModal') modalRef!: ElementRef;
@@ -23,46 +55,78 @@ export class ListUsersComponent implements OnInit {
   editForm!: FormGroup;
   loading = false;
   errorMsg = '';
-  usuario: UserProfile[] = []
+  usuario: UserProfile[] = [];
   filtradosAD: UserProfile[] = [];
   filtradosCL: UserProfile[] = [];
 
-  constructor(private usuariosService: AuthService, private alerta: AlertaService) {
+  constructor(
+    private usuariosService: AuthService,
+    private alerta: AlertaService
+  ) {
     this.registerForm = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.maxLength(30)]),
+      username: new FormControl('', [
+        Validators.required,
+        Validators.maxLength(30),
+      ]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)])
+      password: new FormControl('', [
+        Validators.required,
+        Validators.minLength(6),
+      ]),
     });
 
     this.editForm = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.maxLength(30)]),
+      username: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      passwordE: new FormControl('')
+      passwordE: new FormControl(''), // Opcional
     });
+  }
+
+  handleImageError(event: any) {
+    event.target.style.display = 'none';
   }
 
   ngOnInit(): void {
     this.obtenerUsuarios();
-    this.searchControl.valueChanges.pipe(
-      debounceTime(500),
-      distinctUntilChanged(),
-      switchMap(texto => {
-        this.loading = true;
-        this.errorMsg = '';
-        // Si texto está vacío, traer todos usuarios (puedes implementar en la API)
-        return this.usuariosService.buscarUsuarios(texto?.trim() || '');
-      })
-    ).subscribe({
-      next: (usuarios) => {
-        this.usuario = usuarios;
-        this.loading = false;
-      },
-      error: (err) => {
-        this.errorMsg = 'Error al buscar usuarios';
-        this.loading = false;
-        console.error(err);
-      }
-    });
+    this.searchControl.valueChanges
+      .pipe(
+        debounceTime(500),
+        distinctUntilChanged(),
+        switchMap((texto) => {
+          this.loading = true;
+          this.errorMsg = '';
+          // Si texto está vacío, traer todos usuarios (puedes implementar en la API)
+          return this.usuariosService.buscarUsuarios(texto?.trim() || '');
+        })
+      )
+      .subscribe({
+        next: (usuarios) => {
+          this.usuario = usuarios;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMsg = 'Error al buscar usuarios';
+          this.loading = false;
+          console.error(err);
+        },
+      });
+  }
+
+  getAuthProvider(user: UserProfile): string {
+    if (!user.providerData || user.providerData.length === 0) {
+      return 'Email'; // Valor por defecto
+    }
+
+    switch (user.providerData[0].providerId) {
+      case 'password':
+        return 'Email';
+      case 'google.com':
+        return 'Google';
+      case 'facebook.com':
+        return 'Facebook';
+      default:
+        return user.providerData[0].providerId;
+    }
   }
 
   async crearAdmin() {
@@ -75,19 +139,19 @@ export class ListUsersComponent implements OnInit {
         throw new Error('Token de autenticación no disponible');
       }
 
-      await this.usuariosService.crearAdmin(email, password, username, token).subscribe({
-        next: () => {
-          this.alerta.success('Exito', 'Administrador creado correctamente');
-          this.registerForm.reset();
-          this.closeModal('createUserModal');
-          this.obtenerUsuarios();
-        },
-        error: () => {
-          this.alerta.error('Error', 'No se pudo crear el administrador');
-        }
-      });
-
-
+      await this.usuariosService
+        .crearAdmin(email, password, username, token)
+        .subscribe({
+          next: () => {
+            this.alerta.success('Exito', 'Administrador creado correctamente');
+            this.registerForm.reset();
+            this.closeModal('createUserModal');
+            this.obtenerUsuarios();
+          },
+          error: () => {
+            this.alerta.error('Error', 'No se pudo crear el administrador');
+          },
+        });
     } catch (error) {
       console.error('Error al crear administrador:', error);
       this.alerta.error('Error', 'No se pudo crear el administrador');
@@ -96,13 +160,13 @@ export class ListUsersComponent implements OnInit {
 
   obtenerUsuarios() {
     this.usuariosService.obtenerUsuarios().subscribe({
-      next: usuarios => {
+      next: (usuarios) => {
         this.usuario = usuarios;
         this.cargarFiltros();
       },
-      error: err => {
+      error: (err) => {
         this.alerta.error('Error al obtener usuarios:', err);
-      }
+      },
     });
   }
 
@@ -113,7 +177,7 @@ export class ListUsersComponent implements OnInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.usuariosService.eliminarUsuario(uid).subscribe({
@@ -122,9 +186,10 @@ export class ListUsersComponent implements OnInit {
             this.obtenerUsuarios();
           },
           error: (err) => {
-            const mensaje = err.error?.error || 'No se pudo eliminar el usuario.';
+            const mensaje =
+              err.error?.error || 'No se pudo eliminar el usuario.';
             Swal.fire('Error', mensaje, 'error');
-          }
+          },
         });
       }
     });
@@ -139,15 +204,20 @@ export class ListUsersComponent implements OnInit {
       return;
     }
 
-    user.getIdToken().then(token => {
+    user.getIdToken().then((token) => {
       this.usuariosService.asignarAdmin(uid, token).subscribe({
         next: () => {
-          this.alerta.autoClose('Administración', 'Usuario asignado como admin correctamente', "success", 100);
+          this.alerta.autoClose(
+            'Administración',
+            'Usuario asignado como admin correctamente',
+            'success',
+            100
+          );
           this.obtenerUsuarios();
         },
         error: (err) => {
           this.alerta.error('Error asignando admin:', err);
-        }
+        },
       });
     });
   }
@@ -167,10 +237,10 @@ export class ListUsersComponent implements OnInit {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        user.getIdToken().then(token => {
+        user.getIdToken().then((token) => {
           this.usuariosService.removerAdmin(uid, token).subscribe({
             next: () => {
               this.alerta.success('Exito', 'Rol admin removido correctamente');
@@ -179,7 +249,7 @@ export class ListUsersComponent implements OnInit {
             error: (err) => {
               console.error('Error removiendo admin:', err);
               this.alerta.error('Error', 'Error al remover rol admin');
-            }
+            },
           });
         });
       }
@@ -187,76 +257,109 @@ export class ListUsersComponent implements OnInit {
   }
 
   cargarFiltros() {
-    this.filtradosAD = this.usuario.filter(a => a.customClaims?.role === 'admin');
-    this.filtradosCL = this.usuario.filter(a => {
+    this.filtradosAD = this.usuario.filter(
+      (a) => a.customClaims?.role === 'admin'
+    );
+    this.filtradosCL = this.usuario.filter((a) => {
       const claims = a.customClaims;
       return !claims || Object.keys(claims).length === 0;
     });
   }
 
   openModal(modal: string) {
-    if (modal === 'createUserModal') {
-      return this.modalRef.nativeElement.classList.add('active');
+    try {
+      if (modal === 'createUserModal' && this.modalRef?.nativeElement) {
+        this.modalRef.nativeElement.classList.add('active');
+      } else if (this.modalEdit?.nativeElement) {
+        this.modalEdit.nativeElement.classList.add('active');
+      }
+    } catch (error) {
+      console.error('Error al abrir el modal:', error);
     }
-    return this.modalEdit.nativeElement.classList.add('active');
   }
 
   closeModal(modal: string) {
     if (modal === 'createUserModal') {
-     return  this.modalRef.nativeElement.classList.remove('active');
+      return this.modalRef.nativeElement.classList.remove('active');
     }
     return this.modalEdit.nativeElement.classList.remove('active');
-
   }
-  abrirModalEdicion(user: UserProfile): void {
-    this.selectedUserUid = user.uid;
-    // Rellenar los campos del formulario con datos actuales
-    this.editForm.patchValue({
-      username: user.displayName || '',
-      email: user.email || '',
-      passwordE: '' // No se puede obtener, se deja para que lo ingrese
-    });
 
+abrirModalEdicion(user: UserProfile): void {
+  if (!this.modalEdit) {
+    console.error('Modal de edición no encontrado');
+    return;
+  }
+  
+  this.selectedUserUid = user.uid;
+  this.editForm.reset(); // Limpia el formulario primero
+  
+  this.editForm.patchValue({
+    username: user.displayName || '',
+    email: user.email || '',
+    passwordE: ''
+  });
+
+  // Forzar la detección de cambios (por si acaso)
+  setTimeout(() => {
     this.openModal('editUserModal');
-  }
-  editarAdmin() {
-    const auth = getAuth();
-    const user = auth.currentUser;
+  }, 0);
+}
 
-    if (!user) {
-      alert('No hay usuario autenticado');
+  async editarAdmin() {
+  try {
+    if (!this.selectedUserUid) {
+      this.alerta.error('Error', 'No se seleccionó ningún usuario');
       return;
     }
 
-    user.getIdToken().then(token => {
-      debugger
-      if (!this.editForm.valid || !this.selectedUserUid) return;
-      const { username, email, passwordE } = this.editForm.value;
+    if (this.editForm.invalid) {
+      this.alerta.error('Error', 'Por favor complete todos los campos requeridos');
+      return;
+    }
 
-      this.usuariosService.actualizarUsuario(this.selectedUserUid, {
-        username, email, passwordE
-      }, token!).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Éxito',
-            text: 'Usuario actualizado con éxito',
-            confirmButtonText: 'Aceptar',
-            allowOutsideClick: false,  // Evita que se cierre al hacer click fuera
-            allowEscapeKey: false       // Evita que se cierre con tecla ESC
-          }).then(() => {
-            this.closeModal('editUserModal');
-            this.obtenerUsuarios();
-            window.location.reload();
-          });
-        },
-        error: (err) => {
-          this.alerta.error('Error', 'Error al actualizar usuario');
-          console.error(err);
-        }
-      });
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      this.alerta.error('Error', 'No hay usuario autenticado');
+      return;
+    }
+
+    const token = await currentUser.getIdToken();
+    const { username, email, passwordE } = this.editForm.value;
+
+    this.loading = true;
+    
+    const updateData: any = { 
+      username, 
+      email 
+    };
+    
+    if (passwordE && passwordE.length >= 6) {
+      updateData.password = passwordE;
+    }
+
+    this.usuariosService.actualizarUsuario(
+      this.selectedUserUid,
+      updateData,
+      token
+    ).subscribe({
+      next: () => {
+        this.alerta.autoClose('Éxito', 'Usuario actualizado', 'success', 1500);
+        this.closeModal('editUserModal');
+        this.obtenerUsuarios();
+      },
+      error: (err) => {
+        this.loading = false;
+        const errorMsg = err.error?.message || 'Error al actualizar usuario';
+        this.alerta.error('Error', errorMsg);
+      }
     });
-
-
+  } catch (error) {
+    this.loading = false;
+    this.alerta.error('Error', 'Error inesperado');
+    console.error(error);
   }
+}
 }
