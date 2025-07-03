@@ -225,10 +225,12 @@
                         Crear Película
                     </button>
                 </div>
-                <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
-                <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor"
-                    (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
             </form>
         </div>
     </div>
+</div>
+
+<div class="modal-global-container">
+  <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
+  <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor" (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
 </div>

@@ -10,12 +10,34 @@ import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sed
 import { CreatePromocionComponent } from './components/promociones/crear-promociones/crear-promociones.component';
 import { ListUsersComponent } from './components/usuarios/list-users/list-users.component';
 import { CrearSalasComponent } from './components/salas/crear-salas/crear-salas.component';
+import { ListarActoresComponent } from './components/actores/listar-actores/listar-actores.component';
+import { CrearActorComponent } from './components/actores/crear-actor/crear-actor.component';
+import { CrearDistribuidorComponent } from './components/distribuidor/crear-distribuidor/crear-distribuidor.component';
+import { ListDistribuidorComponent } from './components/distribuidor/listar-distribuidor/list-distribuidor.component';
 
 export const adminRoutes: Routes = [
-  
+  {
+    path: '', redirectTo: 'dashboard', pathMatch: 'full' 
+  },
   {
     path: 'dashboard',
     component: DashboardComponent
+  },
+  {
+    path:'list-actores',
+    component: ListarActoresComponent
+  },
+  {
+    path:'crear-actores',
+    component: CrearActorComponent
+  },
+  {
+    path:'list-distribuidor',
+    component: ListDistribuidorComponent
+  },
+  {
+    path:'crear-distribuidor',
+    component: CrearDistribuidorComponent
   },
   {
     path: 'add-pelicula',

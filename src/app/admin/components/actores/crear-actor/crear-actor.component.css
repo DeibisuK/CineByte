@@ -1,37 +1,125 @@
 .modal-backdrop {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.5);
-
-  height: 100%;
-  width: 100%;
-  align-content: center;
-  justify-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+  margin: 0;
+  padding: 0;
 }
 
 .modal-content {
-  background-color: rgb(0, 0, 0);
-  border-radius: 10px;
-  padding: 20px 30px;
-  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
   position: relative;
+  z-index: 1;
+  background: var(--dropdown-bg);
+  border-radius: 16px;
+  padding: 2rem;
   width: 90%;
   max-width: 500px;
+  margin: 1rem;
+  border: 2px solid var(--yellow);
   animation: fadeIn 0.3s ease;
+  position: relative;
 }
 
+/* Contenedor del formulario dentro del modal */
+.modal-content .form-container {
+  padding: 0;
+  background: transparent;
+}
+
+/* Inputs - Estilo consistente */
+.modal-content .form-input {
+  width: 100%;
+  padding: 0.75rem 1rem; /* Tamaño más compacto */
+  background: var(--bg-color);
+  border: 2px solid var(--dropdownrder);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 0.95rem; /* Tamaño de fuente ligeramente menor */
+  transition: all 0.3s ease;
+}
+
+/* Select - Versión compacta */
+.modal-content select {
+  padding: 0.75rem 1rem; /* Igual que los inputs */
+  font-size: 0.95rem;
+}
+
+
+/* Botón de cerrar */
 .modal-cerrar {
-  color: red;
+  color: #ef4444;
   position: absolute;
-  top: 10px;
-  right: 15px;
+  top: 1rem;
+  right: 1.5rem;
   background: transparent;
   border: none;
-  font-size: 24px;
+  font-size: 1.5rem;
   cursor: pointer;
+  transition: transform 0.2s ease;
+  z-index: 1;
 }
 
+/* Título del modal */
 .modal-titulo {
-  margin-top: 0;
+  color: var(--yellow);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.modal-titulo::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--dropdown-border);
+}
+
+/* Grupos de formulario */
+.modal-content .form-group {
+  margin-bottom: 1.25rem; /* Espaciado más ajustado */
+}
+
+/* Botón de submit */
+.modal-content .submit-button {
+  padding: 0.75rem 1.5rem; /* Más compacto */
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  text-align: justify;
+  letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-content {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .modal-titulo {
+    font-size: 1.3rem;
+  }
 }
 
 @keyframes fadeIn {
@@ -39,92 +127,61 @@
     opacity: 0;
     transform: translateY(-15px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
-
-/* Contenedor principal del formulario */
-.form-container {
-  background-color: #ffffff;
-  padding: 2.5rem;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 500px;
-  box-sizing: border-box;
-}
-
-/* Título del formulario */
-.form-title {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #ffffff;
-  font-size: 1.8rem;
-}
-
-/* Contenedor para cada campo (label + input) */
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-/* Estilo para las etiquetas (labels) */
-.form-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 600;
-  color: #b3b3b3;
-  text-align: left;
-}
-
-/* Estilo para los campos de entrada (input) */
-.form-input {
-  width: 100%;
-  padding: 0.75rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 1rem;
-  box-sizing: border-box;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-/* Efecto de foco en los campos de entrada */
-.form-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
-}
-
-/* Oculta las flechas en los campos de tipo número para un look más limpio */
-.form-input[type="number"]::-webkit-inner-spin-button,
-.form-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.form-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-
-/* Estilo para el botón de envío */
-.submit-button {
+/* Select - Estilo CineByte */
+select {
   width: 100%;
   padding: 0.8rem 1rem;
-  background-color: #007bff;
-  color: #ffffff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  background: var(--bg-color);
+  border: 2px solid var(--dropdown-border);
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  appearance: none; /* Quita el estilo por defecto */
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
 }
 
-/* Efecto hover en el botón de envío */
+select:focus {
+  outline: none;
+  border-color: var(--yellow);
+}
+
+/* Mensajes de validación */
+.validation-error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+
+/* Botón de submit - Adaptado al gradiente de CineByte */
+.submit-button {
+  width: 100%;
+  padding: 0.8rem 1.5rem;
+  background: linear-gradient(135deg, #FFD700, #FFA500); /* Igual que .btn-primary */
+  color: #000;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  font-size: 1rem;
+  text-transform: uppercase; /* Estilo consistente */
+}
+
 .submit-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: translateY(-2px) scale(1.02); /* Efecto hover mejorado */
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3); /* Sombra amarilla */
 }
