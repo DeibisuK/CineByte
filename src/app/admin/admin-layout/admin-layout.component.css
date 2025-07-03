@@ -49,54 +49,59 @@
 /* ... (pega aquí todo tu CSS de :host, .containere, etc. que ya tenías) ... */
 
 :host {
- all: unset;
- display: inline-block;
- margin: 0;
- padding: 0;
- height: 100vh;
- width: 100%;
+  all: unset;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100%;
 }
+
 :host .containere {
- width: 100%;
- height: 100%;
- margin: 0;
- padding: 0;
- display: grid;
- grid-template-rows: 1fr;
- grid-template-columns: auto 1fr;
- grid-template-areas: "sidebar content";
- transition: all 0.3s ease;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: auto 1fr;
+  grid-template-areas: "sidebar content";
+  transition: all 0.3s ease;
 }
+
 :host .containere.no-sidebar {
- grid-template-columns: 80px 1fr;
+  grid-template-columns: 80px 1fr;
 }
+
 :host .sidebar-container {
- grid-area: sidebar;
- text-align: center;
- height: 100vh;
- overflow: hidden;
+  grid-area: sidebar;
+  text-align: center;
+  height: 100vh;
+  overflow: hidden;
 }
+
 :host .content-container {
- grid-area: content;
- text-align: center;
- min-width: 0;
- width: 100%;
- height: 100vh;
- overflow-y: auto;
- transition: margin-left 0.3s;
+  grid-area: content;
+  text-align: center;
+  min-width: 0;
+  width: 100%;
+  height: 100vh;
+  overflow-y: auto;
+  transition: margin-left 0.3s;
 }
 
 /* --- Solución para Móviles --- */
 @media (max-width: 480px) {
 
   /* ... (las reglas para .containere y .content-container se quedan igual) ... */
-   :host .containere {
+  :host .containere {
     grid-template-columns: 1fr;
     grid-template-areas: "content";
-   }
-   :host .containere.no-sidebar {
+  }
+
+  :host .containere.no-sidebar {
     grid-template-columns: 1fr;
-   }
+  }
 
   /* 2. Ocultamos el sidebar por defecto */
   :host .sidebar-container {
@@ -105,19 +110,22 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 250px; /* Dale el ancho que desees para el menú móvil */
+    width: 250px;
+    /* Dale el ancho que desees para el menú móvil */
     z-index: 1000;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   }
 
   /* ESTA ES LA REGLA MÁGICA: muestra el sidebar cuando tiene la clase */
   :host .sidebar-container.mobile-visible {
-    display: block; /* O 'flex' si el contenido interno lo requiere */
+    display: block;
+    /* O 'flex' si el contenido interno lo requiere */
   }
-   :host .content-container {
+
+  :host .content-container {
     height: 100vh;
     width: 100%;
-   }
+  }
 
   /* --- ESTILOS DEL ICONO DEL MENÚ --- */
   /* Añadimos :host a todos los selectores del icono */
@@ -134,39 +142,45 @@
     position: fixed;
     top: 20px;
     left: 20px;
-    z-index: 1001; /* Debe estar por encima del sidebar */
+    z-index: 1001;
+    /* Debe estar por encima del sidebar */
   }
 
   :host .bar {
     /* ... (estilos de .bar igual) ... */
-     position: relative;
-  height: var(--height-bar);
-  width: 100%;
-  border-radius: .5rem;
-  background-color: #9941fc;
+    position: relative;
+    height: var(--height-bar);
+    width: 100%;
+    border-radius: .5rem;
+    background-color: #9941fc;
   }
+
   :host .bar--1 {
-  top: var(--pos-y-bar-one);
-  transform: rotate(var(--rotate-bar-one));
-  transition: top 200ms 100ms, transform 100ms;
+    top: var(--pos-y-bar-one);
+    transform: rotate(var(--rotate-bar-one));
+    transition: top 200ms 100ms, transform 100ms;
   }
+
   :host .bar--2 {
-  transform: scaleX(var(--scale-bar));
-  transition: transform 150ms 100ms;
+    transform: scaleX(var(--scale-bar));
+    transition: transform 150ms 100ms;
   }
+
   :host .bar--3 {
-  bottom: var(--pos-y-bar-three);
-  transform: rotate(var(--rotate-bar-three));
-  transition: bottom 200ms 100ms, transform 100ms;
+    bottom: var(--pos-y-bar-three);
+    transform: rotate(var(--rotate-bar-three));
+    transition: bottom 200ms 100ms, transform 100ms;
   }
 
   /* CAMBIAMOS EL TRIGGER: de ":checked" a nuestra clase ".active" */
-  :host .icon-menu.active > .bar--1 {
+  :host .icon-menu.active>.bar--1 {
     transition: top 200ms, transform 200ms 100ms;
   }
-  :host .icon-menu.active > .bar--3 {
+
+  :host .icon-menu.active>.bar--3 {
     transition: bottom 200ms, transform 200ms 100ms;
   }
+
   :host .icon-menu.active {
     --pos-y-bar-one: calc(var(--gap) + var(--height-bar));
     --pos-y-bar-three: calc(var(--gap) + var(--height-bar));

@@ -9,6 +9,7 @@ import { CrearSedesComponent } from './components/sedes/crear-sedes/crear-sedes.
 import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sedes.component';
 import { CreatePromocionComponent } from './components/promociones/crear-promociones/crear-promociones.component';
 import { ListUsersComponent } from './components/usuarios/list-users/list-users.component';
+import { CrearSalasComponent } from './components/salas/crear-salas/crear-salas.component';
 
 export const adminRoutes: Routes = [
   
@@ -55,5 +56,10 @@ export const adminRoutes: Routes = [
   {
     path: 'users',
     component: ListUsersComponent
+  },
+  {
+    path: 'add-sala',
+    component: CrearSalasComponent
   }
+
 ];
