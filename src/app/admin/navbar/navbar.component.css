@@ -40,7 +40,6 @@
   position: relative;
   min-height: 80px;
   border-bottom: 1px solid var(--sidebar-border);
-  background: linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(247, 218, 0, 0.05) 100%);
   overflow: hidden;
 }
 
@@ -151,7 +150,7 @@
 
 /* Estados del menú */
 .sidebar-menu a:hover {
-  background: var(--footer-esp);
+  background: var(--hover-link);
   transform: translateX(2px);
 }
 
@@ -229,7 +228,6 @@ body.light-mode .sidebar-menu a:hover {
   gap: 1rem;
   padding: 1.5rem 0.5rem;
   border-top: 1px solid var(--sidebar-border);
-  background: linear-gradient(135deg, var(--sidebar-bg) 0%, rgba(247, 218, 0, 0.02) 100%);
   overflow: hidden;
 }
 

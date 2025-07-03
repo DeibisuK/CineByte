@@ -41,7 +41,7 @@
 .form-promocion input:focus,
 .form-promocion select:focus,
 .form-promocion textarea:focus {
-  border-color: #FFA500;
+  border-color: var(--yellow);
   outline: none;
 }
 
@@ -96,11 +96,30 @@
   color: var(--text-color);
   cursor: pointer;
   overflow: hidden;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .image-upload-label:hover {
-  border-color: #f7da00;
+  border-color: #ffd700;
+  background: linear-gradient(135deg, var(--footer-esp), var(--dropdown-bg));
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(255, 215, 0, 0.1);
+
+}
+
+.image-upload-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.image-upload-label:hover::before {
+  left: 100%;
 }
 
 /* CENTRADO de + y texto */

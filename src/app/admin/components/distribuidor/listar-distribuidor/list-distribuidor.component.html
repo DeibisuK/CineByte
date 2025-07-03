@@ -1,1 +1,121 @@
-<p>list-distribuidor works!</p>
+<div class="distribuidores-container">
+  <div class="content-wrapper">
+    <div class="distribuidores-header">
+      <h2 class="distribuidores-title">Administrar Distribuidores</h2>
+      <div class="stats-container">
+        <div class="stat-item">
+          <div class="stat-number">{{totalDistribuidores()}}</div>
+          <div class="stat-label">Total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulario para crear distribuidor -->
+    <div class="distribuidor-form">
+      <form [formGroup]="formDistribuidor" (ngSubmit)="addDistribuidor()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="nombre">Nombre</label>
+            <input formControlName="nombre" type="text" id="nombre" class="form-input" placeholder="Ej: Warner Bros" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="id_pais_origen">País Origen</label>
+            <select formControlName="id_pais_origen" id="id_pais_origen" class="form-select">
+              <option value="">Seleccione país</option>
+              <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="ano_fundacion">Año Fundación</label>
+            <input formControlName="ano_fundacion" type="number" id="ano_fundacion" class="form-input" placeholder="Ej: 1923" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="sitio_web">Sitio Web</label>
+            <input formControlName="sitio_web" type="text" id="sitio_web" class="form-input" placeholder="Ej: warnerbros.com" />
+          </div>
+        </div>
+        
+        <button class="btn-primary" type="submit">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+          </svg>
+          Agregar Distribuidor
+        </button>
+      </form>
+    </div>
+
+    <!-- Listado de distribuidores -->
+    <div class="table-section">
+      <div class="table-header">
+        <h3 class="table-title">Lista de Distribuidores</h3>
+        <div class="search-container">
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+          </svg>
+          <input type="text" class="search-input" placeholder="Buscar distribuidor..." [(ngModel)]="filtroDistribuidores" (input)="aplicarFiltro()" />
+        </div>
+      </div>
+
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>País Origen</th>
+              <th>Año Fundación</th>
+              <th>Sitio Web</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let distribuidor of distribuidoresFiltrados">
+              <td class="distribuidor-id">{{distribuidor.id_distribuidora}}</td>
+              <td class="distribuidor-name">
+                <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora" (dblclick)="activarEdicion(distribuidor)">
+                  {{distribuidor.nombre}}
+                </span>
+                <div *ngIf="distribuidorEditando === distribuidor.id_distribuidora" class="inline-edit">
+                  <input type="text" [(ngModel)]="nombreTemporal" class="edit-input" placeholder="Nombre" #nombreInput>
+                  <div class="edit-actions">
+                    <button type="button" class="btn-save" title="Guardar">
+                      ✓
+                    </button>
+                    <button type="button" class="btn-cancel" title="Cancelar">
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              </td>
+              <td>{{obtenerNombrePais(distribuidor.id_pais_origen)}}</td>
+              <td>{{distribuidor.ano_fundacion}}</td>
+              <td>
+                <a *ngIf="distribuidor.sitio_web" [href]="'https://' + distribuidor.sitio_web" target="_blank" class="website-link">
+                  {{distribuidor.sitio_web}}
+                </a>
+                <span *ngIf="!distribuidor.sitio_web">-</span>
+              </td>
+              <td>
+                <div class="distribuidor-actions">
+                  <button class="action-btn" (click)="activarEdicion(distribuidor)" *ngIf="distribuidorEditando !== distribuidor.id_distribuidora" title="Editar">
+                    <svg class="action-icon" viewBox="0 0 24 24">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                  </button>
+                  <button class="action-btn delete" title="Eliminar">
+                    <svg class="action-icon" viewBox="0 0 24 24">
+                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
