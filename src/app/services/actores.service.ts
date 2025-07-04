@@ -1,13 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Actores } from '../admin/models/actores.model';
+import { ActorCreateDTO, Actores, ActorUpdateDTO } from '../admin/models/actores.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ActoresService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/actores';
+  private apiURL = 'https://api-cinebyte.onrender.com/api/actores';
 
   constructor(private http: HttpClient) {}
 
@@ -15,13 +15,19 @@ export class ActoresService {
     return this.http.get<Actores[]>(this.apiURL);
   }
 
-  addActor(actorForm: Actores): Observable<any> {
-    return this.http.post(this.apiURL, actorForm);
+  getActorById(id: number): Observable<Actores> {
+    return this.http.get<Actores>(`${this.apiURL}/${id}`);
   }
-  updateActor(id: number, act: Actores): Observable<any> {
-    return this.http.put(`${this.apiURL}/${id}`, act);
+
+  addActor(actor: ActorCreateDTO): Observable<Actores> {
+    return this.http.post<Actores>(this.apiURL, actor);
   }
-  deleteActor(id: number): Observable<any> {
-    return this.http.delete(`${this.apiURL}/${id}`);
+
+  updateActor(id: number, actor: ActorUpdateDTO): Observable<Actores> {
+    return this.http.put<Actores>(`${this.apiURL}/${id}`, actor);
+  }
+
+  deleteActor(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiURL}/${id}`);
   }
 }

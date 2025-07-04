@@ -17,17 +17,26 @@
           <div class="form-group">
             <label class="form-label" for="nombre">Nombre</label>
             <input formControlName="nombre" type="text" id="nombre" class="form-input" placeholder="Ej: Chris" />
+            <small *ngIf="formActor.get('nombre')?.invalid && formActor.get('nombre')?.touched" class="error-message">
+              Nombre requerido (mínimo 2 caracteres)
+            </small>
           </div>
           <div class="form-group">
             <label class="form-label" for="apellidos">Apellidos</label>
             <input formControlName="apellidos" type="text" id="apellidos" class="form-input" placeholder="Ej: Hemsworth" />
+            <small *ngIf="formActor.get('apellidos')?.invalid && formActor.get('apellidos')?.touched" class="error-message">
+              Apellidos requeridos (mínimo 2 caracteres)
+            </small>
           </div>
         </div>
-        
+
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="fecha_nacimiento">Fecha Nacimiento</label>
             <input formControlName="fecha_nacimiento" type="date" id="fecha_nacimiento" class="form-input" />
+            <small *ngIf="formActor.get('fecha_nacimiento')?.invalid && formActor.get('fecha_nacimiento')?.touched" class="error-message">
+              Fecha requerida
+            </small>
           </div>
           <div class="form-group">
             <label class="form-label" for="id_nacionalidad">Nacionalidad</label>
@@ -35,10 +44,13 @@
               <option value="">Seleccione nacionalidad</option>
               <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
             </select>
+            <small *ngIf="formActor.get('id_nacionalidad')?.invalid && formActor.get('id_nacionalidad')?.touched" class="error-message">
+              Nacionalidad requerida
+            </small>
           </div>
         </div>
-        
-        <button class="btn-primary" type="submit">
+
+        <button class="btn-primary" type="submit" [disabled]="formActor.invalid">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
           </svg>
@@ -78,32 +90,47 @@
                   {{actor.nombre}} {{actor.apellidos}}
                 </span>
                 <div *ngIf="actorEditando === actor.id_actor" class="inline-edit">
-                  <input type="text" [(ngModel)]="nombreTemporal" class="edit-input" placeholder="Nombre" #nombreInput>
-                  <input type="text" [(ngModel)]="apellidosTemporal" class="edit-input" placeholder="Apellidos">
-                  <div class="edit-actions">
-                    <button type="button"  class="btn-save" title="Guardar">
-                      ✓
-                    </button>
-                    <button type="button" class="btn-cancel" (click)="cancelarEdicion()" title="Cancelar">
-                      ✕
-                    </button>
-                  </div>
+                  <input type="text" [(ngModel)]="nombreTemporal" class="edit-input" placeholder="Nombre" required>
+                  <input type="text" [(ngModel)]="apellidosTemporal" class="edit-input" placeholder="Apellidos" required>
+                  <small *ngIf="!nombreTemporal || !apellidosTemporal" class="error-message">Nombre y apellidos son requeridos</small>
                 </div>
               </td>
-              <td>{{actor.fecha_nacimiento | date:'dd-MM-yyyy'}}</td>
-              <td>{{obtenerNombrePais(actor.id_nacionalidad)}}</td>
+
+              <td>
+                <span *ngIf="actorEditando !== actor.id_actor">
+                  {{actor.fecha_nacimiento | date:'dd-MM-yyyy'}}
+                </span>
+                <input *ngIf="actorEditando === actor.id_actor" type="date" [(ngModel)]="fechaNacimientoTemporal" class="edit-input" required>
+              </td>
+
+              <td>
+                <span *ngIf="actorEditando !== actor.id_actor">
+                  {{actor.nombrePais}}
+                </span>
+                <select *ngIf="actorEditando === actor.id_actor" [(ngModel)]="nacionalidadTemporal" class="edit-select" required>
+                  <option value="">Seleccione país</option>
+                  <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
+                </select>
+              </td>
               <td>
                 <div class="actor-actions">
-                  <button class="action-btn" (click)="activarEdicion(actor)" *ngIf="actorEditando !== actor.id_actor" title="Editar">
-                    <svg class="action-icon" viewBox="0 0 24 24">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                    </svg>
-                  </button>
-                  <button class="action-btn delete" (click)="deleteActor(actor.id_actor, actor.nombre)" title="Eliminar">
-                    <svg class="action-icon" viewBox="0 0 24 24">
-                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                    </svg>
-                  </button>
+                  <div *ngIf="actorEditando === actor.id_actor" class="edit-buttons">
+                    <button class="btn-save" (click)="guardarEdicion()" title="Guardar" 
+                      [disabled]="!nombreTemporal || !apellidosTemporal || !fechaNacimientoTemporal || !nacionalidadTemporal">✓</button>
+                    <button class="btn-cancel" (click)="cancelarEdicion()" title="Cancelar">✕</button>
+                  </div>
+                  <div *ngIf="actorEditando !== actor.id_actor">
+                    <button class="action-btn" (click)="activarEdicion(actor)" title="Editar">
+                      <svg class="action-icon" viewBox="0 0 24 24">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                      </svg>
+                    </button>
+                    <button class="action-btn delete" (click)="deleteActor(actor.id_actor, actor.nombre + ' ' + actor.apellidos)" title="Eliminar">
+                      <svg class="action-icon" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </td>
             </tr>

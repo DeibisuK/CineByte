@@ -3,22 +3,26 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ActoresService } from '../../../../services/actores.service';
 import { PaisesService } from '../../../../services/paises.service';
 import { CommonModule } from '@angular/common';
+import { Actores } from '../../../models/actores.model';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-listar-actores',
-  imports: [CommonModule, FormsModule,ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './listar-actores.component.html',
   styleUrl: './listar-actores.component.css'
 })
 export class ListarActoresComponent implements OnInit {
   formActor: FormGroup;
-  actores: any[] = [];
-  actoresFiltrados: any[] = [];
+  actores: Actores[] = [];
+  actoresFiltrados: Actores[] = [];
   paises: any[] = [];
   filtroActores: string = '';
   actorEditando: number | null = null;
   nombreTemporal: string = '';
   apellidosTemporal: string = '';
+  fechaNacimientoTemporal: string = '';
+  nacionalidadTemporal: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -26,28 +30,48 @@ export class ListarActoresComponent implements OnInit {
     private paisService: PaisesService
   ) {
     this.formActor = this.fb.group({
-      nombre: ['', Validators.required],
-      apellidos: ['', Validators.required],
+      nombre: ['', [Validators.required, Validators.minLength(2)]],
+      apellidos: ['', [Validators.required, Validators.minLength(2)]],
       fecha_nacimiento: ['', Validators.required],
       id_nacionalidad: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.cargarActores();
-    this.cargarPaises();
-  }
-
-  cargarActores(): void {
-    this.actorService.getActor().subscribe(data => {
-      this.actores = data;
-      this.actoresFiltrados = [...data];
+    this.cargarPaises().then(() => {
+      this.cargarActores();
     });
   }
 
-  cargarPaises(): void {
-    this.paisService.getPais().subscribe(data => {
-      this.paises = data;
+  cargarActores(): void {
+    this.actorService.getActor().subscribe({
+      next: (data) => {
+        this.actores = data.map(actor => ({
+          ...actor,
+          nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
+          fecha_nacimiento: new Date(actor.fecha_nacimiento)
+        }));
+        this.actoresFiltrados = [...this.actores];
+      },
+      error: (err) => {
+        Swal.fire('Error', 'No se pudieron cargar los actores', 'error');
+        console.error(err);
+      }
+    });
+  }
+
+  cargarPaises(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.paisService.getPais().subscribe({
+        next: (data) => {
+          this.paises = data;
+          resolve();
+        },
+        error: (err) => {
+          Swal.fire('Error', 'No se pudieron cargar los países', 'error');
+          reject(err);
+        }
+      });
     });
   }
 
@@ -57,13 +81,23 @@ export class ListarActoresComponent implements OnInit {
 
   addActor(): void {
     if (this.formActor.valid) {
-      this.actorService.addActor(this.formActor.value).subscribe({
+      const actorData = this.formActor.value;
+      // Asegurar el formato correcto de la fecha
+      actorData.fecha_nacimiento = new Date(actorData.fecha_nacimiento).toISOString();
+
+      this.actorService.addActor(actorData).subscribe({
         next: () => {
+          Swal.fire('Éxito', 'Actor agregado correctamente', 'success');
           this.cargarActores();
           this.formActor.reset();
         },
-        error: (err) => console.error(err)
+        error: (err) => {
+          Swal.fire('Error', 'No se pudo agregar el actor', 'error');
+          console.error(err);
+        }
       });
+    } else {
+      Swal.fire('Advertencia', 'Por favor complete todos los campos requeridos', 'warning');
     }
   }
 
@@ -79,46 +113,90 @@ export class ListarActoresComponent implements OnInit {
       actor.apellidos.toLowerCase().includes(filtro)
   )}
 
-  activarEdicion(actor: any): void {
+  activarEdicion(actor: Actores): void {
     this.actorEditando = actor.id_actor;
     this.nombreTemporal = actor.nombre;
     this.apellidosTemporal = actor.apellidos;
+    this.fechaNacimientoTemporal = this.formatDateForInput(new Date(actor.fecha_nacimiento));
+    this.nacionalidadTemporal = actor.id_nacionalidad;
   }
- /*
-  guardarEdicion(actor: any): void {
-    const datosActualizados = {
+
+  private formatDateForInput(date: Date): string {
+    const year = date.getFullYear();
+    const month = ('0' + (date.getMonth() + 1)).slice(-2);
+    const day = ('0' + date.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+  }
+
+  guardarEdicion(): void {
+    if (!this.actorEditando) {
+      Swal.fire('Error', 'ID de actor inválido', 'error');
+      return;
+    }
+
+    // Validar campos requeridos
+    if (!this.nombreTemporal || !this.apellidosTemporal || !this.fechaNacimientoTemporal || !this.nacionalidadTemporal) {
+      Swal.fire('Advertencia', 'Todos los campos son requeridos', 'warning');
+      return;
+    }
+
+    const actorActualizado = {
       nombre: this.nombreTemporal,
-      apellidos: this.apellidosTemporal
+      apellidos: this.apellidosTemporal,
+      fecha_nacimiento: new Date(this.fechaNacimientoTemporal).toISOString(),
+      id_nacionalidad: this.nacionalidadTemporal
     };
-    
-    this.actorService.updateActor(actor.id_actor, datosActualizados).subscribe({
+
+    this.actorService.updateActor(this.actorEditando, actorActualizado).subscribe({
       next: () => {
+        Swal.fire('Éxito', 'Actor actualizado correctamente', 'success');
         this.cargarActores();
         this.cancelarEdicion();
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        Swal.fire('Error', 'No se pudo actualizar el actor', 'error');
+        console.error(err);
+      }
     });
   }
-*/
+
   cancelarEdicion(): void {
     this.actorEditando = null;
     this.nombreTemporal = '';
     this.apellidosTemporal = '';
+    this.fechaNacimientoTemporal = '';
+    this.nacionalidadTemporal = null;
   }
-
 
   deleteActor(id: number, nombre: string): void {
-    if (confirm(`¿Estás seguro de eliminar al actor ${nombre}?`)) {
-      this.actorService.deleteActor(id).subscribe({
-        next: () => this.cargarActores(),
-        error: (err) => console.error(err)
-      });
-    }
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `Esta acción eliminará al actor ${nombre} permanentemente`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.actorService.deleteActor(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'El actor ha sido eliminado', 'success');
+            this.cargarActores();
+          },
+          error: (err) => {
+            Swal.fire('Error', 'No se pudo eliminar el actor', 'error');
+            console.error(err);
+          }
+        });
+      }
+    });
   }
 
-
-  obtenerNombrePais(idPais: number): string {
+  obtenerNombrePais(idPais: number | null): string {
+    if (!idPais) return 'Desconocido';
     const pais = this.paises.find(p => p.id_pais === idPais);
-    return pais ? pais.nombre : 'Desconocido';
+    return pais?.nombre || 'Desconocido';
   }
 }

@@ -22,6 +22,4 @@ export class DistribuidorService {
   deleteDisitribuidor(id: number): Observable<any> {
     return this.http.delete(`${this.apiURL}/${id}`);
   }
-
-
 }

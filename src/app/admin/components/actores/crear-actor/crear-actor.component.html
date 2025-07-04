@@ -2,21 +2,19 @@
   <div class="modal-content">
     <button type="button" class="modal-cerrar" (click)="cerrarModal()">&times;</button>
     <h1 class="form-title">Registrar Actor</h1>
-    <form [formGroup]="actorform" (ngSubmit)="saveActor()">
+    <form [formGroup]="actorForm" (ngSubmit)="saveActor()">
       <div class="form-group">
         <label for="nombre" class="form-label">Nombre</label>
         <input type="text" id="nombre" formControlName="nombre" class="form-input" placeholder="Ej: Chris" required>
-        <div *ngIf="actorform.get('nombre')?.invalid && actorform.get('nombre')?.touched" class="validation-error">
+        <div *ngIf="actorForm.get('nombre')?.invalid && actorForm.get('nombre')?.touched" class="validation-error">
           El nombre es obligatorio.
         </div>
       </div>
 
       <div class="form-group">
         <label for="apellidos" class="form-label">Apellidos</label>
-        <input type="text" id="apellidos" formControlName="apellidos" class="form-input" placeholder="Ej: Hemsworth"
-          required>
-        <div *ngIf="actorform.get('apellidos')?.invalid && actorform.get('apellidos')?.touched"
-          class="validation-error">
+        <input type="text" id="apellidos" formControlName="apellidos" class="form-input" placeholder="Ej: Hemsworth" required>
+        <div *ngIf="actorForm.get('apellidos')?.invalid && actorForm.get('apellidos')?.touched" class="validation-error">
           El apellido es obligatorio.
         </div>
       </div>
@@ -24,26 +22,24 @@
       <div class="form-group">
         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
         <input type="date" id="fecha_nacimiento" formControlName="fecha_nacimiento" class="form-input" required>
-        <div *ngIf="actorform.get('fecha_nacimiento')?.invalid && actorform.get('fecha_nacimiento')?.touched"
-          class="validation-error">
-          La fecha de nacimiento es obligatorio.
+        <div *ngIf="actorForm.get('fecha_nacimiento')?.invalid && actorForm.get('fecha_nacimiento')?.touched" class="validation-error">
+          La fecha de nacimiento es obligatoria.
         </div>
       </div>
 
       <div class="form-group">
         <label for="id_nacionalidad" class="form-label">Nacionalidad</label>
-        <select id="id_nacionalidad" formControlName="id_nacionalidad">
-          <option value="" disabled>Seleccione una nacionalidad</option>
-          <option *ngFor="let distru of getNacionalidad()" [value]="distru.id_pais">
-            {{ distru.nombre }}
+        <select id="id_nacionalidad" formControlName="id_nacionalidad" class="form-input" required>
+          <option value="" disabled selected>Seleccione una nacionalidad</option>
+          <option *ngFor="let pais of paises" [value]="pais.id_pais">
+            {{ pais.nombre }}
           </option>
         </select>
-        <div *ngIf="actorform.get('nacionalidad')?.invalid && actorform.get('nacionalidad')?.touched"
-          class="validation-error">
-          La nacionalidad es obligatorio.
+        <div *ngIf="actorForm.get('id_nacionalidad')?.invalid && actorForm.get('id_nacionalidad')?.touched" class="validation-error">
+          La nacionalidad es obligatoria.
         </div>
       </div>
-      <button type="submit" class="submit-button">Guardar Actor</button>
+      <button type="submit" class="submit-button" [disabled]="actorForm.invalid">Guardar Actor</button>
     </form>
   </div>
 </div>
