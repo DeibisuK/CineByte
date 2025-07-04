@@ -99,7 +99,7 @@ export class ListarActoresComponent implements OnInit {
       error: (err) => console.error(err)
     });
   }
-
+*/
   cancelarEdicion(): void {
     this.actorEditando = null;
     this.nombreTemporal = '';
@@ -115,7 +115,7 @@ export class ListarActoresComponent implements OnInit {
       });
     }
   }
-*/
+
 
   obtenerNombrePais(idPais: number): string {
     const pais = this.paises.find(p => p.id_pais === idPais);
