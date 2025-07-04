@@ -1,0 +1,135 @@
+<div class="anuncios-container">
+  <div class="anuncios-header">
+    <h2 class="anuncios-title">Administración de Anuncios</h2>
+  </div>
+
+  <!-- Formulario para crear anuncio -->
+  <div class="anuncio-form">
+    <form [formGroup]="anuncioForm" (ngSubmit)="onSubmit()">
+      <!-- Mensaje (ocupa todo el ancho) -->
+      <div class="form-group full-width">
+        <label for="mensaje" class="form-label">Mensaje del Anuncio</label>
+        <textarea class="form-input" id="mensaje" formControlName="mensaje" rows="3"
+                  placeholder="Escribe el mensaje que aparecerá en el anuncio"></textarea>
+      </div>
+
+      <!-- Fila de controles - 3 columnas -->
+      <div class="form-grid">
+        <!-- Columna 1: Color inicio -->
+        <div class="form-group">
+          <label for="color_inicio" class="form-label">Color Inicial</label>
+          <div class="color-picker-container">
+            <input type="color" class="form-color" id="color_inicio" 
+                   formControlName="color_inicio" value="#ffd966"
+                   title="Selecciona el color inicial del gradiente">
+            <span class="color-hex">{{anuncioForm.value.color_inicio}}</span>
+          </div>
+        </div>
+
+        <!-- Columna 2: Color fin -->
+        <div class="form-group">
+          <label for="color_fin" class="form-label">Color Final</label>
+          <div class="color-picker-container">
+            <input type="color" class="form-color" id="color_fin" 
+                   formControlName="color_fin" value="#ffb347"
+                   title="Selecciona el color final del gradiente">
+            <span class="color-hex">{{anuncioForm.value.color_fin}}</span>
+          </div>
+        </div>
+
+        <!-- Columna 3: Estado -->
+        <div class="form-group">
+          <label for="estado" class="form-label">Estado</label>
+          <select class="form-select" id="estado" formControlName="estado">
+            <option value="Inactivo">Inactivo</option>
+            <option value="Activo">Activo</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Fila de fechas - 2 columnas -->
+      <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
+        <!-- Fecha inicio -->
+        <div class="form-group">
+          <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+          <input type="datetime-local" class="form-date" id="fecha_inicio" formControlName="fecha_inicio">
+        </div>
+
+        <!-- Fecha fin -->
+        <div class="form-group">
+          <label for="fecha_fin" class="form-label">Fecha de Finalización</label>
+          <input type="datetime-local" class="form-date" id="fecha_fin" formControlName="fecha_fin">
+        </div>
+      </div>
+
+      <!-- Vista previa -->
+      <div class="form-group full-width">
+        <label class="form-label">Vista Previa</label>
+        <div class="anuncio-preview" 
+             [style.background]="'linear-gradient(to right, ' + anuncioForm.value.color_inicio + ', ' + anuncioForm.value.color_fin + ')'">
+          {{anuncioForm.value.mensaje || 'Mensaje de ejemplo'}}
+        </div>
+      </div>
+
+      <!-- Botón de enviar -->
+      <button type="submit" class="btn-primary" [disabled]="!anuncioForm.valid">
+        <i class="material-icons">save</i> Guardar Anuncio
+      </button>
+    </form>
+  </div>
+
+  <!-- Lista de anuncios -->
+  <div class="table-section">
+    <div class="table-header">
+      <h3 class="table-title">Anuncios Registrados</h3>
+    </div>
+    
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Mensaje</th>
+            <th>Estado</th>
+            <th>Inicio</th>
+            <th>Fin</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let anuncio of anuncios">
+            <td data-label="Mensaje">{{ anuncio.mensaje | truncate:30 }}</td>
+            <td data-label="Estado">
+              <span class="estado-badge" 
+                    [ngClass]="{'estado-activo': anuncio.estado === 'Activo', 'estado-inactivo': anuncio.estado === 'Inactivo'}">
+                {{ anuncio.estado }}
+              </span>
+            </td>
+            <td data-label="Inicio">{{ anuncio.fecha_inicio | date:'short' }}</td>
+            <td data-label="Fin">{{ anuncio.fecha_fin | date:'short' }}</td>
+            <td data-label="Acciones">
+              <div class="acciones-cell">
+                <button class="action-btn" 
+                        (click)="cambiarEstado(anuncio.id!, anuncio.estado === 'Activo' ? 'Inactivo' : 'Activo')"
+                        [title]="anuncio.estado === 'Activo' ? 'Desactivar' : 'Activar'">
+                  <i class="material-icons">{{ anuncio.estado === 'Activo' ? 'toggle_on' : 'toggle_off' }}</i>
+                </button>
+                <button class="action-btn delete" (click)="eliminarAnuncio(anuncio.id!)" title="Eliminar">
+                  <i class="material-icons">delete</i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="anuncios.length === 0">
+            <td colspan="5" class="empty-state">
+              <div>
+                <i class="material-icons empty-icon">campaign</i>
+                <h4 class="empty-title">No hay anuncios registrados</h4>
+                <p class="empty-message">Crea tu primer anuncio usando el formulario superior</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

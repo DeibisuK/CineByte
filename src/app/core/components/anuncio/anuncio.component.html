@@ -1,8 +1,9 @@
-<div class="anuncio-bar d-flex align-items-center justify-content-between px-4 py-1">
-  <span class="w-100 text-center">
-    {{ mensaje }}
-  </span>
-  <button (click)="cerrar.emit()" class="btn btn-link p-0 m-0 d-flex align-items-center justify-content-center">
-    <span class="material-icons">close</span>
-  </button>
+<div class="anuncio-banner" 
+     [style.background]="'linear-gradient(to right, ' + anuncio.color_inicio + ', ' + anuncio.color_fin + ')'">
+  <div class="anuncio-content">
+    {{ anuncio.mensaje }}
+    <button class="close-btn" (click)="cerrar.emit()">
+      <i class="material-icons">close</i>
+    </button>
+  </div>
 </div>

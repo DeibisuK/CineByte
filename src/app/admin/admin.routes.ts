@@ -17,6 +17,10 @@ import { ListDistribuidorComponent } from './components/distribuidor/listar-dist
 import { ListSalasComponent } from './components/salas/list-salas/list-salas.component';
 import { EditSalasComponent } from './components/salas/edit-salas/edit-salas.component';
 import { EditarPromocionComponent } from './components/promociones/editar-promociones/editar-promociones.component';
+import { ListarFuncionesComponent } from './components/funciones/listar-funciones/listar-funciones.component';
+import { EditarFuncionesComponent } from './components/funciones/editar-funciones/editar-funciones.component';
+import { CrearFuncionesComponent } from './components/funciones/crear-funciones/crear-funciones.component';
+import { AnuncioComponent } from './components/anuncio/anuncio.component';
 
 export const adminRoutes: Routes = [
   {
@@ -83,6 +87,18 @@ export const adminRoutes: Routes = [
     component: EditarPromocionComponent
   },
   {
+    path: 'list-funcion',
+    component: ListarFuncionesComponent
+  },
+  {
+    path: 'edit-funcion/:id',
+    component: EditarFuncionesComponent
+  },
+  {
+    path: 'crear-funcion',
+    component: CrearFuncionesComponent
+  },
+  {
     path: 'users',
     component: ListUsersComponent
   },
@@ -93,9 +109,14 @@ export const adminRoutes: Routes = [
   {
     path: 'add-sala',
     component: CrearSalasComponent
-  }, {
+  },
+  {
     path: 'edit-sala/:id',
     component: EditSalasComponent
+  },
+  {
+    path: 'anuncio',
+    component: AnuncioComponent
   }
 
 ];

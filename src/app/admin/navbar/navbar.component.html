@@ -63,7 +63,7 @@
       </a>
     </li>
     <li>
-      <a routerLink="/admin/funciones" routerLinkActive="active-link" data-tooltip="Funciones"
+      <a routerLink="/admin/list-funcion" routerLinkActive="active-link" data-tooltip="Funciones"
         [attr.aria-label]="'Gestionar Funciones' + (!sidebarClosed ? '' : ' - Funciones')">
         <i class="fa-solid fa-calendar-days"></i>
         <span *ngIf="!sidebarClosed">Funciones</span>
@@ -81,6 +81,13 @@
         [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')">
         <i class="fa-solid fa-users"></i>
         <span *ngIf="!sidebarClosed">Usuarios</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/anuncio" routerLinkActive="active-link" data-tooltip="Anuncios"
+        [attr.aria-label]="'Gestionar Anuncios' + (!sidebarClosed ? '' : ' - Anuncios')">
+        <i class="fa-solid fa-message"></i>
+        <span *ngIf="!sidebarClosed">Anuncio</span>
       </a>
     </li>
   </ul>
