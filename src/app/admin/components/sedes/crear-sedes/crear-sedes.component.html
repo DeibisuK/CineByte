@@ -40,6 +40,12 @@
         <div *ngIf="email.errors?.['email']">Ingrese un email válido</div>
       </div>
     </div>
+    <div>
+      <label>Estado</label>
+      <select formControlName="estado">
+        <option *ngFor="let estado of estados" [value]="estado">{{estado}}</option>
+      </select>
+    </div>
   </div>
 
   <div id="map"></div>
@@ -50,10 +56,6 @@
   <button type="submit">Guardar</button>
 </form>
 
-<app-alert
-  *ngIf="showAlert"
-  [message]="alertMessage"
-  [theme]="alertTheme"
-  [type]="alertType"
+<app-alert *ngIf="showAlert" [message]="alertMessage" [theme]="alertTheme" [type]="alertType"
   (closed)="showAlert = false">
 </app-alert>

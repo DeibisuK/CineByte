@@ -38,6 +38,8 @@
   outline: none;
 }
 
+
+
 .form-sede button[type="submit"] {
   width: 100%;
   /* <-- Añade esta línea */

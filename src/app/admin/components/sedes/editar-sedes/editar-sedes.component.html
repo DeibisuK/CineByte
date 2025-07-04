@@ -38,6 +38,17 @@
         <div *ngIf="email.errors?.['email']">Ingrese un email válido</div>
       </div>
     </div>
+      <div>
+    <label>Estado</label>
+    <select formControlName="estado">
+      <option *ngFor="let estado of estados" [value]="estado" [selected]="estado === sedeForm.value.estado">
+        {{estado}}
+      </option>
+    </select>
+    <div *ngIf="estado.invalid && (estado.dirty || estado.touched)" class="error-message">
+      <div *ngIf="estado.errors?.['required']">El estado es requerido</div>
+    </div>
+  </div>
   </div>
   <div id="map"></div>
   <p>Ubicación: Lat {{ sedeForm.value.latitud }} | Lng {{ sedeForm.value.longitud }}</p>

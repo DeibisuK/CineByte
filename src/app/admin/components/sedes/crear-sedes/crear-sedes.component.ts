@@ -34,6 +34,7 @@ import { TemaService } from '../../../../cliente/features/movies/services/tema.s
 export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm: FormGroup;
   ciudades: any[] = [];
+  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente'];
   map!: L.Map;
   marker!: L.Marker;
   showAlert = false;
@@ -47,16 +48,16 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     private temaService: TemaService,
     private fb: FormBuilder
   ) {
-    this.sedeForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      ciudad: ['', Validators.required],
-      direccion: ['', [Validators.required, Validators.minLength(5)]],
-      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
-      email: ['', Validators.email],
-      latitud: [0],
-      longitud: [0],
-      estado: ['Activo'],
-    });
+  this.sedeForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    ciudad: ['', Validators.required],
+    direccion: ['', [Validators.required, Validators.minLength(5)]],
+    telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
+    email: ['', Validators.email],
+    latitud: [0],
+    longitud: [0],
+    estado: ['Activo', Validators.required], // Cambiado a select
+  });
 
   }
 

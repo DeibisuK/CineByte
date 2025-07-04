@@ -6,7 +6,7 @@ export interface Sede {
   id_sede?: number;
   nombre: string;
   direccion: string;
-  estado?: string;
+  estado: string;
   latitud?: number;
   longitud?: number;
   telefono?: string;

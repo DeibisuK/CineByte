@@ -30,6 +30,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm!: FormGroup;
   map!: L.Map;
   marker!: L.Marker;
+  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente'];
   showAlert = false;
   alertMessage = '';
   alertTheme: 'light' | 'dark' = 'light';
@@ -46,40 +47,44 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.temaSubscription = this.temaService.modoOscuro$.subscribe(
-      (modoOscuro) => {
-        this.alertTheme = modoOscuro ? 'dark' : 'light';
-      }
-    );
-    this.sedeForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(3)]],
-      direccion: ['', [Validators.required, Validators.minLength(5)]],
-      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
-      email: ['', Validators.email],
-      latitud: [0],
-      longitud: [0],
-      estado: ['Activo'],
-      ciudad: ['', Validators.required],  // ahora string
-
-    });
-
-    const idParam = this.route.snapshot.paramMap.get('id');
-    if (!idParam) {
-      this.showAlertMessage('ID de sede no válido', 'error');
-      this.router.navigate(['/admin/sedes']);
-      return;
+  this.temaSubscription = this.temaService.modoOscuro$.subscribe(
+    (modoOscuro) => {
+      this.alertTheme = modoOscuro ? 'dark' : 'light';
     }
-    const id = Number(idParam);
-    this.sedeService.getSedeById(id).subscribe((data) => {
-      this.sedeForm.patchValue(data);
+  );
+  
+  this.sedeForm = this.fb.group({
+    nombre: ['', [Validators.required, Validators.minLength(3)]],
+    direccion: ['', [Validators.required, Validators.minLength(5)]],
+    telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
+    email: ['', Validators.email],
+    latitud: [0],
+    longitud: [0],
+    estado: ['Activo', Validators.required],
+    ciudad: ['', Validators.required],
+  });
 
-      // Centrar mapa si ya se cargó
-      if (this.map) {
-        this.map.setView([data.latitud ?? 0, data.longitud ?? 0], 14);
-        this.marker.setLatLng([data.latitud ?? 0, data.longitud ?? 0]);
-      }
-    });
+  const idParam = this.route.snapshot.paramMap.get('id');
+  if (!idParam) {
+    this.showAlertMessage('ID de sede no válido', 'error');
+    this.router.navigate(['/admin/sedes']);
+    return;
   }
+  
+  const id = Number(idParam);
+  this.sedeService.getSedeById(id).subscribe({
+    next: (data) => {
+      const estadoValido = this.estados.includes(data.estado) ? data.estado : 'Activo';
+      this.sedeForm.patchValue({
+        ...data,
+        estado: estadoValido
+      });
+    },
+    error: (err) => {
+      this.showAlertMessage('Error al cargar sede', 'error');
+    }
+  });
+}
 
   ngOnDestroy(): void {
     if (this.temaSubscription) {
@@ -88,8 +93,10 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    const lat = this.sedeForm?.value.latitud || -3.258;
-    const lng = this.sedeForm?.value.longitud || -79.955;
+  setTimeout(() => {
+    const lat = this.sedeForm?.value.latitud || -0.22985;
+    const lng = this.sedeForm?.value.longitud || -78.52495;
+    
     this.map = L.map('map').setView([lat, lng], 13);
     this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
 
@@ -103,6 +110,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         latitud: lat,
         longitud: lng,
       });
+      this.cdr.detectChanges();
     });
 
     this.map.on('click', (e: L.LeafletMouseEvent) => {
@@ -110,16 +118,10 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
       this.marker.setLatLng(e.latlng);
       this.sedeForm.patchValue({ latitud: lat, longitud: lng });
       this.getDireccionDesdeCoordenadas(lat, lng);
+      this.cdr.detectChanges();
     });
-
-    this.marker.on('dragend', () => {
-      const { lat, lng } = this.marker.getLatLng();
-      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
-      this.getDireccionDesdeCoordenadas(lat, lng);
-    });
-
-    this.cdr.detectChanges();
-  }
+  });
+}
 
   onSubmit(): void {
     this.markFormGroupTouched(this.sedeForm);
@@ -190,5 +192,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Error al obtener dirección desde coordenadas', error);
       });
   }
+
+  get estado() { return this.sedeForm.get('estado')!; }
 
 }
