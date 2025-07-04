@@ -10,19 +10,17 @@ import { Promocion } from '../../../models/promocion.model';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { ImgbbService } from '../../../../services/imgbb.service';
-import { AlertComponent } from '../../../../shared/alert/alert.component';
-import { Subscription } from 'rxjs';
-import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-promociones',
-  imports: [ReactiveFormsModule, CommonModule, AlertComponent],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './crear-promociones.component.html',
   styleUrl: './crear-promociones.component.css',
 })
 export class CreatePromocionComponent {
   promocionForm: FormGroup;
-  tiposPromocion = ['Descuento', 'Multiplicador', 'Cupon'];
+  tiposPromocion = ['Descuento', 'Multiplicador', 'Cupon', 'Publicitaria'];
   diasSemana = [
     'Lunes',
     'Martes',
@@ -37,18 +35,11 @@ export class CreatePromocionComponent {
   imagenSeleccionada!: File;
   imagenPreview: string = '';
 
-  showAlert = false;
-  alertMessage = '';
-  alertTheme: 'light' | 'dark' = 'light';
-  alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
-  private temaSubscription!: Subscription;
-
   constructor(
     private fb: FormBuilder,
     private promocionService: PromocionService,
     public router: Router,
     private imgbbService: ImgbbService,
-    private temaService: TemaService
   ) {
     this.promocionForm = this.fb.group({
       imagen_url: [''],
@@ -72,21 +63,8 @@ export class CreatePromocionComponent {
     this.updateValidators('Descuento');
   }
 
-  ngOnInit(): void {
-    this.temaSubscription = this.temaService.modoOscuro$.subscribe(
-      (modoOscuro) => {
-        this.alertTheme = modoOscuro ? 'dark' : 'light';
-      }
-    );
-  }
 
-  ngOnDestroy(): void {
-    if (this.temaSubscription) {
-      this.temaSubscription.unsubscribe();
-    }
-  }
-
-  updateValidators(tipo: string) {
+updateValidators(tipo: string) {
     const porcentajeControl = this.promocionForm.get('porcentaje_descuento');
     const nroBoletosControl = this.promocionForm.get('nro_boletos');
     const codigoControl = this.promocionForm.get('codigo_cupon');
@@ -124,59 +102,65 @@ export class CreatePromocionComponent {
         ]);
         codigoControl?.setValidators([Validators.required]);
         break;
+      case 'Publicitaria':
+        // No necesita validadores adicionales
+        break;
     }
 
     this.promocionForm.updateValueAndValidity();
   }
 
   async onSubmit() {
-    console.log(
-      '🔔 onSubmit invocado. FormGroup válido:',
-      this.promocionForm.valid
-    );
     this.promocionForm.markAllAsTouched();
 
     if (this.promocionForm.invalid) {
-      this.showAlertMessage(
-        'Por favor complete correctamente todos los campos requeridos.',
-        'warning'
-      );
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor complete correctamente todos los campos requeridos.',
+        confirmButtonColor: '#3085d6',
+      });
       return;
     }
 
-
     const promocion: Promocion = this.promocionForm.value;
-    console.log('Formulario válido, datos actuales:', promocion);
 
     try {
       if (this.imagenSeleccionada) {
-        console.log('Subiendo imagen a imgbb...');
-        const url = await this.imgbbService.subirImagen(
-          this.imagenSeleccionada
-        );
-        console.log('URL recibida de imgbb:', url);
+        const url = await this.imgbbService.subirImagen(this.imagenSeleccionada);
         promocion.imagen_url = url;
-      } else {
-        console.log('No hay imagen seleccionada');
       }
+
       this.promocionService.createPromocion(promocion).subscribe({
         next: () => {
-          console.log('Promoción enviada con éxito');
-          this.showAlertMessage('¡Promoción creada exitosamente!', 'success');
-          this.resetForm();
+          Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: 'Promoción creada exitosamente',
+            confirmButtonColor: '#3085d6',
+          }).then(() => {
+            this.resetForm();
+          });
         },
         error: (err) => {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error al guardar la promoción. Intente de nuevo.',
+            confirmButtonColor: '#3085d6',
+          });
           console.error('Error al guardar promoción:', err);
-          this.showAlertMessage(
-            'Error al guardar la promoción. Intente de nuevo.',
-            'error'
-          );
         },
       });
     } catch (error) {
-      console.error('Error al subir la imagen:', error); // <-- AQUÍ
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Error al subir la imagen. Intente de nuevo.',
+        confirmButtonColor: '#3085d6',
+      });
+      console.error('Error al subir la imagen:', error);
     }
-    
   }
 
   onImageSelected(event: Event) {
@@ -184,24 +168,13 @@ export class CreatePromocionComponent {
     if (input.files && input.files[0]) {
       const file = input.files[0];
       this.imagenSeleccionada = file;
-      console.log('Imagen seleccionada:', file); // <-- AQUÍ
 
       const reader = new FileReader();
       reader.onload = () => {
         this.imagenPreview = reader.result as string;
-        console.log('Preview cargada'); // <-- Y AQUÍ
       };
       reader.readAsDataURL(file);
     }
-  }
-
-  private showAlertMessage(
-    message: string,
-    type: 'success' | 'error' | 'warning' | 'info'
-  ) {
-    this.alertMessage = message;
-    this.alertType = type;
-    this.showAlert = true;
   }
 
   private resetForm(): void {

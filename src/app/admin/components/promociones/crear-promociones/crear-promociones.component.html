@@ -28,7 +28,7 @@
     </div>
   </div>
 
-<div class="form-grid">
+  <div class="form-grid">
     <div>
       <label>Fecha Inicio</label>
       <input type="date" formControlName="fecha_inicio">
@@ -135,17 +135,8 @@
     <button type="button" class="btn-secondary" (click)="router.navigate(['/admin/promociones'])">
       Cancelar
     </button>
-    <!-- Temporalmente sin [disabled] para debug -->
-    <button type="submit" class="btn-primary">
+    <button type="submit" class="btn-primary" [disabled]="promocionForm.invalid">
       Guardar
     </button>
   </div>
 </form>
-
-<app-alert
-  *ngIf="showAlert"
-  [message]="alertMessage"
-  [theme]="alertTheme"
-  [type]="alertType"
-  (closed)="showAlert = false">
-</app-alert>
