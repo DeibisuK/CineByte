@@ -2,17 +2,18 @@ import {
   Component, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Sede, SedeService } from '../../../../services/sede.service';
+import { SedeService } from '../../../../services/sede.service';
 import {
   FormBuilder, FormGroup, Validators, ReactiveFormsModule
 } from '@angular/forms';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
-import { AlertComponent } from '../../../../shared/alert/alert.component';
 import { Subscription } from 'rxjs';
 import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
+import Swal from 'sweetalert2';
 
+// Configuración de iconos de Leaflet (mantenido igual)
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'leaflet/marker-icon-2x.png',
@@ -22,7 +23,7 @@ L.Icon.Default.mergeOptions({
 
 @Component({
   selector: 'app-editar-sedes',
-  imports: [ReactiveFormsModule, CommonModule, AlertComponent],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './editar-sedes.component.html',
   styleUrl: './editar-sedes.component.css'
 })
@@ -30,11 +31,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm!: FormGroup;
   map!: L.Map;
   marker!: L.Marker;
-  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente'];
-  showAlert = false;
-  alertMessage = '';
-  alertTheme: 'light' | 'dark' = 'light';
-  alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
+  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente', 'En Construccion'];
   private temaSubscription!: Subscription;
 
   constructor(
@@ -43,48 +40,48 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    private temaService: TemaService // <-- AGREGA ESTO
+    private temaService: TemaService
   ) { }
 
   ngOnInit(): void {
-  this.temaSubscription = this.temaService.modoOscuro$.subscribe(
-    (modoOscuro) => {
-      this.alertTheme = modoOscuro ? 'dark' : 'light';
-    }
-  );
-  
-  this.sedeForm = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3)]],
-    direccion: ['', [Validators.required, Validators.minLength(5)]],
-    telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
-    email: ['', Validators.email],
-    latitud: [0],
-    longitud: [0],
-    estado: ['Activo', Validators.required],
-    ciudad: ['', Validators.required],
-  });
+    this.temaSubscription = this.temaService.modoOscuro$.subscribe(
+      (modoOscuro) => {
+        // Puedes usar esto para configurar el tema de SweetAlert2 si lo deseas
+      }
+    );
+    
+    this.sedeForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      direccion: ['', [Validators.required, Validators.minLength(5)]],
+      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
+      email: ['', Validators.email],
+      latitud: [0],
+      longitud: [0],
+      estado: ['Activo', Validators.required],
+      ciudad: ['', Validators.required],
+    });
 
-  const idParam = this.route.snapshot.paramMap.get('id');
-  if (!idParam) {
-    this.showAlertMessage('ID de sede no válido', 'error');
-    this.router.navigate(['/admin/sedes']);
-    return;
-  }
-  
-  const id = Number(idParam);
-  this.sedeService.getSedeById(id).subscribe({
-    next: (data) => {
-      const estadoValido = this.estados.includes(data.estado) ? data.estado : 'Activo';
-      this.sedeForm.patchValue({
-        ...data,
-        estado: estadoValido
-      });
-    },
-    error: (err) => {
-      this.showAlertMessage('Error al cargar sede', 'error');
+    const idParam = this.route.snapshot.paramMap.get('id');
+    if (!idParam) {
+      this.showErrorAlert('ID de sede no válido');
+      this.router.navigate(['/admin/sedes']);
+      return;
     }
-  });
-}
+    
+    const id = Number(idParam);
+    this.sedeService.getSedeById(id).subscribe({
+      next: (data) => {
+        const estadoValido = this.estados.includes(data.estado) ? data.estado : 'Activo';
+        this.sedeForm.patchValue({
+          ...data,
+          estado: estadoValido
+        });
+      },
+      error: (err) => {
+        this.showErrorAlert('Error al cargar sede');
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     if (this.temaSubscription) {
@@ -93,43 +90,43 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-  setTimeout(() => {
-    const lat = this.sedeForm?.value.latitud || -0.22985;
-    const lng = this.sedeForm?.value.longitud || -78.52495;
-    
-    this.map = L.map('map').setView([lat, lng], 13);
-    this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+    setTimeout(() => {
+      const lat = this.sedeForm?.value.latitud || -0.22985;
+      const lng = this.sedeForm?.value.longitud || -78.52495;
+      
+      this.map = L.map('map').setView([lat, lng], 13);
+      this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors',
-    }).addTo(this.map);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors',
+      }).addTo(this.map);
 
-    this.marker.on('dragend', () => {
-      const { lat, lng } = this.marker.getLatLng();
-      this.sedeForm.patchValue({
-        latitud: lat,
-        longitud: lng,
+      this.marker.on('dragend', () => {
+        const { lat, lng } = this.marker.getLatLng();
+        this.sedeForm.patchValue({
+          latitud: lat,
+          longitud: lng,
+        });
+        this.cdr.detectChanges();
       });
-      this.cdr.detectChanges();
-    });
 
-    this.map.on('click', (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-      this.marker.setLatLng(e.latlng);
-      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
-      this.getDireccionDesdeCoordenadas(lat, lng);
-      this.cdr.detectChanges();
+      this.map.on('click', (e: L.LeafletMouseEvent) => {
+        const { lat, lng } = e.latlng;
+        this.marker.setLatLng(e.latlng);
+        this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+        this.getDireccionDesdeCoordenadas(lat, lng);
+        this.cdr.detectChanges();
+      });
     });
-  });
-}
+  }
 
   onSubmit(): void {
     this.markFormGroupTouched(this.sedeForm);
 
     if (this.sedeForm.invalid) {
-      this.showAlertMessage(
-        'Por favor complete correctamente todos los campos requeridos. Revise los campos marcados.',
-        'warning'
+      this.showWarningAlert(
+        'Por favor complete correctamente todos los campos requeridos',
+        'Revise los campos marcados.'
       );
       return;
     }
@@ -137,13 +134,18 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     const id = this.route.snapshot.paramMap.get('id');
     this.sedeService.editarSede(Number(id), this.sedeForm.value).subscribe({
       next: () => {
-        this.showAlertMessage('Sede editada correctamente', 'success');
-        setTimeout(() => this.router.navigate(['/admin/sedes']), 1200);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Sede editada correctamente',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.router.navigate(['/admin/sedes']);
+        });
       },
       error: (err) => {
-        const errorMsg =
-          err.error?.message || err.message || 'Error desconocido';
-        this.showAlertMessage(`Error al editar la sede: ${errorMsg}`, 'error');
+        const errorMsg = err.error?.message || err.message || 'Error desconocido';
+        this.showErrorAlert(`Error al editar la sede: ${errorMsg}`);
       },
     });
   }
@@ -158,13 +160,22 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  private showAlertMessage(
-    message: string,
-    type: 'success' | 'error' | 'warning' | 'info'
-  ): void {
-    this.alertMessage = message;
-    this.alertType = type;
-    this.showAlert = true;
+  private showErrorAlert(message: string): void {
+    Swal.fire({
+      title: 'Error',
+      text: message,
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  }
+
+  private showWarningAlert(title: string, text: string): void {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: 'warning',
+      confirmButtonText: 'Entendido'
+    });
   }
 
   // Getters para los mensajes de error en el template
@@ -173,6 +184,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   get direccion() { return this.sedeForm.get('direccion')!; }
   get telefono() { return this.sedeForm.get('telefono')!; }
   get email() { return this.sedeForm.get('email')!; }
+  get estado() { return this.sedeForm.get('estado')!; }
 
   private getDireccionDesdeCoordenadas(lat: number, lon: number): void {
     const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
@@ -192,7 +204,4 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         console.error('Error al obtener dirección desde coordenadas', error);
       });
   }
-
-  get estado() { return this.sedeForm.get('estado')!; }
-
 }

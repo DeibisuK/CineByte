@@ -54,7 +54,3 @@
   <p>Ubicación: Lat {{ sedeForm.value.latitud }} | Lng {{ sedeForm.value.longitud }}</p>
   <button type="submit">Guardar Cambios</button>
 </form>
-
-<app-alert *ngIf="showAlert" [message]="alertMessage" [theme]="alertTheme" [type]="alertType"
-  (closed)="showAlert = false">
-</app-alert>

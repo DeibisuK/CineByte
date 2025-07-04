@@ -13,34 +13,31 @@ import {
 } from '@angular/forms';
 import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
+import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
+import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
+import Swal from 'sweetalert2';
 
+// Configuración de iconos de Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'leaflet/marker-icon-2x.png',
   iconUrl: 'leaflet/marker-icon.png',
   shadowUrl: 'leaflet/marker-shadow.png',
 });
-import { CommonModule } from '@angular/common';
-import { AlertComponent } from '../../../../shared/alert/alert.component';
-import { Subscription } from 'rxjs';
-import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
 
 @Component({
   selector: 'app-crear-sedes',
-  imports: [ReactiveFormsModule, CommonModule, AlertComponent],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './crear-sedes.component.html',
   styleUrl: './crear-sedes.component.css',
 })
 export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   sedeForm: FormGroup;
   ciudades: any[] = [];
-  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente'];
+  estados = ['Activo', 'Inactivo', 'Mantenimiento', 'Pendiente', 'En Construccion'];
   map!: L.Map;
   marker!: L.Marker;
-  showAlert = false;
-  alertMessage = '';
-  alertTheme: 'light' | 'dark' = 'light';
-  alertType: 'success' | 'error' | 'warning' | 'info' = 'success';
   private temaSubscription!: Subscription;
 
   constructor(
@@ -48,17 +45,16 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     private temaService: TemaService,
     private fb: FormBuilder
   ) {
-  this.sedeForm = this.fb.group({
-    nombre: ['', [Validators.required, Validators.minLength(3)]],
-    ciudad: ['', Validators.required],
-    direccion: ['', [Validators.required, Validators.minLength(5)]],
-    telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
-    email: ['', Validators.email],
-    latitud: [0],
-    longitud: [0],
-    estado: ['Activo', Validators.required], // Cambiado a select
-  });
-
+    this.sedeForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      ciudad: ['', Validators.required],
+      direccion: ['', [Validators.required, Validators.minLength(5)]],
+      telefono: ['', [Validators.pattern(/^[\d\s\-]+$/), Validators.maxLength(15)]],
+      email: ['', Validators.email],
+      latitud: [0],
+      longitud: [0],
+      estado: ['Activo', Validators.required],
+    });
   }
 
   get nombre() {
@@ -66,7 +62,6 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!control) throw new Error('Control "nombre" no encontrado');
     return control;
   }
-
 
   get direccion() {
     const control = this.sedeForm.get('direccion');
@@ -85,6 +80,7 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!control) throw new Error('Control "email" no encontrado');
     return control;
   }
+
   get latitud(): number {
     return this.sedeForm.get('latitud')?.value || 0;
   }
@@ -93,13 +89,8 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.sedeForm.get('longitud')?.value || 0;
   }
 
-
   ngOnInit(): void {
-    this.temaSubscription = this.temaService.modoOscuro$.subscribe(
-      (modoOscuro) => {
-        this.alertTheme = modoOscuro ? 'dark' : 'light';
-      }
-    );
+    this.temaSubscription = this.temaService.modoOscuro$.subscribe();
   }
 
   ngOnDestroy(): void {
@@ -144,38 +135,41 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSubmit(): void {
-    // Marca todos los controles como touched para mostrar errores
     this.markFormGroupTouched(this.sedeForm);
 
     if (this.sedeForm.invalid) {
-      // Encuentra el primer control inválido para debug
-      const invalidFields = Object.keys(this.sedeForm.controls).filter(
-        (key) => this.sedeForm.get(key)?.invalid
-      );
-
-      console.log('Campos inválidos:', invalidFields);
-
-      this.showAlertMessage(
-        'Por favor complete correctamente todos los campos requeridos. Revise los campos marcados.',
-        'warning'
-      );
+      Swal.fire({
+        title: 'Formulario incompleto',
+        text: 'Por favor complete correctamente todos los campos requeridos. Revise los campos marcados.',
+        icon: 'warning',
+        confirmButtonText: 'Entendido'
+      });
       return;
     }
 
     this.sedeService.crearSede(this.sedeForm.value).subscribe({
       next: () => {
-        this.showAlertMessage('Sede creada correctamente', 'success');
-        this.resetForm();
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Sede creada correctamente',
+          icon: 'success',
+          confirmButtonText: 'OK'
+        }).then(() => {
+          this.resetForm();
+        });
       },
       error: (err) => {
-        const errorMsg =
-          err.error?.message || err.message || 'Error desconocido';
-        this.showAlertMessage(`Error al crear sede: ${errorMsg}`, 'error');
+        const errorMsg = err.error?.message || err.message || 'Error desconocido';
+        Swal.fire({
+          title: 'Error',
+          text: `Error al crear sede: ${errorMsg}`,
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       },
     });
   }
 
-  // Método auxiliar para marcar todos los controles como touched
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach((control) => {
       control.markAsTouched();
@@ -184,15 +178,6 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.markFormGroupTouched(control);
       }
     });
-  }
-
-  private showAlertMessage(
-    message: string,
-    type: 'success' | 'error' | 'warning' | 'info'
-  ): void {
-    this.alertMessage = message;
-    this.alertType = type;
-    this.showAlert = true;
   }
 
   private resetForm(): void {

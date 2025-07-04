@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Sala } from '../admin/models/salas.model';
+import { Asiento, Sala } from '../admin/models/salas.model';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -31,4 +31,7 @@ export class SalasService {
     return this.http.get<Sala>(`${this.apiURL}/${id}`);
   }
 
+   getAsientosPorSala(id: number): Observable<Asiento[]> {
+    return this.http.get<Asiento[]>(`${this.apiURL}/asientos/${id}`);
+  }
 }
