@@ -32,6 +32,6 @@ export class SalasService {
   }
 
    getAsientosPorSala(id: number): Observable<Asiento[]> {
-    return this.http.get<Asiento[]>(`http://localhost:3000/api/salas/asientos/${id}`);
+    return this.http.get<Asiento[]>(`${this.apiURL}/asientos/${id}`);
   }
 }
