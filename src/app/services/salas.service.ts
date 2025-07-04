@@ -1,0 +1,34 @@
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Sala } from '../admin/models/salas.model';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SalasService {
+  private apiURL = 'https://api-cinebyte.onrender.com/api/salas';
+
+  constructor(private http: HttpClient) { }
+
+  getSalas(): Observable<Sala[]> {
+    return this.http.get<Sala[]>(this.apiURL);
+  }
+
+  addSala(sala: Sala): Observable<any> {
+    return this.http.post(this.apiURL, sala);
+  }
+
+  updateSala(sala: Sala): Observable<any> {
+    return this.http.put(`${this.apiURL}/${sala.id_sala}`, sala);
+  }
+
+  deleteSala(id: number): Observable<any> {
+    return this.http.delete(`${this.apiURL}/${id}`);
+  }
+
+  getSalaById(id: number): Observable<Sala> {
+    return this.http.get<Sala>(`${this.apiURL}/${id}`);
+  }
+
+}

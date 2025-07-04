@@ -1,10 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { SalasService } from '../../../../services/salas.service';
+import { Espacio, Sala } from '../../../models/salas.model';
+import { AlertaService } from '../../../../services/alerta.service';
 
 @Component({
   selector: 'app-crear-salas',
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './crear-salas.component.html',
   styleUrl: './crear-salas.component.css'
 })
@@ -14,7 +17,7 @@ export class CrearSalasComponent {
   vistaPrevia: { letra: string, asientos: number[] }[] = [];
   asientosNoUtilizados: string[] = [];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private salaService: SalasService,private alerta:AlertaService) {
     this.crearSalaForm = this.fb.group({
       nombre: ['', Validators.required],
       tipo_sala: [''],
@@ -79,14 +82,41 @@ export class CrearSalasComponent {
 
   onSubmit() {
     if (this.crearSalaForm.valid) {
-      const datos = this.crearSalaForm.value;
-      datos.espacios = this.asientosNoUtilizados;
-      console.log('Datos de la sala:', datos);
-      alert('Sala creada exitosamente!\n\nDatos:\n' + JSON.stringify(datos, null, 2));
+      const valores = this.crearSalaForm.value;
+
+      // Convertir ['A1', 'B4'] -> [{ fila: 'A', columna: 1 }, ...]
+      const espaciosFormateados: Espacio[] = this.asientosNoUtilizados.map(code => {
+        const fila = code.charAt(0);
+        const columna = parseInt(code.slice(1), 10);
+        return { fila, columna };
+      });
+
+      const sala: Sala = {
+        nombre: valores.nombre,
+        tipo_sala: valores.tipo_sala,
+        cantidad_asientos: valores.cantidad_asientos,
+        espacios: espaciosFormateados
+      };
+
+      console.log(sala);
+
+      this.salaService.addSala(sala).subscribe({
+        next: (res) => {
+          alert('Sala creada correctamente 🎉');
+          console.log('Respuesta:', res);
+          this.limpiarFormulario();
+        },
+        error: (err) => {
+          console.error('Error al crear sala', err);
+          alert('❌ Error al crear sala: ' + (err.error?.mensaje || 'Error del servidor'));
+        }
+      });
     } else {
+      this.alerta.warning('Formulario','Necesitas rellenar todo el formulario');
       this.crearSalaForm.markAllAsTouched();
     }
   }
+
 
   limpiarFormulario() {
     this.crearSalaForm.reset();
