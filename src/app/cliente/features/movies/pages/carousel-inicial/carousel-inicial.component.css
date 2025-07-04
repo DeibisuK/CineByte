@@ -128,6 +128,7 @@
   margin-top: 18px;
 }
 
+
 .indicator {
   width: 32px;
   height: 5px;
@@ -142,9 +143,23 @@
 }
 
 .indicator.active {
+  animation: indicatorActive 0.3s ease;
   background: var(--text-color);
   opacity: 1;
 }
+
+
+@keyframes indicatorActive {
+  from {
+    transform: scaleX(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
 
 @media (max-width: 900px) {
   .estreno-card {

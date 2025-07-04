@@ -1,10 +1,20 @@
-<div class="containere" [class.no-sidebar]="sidebarClosed">
+<app-loading *ngIf="isLoading" [fadeOut]="loadingFadeOut"></app-loading>
 
-  <div class="sidebar-container" >
-    <app-navbar (sidebarState)="sidebarClosed = $event"></app-navbar>
-  </div>
+<div [class.hidden]="isLoading">
+  <div class="containere" [class.no-sidebar]="sidebarClosed">
+    <div class="sidebar-container" [class.mobile-visible]="!sidebarClosed">
+      <app-navbar (sidebarState)="sidebarClosed = $event"></app-navbar>
+    </div>
 
-  <div class="content-container">
-    <router-outlet></router-outlet>
+    <div class="content-container">
+      <router-outlet></router-outlet>
+    </div>
+
+    <label class="icon-menu" (click)="toggleMobileSidebar()" [class.active]="!sidebarClosed">
+      <div class="bar bar--1"></div>
+      <div class="bar bar--2"></div>
+      <div class="bar bar--3"></div>
+    </label>
   </div>
 </div>
+>>>>>>> 32d7fe1 (Pantalla de carga implementada de 1,5s de duracion)

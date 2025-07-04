@@ -47,14 +47,11 @@ body {
   --text-color: #ffffff;
   --image-opacity: 0.35;
   --image-filter: grayscale(1);
-  /* Filtro Blanco y Negro */
   --footer-bg: #111;
-  /* fondo oscuro por defecto */
   --footer-esp: #1D1D1D;
   --footer-text: #f0f0f0;
   --footer-link: #aaa;
   --footer-line: #555;
-  /* cambiado de #000 a #333 para mejor contraste en oscuro */
   --btn-bg-crud: rgba(51, 51, 51, 0.8);
   --btn-line-crud: rgba(255, 255, 255, 0.5);
   --dropdown-bg: #222;
@@ -64,7 +61,6 @@ body {
   --dropdown-logout-color: #e74c3c;
   --yellow: #FFD700;
   --hover-link: rgba(64, 64, 64, 0.3);
-  /* Rojo para cerrar sesión */
 }
 
 /* Tema claro */
@@ -74,12 +70,10 @@ body.light-mode {
   --image-opacity: 0.2;
   --image-filter: none;
   --footer-bg: #f0f0f0;
-  /* fondo claro */
   --footer-esp: #f0f0f0;
   --footer-text: #222;
   --footer-link: #3e3e3e;
   --footer-line: #777;
-  /* cambiado a negro para modo claro */
   --btn-bg-crud: rgba(215, 215, 215, 0.8);
   --btn-line-crud: rgba(34, 34, 34, 0.5);
   --dropdown-bg: #ffffff;
@@ -89,7 +83,6 @@ body.light-mode {
   --dropdown-logout-color: #c0392b;
   --yellow: #FFA500;
   --hover-link: rgba(192, 192, 192, 0.3);
-  /* Rojo para cerrar sesión en modo claro */
 }
 
 hr {
