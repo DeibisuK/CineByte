@@ -107,6 +107,7 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
+  margin: 0;
 }
 
 .sidebar-menu::-webkit-scrollbar {

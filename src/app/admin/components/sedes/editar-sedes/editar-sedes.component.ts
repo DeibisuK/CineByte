@@ -79,9 +79,6 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
         this.marker.setLatLng([data.latitud ?? 0, data.longitud ?? 0]);
       }
     });
-
-
-
   }
 
   ngOnDestroy(): void {
@@ -136,7 +133,6 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     const id = this.route.snapshot.paramMap.get('id');
-    console.log(this.sedeForm.value);
     this.sedeService.editarSede(Number(id), this.sedeForm.value).subscribe({
       next: () => {
         this.showAlertMessage('Sede editada correctamente', 'success');

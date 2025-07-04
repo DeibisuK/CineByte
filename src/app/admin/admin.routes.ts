@@ -14,6 +14,7 @@ import { ListarActoresComponent } from './components/actores/listar-actores/list
 import { CrearActorComponent } from './components/actores/crear-actor/crear-actor.component';
 import { CrearDistribuidorComponent } from './components/distribuidor/crear-distribuidor/crear-distribuidor.component';
 import { ListDistribuidorComponent } from './components/distribuidor/listar-distribuidor/list-distribuidor.component';
+import { ListSalasComponent } from './components/salas/list-salas/list-salas.component';
 
 export const adminRoutes: Routes = [
   {
@@ -78,6 +79,10 @@ export const adminRoutes: Routes = [
   {
     path: 'users',
     component: ListUsersComponent
+  },
+  {
+    path: 'list-sala',
+    component: ListSalasComponent
   },
   {
     path: 'add-sala',

@@ -7,7 +7,7 @@
     <div class="profile-avatar">
       <div class="avatar-container">
         <img [src]="user?.photoURL || 'Autenticacion/default-avatar.jpg'" alt="Foto de perfil"
-          (error)="handleImageError($event)" class="avatar-image">
+          (error)="handleImageError($event)" class="avatar-image" referrerpolicy="no-referrer">
         <div *ngIf="showDefaultAvatar" class="default-avatar-overlay">
           <svg viewBox="0 0 24 24" class="default-avatar-icon">
             <path fill="currentColor"

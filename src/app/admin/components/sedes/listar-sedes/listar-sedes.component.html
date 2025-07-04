@@ -1,9 +1,10 @@
 <div class="sedes-container" [class.modo-cliente]="isClientRoute()">
   <div class="flex-header">
     <h1 class="titulo-sedes">Sedes del Cine</h1>
-    <button *ngIf="!isClientRoute()" class="btn-agregar-sede">
+    <button *ngIf="!isClientRoute()" class="btn-agregar-sede" routerLink="/admin/add-sede">
       <svg class="icono-mas" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+        <path
+          d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
       </svg>
       <span>Agregar Sede</span>
     </button>
@@ -11,7 +12,8 @@
 
   <!-- Mensaje introductorio solo para ruta de clientes -->
   <div *ngIf="isClientRoute()" class="intro-mensaje">
-    <p>A continuación encontrarás todas nuestras sedes disponibles. Selecciona tu ubicación preferida para disfrutar de la mejor experiencia cinematográfica.</p>
+    <p>A continuación encontrarás todas nuestras sedes disponibles. Selecciona tu ubicación preferida para disfrutar de
+      la mejor experiencia cinematográfica.</p>
   </div>
 
   <div class="contenedor-sedes">
@@ -21,10 +23,12 @@
         <div class="acciones" *ngIf="!isClientRoute()">
           <button class="action-btn" *ngIf="sede.id_sede !== undefined" (click)="editarSede(sede)" title="Editar">
             <svg class="action-icon" viewBox="0 0 24 24">
-              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+              <path
+                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
             </svg>
           </button>
-          <button class="action-btn delete" *ngIf="sede.id_sede !== undefined" (click)="eliminarSede(sede)" title="Eliminar">
+          <button class="action-btn delete" *ngIf="sede.id_sede !== undefined" (click)="eliminarSede(sede)"
+            title="Eliminar">
             <svg class="action-icon" viewBox="0 0 24 24">
               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
             </svg>
