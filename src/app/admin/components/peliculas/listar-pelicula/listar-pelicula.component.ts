@@ -9,12 +9,13 @@ import { ActoresService } from '../../../../services/actores.service';
 import { EtiquetasService } from '../../../../services/etiquetas.service';
 import { DistribuidorService } from '../../../../services/distribuidor.service';
 import Swal from 'sweetalert2';
+import { Distribuidor } from '../../../models/distribuidor.model';
 
 @Component({
   selector: 'app-listar-pelicula',
   imports: [CommonModule, RouterLink],
   templateUrl: './listar-pelicula.component.html',
-  styleUrl: './listar-pelicula.component.css'
+  styleUrl: './listar-pelicula.component.css',
 })
 export class ListarPeliculaComponent {
   peliculas: Pelicula[] = [];
@@ -23,9 +24,13 @@ export class ListarPeliculaComponent {
   actorsaMap: { [id: number]: string } = {};
   distribuidorMap: { [id: number]: string } = {};
 
-  constructor(private peliculaService: PeliculaService, private idiomaService: IdiomasService,
-    private actoresService: ActoresService, private etiquetasService: EtiquetasService, private distribuidoraService: DistribuidorService
-  ) { }
+  constructor(
+    private peliculaService: PeliculaService,
+    private idiomaService: IdiomasService,
+    private actoresService: ActoresService,
+    private etiquetasService: EtiquetasService,
+    private distribuidoraService: DistribuidorService
+  ) {}
 
   ngOnInit(): void {
     this.obtenerPeliculas();
@@ -49,7 +54,7 @@ export class ListarPeliculaComponent {
           map[idioma.id_idioma] = idioma.nombre;
           return map;
         }, {} as { [id: number]: string });
-      }
+      },
     });
 
     this.actoresService.getActor().subscribe({
@@ -59,7 +64,7 @@ export class ListarPeliculaComponent {
           map[actor.id_actor] = actor.nombre;
           return map;
         }, {} as { [id: number]: string });
-      }
+      },
     });
 
     this.etiquetasService.getEtiquetas().subscribe({
@@ -69,28 +74,33 @@ export class ListarPeliculaComponent {
           map[tag.id_etiqueta] = tag.nombre;
           return map;
         }, {} as { [id: number]: string });
-      }
+      },
     });
+
+    interface DistribuidorMap {
+      [id: number]: string;
+    }
 
     this.distribuidoraService.getDistribuidor().subscribe({
-      next: (res) => {
-        // construyes un mapa { id: nombre }
-        this.distribuidorMap = res.reduce((map, tag) => {
-          map[tag.id_distribuidora] = tag.nombre;
+      next: (res: Distribuidor[]) => {
+        this.distribuidorMap = res.reduce<DistribuidorMap>((map, tag) => {
+          const id = Number(tag.id_distribuidora);
+          if (!isNaN(id)) {
+            map[id] = tag.nombre || '';
+          }
           return map;
-        }, {} as { [id: number]: string });
-      }
+        }, {});
+      },
     });
-
   }
 
   tipoEstado(tipo: string): string {
-    if (tipo === "proximamente") {
-      return "Proximamente";
-    } else if (tipo === "activo") {
-      return "Activo";
+    if (tipo === 'proximamente') {
+      return 'Proximamente';
+    } else if (tipo === 'activo') {
+      return 'Activo';
     }
-    return "Retirado";
+    return 'Retirado';
   }
 
   eliminarPelicula(id: number): void {
@@ -100,7 +110,7 @@ export class ListarPeliculaComponent {
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.peliculaService.deletePelicula(id).subscribe({
@@ -109,9 +119,10 @@ export class ListarPeliculaComponent {
             this.obtenerPeliculas();
           },
           error: (err) => {
-            const mensaje = err.error?.error || 'No se pudo eliminar la pelicula.';
+            const mensaje =
+              err.error?.error || 'No se pudo eliminar la pelicula.';
             Swal.fire('Error', mensaje, 'error');
-          }
+          },
         });
       }
     });

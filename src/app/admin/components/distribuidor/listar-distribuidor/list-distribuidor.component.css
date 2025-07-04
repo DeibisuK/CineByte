@@ -269,8 +269,8 @@
 }
 
 .website-link:hover {
-  text-decoration: underline;
-  color: #FFD700;
+  font-weight: 480;
+  color: #fee34a;
 }
 
 /* Acciones */
@@ -289,6 +289,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 5px;
   padding: 0.5rem;
   min-width: 32px;
 }
@@ -340,6 +341,22 @@
   justify-content: flex-end;
 }
 
+.edit-select {
+    width: 100%;
+    padding: 8px 12px;
+    background: var(--bg-color);
+    border: 2px solid var(--dropdown-border);
+    color: var(--text-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+.edit-select:focus {
+    outline: none;
+    border-color: var(--yellow);
+}
+
 .btn-save {
   padding: 8px 12px;
   border-radius: 8px;
@@ -351,6 +368,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  margin-bottom: 5px;
   background: var(--yellow);
   color: #000;
 }

@@ -79,37 +79,50 @@
                   {{distribuidor.nombre}}
                 </span>
                 <div *ngIf="distribuidorEditando === distribuidor.id_distribuidora" class="inline-edit">
-                  <input type="text" [(ngModel)]="nombreTemporal" class="edit-input" placeholder="Nombre" #nombreInput>
-                  <div class="edit-actions">
-                    <button type="button" class="btn-save" title="Guardar">
-                      ✓
-                    </button>
-                    <button type="button" class="btn-cancel" title="Cancelar">
-                      ✕
-                    </button>
-                  </div>
+                  <input type="text" [(ngModel)]="nombreTemporal" class="edit-input" placeholder="Nombre">
                 </div>
               </td>
-              <td>{{obtenerNombrePais(distribuidor.id_pais_origen)}}</td>
-              <td>{{distribuidor.ano_fundacion}}</td>
               <td>
-                <a *ngIf="distribuidor.sitio_web" [href]="'https://' + distribuidor.sitio_web" target="_blank" class="website-link">
-                  {{distribuidor.sitio_web}}
-                </a>
-                <span *ngIf="!distribuidor.sitio_web">-</span>
+                <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">
+                  {{obtenerNombrePais(distribuidor.id_pais_origen)}}
+                </span>
+                <select *ngIf="distribuidorEditando === distribuidor.id_distribuidora" [(ngModel)]="paisOrigenTemporal" class="edit-select">
+                  <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
+                </select>
+              </td>
+              <td>
+                <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">
+                  {{distribuidor.ano_fundacion}}
+                </span>
+                <input *ngIf="distribuidorEditando === distribuidor.id_distribuidora" type="number" [(ngModel)]="anoFundacionTemporal" class="edit-input">
+              </td>
+              <td>
+                <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">
+                  <a *ngIf="distribuidor.sitio_web" [href]="'https://' + distribuidor.sitio_web" target="_blank" class="website-link">
+                    {{distribuidor.sitio_web}}
+                  </a>
+                  <span *ngIf="!distribuidor.sitio_web">-</span>
+                </span>
+                <input *ngIf="distribuidorEditando === distribuidor.id_distribuidora" type="text" [(ngModel)]="sitioWebTemporal" class="edit-input" placeholder="Sitio web">
               </td>
               <td>
                 <div class="distribuidor-actions">
-                  <button class="action-btn" (click)="activarEdicion(distribuidor)" *ngIf="distribuidorEditando !== distribuidor.id_distribuidora" title="Editar">
-                    <svg class="action-icon" viewBox="0 0 24 24">
-                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                    </svg>
-                  </button>
-                  <button class="action-btn delete" title="Eliminar">
-                    <svg class="action-icon" viewBox="0 0 24 24">
-                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                    </svg>
-                  </button>
+                  <div *ngIf="distribuidorEditando === distribuidor.id_distribuidora" class="edit-buttons">
+                    <button class="btn-save" (click)="guardarEdicion()" title="Guardar">✓</button>
+                    <button class="btn-cancel" (click)="cancelarEdicion()" title="Cancelar">✕</button>
+                  </div>
+                  <div *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">
+                    <button class="action-btn" (click)="activarEdicion(distribuidor)" title="Editar">
+                      <svg class="action-icon" viewBox="0 0 24 24">
+                        <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                      </svg>
+                    </button>
+                    <button class="action-btn delete" (click)="deleteDistribuidor(distribuidor.id_distribuidora, distribuidor.nombre)" title="Eliminar">
+                      <svg class="action-icon" viewBox="0 0 24 24">
+                        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </td>
             </tr>

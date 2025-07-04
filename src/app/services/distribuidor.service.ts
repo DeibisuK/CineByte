@@ -16,4 +16,12 @@ export class DistribuidorService {
   addDisitribuidor(distri: Distribuidor):Observable<any> {
     return this.http.post(this.apiURL, distri);
   }
+  updateDistribuidor(id: number, distri: Distribuidor): Observable<any> {
+    return this.http.put(`${this.apiURL}/${id}`, distri);
+  }
+  deleteDisitribuidor(id: number): Observable<any> {
+    return this.http.delete(`${this.apiURL}/${id}`);
+  }
+
+
 }
