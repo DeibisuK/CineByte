@@ -1,5 +1,5 @@
 export interface Promocion {
-  id_promo?: number;
+  id_promo: number;
   imagen_url?: string;
   titulo: string;
   descripcion: string;

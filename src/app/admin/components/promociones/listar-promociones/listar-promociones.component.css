@@ -1,0 +1,260 @@
+.promociones-container {
+  width: calc(100% - 2rem);
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  align-items: center;
+}
+
+.contenedor-promociones {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centramos las tarjetas */
+  gap: 2.5rem;
+}
+
+.loading-spinner, .no-promociones {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-color);
+}
+
+.promo-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--footer-esp, var(--footer-bg));
+  color: var(--text-color);
+  border-radius: 14px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.13);
+  overflow: hidden;
+  transition: transform 0.2s;
+  width: 100%;
+  max-width: 950px; /* Ancho máximo para las tarjetas */
+}
+
+.promo-card:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+.promo-card img {
+  width: 100%;
+  object-fit: contain;
+  display: block;
+  max-height: none;
+  min-height: auto;
+}
+
+.promo-etiquetas {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.promo-etiqueta {
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.95rem;
+  padding: 4px 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+}
+
+.promo-info {
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.promo-info h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.promo-desc {
+  margin: 0.7rem 0 0 0;
+  font-size: 1.08rem;
+  color: var(--text-color);
+}
+
+.promo-footer {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.promo-fechas {
+  font-size: 1.05rem;
+  color: var(--footer-link, #888);
+}
+
+/* Estilo para el mensaje introductorio */
+.intro-mensaje {
+  width: 100%;
+  margin: -0.5rem 0 1.5rem 0; /* Margen negativo para subirlo */
+  color: var(--text-color);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+.acciones {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px;
+  background: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background: rgba(25, 0, 255, 0.1);
+  border-color: rgba(25, 0, 255, 0.3);
+}
+
+.action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.action-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.btn-agregar-promo {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #121212;
+  font-weight: 600;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.08);
+  gap: 0.5rem;
+}
+
+.btn-agregar-promo:hover {
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
+}
+
+.btn-agregar-promo,
+.form-sede button[type="submit"] {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #121212;
+  font-weight: 600;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.08rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.08);
+  outline: none;
+  gap: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7rem 1.6rem;
+}
+.btn-agregar-promo:hover,
+.form-sede button[type="submit"]:hover,
+.btn-agregar-promo:focus,
+.form-sede button[type="submit"]:focus {
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
+}
+
+.icono-mas {
+  width: 1.3em;
+  height: 1.3em;
+  margin-right: 0.3em;
+  fill: currentColor;
+}
+
+.flex-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin: 1.5rem 0; /* Ajustamos el margen superior/inferior */
+}
+
+:host-context(.admin-view) .flex-header,
+.modo-admin .flex-header {
+  padding-top: 0;
+}
+
+.titulo-promociones {
+  margin: 0; /* Eliminamos cualquier margen por defecto */
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .promo-card {
+    max-width: 100%;
+  }
+  
+  .promociones-container {
+    padding: 0 1rem 1.5rem;
+  }
+  
+  .promo-card img {
+    min-height: 180px;
+    max-height: 220px;
+  }
+  
+  .promo-info {
+    padding: 1rem;
+  }
+  
+  .promo-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .acciones {
+    align-self: flex-end;
+  }
+}
+
+/* Ajustes responsive */
+@media (max-width: 768px) {
+  .flex-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .titulo-promociones {
+    font-size: 1.8rem;
+  }
+  
+  .btn-agregar-promo {
+    align-self: flex-end;
+  }
+}

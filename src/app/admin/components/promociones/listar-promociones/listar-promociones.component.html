@@ -1,1 +1,60 @@
-<p>listar-promociones works!</p>
+<div class="promociones-container">
+    <div class="flex-header">
+        <h1 class="titulo-promociones">{{ isClientRoute() ? 'Promociones' : 'Administrar Promociones' }}</h1>
+        <button *ngIf="!isClientRoute()" class="btn-agregar-promo" routerLink="/admin/add-promocion">
+            <svg class="icono-mas" viewBox="0 0 20 20" fill="currentColor">
+                <path
+                    d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+            </svg>
+            <span>Agregar Promoción</span>
+        </button>
+    </div>
+
+    <!-- Mensaje introductorio solo para ruta de clientes -->
+    <div *ngIf="isClientRoute()" class="intro-mensaje">
+        <p>A continuación encontrarás todas nuestras sedes disponibles. Selecciona tu ubicación preferida para disfrutar
+            de
+            la mejor experiencia cinematográfica.</p>
+    </div>
+
+    <div class="contenedor-promociones">
+        <div class="promo-card" *ngFor="let promo of promociones" (click)="verDetalle(promo)"
+            [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
+
+            <img [src]="promo.imagen_url || 'assets/imagen-placeholder.jpg'" [alt]="promo.titulo" />
+
+            <div class="promo-etiquetas">
+                <span class="promo-etiqueta">{{ getEtiquetaTipo(promo.tipo_promocion) }}</span>
+                <span class="promo-etiqueta" *ngIf="promo.estado">{{ promo.estado }}</span>
+            </div>
+
+            <div class="promo-info">
+                <h3>{{ promo.titulo }}</h3>
+                <p class="promo-desc">{{ promo.descripcion }}</p>
+
+                <div class="promo-footer">
+                    <div class="promo-fechas" *ngIf="promo.fecha_inicio && promo.fecha_fin">
+                        <span>
+                            {{ promo.fecha_inicio | date:'dd/MM/yyyy' }} - {{ promo.fecha_fin | date:'dd/MM/yyyy' }}
+                        </span>
+                    </div>
+
+                    <div class="acciones" *ngIf="!isClientRoute()">
+                        <button class="action-btn" (click)="editarPromocion(promo, $event)" title="Editar">
+                            <svg class="action-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                            </svg>
+                        </button>
+                        <button class="action-btn delete" (click)="eliminarPromocion(promo, $event)" title="Eliminar">
+                            <svg class="action-icon" viewBox="0 0 24 24">
+                                <path
+                                    d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

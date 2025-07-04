@@ -69,7 +69,7 @@ export const adminRoutes: Routes = [
     component: EditarSedesComponent
   },
   {
-    path: 'promociones',
+    path: 'list-promocion',
     component: ListarPromocionesComponent
   },
   {
