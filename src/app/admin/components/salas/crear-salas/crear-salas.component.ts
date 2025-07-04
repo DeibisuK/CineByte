@@ -98,9 +98,7 @@ export class CrearSalasComponent {
         cantidad_asientos: valores.cantidad_asientos,
         espacios: espaciosFormateados
       };
-
-      console.log(sala);
-
+      
       this.salaService.addSala(sala).subscribe({
         next: (res) => {
           alert('Sala creada correctamente 🎉');

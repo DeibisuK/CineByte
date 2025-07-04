@@ -63,7 +63,7 @@ export class ListSalasComponent {
   }
 
   editarSala(id: number) {
-    alert(`Editar sala ID: ${id}`);
+    this.router.navigate(['/admin/edit-sala/', id]);
   }
 
   eliminarSala(id: number) {

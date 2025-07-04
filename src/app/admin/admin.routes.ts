@@ -15,29 +15,30 @@ import { CrearActorComponent } from './components/actores/crear-actor/crear-acto
 import { CrearDistribuidorComponent } from './components/distribuidor/crear-distribuidor/crear-distribuidor.component';
 import { ListDistribuidorComponent } from './components/distribuidor/listar-distribuidor/list-distribuidor.component';
 import { ListSalasComponent } from './components/salas/list-salas/list-salas.component';
+import { EditSalasComponent } from './components/salas/edit-salas/edit-salas.component';
 
 export const adminRoutes: Routes = [
   {
-    path: '', redirectTo: 'dashboard', pathMatch: 'full' 
+    path: '', redirectTo: 'dashboard', pathMatch: 'full'
   },
   {
     path: 'dashboard',
     component: DashboardComponent
   },
   {
-    path:'list-actores',
+    path: 'list-actores',
     component: ListarActoresComponent
   },
   {
-    path:'crear-actores',
+    path: 'crear-actores',
     component: CrearActorComponent
   },
   {
-    path:'list-distribuidor',
+    path: 'list-distribuidor',
     component: ListDistribuidorComponent
   },
   {
-    path:'crear-distribuidor',
+    path: 'crear-distribuidor',
     component: CrearDistribuidorComponent
   },
   {
@@ -87,6 +88,9 @@ export const adminRoutes: Routes = [
   {
     path: 'add-sala',
     component: CrearSalasComponent
+  }, {
+    path: 'edit-sala/:id',
+    component: EditSalasComponent
   }
 
 ];
