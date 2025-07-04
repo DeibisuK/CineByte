@@ -4,10 +4,11 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SalasService } from '../../../../services/salas.service';
 import { Espacio, Sala } from '../../../models/salas.model';
 import { AlertaService } from '../../../../services/alerta.service';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-crear-salas',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,RouterModule],
   templateUrl: './crear-salas.component.html',
   styleUrl: './crear-salas.component.css'
 })

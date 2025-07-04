@@ -368,3 +368,131 @@
         grid-template-columns: 1fr;
     }
 }
+
+.close-btn {
+  text-align: right;
+  margin-bottom: 10px;
+}
+
+.btn-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.btn-cerrar:hover {
+  color: red;
+}
+
+.espacio-container {
+    position: fixed;
+    /* O absolute si está dentro de contenedor posicionado */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /* Centrado exacto */
+    z-index: 1;
+    /* Asegura que esté por encima */
+    background-color: var(--bg-color);
+    /* O rgba(0, 0, 0, 0.8) si quieres efecto modal */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.espacios-preview {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: var(--bg-color);
+    border-radius: 5px;
+    justify-items: center;
+}
+
+.fila-asientos {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 5px;
+}
+
+.fila-label {
+    font-weight: bold;
+    color: var(--yellow);
+    min-width: 25px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.asientos-fila {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.asiento {
+    width: 35px;
+    height: 35px;
+    background-color: var(--btn-bg-crud);
+    border: 2px solid var(--btn-line-crud);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+/* Asiento normal */
+.asiento-normal {
+    background-color: var(--btn-bg-crud);
+    /* ya es el color base */
+    border: 2px solid var(--btn-line-crud);
+}
+
+/* Asiento vacío o espacio */
+.asiento-espacio {
+    background-color: #333;
+    /* gris oscuro o neutro */
+    border: 2px dashed #777;
+    /* borde discontinuo para distinguir */
+    color: #999;
+    cursor: default;
+    pointer-events: none;
+    /* para que no se pueda hacer clic */
+    opacity: 0.6;
+}
+
+/* Animación de entrada */
+.fade-in {
+  animation: fadeInScale 0.3s ease-out forwards;
+}
+
+/* Animación de salida */
+.fade-out {
+  animation: fadeOutScale 0.2s ease-in forwards;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutScale {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}

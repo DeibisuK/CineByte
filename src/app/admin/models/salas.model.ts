@@ -11,3 +11,12 @@ export interface Sala {
   espacios: Espacio[];       // Lista de asientos vacíos
   fecha_creacion?: Date;
 }
+
+export interface Asiento {
+  id_asiento: number;
+  id_sala: number;
+  fila: string;
+  columna: number;
+  tipo: string;
+  url_imagen: string | null;
+}
