@@ -6,118 +6,127 @@
         </div>
         <div class="header-actions">
             <button class="btn btn-primary" routerLink="/admin/add-sala">
-                ➕ Nueva Sala
+                <span class="btn-icon">+</span>
+                Nueva Sala
             </button>
-            <button class="btn btn-secondary" onclick="exportarSalas()">
-                📊 Exportar
+            <button class="btn btn-export" onclick="exportarSalas()">
+                <span class="btn-icon">↓</span>
+                Exportar
+            </button>
+            <button class="btn btn-clear" (click)="limpiarFiltros()">
+                Limpiar
+            </button>
+    </div>
+</div>
+
+<div class="stats-container">
+    <div class="stat-card">
+        <div class="stat-number">{{ totalSalas }}</div>
+        <div class="stat-label">Total Salas</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ totalAsientos }}</div>
+        <div class="stat-label">Total Asientos</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ promedioAsientos }}</div>
+        <div class="stat-label">Promedio Asientos</div>
+    </div>
+</div>
+
+<<div class="filters-container">
+    <div class="filters-row">
+        <div class="filter-group search-group">
+            <label for="filtro-nombre">Buscar por nombre</label>
+            <input type="text" id="filtro-nombre" [(ngModel)]="filtroNombre" (input)="aplicarFiltros()"
+                placeholder="Nombre de la sala..." />
+        </div>
+
+        <div class="filter-group">
+            <label for="filtro-tipo">Tipo de sala</label>
+            <select id="filtro-tipo" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
+                <option value="">Todos los tipos</option>
+                <option value="2D">2D</option>
+                <option value="3D">3D</option>
+                <option value="IMAX">IMAX</option>
+                <option value="4DX">4DX</option>
+                <option value="VIP">VIP</option>
+                <option value="Premium">Premium</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="filtro-asientos">Mín. asientos</label>
+            <input type="number" id="filtro-asientos" [(ngModel)]="filtroAsientos" (input)="aplicarFiltros()"
+                min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+            <button class="btn btn-clear" (click)="limpiarFiltros()" title="Limpiar filtros">
+                <svg class="trash-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+                </svg>
             </button>
         </div>
     </div>
+</div>
 
-    <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-number">{{ totalSalas }}</div>
-            <div class="stat-label">Total Salas</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ totalAsientos }}</div>
-            <div class="stat-label">Total Asientos</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-number">{{ promedioAsientos }}</div>
-            <div class="stat-label">Promedio Asientos</div>
-        </div>
-    </div>
+<div *ngIf="cargando" class="loading">Cargando salas...</div>
 
-    <div class="filters-container">
-        <div class="filters-row">
-            <div class="filter-group">
-                <label for="filtro-nombre">Buscar por nombre</label>
-                <input type="text" id="filtro-nombre" [(ngModel)]="filtroNombre" (input)="aplicarFiltros()"
-                    placeholder="Nombre de la sala..." />
-            </div>
-
-            <div class="filter-group">
-                <label for="filtro-tipo">Tipo de sala</label>
-                <select id="filtro-tipo" [(ngModel)]="filtroTipo" (change)="aplicarFiltros()">
-                    <option value="">Todos los tipos</option>
-                    <option value="2D">2D</option>
-                    <option value="3D">3D</option>
-                    <option value="IMAX">IMAX</option>
-                    <option value="4DX">4DX</option>
-                    <option value="VIP">VIP</option>
-                    <option value="Premium">Premium</option>
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label for="filtro-asientos">Mín. asientos</label>
-                <input type="number" id="filtro-asientos" [(ngModel)]="filtroAsientos" (input)="aplicarFiltros()"
-                    min="0" placeholder="0" />
-            </div>
-
-            <div class="filter-group">
-                <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+<div *ngIf="!cargando && salasFiltradas.length > 0" class="salas-grid">
+    <div *ngFor="let sala of salasFiltradas" class="sala-card">
+        <div class="sala-header">
+            <div>
+                <div class="sala-title">{{ sala.nombre }}</div>
+                <div class="sala-id">ID: {{ sala.id_sala }}</div>
             </div>
         </div>
-    </div>
-
-    <div *ngIf="cargando" class="loading">Cargando salas...</div>
-
-    <div *ngIf="!cargando && salasFiltradas.length > 0" class="salas-grid">
-        <div *ngFor="let sala of salasFiltradas" class="sala-card">
-            <div class="sala-header">
-                <div>
-                    <div class="sala-title">{{ sala.nombre }}</div>
-                    <div class="sala-id">ID: {{ sala.id_sala }}</div>
+        <div class="sala-info">
+            <div class="info-item">
+                <div class="info-label">Tipo de Sala</div>
+                <div class="info-value">
+                    <span [ngClass]="'tipo-badge tipo-' + (sala.tipo_sala.toLowerCase() || 'default')">
+                        {{ sala.tipo_sala || 'Sin tipo' }}
+                    </span>
                 </div>
             </div>
-            <div class="sala-info">
-                <div class="info-item">
-                    <div class="info-label">Tipo de Sala</div>
-                    <div class="info-value">
-                        <span [ngClass]="'tipo-badge tipo-' + (sala.tipo_sala.toLowerCase() || 'default')">
-                            {{ sala.tipo_sala || 'Sin tipo' }}
-                        </span>
-                    </div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Asientos</div>
-                    <div class="info-value">{{ sala.cantidad_asientos }}</div>
-                </div>
-            </div>
-            <div class="sala-actions">
-                <button class="btn btn-small btn-view" (click)="verSala(sala.id_sala || 0)">👁️ Ver</button>
-                <button class="btn btn-small btn-edit" (click)="editarSala(sala.id_sala || 0)">✏️ Editar</button>
-                <button class="btn btn-small btn-delete" (click)="eliminarSala(sala.id_sala || 0)">🗑️
-                    Eliminar</button>
+            <div class="info-item">
+                <div class="info-label">Asientos</div>
+                <div class="info-value">{{ sala.cantidad_asientos }}</div>
             </div>
         </div>
-    </div>
-
-    <!-- No hay salas -->
-    <div *ngIf="!cargando && salasFiltradas.length === 0" class="no-salas">
-        <h3>No hay salas disponibles</h3>
-        <p>No se encontraron salas que coincidan con los filtros seleccionados.</p>
-        <button class="btn btn-primary" (click)="crearSala()">Crear Primera Sala</button>
-    </div>
-
-    <div class="espacio-container" *ngIf="mostrarAsientos" [ngClass]="animacionAsientos">
-        <div class="close-btn">
-            <button class="btn-cerrar" (click)="closeAsientos()">x</button>
+        <div class="sala-actions">
+            <button class="btn btn-small btn-view" (click)="verSala(sala.id_sala || 0)">👁️ Ver</button>
+            <button class="btn btn-small btn-edit" (click)="editarSala(sala.id_sala || 0)">✏️ Editar</button>
+            <button class="btn btn-small btn-delete" (click)="eliminarSala(sala.id_sala || 0)">🗑️
+                Eliminar</button>
         </div>
-        <div class="espacios-preview">
-            <div *ngFor="let fila of vistaPrevia" class="fila-asientos">
-                <div class="asientos-fila">
-                    <div *ngFor="let asiento of fila.asientos" [ngClass]="{
+    </div>
+</div>
+
+<!-- No hay salas -->
+<div *ngIf="!cargando && salasFiltradas.length === 0" class="no-salas">
+    <h3>No hay salas disponibles</h3>
+    <p>No se encontraron salas que coincidan con los filtros seleccionados.</p>
+    <button class="btn btn-primary" (click)="crearSala()">Crear Primera Sala</button>
+</div>
+
+<div class="espacio-container" *ngIf="mostrarAsientos" [ngClass]="animacionAsientos">
+    <div class="close-btn">
+        <button class="btn-cerrar" (click)="closeAsientos()">x</button>
+    </div>
+    <div class="espacios-preview">
+        <div *ngFor="let fila of vistaPrevia" class="fila-asientos">
+            <div class="asientos-fila">
+                <div *ngFor="let asiento of fila.asientos" [ngClass]="{
             asiento: true,
             'asiento-normal': asiento.tipo === 'normal',
             'asiento-espacio': asiento.tipo === 'espacio'
           }">
-                        {{ fila.letra }}{{ asiento.numero }}
-                    </div>
+                    {{ fila.letra }}{{ asiento.numero }}
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>

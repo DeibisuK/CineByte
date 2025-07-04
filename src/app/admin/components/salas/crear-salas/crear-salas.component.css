@@ -100,13 +100,14 @@
 }
 
 .btn-primary {
-    background-color: var(--yellow);
-    color: var(--bg-color);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    transition: background 0.2s, transform 0.2s;
+    color:  #121212;
 }
 
 .btn-primary:hover {
-    background-color: #e6c200;
-    transform: translateY(-2px);
+    background: linear-gradient(135deg, #FFA500, #FFD700);
+    transform: scale(1.04);
 }
 
 .btn-secondary {
@@ -162,12 +163,13 @@
 
 .btn-warning {
     background-color: #f39c12;
-    color: var(--bg-color);
+    color: #121212;
+    font-weight: 500;
     border: none;
 }
 
 .btn-warning:hover {
-    background-color: #e67e22;
+    background-color: rgba(255, 167, 90, 0.851);
 }
 
 .espacios-json {
