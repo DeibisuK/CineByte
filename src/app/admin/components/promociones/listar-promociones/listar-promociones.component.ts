@@ -53,9 +53,9 @@ export class ListarPromocionesComponent implements OnInit {
     this.router.navigate(['/admin/promociones/detalle', promo.id_promo]);
   }
 
-  editarPromocion(promo: Promocion, event: Event): void {
+  editarPromocion(promo: Promocion, event: Event) {
     event.stopPropagation();
-    this.router.navigate(['/admin/promociones/editar', promo.id_promo]);
+    this.router.navigate(['/admin/edit-promocion', promo.id_promo]);
   }
 
   eliminarPromocion(promo: Promocion, event: Event): void {

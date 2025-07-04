@@ -16,6 +16,7 @@ import { CrearDistribuidorComponent } from './components/distribuidor/crear-dist
 import { ListDistribuidorComponent } from './components/distribuidor/listar-distribuidor/list-distribuidor.component';
 import { ListSalasComponent } from './components/salas/list-salas/list-salas.component';
 import { EditSalasComponent } from './components/salas/edit-salas/edit-salas.component';
+import { EditarPromocionComponent } from './components/promociones/editar-promociones/editar-promociones.component';
 
 export const adminRoutes: Routes = [
   {
@@ -76,6 +77,10 @@ export const adminRoutes: Routes = [
   {
     path: 'add-promocion',
     component: CreatePromocionComponent
+  },
+  {
+    path: 'edit-promocion/:id',
+    component: EditarPromocionComponent
   },
   {
     path: 'users',
