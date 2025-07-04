@@ -8,6 +8,7 @@ import { DetallePromocionComponent } from './features/promotions/pages/detalle-p
 import { BuscarComponent } from './features/movies/pages/buscar/buscar.component';
 import { ContactanosComponent } from './pages/contactanos/contactanos.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
+import { ListarSedesComponent } from '../admin/components/sedes/listar-sedes/listar-sedes.component';
 
 
 export const clienteRoutes: Routes = [
@@ -20,5 +21,6 @@ export const clienteRoutes: Routes = [
   {path: 'promocion/:id/:titulo', component: DetallePromocionComponent},
   {path: 'buscar/:termino', component: BuscarComponent},
   {path: 'contactanos', component: ContactanosComponent},
-  {path: 'perfil', component: PerfilComponent}
+  {path: 'perfil', component: PerfilComponent},
+  {path: 'donde-estamos', component: ListarSedesComponent}
 ];

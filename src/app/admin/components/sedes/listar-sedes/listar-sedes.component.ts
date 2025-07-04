@@ -26,7 +26,7 @@ export class ListarSedesComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private router: Router,
     private temaService: TemaService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -48,6 +48,10 @@ export class ListarSedesComponent implements OnInit {
       // Forzar redibujado para que se apliquen las variables
       this.cdr.detectChanges();
     }
+  }
+
+  isClientRoute(): boolean {
+    return this.router.url.includes('/donde-estamos');
   }
 
   cargarSedes() {

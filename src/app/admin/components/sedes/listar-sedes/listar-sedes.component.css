@@ -2,10 +2,30 @@
 .contenedor-sedes {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 2.5rem;
+  margin: 0 1.5rem 2.5rem; /* Mismo margen horizontal que el header */
+  width: auto;
+  max-width: 750px;
+}
+.sedes-container {
+  width: calc(100% - 2rem);
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+/* Estilo para el mensaje introductorio */
+.intro-mensaje {
   width: 100%;
-  margin: 2.5rem 0 2.5rem 0; /* margen arriba y abajo */
+  margin: -0.5rem 0 1.5rem 0; /* Margen negativo para subirlo */
+  color: var(--text-color);
+  font-size: 1.05rem;
+  line-height: 1.4;
+}
+
+:host-context(.admin-view) .flex-header,
+.modo-admin .flex-header {
+  padding-top: 2.5rem;
 }
 
 /* Tarjeta más ancha y menos gruesa la fuente */
@@ -86,20 +106,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 2.5rem;      /* <-- margen superior */
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   width: 100%;
-  max-width: 750px;
-  margin-left: auto;
-  margin-right: auto;
 }
 
+:not(.modo-cliente) .flex-header {
+  padding-top: 2rem;
+}
+
+
+.modo-admin .flex-header {
+  --header-padding: 2.5rem;
+}
+
+
 .titulo-sedes {
-  font-size: 2.1rem;
-  font-weight: 700; /* antes 800 */
+  margin-top: 0;
+  text-align: left; /* Mantenemos alineación izquierda */
+  font-size: 2.25rem;
+  font-weight: 700;
   color: var(--text-color);
-  margin: 0;
-  letter-spacing: -1px;
 }
 
 .btn-agregar-sede {
@@ -128,7 +154,7 @@
 .btn-agregar-sede,
 .form-sede button[type="submit"] {
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: var(--text-color);
+  color: #121212;
   font-weight: 600;
   border: none;
   border-radius: 999px;
@@ -181,8 +207,6 @@
   border: 2px solid #7f7f7f;
 
 }
-
-
 
 /* Responsive */
 @media (max-width: 900px) {
