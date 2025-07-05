@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../services/AuthService';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, CommonModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css',
 })
