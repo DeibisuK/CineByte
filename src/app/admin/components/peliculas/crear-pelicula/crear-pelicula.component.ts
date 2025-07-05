@@ -166,7 +166,7 @@ export class CrearPeliculaComponent {
 
       this.peliculaService.addPelicula(pelicula).subscribe({
         next: () => {
-          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "list-peliculas");
+          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "/peliculas/list");
         },
         error: () => {
           this.alerta.error("Error", "Error al guardar la pelicula");

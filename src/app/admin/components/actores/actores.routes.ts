@@ -4,10 +4,6 @@ import { CrearActorComponent } from "./crear-actor/crear-actor.component";
 
 export const actoresRoutes: Routes = [
   {
-    path: 'add',
-    component: CrearActorComponent
-  },
-  {
     path: 'list',
     component: ListarActoresComponent
   }

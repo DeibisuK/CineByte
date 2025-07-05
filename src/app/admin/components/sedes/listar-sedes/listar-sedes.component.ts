@@ -67,7 +67,7 @@ export class ListarSedesComponent implements OnInit {
 
   editarSede(sede: Sede) {
     if (sede.id_sede !== undefined) {
-      this.router.navigate(['/admin/edit-sede', sede.id_sede]);
+      this.router.navigate(['/admin/sedes/edit', sede.id_sede]);
     }
   }
 

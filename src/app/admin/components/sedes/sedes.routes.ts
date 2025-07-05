@@ -14,7 +14,7 @@ export const sedesRoutes: Routes = [
     component: ListarSedesComponent
   },
   {
-    path: 'editar/:id',
+    path: 'edit/:id',
     component: EditarSedesComponent
   },
   {

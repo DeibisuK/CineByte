@@ -4,10 +4,6 @@ import { ListDistribuidorComponent } from "./listar-distribuidor/list-distribuid
 
 export const distribuidoresRoutes: Routes = [
   {
-    path: 'add',
-    component: CrearDistribuidorComponent
-  },
-  {
     path: 'list',
     component: ListDistribuidorComponent
   }

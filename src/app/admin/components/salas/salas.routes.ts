@@ -13,7 +13,7 @@ export const salasRoutes: Routes = [
     component: ListSalasComponent
   },
   {
-    path: 'editar/:id',
+    path: 'edit/:id',
     component: EditSalasComponent
   }
 ]

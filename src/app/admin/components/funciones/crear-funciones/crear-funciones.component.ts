@@ -1,29 +1,37 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pelicula } from '../../../models/pelicula.model';
-import { Sede } from '../../../../services/sede.service';
+import { Sede, SedeService } from '../../../../services/sede.service';
 import { Sala } from '../../../models/salas.model';
 import { Idiomas } from '../../../models/idiomas.model';
+import { FuncionesService } from '../../../../services/funciones.service';
+import { SalasService } from '../../../../services/salas.service';
+import { PeliculaService } from '../../../../services/pelicula.service';
+import { IdiomasService } from '../../../../services/idiomas.service';
+import { SedeSala } from '../../../models/sede_salas.model';
+import { SedeSalasService } from '../../../../services/sede-salas.service';
+import { Funciones } from '../../../models/funciones.model';
+import { AlertaService } from '../../../../services/alerta.service';
 
 @Component({
   selector: 'app-crear-funciones',
-  imports: [CommonModule,ReactiveFormsModule,FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './crear-funciones.component.html',
   styleUrl: './crear-funciones.component.css'
 })
 export class CrearFuncionesComponent {
- FuncionesForm: FormGroup;
+  FuncionesForm: FormGroup;
   // Datos originales
   peliculas: Pelicula[] = [];
   sedes: Sede[] = [];
-  salas: Sala[] = [];
+  salas: SedeSala[] = [];
   idiomas: Idiomas[] = [];
 
   // Datos filtrados
   filteredPeliculas: Pelicula[] = [];
   filteredSedes: Sede[] = [];
-  filteredSalas: Sala[] = [];
+  filteredSalas: SedeSala[] = [];
 
   // Estados de dropdowns
   showPeliculasDropdown = false;
@@ -34,8 +42,16 @@ export class CrearFuncionesComponent {
   selectedPeliculaId: number | null = null;
   selectedSedeId: number | null = null;
   selectedSalaId: number | null = null;
-
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private funcionesService: FuncionesService,
+    private peliculasService: PeliculaService,
+    private sedesService: SedeService,
+    private sedesSalasService: SedeSalasService,
+    private salasService: SalasService,
+    private idiomasService: IdiomasService,
+    private alerta: AlertaService
+  ) {
     this.FuncionesForm = this.fb.group({
       pelicula_search: ['', Validators.required],
       sede_search: ['', Validators.required],
@@ -43,7 +59,6 @@ export class CrearFuncionesComponent {
       fecha_hora_inicio: ['', Validators.required],
       precio: ['', [Validators.required, Validators.min(0)]],
       id_idioma: ['', Validators.required],
-      // Campos ocultos para almacenar los IDs
       id_pelicula: [''],
       id_sede: [''],
       id_sala: ['']
@@ -51,10 +66,18 @@ export class CrearFuncionesComponent {
   }
 
   ngOnInit() {
-    this.filteredPeliculas = this.peliculas;
-    this.filteredSedes = this.sedes;
-  }
+    this.peliculasService.getPeliculas().subscribe(p => {
+      this.peliculas = this.filteredPeliculas = p;
+    });
 
+    this.sedesService.getSedes().subscribe(s => {
+      this.sedes = this.filteredSedes = s;
+    });
+
+    this.idiomasService.getIdiomas().subscribe(i => {
+      this.idiomas = i;
+    });
+  }
   // Métodos para Películas
   filterPeliculas(event: any) {
     const query = event.target.value.toLowerCase();
@@ -123,33 +146,34 @@ export class CrearFuncionesComponent {
 
   // Métodos para Salas
   loadSalasBySede(sedeId: number) {
-    //this.filteredSalas = this.salas.filter(sala => sala.id_sede === sedeId);
+    this.sedesSalasService.getSalasBySede(sedeId).subscribe(salas => {
+      this.salas = this.filteredSalas = salas;
+    });
   }
 
   filterSalas(event: any) {
     if (!this.selectedSedeId) return;
-    
+
     const query = event.target.value.toLowerCase();
-    //const salasDeSede = this.salas.filter(sala => sala.id_sede === this.selectedSedeId);
-    
-   // this.filteredSalas = salasDeSede.filter(sala =>
-    //  sala.nombre.toLowerCase().includes(query)
-    //);
+    const salasDeSede = this.salas.filter(sala => sala.id_sede === this.selectedSedeId);
+
+    this.filteredSalas = salasDeSede.filter(sala =>
+      sala.nombre.toLowerCase().includes(query)
+    );
     this.showSalasDropdown = true;
   }
 
-  selectSala(sala: Sala) {
+  selectSala(sala: SedeSala) {
     this.selectedSalaId = sala.id_sala ?? null;
     this.FuncionesForm.patchValue({
-      //sala_search: `${sala.nombre} - ${sala.capacidad} asientos`,
-      //id_sala: sala.id
+      sala_search: sala.nombre,
+      id_sala: sala.id_sala
     });
     this.showSalasDropdown = false;
   }
 
   toggleSalasDropdown() {
     if (!this.selectedSedeId) return;
-    
     this.showSalasDropdown = !this.showSalasDropdown;
     if (this.showSalasDropdown) {
       this.loadSalasBySede(this.selectedSedeId);
@@ -165,23 +189,28 @@ export class CrearFuncionesComponent {
   // Método para enviar el formulario
   onSubmit() {
     if (this.FuncionesForm.valid) {
-      const formData = {
-        id_pelicula: this.selectedPeliculaId,
-        id_sede: this.selectedSedeId,
-        id_sala: this.selectedSalaId,
-        fecha_hora_inicio: this.FuncionesForm.value.fecha_hora_inicio,
+      const formData: Funciones = {
+        id_funcion: '',
+        id_pelicula: this.selectedPeliculaId!,
+        id_sala: this.selectedSalaId!,
+        fecha_hora_inicio: new Date(this.FuncionesForm.value.fecha_hora_inicio), // ← objeto Date
         precio: this.FuncionesForm.value.precio,
         id_idioma: this.FuncionesForm.value.id_idioma
       };
+      ;
 
-      console.log('Datos del formulario:', formData);
-      
-      // Aquí enviarías los datos a tu servicio
-      // this.funcionesService.crearFuncion(formData).subscribe(...)
-      
-      alert('Función creada exitosamente!');
+      this.funcionesService.addFuncion(formData).subscribe({
+        next: () => {
+          this.alerta.success('Éxito', 'Función creada exitosamente!');
+          this.limpiarFormulario();
+        },
+        error: (err) => {
+          console.error(err);
+          this.alerta.error('Error', 'Error al crear la función.');
+        }
+      });
     } else {
-      alert('Por favor, completa todos los campos requeridos.');
+      this.alerta.error('Error', 'Por favor, completa todos los campos requeridos.');
     }
   }
 
