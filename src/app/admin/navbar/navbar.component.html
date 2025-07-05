@@ -21,86 +21,88 @@
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-peliculas" routerLinkActive="active-link" data-tooltip="Películas"
+      <a routerLink="./peliculas/list" routerLinkActive="active-link" data-tooltip="Películas"
         [attr.aria-label]="'Gestionar Películas' + (!sidebarClosed ? '' : ' - Películas')">
         <i class="fa-solid fa-film"></i>
         <span *ngIf="!sidebarClosed">Películas</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-actores" routerLinkActive="active-link" data-tooltip="Actores"
+      <a routerLink="./actores/list" routerLinkActive="active-link" data-tooltip="Actores"
         [attr.aria-label]="'Gestionar Actores' + (!sidebarClosed ? '' : ' - Actores')">
         <i class="fa-solid fa-people-group"></i>
         <span *ngIf="!sidebarClosed">Actores</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-distribuidor" routerLinkActive="active-link" data-tooltip="Distribuidor"
+      <a routerLink="./distribuidores/list" routerLinkActive="active-link" data-tooltip="Distribuidor"
         [attr.aria-label]="'Gestionar Distribuidor' + (!sidebarClosed ? '' : ' - Distribuidor')">
         <i class="fa-solid fa-photo-film"></i>
         <span *ngIf="!sidebarClosed">Distribuidor</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/categorias" routerLinkActive="active-link" data-tooltip="Categorías"
+      <a routerLink="./categorias" routerLinkActive="active-link" data-tooltip="Categorías"
         [attr.aria-label]="'Gestionar Categorías' + (!sidebarClosed ? '' : ' - Categorías')">
         <i class="fa-solid fa-list"></i>
         <span *ngIf="!sidebarClosed">Categorías</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-promocion" routerLinkActive="active-link" data-tooltip="Promociones"
+      <a routerLink="./promociones/list" routerLinkActive="active-link" data-tooltip="Promociones"
         [attr.aria-label]="'Gestionar Promociones' + (!sidebarClosed ? '' : ' - Promociones')">
         <i class="fa-solid fa-tags"></i>
         <span *ngIf="!sidebarClosed">Promociones</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-sala" routerLinkActive="active-link" data-tooltip="Salas"
+      <a routerLink="./salas/list" routerLinkActive="active-link" data-tooltip="Salas"
         [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')">
         <i class="fa-solid fa-door-open"></i>
         <span *ngIf="!sidebarClosed">Salas</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/list-funcion" routerLinkActive="active-link" data-tooltip="Funciones"
+      <a routerLink="./funciones/list" routerLinkActive="active-link" data-tooltip="Funciones"
         [attr.aria-label]="'Gestionar Funciones' + (!sidebarClosed ? '' : ' - Funciones')">
         <i class="fa-solid fa-calendar-days"></i>
         <span *ngIf="!sidebarClosed">Funciones</span>
       </a>
     </li>
     <li>
-      <a  (click)="toggleCinesMenu()" data-tooltip="Cines"
+
+      <a (click)="toggleCinesMenu()" data-tooltip="Cines"
         [attr.aria-label]="'Gestionar Cines' + (!sidebarClosed ? '' : ' - Cines')">
         <i class="fa-solid fa-film"></i>
         <span *ngIf="!sidebarClosed">Cines</span>
         <i class="fa-solid fa-chevron-down dropdown-arrow" [class.rotated]="cinesMenuOpen"></i>
+
       </a>
       <ul class="cines-menu" *ngIf="cinesMenuOpen">
 
-          <a routerLink="/admin/sedes" routerLinkActive="active-link" data-tooltip="Sedes"
-            [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
-            <i class="fa-solid fa-location-dot"></i>
-            <span *ngIf="!sidebarClosed">Sedes</span>
-          </a>
+        <a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
+          [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
+          <i class="fa-solid fa-location-dot"></i>
+          <span *ngIf="!sidebarClosed">Sedes</span>
+        </a>
 
-          <a routerLink="/admin/asignar-salas" routerLinkActive="active-link" data-tooltip="Asignar Salas"
-            [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
-            <i class="fa-solid fa-sitemap"></i>
-            <span *ngIf="!sidebarClosed">Asignar Salas</span>
-          </a>
+        <a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
+          [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
+          <i class="fa-solid fa-sitemap"></i>
+          <span *ngIf="!sidebarClosed">Asignar Salas</span>
+        </a>
 
       </ul>
     </li>
     <li>
-      <a routerLink="/admin/users" routerLinkActive="active-link" data-tooltip="Usuarios"
+      <a routerLink="./usuarios/list" routerLinkActive="active-link" data-tooltip="Usuarios"
         [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')">
         <i class="fa-solid fa-users"></i>
         <span *ngIf="!sidebarClosed">Usuarios</span>
       </a>
     </li>
     <li>
-      <a routerLink="/admin/anuncio" routerLinkActive="active-link" data-tooltip="Anuncios"
+      <a routerLink="./anuncios/add" routerLinkActive="active-link" data-tooltip="Anuncios"
         [attr.aria-label]="'Gestionar Anuncios' + (!sidebarClosed ? '' : ' - Anuncios')">
         <i class="fa-solid fa-message"></i>
         <span *ngIf="!sidebarClosed">Anuncio</span>

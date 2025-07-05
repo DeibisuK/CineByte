@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Promocion } from '../../../models/promocion.model';
 import { PromocionService } from '../../../../services/promocion.service';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-listar-promociones',
-  imports: [CommonModule],
+  imports: [CommonModule,RouterModule],
   templateUrl: './listar-promociones.component.html',
   styleUrl: './listar-promociones.component.css'
 })

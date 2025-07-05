@@ -1,0 +1,158 @@
+.funciones-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--dropdown-border);
+    border-radius: 6px;
+    background-color: var(--dropdown-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.dropdown-container {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-input {
+    width: 100%;
+    padding: 12px 40px 12px 12px;
+    border: 1px solid var(--dropdown-border);
+    border-radius: 6px;
+    background-color: var(--dropdown-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dropdown-input:focus {
+    outline: none;
+    border-color: var(--yellow);
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.dropdown-input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background-color: rgba(34, 34, 34, 0.5);
+}
+
+.dropdown-arrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--text-color);
+    transition: transform 0.3s ease;
+}
+
+.dropdown-arrow:hover {
+    color: var(--yellow);
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: var(--dropdown-bg);
+    border: 1px solid var(--dropdown-border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    z-index: 1000;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-item {
+    padding: 12px;
+    cursor: pointer;
+    color: var(--dropdown-item-text);
+    border-bottom: 1px solid var(--dropdown-border);
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: var(--dropdown-item-hover-bg);
+}
+
+.dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 14px;
+    background-color: var(--btn-bg-crud);
+    color: var(--text-color);
+    border: 1px solid var(--btn-line-crud);
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background-color: var(--yellow);
+    color: var(--bg-color);
+    border-color: var(--yellow);
+}
+
+.submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Scrollbar personalizado para dropdown */
+.dropdown-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dropdown-list::-webkit-scrollbar-track {
+    background-color: var(--dropdown-bg);
+}
+
+.dropdown-list::-webkit-scrollbar-thumb {
+    background-color: var(--dropdown-border);
+    border-radius: 3px;
+}
+
+.dropdown-list::-webkit-scrollbar-thumb:hover {
+    background-color: var(--dropdown-item-hover-bg);
+}

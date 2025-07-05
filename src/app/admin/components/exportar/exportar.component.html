@@ -16,27 +16,27 @@
     </div>
   </div>
 
-  <div class="rows-container">
-    <div class="export-rows">
-      <!-- Fila: Películas -->
-      <div class="export-row" *ngFor="let row of filteredRows">
-        <span class="export-category">{{ row.category }}</span>
-        <div class="export-options">
-          <span class="menu-icon">⋮</span>
-          <div class="dropdown-menu">
-            <button class="dropdown-item" (mouseenter)="showSubMenu('peliculasMasVendidas')">Películas más vendidas</button>
-            <div class="sub-dropdown-menu" *ngIf="activeSubMenu === 'peliculasMasVendidas'">
-              <button class="sub-dropdown-item">Descargar PDF</button>
-              <button class="sub-dropdown-item">Descargar Excel</button>
-            </div>
-            <button class="dropdown-item" (mouseenter)="showSubMenu('listadoPeliculas')">Listado</button>
-            <div class="sub-dropdown-menu" *ngIf="activeSubMenu === 'listadoPeliculas'">
-              <button class="sub-dropdown-item">Descargar PDF</button>
-              <button class="sub-dropdown-item">Descargar Excel</button>
-            </div>
-          </div>
+  <div class="export-grid" *ngIf="filteredCategories.length > 0">
+    <!-- Categorías filtradas dinámicamente -->
+    <div class="export-card" *ngFor="let category of filteredCategories">
+      <div class="card-header">
+        <h3 class="card-title">{{ category.title }}</h3>
+        <button class="menu-btn" (click)="toggleMenu(category.id)">⋮</button>
+      </div>
+      <div class="dropdown-menu" *ngIf="activeMenu === category.id" (click)="$event.stopPropagation()">
+        <div class="menu-section" *ngFor="let section of category.sections">
+          <h4>{{ section.name }}</h4>
+          <button class="download-btn" (click)="downloadFile(category.id, section.name, 'pdf')">Descargar PDF</button>
+          <button class="download-btn" (click)="downloadFile(category.id, section.name, 'excel')">Descargar Excel</button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Mensaje cuando no hay resultados -->
+  <div class="no-results" *ngIf="filteredCategories.length === 0 && searchQuery.trim() !== ''">
+    <h3>No se encontraron resultados</h3>
+    <p>No hay categorías que coincidan con "{{ searchQuery }}"</p>
+    <button class="download-btn" (click)="clearSearch()" style="max-width: 200px; margin: 10px auto;">Limpiar búsqueda</button>
   </div>
 </div>

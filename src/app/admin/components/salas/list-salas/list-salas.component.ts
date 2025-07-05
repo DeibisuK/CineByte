@@ -55,7 +55,7 @@ export class ListSalasComponent {
   }
 
   crearSala() {
-    this.router.navigate(['/admin/add-sala']);
+    this.router.navigate(['/admin/salas/add']);
   }
 
   verSala(id: number) {
@@ -63,7 +63,7 @@ export class ListSalasComponent {
   }
 
   editarSala(id: number) {
-    this.router.navigate(['/admin/edit-sala/', id]);
+    this.router.navigate(['/admin/salas/edit/', id]);
   }
 
   eliminarSala(id: number) {

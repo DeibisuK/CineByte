@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { SalasService } from '../../../../services/salas.service';
 import { AlertaService } from '../../../../services/alerta.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Sala } from '../../../models/salas.model';
 
 @Component({
   selector: 'app-edit-salas',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule,RouterModule],
   templateUrl: './edit-salas.component.html',
   styleUrl: './edit-salas.component.css'
 })

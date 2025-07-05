@@ -487,7 +487,7 @@ body.light-mode .sidebar-menu a:hover {
   bottom: 2px;
   background: #fff;
   /* Bola blanca /
-color: #000; / Icono negro */
+  color: #000; / Icono negro */
   transition: .4s;
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
@@ -495,15 +495,14 @@ color: #000; / Icono negro */
 
 input:checked+.slider {
   background: linear-gradient(135deg, #ffd700, #f7da00);
-  /* Modo oscuro: fondo amarillo */
 }
 
 input:checked+.slider:before {
   transform: translateX(30px);
   content: "dark_mode";
   background: #111;
-  /* Bola negra /
-color: #ffd700; / Icono amarillo anaranjado */
+  color:#f7da00;
+
 }
 
 /* Botón logout mejorado */
@@ -621,99 +620,43 @@ color: #ffd700; / Icono amarillo anaranjado */
   display: none;
 }
 
-/* Dropdown button for "Cines" */
-.dropdown-toggle {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: var(--menu-button-padding);
-  background-color: var(--menu-button-bg);
-  border: none;
-  border-radius: var(--menu-button-radius);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.dropdown-toggle:hover {
-  background-color: var(--menu-button-hover-bg);
-}
-
-.dropdown-arrow {
-  margin-left: auto;
-  padding-right: 0rem;
-  /* Consistent alignment */
-  transition: transform var(--transition-fast);
-  position: relative;
-}
-
-.dropdown-arrow.rotated {
-  transform: rotate(180deg);
-}
-
-/* Dropdown menu for "Cines" */
+/* Styles for the Cines section */
 .cines-menu {
-  list-style: none;
-  width: 95%;
-  margin-left: 2rem;
-  background-color: var(--submenu-bg);
-  border-radius: var(--submenu-radius);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
-
 
 .cines-menu a {
   display: flex;
   align-items: center;
-  padding: var(--submenu-button-padding);
-  border: none;
-  border-radius: var(--submenu-button-radius);
+  gap: 1rem;
+  padding: var(--menu-button-padding);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  border-radius: var(--menu-button-radius);
+  font-size: 0.95rem;
+  font-weight: 500;
   transition: all var(--transition-fast);
+  position: relative;
+  cursor: pointer;
+  width: calc(100% - 0.5rem);
+  max-width: calc(100% - 0.5rem);
+  min-height: 50px;
+  overflow: hidden;
   box-sizing: border-box;
+  background: var(--bg-submenu);
+  border-left: 3px solid var(--yellow);
+  border-top-left-radius: 0px;
 }
 
 .cines-menu a:hover {
-  border-radius: 8px;
+  background: var(--menu-button-hover-bg);
 }
 
-ul .cines-menu {
-  width: 80%;
-}
-
-ul .cines-menu a {
-  padding-left: 0.5rem;
-
-}
-
-ul .cines-menu a.active-link {
-  width: 100%;
-  /* Ensure the active line spans the full width */
-  border-radius: 0;
-  /* Remove border-radius to prevent deformation */
-}
-
-ul .cines-menu a:hover {
-  width: 100%;
-  /* Ensure hover effect spans the full width */
-}
-
-/* Prevent yellow line deformation for active sub-buttons */
 .cines-menu a.active-link {
-  color: var(--text-color);
+  background: var(--bg-submenu);
+  color: var(--sidebar-text);
   font-weight: 600;
-  border-radius: 0;
-  /* Remove border-radius to prevent deformation */
-}
-
-.cines-menu a.active-link::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background: #000;
-  border-radius: 0;
-}
-
-.cines-menu {
-  border-top: none;
+    border-top-left-radius: 0px;
 }
