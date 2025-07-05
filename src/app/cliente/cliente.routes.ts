@@ -9,6 +9,7 @@ import { BuscarComponent } from './features/movies/pages/buscar/buscar.component
 import { ContactanosComponent } from './pages/contactanos/contactanos.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ListarSedesComponent } from '../admin/components/sedes/listar-sedes/listar-sedes.component';
+import { TerminosYCondicionesComponent } from './features/legal/terminos-y-condiciones/terminos-y-condiciones.component';
 
 
 export const clienteRoutes: Routes = [
@@ -22,5 +23,6 @@ export const clienteRoutes: Routes = [
   {path: 'buscar/:termino', component: BuscarComponent},
   {path: 'contactanos', component: ContactanosComponent},
   {path: 'perfil', component: PerfilComponent},
-  {path: 'donde-estamos', component: ListarSedesComponent}
+  {path: 'donde-estamos', component: ListarSedesComponent},
+  {path: 'terminos-y-condiciones', component: TerminosYCondicionesComponent}
 ];
