@@ -1,1 +1,129 @@
-<p>crear-funciones works!</p>
+<!-- HTML Template -->
+<form [formGroup]="FuncionesForm" (ngSubmit)="onSubmit()" class="funciones-form">
+    <!-- Dropdown con buscador para Películas -->
+    <div class="form-group">
+        <label for="id_pelicula">Película:</label>
+        <div class="dropdown-container">
+            <input 
+                type="text" 
+                id="id_pelicula" 
+                class="dropdown-input"
+                formControlName="pelicula_search"
+                placeholder="Buscar película..."
+                (input)="filterPeliculas($event)"
+                (focus)="showPeliculasDropdown = true"
+                (blur)="hidePeliculasDropdown()"
+                autocomplete="off">
+            <div class="dropdown-arrow" (click)="togglePeliculasDropdown()">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <ul class="dropdown-list" *ngIf="showPeliculasDropdown && filteredPeliculas.length > 0">
+                <li *ngFor="let pelicula of filteredPeliculas" 
+                    class="dropdown-item"
+                    (mousedown)="selectPelicula(pelicula)">
+                    {{pelicula.titulo}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dropdown con buscador para Sedes -->
+    <div class="form-group">
+        <label for="id_sede">Sede:</label>
+        <div class="dropdown-container">
+            <input 
+                type="text" 
+                id="id_sede" 
+                class="dropdown-input"
+                formControlName="sede_search"
+                placeholder="Buscar sede..."
+                (input)="filterSedes($event)"
+                (focus)="showSedesDropdown = true"
+                (blur)="hideSedesDropdown()"
+                autocomplete="off">
+            <div class="dropdown-arrow" (click)="toggleSedesDropdown()">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <ul class="dropdown-list" *ngIf="showSedesDropdown && filteredSedes.length > 0">
+                <li *ngFor="let sede of filteredSedes" 
+                    class="dropdown-item"
+                    (mousedown)="selectSede(sede)">
+                    {{sede.nombre}}
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Dropdown con buscador para Salas (dependiente de la sede seleccionada) -->
+    <div class="form-group">
+        <label for="id_sala">Sala:</label>
+        <div class="dropdown-container">
+            <input 
+                type="text" 
+                id="id_sala" 
+                class="dropdown-input"
+                formControlName="sala_search"
+                placeholder="Buscar sala..."
+                (input)="filterSalas($event)"
+                (focus)="showSalasDropdown = true"
+                (blur)="hideSalasDropdown()"
+                [disabled]="!selectedSedeId"
+                autocomplete="off">
+            <div class="dropdown-arrow" (click)="toggleSalasDropdown()">
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <ul class="dropdown-list" *ngIf="showSalasDropdown && filteredSalas.length > 0">
+                <li *ngFor="let sala of filteredSalas" 
+                    class="dropdown-item"
+                    (mousedown)="selectSala(sala)">
+                    {{sala.nombre}} - {{sala.cantidad_asientos}} asientos
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Fecha y Hora de Inicio -->
+    <div class="form-group">
+        <label for="fecha_hora_inicio">Fecha y Hora de Inicio:</label>
+        <input 
+            type="datetime-local" 
+            id="fecha_hora_inicio" 
+            class="form-input"
+            formControlName="fecha_hora_inicio" 
+            required>
+    </div>
+
+    <!-- Precio -->
+    <div class="form-group">
+        <label for="precio">Precio:</label>
+        <input 
+            type="number" 
+            id="precio" 
+            class="form-input"
+            formControlName="precio" 
+            step="0.01"
+            min="0"
+            required>
+    </div>
+
+    <!-- Dropdown simple para Idiomas -->
+    <div class="form-group">
+        <label for="id_idioma">Idioma:</label>
+        <div class="dropdown-container">
+            <select 
+                id="id_idioma" 
+                class="form-select"
+                formControlName="id_idioma" 
+                required>
+                <option value="">Seleccionar idioma</option>
+                <option *ngFor="let idioma of idiomas" [value]="idioma.id_idioma">
+                    {{idioma.nombre}}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <button type="submit" class="submit-btn" [disabled]="!FuncionesForm.valid">
+        Crear Función
+    </button>
+</form>
