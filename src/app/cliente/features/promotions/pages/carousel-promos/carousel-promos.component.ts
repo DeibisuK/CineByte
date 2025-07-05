@@ -1,8 +1,8 @@
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { Promotions } from '../../../../../core/models/promotions.model';
+import { Promocion } from '../../../../../admin/models/promocion.model';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { PromotionsService } from '../../../movies/services/promotions.service';
-import { MovieNavigationService } from '../../../movies/services/navigation.service';
+import { PromocionService } from '../../../../../services/promocion.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-carousel-promos',
@@ -11,25 +11,36 @@ import { MovieNavigationService } from '../../../movies/services/navigation.serv
   styleUrl: './carousel-promos.component.css'
 })
 export class CarouselPromosComponent {
-  promociones: Promotions[] = [];
+  promociones: Promocion[] = [];
   visibleStart = 0;
   visibleCount = 1; // Mostrar solo 1 promoción a la vez
   autoSlideInterval: any;
   isBrowser: boolean;
   hoveredIndex: number = -1;
+  loading: boolean = true;
 
   constructor(
-    private promoService: PromotionsService, private promoNav: MovieNavigationService,
+    private promoService: PromocionService,
+    private router: Router,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-    this.promoService.getAllPromotions().subscribe(promos => {
-      this.promociones = promos;
-      if (this.isBrowser) {
-        this.startAutoSlide();
+    this.loading = true;
+    this.promoService.getPromociones().subscribe({
+      next: (promos: Promocion[]) => {
+        this.promociones = promos;
+        this.loading = false;
+        if (this.isBrowser) {
+          this.startAutoSlide();
+        }
+      },
+      error: (err: any) => {
+        console.error('Error al cargar promociones:', err);
+        this.loading = false;
+        // Aquí puedes mostrar un mensaje de error con SweetAlert o similar si lo deseas
       }
     });
   }
@@ -72,7 +83,7 @@ export class CarouselPromosComponent {
     }, 5000); // Cambia cada 5 segundos
   }
 
-    verDetalle(promo: Promotions) {
-      this.promoNav.verDetallePromo(promo);
-    }
+  verDetalle(promo: Promocion) {
+    this.router.navigate(['/promociones/detalle', promo.id_promo]);
+  }
 }

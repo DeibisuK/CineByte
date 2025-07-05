@@ -7,6 +7,7 @@ import { ListarSedesComponent } from './components/sedes/listar-sedes/listar-sed
 import { ListarPromocionesComponent } from './components/promociones/listar-promociones/listar-promociones.component';
 import { CrearSedesComponent } from './components/sedes/crear-sedes/crear-sedes.component';
 import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sedes.component';
+import { AsignSalasComponent } from './components/sedes/asign-salas/asign-salas.component';
 import { CreatePromocionComponent } from './components/promociones/crear-promociones/crear-promociones.component';
 import { ListUsersComponent } from './components/usuarios/list-users/list-users.component';
 import { CrearSalasComponent } from './components/salas/crear-salas/crear-salas.component';
@@ -73,6 +74,10 @@ export const adminRoutes: Routes = [
   {
     path: 'edit-sede/:id',
     component: EditarSedesComponent
+  },
+  {
+    path: 'asignar-salas',
+    component: AsignSalasComponent
   },
   {
     path: 'list-promocion',

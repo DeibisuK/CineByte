@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class SalasService {
-  private apiURL = 'http://localhost:3000/api/salas';
+  private apiURL = 'https://api-cinebyte.onrender.com/api/salas';
 
   constructor(private http: HttpClient) { }
 

@@ -15,6 +15,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   sidebarClosed = false;
   modoOscuro = true;
   private mediaQuery: MediaQueryList;
+  dropdownStates: { [key: string]: boolean } = {};
 
   @Output() sidebarState = new EventEmitter<boolean>();
 
@@ -80,7 +81,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   toggleSidebar() {
     this.sidebarClosed = !this.sidebarClosed;
     this.sidebarState.emit(this.sidebarClosed);
-    this.savePreferences();
+    
+    // Cerrar todos los dropdowns cuando el sidebar se cierra
+    if (this.sidebarClosed) {
+      Object.keys(this.dropdownStates).forEach(key => {
+        this.dropdownStates[key] = false;
+      });
+    }
+    
+    // Guardar preferencia
+    localStorage.setItem('sidebarClosed', this.sidebarClosed.toString());
 
     // Feedback haptico en dispositivos móviles
     if ('vibrate' in navigator) {
@@ -216,4 +226,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.sidebarState.emit(this.sidebarClosed);
     }
   }
+
+  // Toggle para los dropdowns
+  toggleDropdown(dropdownName: string): void {
+    this.dropdownStates[dropdownName] = !this.dropdownStates[dropdownName];
+    
+    // Cerrar otros dropdowns
+    Object.keys(this.dropdownStates).forEach(key => {
+      if (key !== dropdownName) {
+        this.dropdownStates[key] = false;
+      }
+    });
+  }
+
 }

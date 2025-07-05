@@ -1,0 +1,121 @@
+<div class="form-sede">
+  <h2 style="margin-bottom: 1.5rem; font-weight: 700;">Asignar Salas a Sedes</h2>
+  
+  <!-- Formulario para nueva asignación -->
+  <form [formGroup]="asignacionForm" (ngSubmit)="agregarAsignacion()">
+    <div class="form-grid">
+      <div>
+        <label>Sede</label>
+        <div class="selector-sede" [class.abierto]="menuSedesAbierto">
+          <button type="button" class="btn-selector-sede" (click)="toggleMenuSedes()">
+            <span class="material-icons">location_on</span>
+            <span>
+              {{ sedeSeleccionadaObj?.nombre || 'Selecciona una sede' }}
+            </span>
+            <span class="material-icons flecha" [class.rotada]="menuSedesAbierto">expand_more</span>
+          </button>
+
+          <div class="menu-sedes" *ngIf="menuSedesAbierto">
+            <div *ngFor="let ciudad of ciudadesConSedes">
+              <div class="ciudad-titulo">
+                {{ ciudad.nombre }}
+              </div>
+              <hr class="linea-ciudad" />
+              <button type="button" class="sede-opcion" *ngFor="let sede of ciudad.sedes"
+                (click)="seleccionarSede(sede)">
+                <span class="sede-nombre">{{ sede.nombre }}</span>
+                <span class="sede-direccion">{{ sede.direccion }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div *ngIf="id_sede.invalid && (id_sede.dirty || id_sede.touched)" class="error-message">
+          <div *ngIf="id_sede.errors?.['required']">Debe seleccionar una sede</div>
+        </div>
+      </div>
+
+      <div>
+        <label>Sala</label>
+        <select formControlName="id_sala" (change)="onSalaChange()" [disabled]="!sedeSeleccionada">
+          <option value="">Seleccione una sala</option>
+          <option *ngFor="let sala of salasDisponibles" [value]="sala.id_sala">
+            {{ sala.nombre }} ({{ sala.tipo_sala }}) - {{ sala.cantidad_asientos }} personas
+          </option>
+        </select>
+        <div *ngIf="id_sala.invalid && (id_sala.dirty || id_sala.touched)" class="error-message">
+          <div *ngIf="id_sala.errors?.['required']">Debe seleccionar una sala</div>
+        </div>
+      </div>
+
+      <div>
+        <label>Nombre de la Asignación</label>
+        <input type="text" formControlName="nombre" placeholder="Ej: Sala VIP Norte">
+        <div *ngIf="nombre.invalid && (nombre.dirty || nombre.touched)" class="error-message">
+          <div *ngIf="nombre.errors?.['required']">El nombre es requerido</div>
+          <div *ngIf="nombre.errors?.['minlength']">Debe tener al menos 3 caracteres</div>
+        </div>
+      </div>
+
+      <div>
+        <label>Estado</label>
+        <select formControlName="estado">
+          <option *ngFor="let estado of estados" [value]="estado">{{ estado }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button type="submit" [disabled]="asignacionForm.invalid" class="btn-add">
+        <i class="fas fa-plus"></i> Agregar a Lista
+      </button>
+    </div>
+  </form>
+
+  <!-- Lista de asignaciones pendientes -->
+  <div *ngIf="asignacionesSeleccionadas.length > 0" class="asignaciones-pendientes">
+    <h3>Asignaciones Pendientes ({{ asignacionesSeleccionadas.length }})</h3>
+    <div class="asignaciones-grid">
+      <div *ngFor="let asignacion of asignacionesSeleccionadas; let i = index" class="asignacion-card">
+        <div class="asignacion-info">
+          <h4>{{ asignacion.nombre }}</h4>
+          <p><strong>Sede:</strong> {{ getNombreSede(asignacion.id_sede) }}</p>
+          <p><strong>Sala:</strong> {{ getNombreSala(asignacion.id_sala) }}</p>
+          <p><strong>Estado:</strong> <span [class]="getEstadoClass(asignacion.estado)">{{ asignacion.estado }}</span></p>
+        </div>
+        <button (click)="eliminarAsignacion(i)" class="btn-remove">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="button-container">
+      <button (click)="guardarAsignaciones()" [disabled]="loading" class="btn-save">
+        <i class="fas fa-save"></i> {{ loading ? 'Guardando...' : 'Guardar Todas las Asignaciones' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Asignaciones actuales de la sede seleccionada -->
+  <div *ngIf="sedeSeleccionada && asignacionesActuales.length > 0" class="asignaciones-actuales">
+    <h3>Asignaciones Actuales de la Sede</h3>
+    <div class="asignaciones-grid">
+      <div *ngFor="let asignacion of asignacionesActuales" class="asignacion-card actual">
+        <div class="asignacion-info">
+          <h4>{{ asignacion.nombre }}</h4>
+          <p><strong>Sala:</strong> {{ asignacion.nombre_sala }}</p>
+          <p><strong>Capacidad:</strong> {{ asignacion.cantidad_asientos }} personas</p>
+          <p><strong>Tipo:</strong> {{ asignacion.tipo_sala }}</p>
+          <p><strong>Estado:</strong> <span [class]="getEstadoClass(asignacion.estado)">{{ asignacion.estado }}</span></p>
+        </div>
+        <button (click)="eliminarAsignacionActual(asignacion)" class="btn-remove">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje cuando no hay salas disponibles -->
+  <div *ngIf="sedeSeleccionada && salasDisponibles.length === 0" class="no-salas">
+    <p><i class="fas fa-info-circle"></i> No hay salas disponibles para asignar a esta sede.</p>
+  </div>
+</div>

@@ -38,11 +38,10 @@
 
 .promo-card img {
   width: 100%;
-  aspect-ratio: 16/9;
-  min-height: 260px;
-  max-height: 340px;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+  max-height: none;
+  min-height: auto;
 }
 
 .promo-etiquetas {
@@ -134,7 +133,6 @@
   gap: 8px;
   margin-top: 18px;
 }
-
 .indicator {
   width: 32px;
   height: 5px;
@@ -149,10 +147,21 @@
 }
 
 .indicator.active {
+  animation: indicatorActive 0.3s ease;
   background: var(--text-color);
   opacity: 1;
 }
 
+@keyframes indicatorActive {
+  from {
+    transform: scaleX(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
 /* Responsive */
 @media (max-width: 900px) {
   .promo-card {

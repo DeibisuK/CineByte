@@ -1,4 +1,4 @@
-<div class="promo-carousel-container" style="position:relative;">
+<div class="promo-carousel-container" style="position:relative;" *ngIf="!loading">
   <div class="carrusel-controles">
     <button class="carrusel-flecha" (click)="prev()" [disabled]="visibleStart === 0">&lt;</button>
     <button class="carrusel-flecha" (click)="next()" [disabled]="visibleStart + visibleCount >= promociones.length">&gt;</button>
@@ -6,20 +6,21 @@
 
   <div class="promo-carousel">
     <div class="promo-card" *ngFor="let promo of visiblePromos"
-      (mouseenter)="hoveredIndex = promo.id"
+      (mouseenter)="hoveredIndex = promo.id_promo"
       (mouseleave)="hoveredIndex = -1"
       (click)="verDetalle(promo)"
-      [style.zIndex]="hoveredIndex === promo.id ? 2 : 1">
-      <img [src]="promo.img" [alt]="promo.titulo" />
+      [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
+      <img [src]="promo.imagen_url" [alt]="promo.titulo" />
       <div class="promo-etiquetas">
-        <span class="promo-etiqueta" *ngFor="let et of promo.etiqueta">{{ et }}</span>
+        <span class="promo-etiqueta">{{ promo.tipo_promocion }}</span>
+        <span class="promo-etiqueta" [ngClass]="{'activo': promo.estado === 'Activo', 'inactivo': promo.estado === 'Inactivo'}">{{ promo.estado }}</span>
       </div>
       <div class="promo-info">
         <h3>{{ promo.titulo }}</h3>
         <p class="promo-desc">{{ promo.descripcion }}</p>
-        <div class="promo-fechas" *ngIf="promo.fechaInicio && promo.fechaFin">
+        <div class="promo-fechas" *ngIf="promo.fecha_inicio && promo.fecha_fin">
           <span>
-            {{ promo.fechaInicio | date:'dd/MM/yyyy' }} - {{ promo.fechaFin | date:'dd/MM/yyyy' }}
+            {{ promo.fecha_inicio | date:'dd/MM/yyyy' }} - {{ promo.fecha_fin | date:'dd/MM/yyyy' }}
           </span>
         </div>
       </div>
@@ -34,4 +35,8 @@
       (click)="goTo(idx)">
     </div>
   </div>
+</div>
+
+<div *ngIf="loading" class="loading-spinner">
+  <p>Cargando promociones...</p>
 </div>
