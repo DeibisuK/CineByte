@@ -1,27 +1,5 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { CrearPeliculaComponent } from './components/peliculas/crear-pelicula/crear-pelicula.component';
-import { ListarPeliculaComponent } from './components/peliculas/listar-pelicula/listar-pelicula.component';
-import { CategoriasComponent } from './components/categorias/categorias/categorias.component';
-import { ListarSedesComponent } from './components/sedes/listar-sedes/listar-sedes.component';
-import { ListarPromocionesComponent } from './components/promociones/listar-promociones/listar-promociones.component';
-import { CrearSedesComponent } from './components/sedes/crear-sedes/crear-sedes.component';
-import { EditarSedesComponent } from './components/sedes/editar-sedes/editar-sedes.component';
-import { AsignSalasComponent } from './components/sedes/asign-salas/asign-salas.component';
-import { CreatePromocionComponent } from './components/promociones/crear-promociones/crear-promociones.component';
-import { ListUsersComponent } from './components/usuarios/list-users/list-users.component';
-import { CrearSalasComponent } from './components/salas/crear-salas/crear-salas.component';
-import { ListarActoresComponent } from './components/actores/listar-actores/listar-actores.component';
-import { CrearActorComponent } from './components/actores/crear-actor/crear-actor.component';
-import { CrearDistribuidorComponent } from './components/distribuidor/crear-distribuidor/crear-distribuidor.component';
-import { ListDistribuidorComponent } from './components/distribuidor/listar-distribuidor/list-distribuidor.component';
-import { ListSalasComponent } from './components/salas/list-salas/list-salas.component';
-import { EditSalasComponent } from './components/salas/edit-salas/edit-salas.component';
-import { EditarPromocionComponent } from './components/promociones/editar-promociones/editar-promociones.component';
-import { ListarFuncionesComponent } from './components/funciones/listar-funciones/listar-funciones.component';
-import { EditarFuncionesComponent } from './components/funciones/editar-funciones/editar-funciones.component';
-import { CrearFuncionesComponent } from './components/funciones/crear-funciones/crear-funciones.component';
-import { AnuncioComponent } from './components/anuncio/anuncio.component';
 
 export const adminRoutes: Routes = [
   {
@@ -32,96 +10,94 @@ export const adminRoutes: Routes = [
     component: DashboardComponent
   },
   {
-    path: 'list-actores',
-    component: ListarActoresComponent
+    path: 'peliculas',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/peliculas/peliculas.routes').then(m => m.peliculasRoutes)
+      }
+    ]
   },
   {
-    path: 'crear-actores',
-    component: CrearActorComponent
+    path: 'actores',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/actores/actores.routes').then(m => m.actoresRoutes)
+      }
+    ]
   },
   {
-    path: 'list-distribuidor',
-    component: ListDistribuidorComponent
-  },
-  {
-    path: 'crear-distribuidor',
-    component: CrearDistribuidorComponent
-  },
-  {
-    path: 'add-pelicula',
-    component: CrearPeliculaComponent
-  },
-  {
-    path: 'list-peliculas',
-    component: ListarPeliculaComponent
+    path: 'distribuidores',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/distribuidor/distribuidores.routes').then(m => m.distribuidoresRoutes)
+      }
+    ]
   },
   {
     path: 'categorias',
-    component: CategoriasComponent
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/categorias/categorias.routes').then(m => m.categoriasRoutes)
+      }
+    ]
   },
   {
     path: 'promociones',
-    component: ListarPromocionesComponent
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/promociones/promociones.routes').then(m => m.promocionesRoutes)
+      }
+    ]
+  },
+  {
+    path: 'salas',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/salas/salas.routes').then(m => m.salasRoutes)
+      }
+    ]
+  },
+  {
+    path: 'funciones',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/funciones/funciones.routes').then(m => m.funcionesRoutes)
+      }
+    ]
   },
   {
     path: 'sedes',
-    component: ListarSedesComponent
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/sedes/sedes.routes').then(m => m.sedesRoutes)
+      }
+    ]
   },
   {
-    path: 'add-sede',
-    component: CrearSedesComponent
+    path: 'usuarios',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/usuarios/users.routes').then(m => m.usersRoutes)
+      }
+    ]
   },
   {
-    path: 'edit-sede/:id',
-    component: EditarSedesComponent
-  },
-  {
-    path: 'asignar-salas',
-    component: AsignSalasComponent
-  },
-  {
-    path: 'list-promocion',
-    component: ListarPromocionesComponent
-  },
-  {
-    path: 'add-promocion',
-    component: CreatePromocionComponent
-  },
-  {
-    path: 'edit-promocion/:id',
-    component: EditarPromocionComponent
-  },
-  {
-    path: 'list-funcion',
-    component: ListarFuncionesComponent
-  },
-  {
-    path: 'edit-funcion/:id',
-    component: EditarFuncionesComponent
-  },
-  {
-    path: 'crear-funcion',
-    component: CrearFuncionesComponent
-  },
-  {
-    path: 'users',
-    component: ListUsersComponent
-  },
-  {
-    path: 'list-sala',
-    component: ListSalasComponent
-  },
-  {
-    path: 'add-sala',
-    component: CrearSalasComponent
-  },
-  {
-    path: 'edit-sala/:id',
-    component: EditSalasComponent
-  },
-  {
-    path: 'anuncio',
-    component: AnuncioComponent
+    path: 'anuncios',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./components/anuncio/anuncios.routes').then(m => m.anunciosRoutes)
+      }
+    ]
   }
 
-];
+]

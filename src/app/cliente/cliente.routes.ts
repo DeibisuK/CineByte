@@ -12,6 +12,7 @@ import { ListarSedesComponent } from '../admin/components/sedes/listar-sedes/lis
 import { TerminosYCondicionesComponent } from './features/legal/terminos-y-condiciones/terminos-y-condiciones.component';
 import { AcercaDeNosotrosComponent } from './features/legal/acerca-de-nosotros/acerca-de-nosotros.component';
 import { PoliticaDePrivacidadComponent } from './features/legal/politica-de-privacidad/politica-de-privacidad.component';
+import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.component';
 
 
 export const clienteRoutes: Routes = [

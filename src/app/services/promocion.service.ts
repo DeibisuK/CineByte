@@ -8,7 +8,7 @@ import { Promocion } from '../admin/models/promocion.model';
   providedIn: 'root'
 })
 export class PromocionService {
-  apiURL = 'http://localhost:3000/api/promociones';
+  apiURL = 'https://api-cinebyte.onrender.com/api/promociones';
 
   constructor(private http: HttpClient) { }
 

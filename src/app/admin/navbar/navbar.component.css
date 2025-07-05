@@ -114,12 +114,8 @@
   width: 4px;
 }
 
-.sidebar-menu::-webkit-scrollbar-track {
-  background: transparent;
-}
-
 .sidebar-menu::-webkit-scrollbar-thumb {
-  background: var(--sidebar-active);
+  background: var(--text-color);
   border-radius: 2px;
 }
 
@@ -156,21 +152,23 @@
 }
 
 .sidebar-menu a.active-link {
-  background: linear-gradient(135deg, var(--sidebar-active), rgba(247, 218, 0, 0.8));
-  color: #000;
+  border-radius: 10px 10px 0 0;
+  border-bottom: 4px solid var(--yellow);
+  background: transparent; /* Elimina el fondo degradado */
+  color: var(--sidebar-text); /* Mantén el color normal del texto */
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(247, 218, 0, 0.3);
+  box-shadow: none; /* Elimina la sombra */
 }
 
+/* Elimina el pseudo-elemento ::before que añadía la barra lateral */
 .sidebar-menu a.active-link::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  height: 100%;
-  width: 4px;
-  background: #000;
-  border-radius: 0 4px 4px 0;
+  display: none;
+}
+
+/* Asegúrate de que el hover no sobrescriba el active */
+.sidebar-menu a.active-link:hover {
+  background: var(--hover-link);
+  border-bottom: 4px solid var(--yellow);
 }
 
 body.light-mode .sidebar-menu a:hover {
@@ -566,6 +564,11 @@ input:checked + .slider:before {
 .sidebar-menu li {
   opacity: 1;
   transform: translateX(0);
+}
+
+.sidebar-menu a.active-link {
+  border-radius: 10px 10px 0 0;
+  border-bottom: 4px solid var(--yellow);
 }
 
 /* Tooltip para modo cerrado */
