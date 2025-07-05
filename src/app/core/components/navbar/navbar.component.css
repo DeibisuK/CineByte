@@ -3,6 +3,12 @@
   background-color: var(--bg-color);
   padding: 0.5rem 1rem;
   border-bottom: 1px solid var(--footer-line);
+  margin-top: 0;
+}
+
+/* Cuando hay anuncio visible */
+.navbar-container.with-anuncio {
+  margin-top: 0;
 }
 
 .navbar-content {

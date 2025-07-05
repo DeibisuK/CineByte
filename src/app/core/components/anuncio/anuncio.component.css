@@ -1,34 +1,83 @@
-.anuncio-bar {
+.anuncio-banner {
   background: linear-gradient(to right, #ffd966, #ffb347);
-  color: var(--text-color); 
-  font-weight: bold;
-  font-size: 0.85rem;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.9rem;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  z-index: 1000; /* Es como la prioridad, estaba muy alta */
-  min-height: 1.25rem;
-  padding: 0.25em 1em;
+  z-index: 1001;
+  min-height: 40px;
+  padding: 0;
+  margin: 0;
   transition: all 0.3s ease;
   transform-origin: top;
   overflow: hidden;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.btn-link {
-  text-decoration: none !important;
-  box-shadow: none !important;
-  color: var(--text-color); 
-  font-size: 0.5rem; 
-  height: 32px;
-  width: 32px;
+.anuncio-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 3rem 0 1rem;
+  position: relative;
+  text-align: center;
 }
 
-.btn-link:hover {
-  color: var(--footer-bg);
+.close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 28px;
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: bold;
+  z-index: 10;
 }
 
-.material-icons {
-  font-size: 1.35rem;
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.close-btn .material-icons {
+  font-size: 1rem;
   line-height: 1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .anuncio-banner {
+    font-size: 0.8rem;
+    min-height: 35px;
+  }
+  
+  .anuncio-content {
+    height: 35px;
+    padding: 0 2.5rem 0 0.75rem;
+  }
+  
+  .close-btn {
+    width: 24px;
+    height: 24px;
+    right: 0.5rem;
+  }
+  
+  .close-btn .material-icons {
+    font-size: 0.9rem;
+  }
 }

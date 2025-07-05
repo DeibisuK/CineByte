@@ -73,7 +73,7 @@
 .btn-add,
 .btn-save {
   background: linear-gradient(135deg, #FFD700, #FFA500);
-  color: var(--text-color);
+  color:  #121212;
   font-weight: 600;
   border: none;
   border-radius: 999px;
@@ -106,10 +106,10 @@
 }
 
 .btn-remove {
-  background: #ff4343;
-  color: white;
-  border: none;
-  border-radius: 50%;
+  background: var(--btn-bg-crud);
+  color: var(--text-color);
+  border: 1px solid var(--btn-line-crud);
+  border-radius: 6px;
   width: 35px;
   height: 35px;
   cursor: pointer;
@@ -120,8 +120,8 @@
 }
 
 .btn-remove:hover {
-  background: #ff2222;
-  transform: scale(1.1);
+  background: rgba(239, 68, 68, 0.4);
+  border-color: rgba(239, 68, 68, 0.3);
 }
 
 /* Secciones */

@@ -1,0 +1,29 @@
+.page-wrapper {
+  transition: margin-top 0.3s ease;
+  margin: 0;
+  padding: 0;
+}
+
+.page-wrapper.anuncio-visible {
+  margin-top: 40px;
+}
+
+.container {
+  transition: margin-top 0.3s ease;
+}
+
+/* Asegurar que no hay espacios adicionales */
+.page-wrapper > * {
+  margin-top: 0;
+}
+
+.page-wrapper > app-navbar {
+  margin-top: 0 !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .page-wrapper.anuncio-visible {
+    margin-top: 35px;
+  }
+}

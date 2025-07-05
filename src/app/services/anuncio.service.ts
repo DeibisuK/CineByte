@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Anuncio } from '../admin/models/anuncio.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AnuncioService {
-  private apiUrl = 'http://localhost:3000/api/anuncios';
+  private apiUrl = 'https://api-cinebyte.onrender.com/api/anuncios';
 
   constructor(private http: HttpClient) { }
 
@@ -16,7 +17,9 @@ export class AnuncioService {
   }
 
   getAnuncioActivo(): Observable<Anuncio | null> {
-    return this.http.get<Anuncio | null>(`${this.apiUrl}/activo`);
+    return this.http.get<Anuncio[]>(`${this.apiUrl}/activos`).pipe(
+      map((anuncios: Anuncio[]) => anuncios.length > 0 ? anuncios[0] : null)
+    );
   }
 
   createAnuncio(anuncio: Anuncio): Observable<Anuncio> {

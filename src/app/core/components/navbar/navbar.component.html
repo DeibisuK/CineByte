@@ -1,5 +1,4 @@
-<nav [ngStyle]="{'margin-top.px': anuncioVisible ? 38 : 0}">
-  <nav class="navbar-container">
+<nav class="navbar-container" [class.with-anuncio]="anuncioVisible">
     <div class="navbar-content">
       <!-- Botón hamburguesa SOLO en móvil -->
       <button class="menu-toggle" (click)="menuAbierto = !menuAbierto">
@@ -141,6 +140,6 @@
     </div>
 
   </nav>
-</nav>
+
 
 <app-login [showLoginRegisterModal]="showLoginModal" (cerrarLoginRegister)="closeLoginModal()"></app-login>

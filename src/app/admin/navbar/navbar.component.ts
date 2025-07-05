@@ -20,18 +20,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
   @Output() sidebarState = new EventEmitter<boolean>();
 
   constructor(private router: Router,private authService:AuthService) {
-    // Detectar preferencia de sistema para modo oscuro
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   }
 
   ngOnInit() {
-    // Cargar preferencias guardadas
     this.loadPreferences();
 
-    // Aplicar tema inicial
     this.applyTheme();
 
-    // Escuchar cambios en las preferencias del sistema
     this.mediaQuery.addEventListener('change', this.handleSystemThemeChange.bind(this));
 
     // Auto-cerrar sidebar en móvil si se navega
@@ -50,7 +46,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Escuchar cambios de tamaño de ventana
   @HostListener('window:resize', ['$event'])
   onResize(event: any) {
-    // Auto-cerrar en móvil
     if (event.target.innerWidth <= 900 && !this.sidebarClosed) {
       this.sidebarClosed = true;
       this.sidebarState.emit(this.sidebarClosed);
@@ -62,7 +57,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Cerrar sidebar al hacer clic fuera (móvil)
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event) {
     if (window.innerWidth <= 900 && !this.sidebarClosed) {
@@ -77,22 +71,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Toggle del sidebar con animación suave
   toggleSidebar() {
     this.sidebarClosed = !this.sidebarClosed;
     this.sidebarState.emit(this.sidebarClosed);
-    
-    // Cerrar todos los dropdowns cuando el sidebar se cierra
     if (this.sidebarClosed) {
       Object.keys(this.dropdownStates).forEach(key => {
         this.dropdownStates[key] = false;
       });
     }
-    
-    // Guardar preferencia
     localStorage.setItem('sidebarClosed', this.sidebarClosed.toString());
 
-    // Feedback haptico en dispositivos móviles
     if ('vibrate' in navigator) {
       navigator.vibrate(50);
     }
@@ -190,18 +178,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Feedback visual para logout
-  private showLogoutFeedback() {
-    const logoutBtn = document.querySelector('.logout-btn');
-    if (logoutBtn) {
-      logoutBtn.classList.add('logging-out');
-      setTimeout(() => {
-        logoutBtn.classList.remove('logging-out');
-      }, 1000);
-    }
-  }
-
-  // Método para obtener el estado actual (útil para el componente padre)
   getSidebarState(): boolean {
     return this.sidebarClosed;
   }
@@ -227,16 +203,5 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Toggle para los dropdowns
-  toggleDropdown(dropdownName: string): void {
-    this.dropdownStates[dropdownName] = !this.dropdownStates[dropdownName];
-    
-    // Cerrar otros dropdowns
-    Object.keys(this.dropdownStates).forEach(key => {
-      if (key !== dropdownName) {
-        this.dropdownStates[key] = false;
-      }
-    });
-  }
 
 }

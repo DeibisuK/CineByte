@@ -1,4 +1,4 @@
-<div class="page-wrapper d-flex flex-column min-vh-100">
+<div class="page-wrapper d-flex flex-column min-vh-100" [class.anuncio-visible]="mostrarAnuncio && anuncioActivo">
   <!-- Anuncio -->
   <app-anuncio *ngIf="mostrarAnuncio && anuncioActivo" [anuncio]="anuncioActivo" (cerrar)="onCerrarAnuncio()">
   </app-anuncio>
