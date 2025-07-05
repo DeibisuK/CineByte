@@ -12,24 +12,25 @@
           <ul>
             <li><a href="#">Estrenos</a></li>
             <li><a href="#">Próximamente</a></li>
-            <li><a href="peliculas">Todos</a></li>
+            <li><a [routerLink]="['peliculas']">Todos</a></li>
           </ul>
         </div>
 
         <div class="footer-section">
           <h4>LEGAL</h4>
           <ul>
-            <li><a href="terminos-y-condiciones">Términos y Condiciones</a></li>
-            <li><a href="politica-de-privacidad">Política de Privacidad</a></li>
+            
+            <li><a [routerLink]="['terminos-y-condiciones']">Términos y Condiciones</a></li>
+            <li><a [routerLink]="['politica-de-privacidad']">Política de Privacidad</a></li>
           </ul>
         </div>
 
         <div class="footer-section">
           <h4>NOSOTROS</h4>
           <ul>
-            <li><a href="donde-estamos">Dónde Estamos</a></li>
-            <li><a href="acerca-de-nosotros">Acerca de Nosotros</a></li>
-            <li><a href="contactanos">Contáctanos</a></li>
+            <li><a [routerLink]="['donde-estamos']">Dónde Estamos</a></li>
+            <li><a [routerLink]="['acerca-de-nosotros']">Acerca de Nosotros</a></li>
+            <li><a [routerLink]="['contactanos']">Contáctanos</a></li>
           </ul>
         </div>
 

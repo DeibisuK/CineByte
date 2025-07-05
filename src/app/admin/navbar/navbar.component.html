@@ -70,18 +70,29 @@
       </a>
     </li>
     <li>
-      <a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
-        [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Funciones')">
-        <i class="fa-solid fa-location-dot"></i>
-        <span *ngIf="!sidebarClosed">Sedes</span>
+
+      <a (click)="toggleCinesMenu()" data-tooltip="Cines"
+        [attr.aria-label]="'Gestionar Cines' + (!sidebarClosed ? '' : ' - Cines')">
+        <i class="fa-solid fa-film"></i>
+        <span *ngIf="!sidebarClosed">Cines</span>
+        <i class="fa-solid fa-chevron-down dropdown-arrow" [class.rotated]="cinesMenuOpen"></i>
+
       </a>
-    </li>
-    <li>
-      <a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
-        [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Funciones')">
-        <i class="fa-solid fa-sitemap"></i>
-        <span *ngIf="!sidebarClosed">Asignar Salas</span>
-      </a>
+      <ul class="cines-menu" *ngIf="cinesMenuOpen">
+
+        <a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
+          [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
+          <i class="fa-solid fa-location-dot"></i>
+          <span *ngIf="!sidebarClosed">Sedes</span>
+        </a>
+
+        <a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
+          [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
+          <i class="fa-solid fa-sitemap"></i>
+          <span *ngIf="!sidebarClosed">Asignar Salas</span>
+        </a>
+
+      </ul>
     </li>
     <li>
       <a routerLink="./usuarios/list" routerLinkActive="active-link" data-tooltip="Usuarios"
@@ -95,6 +106,13 @@
         [attr.aria-label]="'Gestionar Anuncios' + (!sidebarClosed ? '' : ' - Anuncios')">
         <i class="fa-solid fa-message"></i>
         <span *ngIf="!sidebarClosed">Anuncio</span>
+      </a>
+    </li>
+    <li>
+      <a routerLink="/admin/exportar" routerLinkActive="active-link" data-tooltip="Exportar"
+        [attr.aria-label]="'Gestionar Exportaciones' + (!sidebarClosed ? '' : ' - Exportar')">
+        <i class="fa-solid fa-file-arrow-down"></i>
+        <span *ngIf="!sidebarClosed">Exportar</span>
       </a>
     </li>
   </ul>

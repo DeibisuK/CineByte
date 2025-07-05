@@ -16,6 +16,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
   modoOscuro = true;
   private mediaQuery: MediaQueryList;
   dropdownStates: { [key: string]: boolean } = {};
+  cinesMenuOpen = false; // Nueva propiedad para el menú de cines
+  dropdownOpen = false; // Nueva propiedad para el menú desplegable
 
   @Output() sidebarState = new EventEmitter<boolean>();
 
@@ -203,5 +205,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Método para alternar el estado del menú de cines
+  toggleCines(): void {
+    this.cinesMenuOpen = !this.cinesMenuOpen;
+  }
+
+  // Método para alternar el estado del menú desplegable
+  toggleDropdown(): void {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  // Método para alternar el estado del menú de Cines
+  toggleCinesMenu() {
+    this.cinesMenuOpen = !this.cinesMenuOpen;
+  }
 
 }

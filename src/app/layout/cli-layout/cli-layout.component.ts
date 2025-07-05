@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../core/components/navbar/navbar.component';
-import { CommonModule } from '@angular/common';
+import { CommonModule, ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../core/components/footer/footer.component';
 import { ScrollTopComponent } from '../../core/components/scroll-top/scroll-top.component';
 import { AnuncioComponent } from '../../core/components/anuncio/anuncio.component';
@@ -10,11 +10,17 @@ import { AnuncioService } from '../../services/anuncio.service';
 
 @Component({
   selector: 'app-cli-layout',
-  imports: [RouterOutlet,NavbarComponent,
-    AnuncioComponent,CommonModule,
-  ScrollTopComponent,FooterComponent,CommonModule],
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    AnuncioComponent,
+    CommonModule,
+    ScrollTopComponent,
+    FooterComponent,
+    CommonModule,
+  ],
   templateUrl: './cli-layout.component.html',
-  styleUrl: './cli-layout.component.css'
+  styleUrl: './cli-layout.component.css',
 })
 export class CliLayoutComponent implements OnInit {
   title = 'Cinebyte';
@@ -22,14 +28,24 @@ export class CliLayoutComponent implements OnInit {
   mostrarAnuncio = false;
   modoOscuro = false;
 
-  constructor(private anuncioService: AnuncioService) {}
+  constructor(
+    private router: Router,
+    private viewportScroller: ViewportScroller,
+    private anuncioService: AnuncioService
+  ) {}
 
   ngOnInit() {
     this.cargarAnuncioActivo();
+    this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        // Desplazar al inicio de la página
+        this.viewportScroller.scrollToPosition([0, 0]);
+      }
+    });
   }
 
   cargarAnuncioActivo() {
-    this.anuncioService.getAnuncioActivo().subscribe(anuncio => {
+    this.anuncioService.getAnuncioActivo().subscribe((anuncio) => {
       this.anuncioActivo = anuncio;
       this.mostrarAnuncio = !!anuncio;
     });

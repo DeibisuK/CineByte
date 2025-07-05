@@ -8,6 +8,21 @@
   --sidebar-width-closed: 70px;
   --transition-fast: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-smooth: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --menu-button-padding: 1rem 2.23rem;
+  --menu-button-bg: transparent;
+  --menu-button-hover-bg: rgba(255, 255, 255, 0.1);
+  --menu-button-radius: 12px;
+  --submenu-bg: var(--bg-submenu);
+  --submenu-radius: 8px;
+  --submenu-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  --submenu-button-padding: 0.75rem 1.5rem;
+  --submenu-button-bg: transparent;
+  --submenu-button-hover-bg: rgba(255, 255, 255, 0.1);
+}
+
+.fa-chevron-down {
+  color: var(--text-color);
+  padding-right: 60px;
 }
 
 .sidebar {
@@ -154,10 +169,11 @@
 .sidebar-menu a.active-link {
   border-radius: 10px 10px 0 0;
   border-bottom: 4px solid var(--yellow);
-  background: transparent; /* Elimina el fondo degradado */
-  color: var(--sidebar-text); /* Mantén el color normal del texto */
-  font-weight: 600;
-  box-shadow: none; /* Elimina la sombra */
+  background: transparent;
+  /* Elimina el fondo degradado /
+color: var(--sidebar-text); / Mantén el color normal del texto /
+font-weight: 600;
+box-shadow: none; / Elimina la sombra */
 }
 
 /* Elimina el pseudo-elemento ::before que añadía la barra lateral */
@@ -187,12 +203,10 @@ body.light-mode .sidebar-menu a:hover {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 2.23rem;
-  color: var(--sidebar-text);
-  text-decoration: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  padding: var(--menu-button-padding);
+  background-color: var(--menu-button-bg);
+  border: none;
+  border-radius: var(--menu-button-radius);
   transition: all var(--transition-fast);
   position: relative;
   width: calc(100% - 0.5rem);
@@ -204,15 +218,15 @@ body.light-mode .sidebar-menu a:hover {
 }
 
 .dropdown-toggle:hover {
-  background: var(--hover-link);
-  transform: translateX(2px);
+  background-color: var(--menu-button-hover-bg);
 }
 
 .dropdown-arrow {
-  font-size: 0.8rem;
-  transition: transform var(--transition-fast);
   margin-left: auto;
-  flex-shrink: 0;
+  padding-right: 1rem;
+  /* Consistent alignment */
+  transition: transform var(--transition-fast);
+  position: relative;
 }
 
 .dropdown-arrow.rotated {
@@ -246,12 +260,10 @@ body.light-mode .sidebar-menu a:hover {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 2.23rem;
-  color: var(--sidebar-text);
-  text-decoration: none;
-  border-radius: 12px;
-  font-size: 0.95rem;
-  font-weight: 500;
+  padding: var(--submenu-button-padding);
+  background-color: var(--submenu-button-bg);
+  border: none;
+  border-radius: var(--submenu-button-radius);
   transition: all var(--transition-fast);
   position: relative;
   width: calc(100% - 0.5rem);
@@ -261,8 +273,6 @@ body.light-mode .sidebar-menu a:hover {
   box-sizing: border-box;
   margin: 0.2rem 0.25rem;
   margin-left: 1.5rem;
-  background: rgba(255, 165, 0, 0.05);
-  border-left: 3px solid var(--sidebar-active);
 }
 
 .dropdown-menu a:hover {
@@ -271,21 +281,20 @@ body.light-mode .sidebar-menu a:hover {
 }
 
 .dropdown-menu a.active-link {
-  background: linear-gradient(135deg, var(--sidebar-active), rgba(247, 218, 0, 0.8));
   color: #000;
   font-weight: 600;
-  box-shadow: 0 4px 15px rgba(247, 218, 0, 0.3);
 }
 
 .dropdown-menu a.active-link::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 0;
   height: 100%;
   width: 4px;
   background: #000;
-  border-radius: 0 4px 4px 0;
+  border-bottom: 0px;
+  /* Ensure no border-radius affects the yellow line */
+  border-top: 8px;
 }
 
 .dropdown-menu i {
@@ -458,7 +467,8 @@ body.light-mode .sidebar-menu a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: #000; /* Modo claro: fondo negro */
+  background: #000;
+  /* Modo claro: fondo negro */
   transition: .4s;
   border-radius: 34px;
 }
@@ -475,22 +485,24 @@ body.light-mode .sidebar-menu a:hover {
   width: 26px;
   left: 2px;
   bottom: 2px;
-  background: #fff; /* Bola blanca */
-  color: #000;      /* Icono negro */
+  background: #fff;
+  /* Bola blanca /
+  color: #000; / Icono negro */
   transition: .4s;
   border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-input:checked + .slider {
-  background: linear-gradient(135deg, #ffd700, #f7da00); /* Modo oscuro: fondo amarillo */
+input:checked+.slider {
+  background: linear-gradient(135deg, #ffd700, #f7da00);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(30px);
   content: "dark_mode";
-  background: #111;    /* Bola negra */
-  color: #ffd700;      /* Icono amarillo anaranjado */
+  background: #111;
+  color:#f7da00;
+
 }
 
 /* Botón logout mejorado */
@@ -559,7 +571,6 @@ input:checked + .slider:before {
 
 /* Responsive mejorado */
 
-
 /* Animaciones adicionales - Removidas para evitar el "brinco" */
 .sidebar-menu li {
   opacity: 1;
@@ -607,4 +618,45 @@ input:checked + .slider:before {
 
 .sidebar.closed .dropdown-toggle:hover::after {
   display: none;
+}
+
+/* Styles for the Cines section */
+.cines-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cines-menu a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: var(--menu-button-padding);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  border-radius: var(--menu-button-radius);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  position: relative;
+  cursor: pointer;
+  width: calc(100% - 0.5rem);
+  max-width: calc(100% - 0.5rem);
+  min-height: 50px;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: var(--bg-submenu);
+  border-left: 3px solid var(--yellow);
+  border-top-left-radius: 0px;
+}
+
+.cines-menu a:hover {
+  background: var(--menu-button-hover-bg);
+}
+
+.cines-menu a.active-link {
+  background: var(--bg-submenu);
+  color: var(--sidebar-text);
+  font-weight: 600;
+    border-top-left-radius: 0px;
 }
