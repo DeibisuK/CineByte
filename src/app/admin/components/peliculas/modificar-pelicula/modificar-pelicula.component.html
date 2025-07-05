@@ -1,1 +1,236 @@
-<p>modificar-pelicula works!</p>
+<div class="main-content">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h2>Modificar Película</h2>
+        </div>
+
+        <div class="form-container">
+            <form [formGroup]="peliculaForm" (ngSubmit)="onSubmit()" class="form-grid">
+
+                <div class="image-upload-section">
+                    <label class="image-upload">
+                        <input type="file" accept="image/*" (change)="onImageSelected($event)" style="display: none;">
+                        <ng-container *ngIf="imagenPreview; else uploadIcon">
+                            <img [src]="imagenPreview" alt="Vista previa" class="img-preview" />
+                        </ng-container>
+                        <ng-template #uploadIcon>
+                            <i class="fa-solid fa-plus"></i>
+                            <div class="text">Agregar Imagen</div>
+                        </ng-template>
+                    </label>
+                </div>
+
+                <div class="form-fields">
+                    <div class="form-field">
+                        <label for="titulo">Título</label>
+                        <input type="text" id="titulo" formControlName="titulo"
+                            placeholder="Ingrese el título de la película">
+                        <div *ngIf="peliculaForm.get('titulo')?.invalid && peliculaForm.get('titulo')?.touched"
+                            class="validation-error">
+                            El título es obligatorio.
+                        </div>
+                    </div>
+
+                    <div class="field-row-three">
+                        <div class="form-field">
+                            <label for="fecha_estreno">Fecha de Estreno</label>
+                            <input type="date" id="fecha_estreno" formControlName="fecha_estreno" required>
+                            <div *ngIf="peliculaForm.get('fecha_estreno')?.invalid && peliculaForm.get('fecha_estreno')?.touched"
+                                class="validation-error">
+                                La fecha de estreno es obligatoria.
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="duracion_minutos">Duración (min)</label>
+                            <input type="number" id="duracion_minutos" formControlName="duracion_minutos"
+                                placeholder="120" min="1" required>
+                            <div *ngIf="peliculaForm.get('duracion_minutos')?.invalid && peliculaForm.get('duracion_minutos')?.touched"
+                                class="validation-error">
+                                La duración es obligatoria y debe ser un número positivo.
+                            </div>
+
+                        </div>
+                        <div class="form-field">
+                            <label for="clasificacion">Clasificación</label>
+                            <select id="clasificacion" formControlName="clasificacion" required>
+                                <option value="">Seleccione una clasificación</option>
+                                <option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">
+                                    {{ clasificacion }}
+                                </option>
+                            </select>
+                            <div *ngIf="peliculaForm.get('clasificacion')?.invalid && peliculaForm.get('clasificacion')?.touched"
+                                class="validation-error">
+                                La clasificación es obligatoria.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="descripcion">Descripción</label>
+                        <textarea id="descripcion" formControlName="descripcion"
+                            placeholder="Ingrese una descripción detallada de la película..." required></textarea>
+                        <div *ngIf="peliculaForm.get('descripcion')?.invalid && peliculaForm.get('descripcion')?.touched"
+                            class="validation-error">
+                            La descripción es obligatoria.
+                        </div>
+                    </div>
+
+                    <div class="field-row-three">
+                        <div class="form-field">
+                            <label for="idiomas">Agregar Idiomas</label>
+                            <select id="idiomas" #idiomaSelect
+                                (change)="addIdioma(idiomas[idiomaSelect.selectedIndex - 1])">
+                                <option value="" >Seleccione un idioma</option>
+                                <option *ngFor="let idioma of idiomas" [value]="idioma">
+                                    {{ idioma.nombre }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="generos">Agregar Género</label>
+                            <select id="generos" #generoSelect
+                                (change)="addGenre(generos[generoSelect.selectedIndex - 1])">
+                                <option value="" >Seleccione un genero</option>
+                                <option *ngFor="let genero of generos" [value]="genero">
+                                    {{ genero.nombre }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="estado">Estado</label>
+                            <select id="estado" formControlName="estado">
+                                <option value="">Seleccione un estado</option>
+                                <option value="activo">Estreno</option>
+                                <option value="proximamente">Próximamente</option>
+                                <option value="retirada">Retirada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field-row">
+                        <div class="multi-select">
+                            <label>Idiomas Seleccionados</label>
+                            <div id="idiomasTags" class="tags-container" [class.has-tags]="selectedIdiomas.length > 0">
+                                <div *ngIf="selectedIdiomas.length === 0" class="empty-state">
+                                    No hay idiomas seleccionados
+                                </div>
+                                <div *ngFor="let idioma of selectedIdiomas" class="tag">
+                                    {{ idioma.nombre }}
+                                    <span class="tag-remove" (click)="removeIdioma(idioma)">×</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="multi-select">
+                            <label>Géneros Seleccionados</label>
+                            <div id="genresTags" class="tags-container" [class.has-tags]="selectedGenres.length > 0">
+                                <div *ngIf="selectedGenres.length === 0" class="empty-state">
+                                    No hay géneros seleccionados
+                                </div>
+                                <div *ngFor="let genre of selectedGenres" class="tag">
+                                    {{ genre.nombre }}
+                                    <span class="tag-remove" (click)="removeGenre(genre)">×</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field-row-three">
+                        <div class="form-double">
+                            <div class="form-field">
+                                <label for="actores">Actores</label>
+                                <select id="actores" #actoresSelect
+                                    (change)="addActor(actores[actoresSelect.selectedIndex - 1])">
+                                    <option value="">Seleccione un actor</option>
+                                    <option *ngFor="let actor of actores" [value]="actor">
+                                        {{ actor.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div tabindex="0" class="plusButton" (click)="abrirModal('actor')">
+                                <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                                    <g mask="url(#mask0_21_345)">
+                                        <path
+                                            d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="form-field">
+                            <label for="etiquetas">Etiqueta</label>
+                            <select id="etiquetas" #etiquetasSelect
+                                (change)="addTag(etiquetas[etiquetasSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un etiquieta</option>
+                                <option *ngFor="let etiqueta of etiquetas" [value]="etiqueta">
+                                    {{ etiqueta.nombre }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-double">
+                            <div class="form-field">
+                                <label for="id_distribuidor">Distribuidor</label>
+                                <select id="id_distribuidor" formControlName="id_distribuidor">
+                                    <option value="" disabled>Seleccione un distribuidor</option>
+                                    <option *ngFor="let distru of distribuidor" [value]="distru.id_distribuidora">
+                                        {{ distru.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+                            <div tabindex="0" class="plusButton" (click)="abrirModal('distribuidor')">
+                                <svg class="plusIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                                    <g mask="url(#mask0_21_345)">
+                                        <path
+                                            d="M13.75 23.75V16.25H6.25V13.75H13.75V6.25H16.25V13.75H23.75V16.25H16.25V23.75H13.75Z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="field-row">
+                        <div class="multi-select">
+                            <label>Actores Seleccionados</label>
+                            <div id="actoresTag" class="tags-container" [class.has-tags]="selectedActores.length > 0">
+                                <div *ngIf="selectedActores.length === 0" class="empty-state">
+                                    No hay actores seleccionados
+                                </div>
+                                <div *ngFor="let actor of selectedActores" class="tag">
+                                    {{ actor.nombre }}
+                                    <span class="tag-remove" (click)="removeActor(actor)">×</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="multi-select">
+                            <label>Etiquetas Seleccionadas</label>
+                            <div id="tag" class="tags-container" [class.has-tags]="selectedTags.length > 0">
+                                <div *ngIf="selectedTags.length === 0" class="empty-state">
+                                    No hay etiquetas seleccionadas
+                                </div>
+                                <div *ngFor="let tag of selectedTags" class="tag">
+                                    {{ tag.nombre }}
+                                    <span class="tag-remove" (click)="removeTag(tag)">×</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">
+                        Actualizar Película
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal-global-container">
+  <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
+  <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor" (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
+</div>

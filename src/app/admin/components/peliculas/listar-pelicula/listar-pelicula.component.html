@@ -51,20 +51,22 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
-                                <span>{{distribuidorMap[pelicula.id_distribuidor]}}</span>
+                                <span>{{pelicula.id_distribuidor}}</span>
                             </div>
                         </div>
 
                         <div class="genre-tags">
                             <div class="flex-wrap">
-                                <span *ngFor="let gen of pelicula.etiquetas" class="tag">{{tagsMap[gen]}}</span>
+                                <span *ngFor="let gen of toStringArray(pelicula.generos)" class="tag">
+                                    {{gen}}</span>
                             </div>
                         </div>
 
                         <div class="language-section">
                             <p>Idiomas:</p>
                             <div class="flex-wrap">
-                                <span *ngFor="let gen of pelicula.idiomas">{{idiomaMap[gen]}}</span>
+                                <span *ngFor="let idi of toStringArray(pelicula.idiomas)">
+                                    {{idi}}</span>
                             </div>
                         </div>
 
@@ -72,8 +74,8 @@
                             <p>Actores:</p>
                             <div class="actors-flex">
                                 <p>
-                                    <span *ngFor="let gen of pelicula.actores; let last = last">
-                                        {{ actorsaMap[gen] }}<span *ngIf="!last">, </span>
+                                    <span *ngFor="let actor of toStringArray(pelicula.actores); let last = last">
+                                        {{ actor }}<span *ngIf="!last">, </span>
                                     </span>
                                 </p>
                             </div>
@@ -81,7 +83,7 @@
                     </div>
 
                     <div class="card-actions">
-                        <button class="action-btn">
+                        <button routerLink="/admin/peliculas/edit/{{pelicula.id_pelicula}}" class="action-btn">
                             <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

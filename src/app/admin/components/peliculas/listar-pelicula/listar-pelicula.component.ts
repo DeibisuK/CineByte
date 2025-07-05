@@ -19,77 +19,22 @@ import { Distribuidor } from '../../../models/distribuidor.model';
 })
 export class ListarPeliculaComponent {
   peliculas: Pelicula[] = [];
-  idiomaMap: { [id: number]: string } = {};
-  tagsMap: { [id: number]: string } = {};
-  actorsaMap: { [id: number]: string } = {};
-  distribuidorMap: { [id: number]: string } = {};
 
   constructor(
-    private peliculaService: PeliculaService,
-    private idiomaService: IdiomasService,
-    private actoresService: ActoresService,
-    private etiquetasService: EtiquetasService,
-    private distribuidoraService: DistribuidorService
+    private peliculaService: PeliculaService
   ) {}
 
   ngOnInit(): void {
     this.obtenerPeliculas();
   }
   obtenerPeliculas(): void {
-    this.peliculaService.getPeliculas().subscribe({
+    this.peliculaService.getPeliculasCompletas().subscribe({
       next: (data) => {
         this.peliculas = data;
+        console.log('Peliculas obtenidas:', this.peliculas);
       },
       error: (error) => {
         console.error('Error al obtener películas', error);
-      },
-    });
-    this.cargarCategorias();
-  }
-  cargarCategorias(): void {
-    this.idiomaService.getIdiomas().subscribe({
-      next: (res) => {
-        // construyes un mapa { id: nombre }
-        this.idiomaMap = res.reduce((map, idioma) => {
-          map[idioma.id_idioma] = idioma.nombre;
-          return map;
-        }, {} as { [id: number]: string });
-      },
-    });
-
-    this.actoresService.getActor().subscribe({
-      next: (res) => {
-        // construyes un mapa { id: nombre }
-        this.actorsaMap = res.reduce((map, actor) => {
-          map[actor.id_actor] = actor.nombre;
-          return map;
-        }, {} as { [id: number]: string });
-      },
-    });
-
-    this.etiquetasService.getEtiquetas().subscribe({
-      next: (res) => {
-        // construyes un mapa { id: nombre }
-        this.tagsMap = res.reduce((map, tag) => {
-          map[tag.id_etiqueta] = tag.nombre;
-          return map;
-        }, {} as { [id: number]: string });
-      },
-    });
-
-    interface DistribuidorMap {
-      [id: number]: string;
-    }
-
-    this.distribuidoraService.getDistribuidor().subscribe({
-      next: (res: Distribuidor[]) => {
-        this.distribuidorMap = res.reduce<DistribuidorMap>((map, tag) => {
-          const id = Number(tag.id_distribuidora);
-          if (!isNaN(id)) {
-            map[id] = tag.nombre || '';
-          }
-          return map;
-        }, {});
       },
     });
   }
@@ -127,4 +72,8 @@ export class ListarPeliculaComponent {
       }
     });
   }
+
+  toStringArray(arr: number[] | string[]): string[] {
+  return arr.map(x => x.toString());
+}
 }
