@@ -22,6 +22,7 @@ import { ListarFuncionesComponent } from './components/funciones/listar-funcione
 import { EditarFuncionesComponent } from './components/funciones/editar-funciones/editar-funciones.component';
 import { CrearFuncionesComponent } from './components/funciones/crear-funciones/crear-funciones.component';
 import { AnuncioComponent } from './components/anuncio/anuncio.component';
+import { ExportarComponent } from './components/exportar/exportar.component';
 
 export const adminRoutes: Routes = [
   {
@@ -122,6 +123,9 @@ export const adminRoutes: Routes = [
   {
     path: 'anuncio',
     component: AnuncioComponent
+  },
+  {
+    path: 'exportar',
+    component: ExportarComponent
   }
-
 ];

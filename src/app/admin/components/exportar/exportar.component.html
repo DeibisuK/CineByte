@@ -1,0 +1,42 @@
+<div class="export-container">
+  <div class="export-header">
+    <h1 class="export-title">Gestión de Exportación</h1>
+    <p class="export-subtitle">Administración de las exportaciones de PDFs y Excels de CineByte</p>
+    <hr class="export-divider">
+  </div>
+
+  <div class="search-container">
+    <div class="export-search">
+      <input type="text" class="search-input" placeholder="Buscar..." [(ngModel)]="searchQuery" (input)="filterRows()">
+      <button class="clear-btn" (click)="clearSearch()">
+        <svg class="trash-icon" viewBox="0 0 24 24">
+          <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="rows-container">
+    <div class="export-rows">
+      <!-- Fila: Películas -->
+      <div class="export-row" *ngFor="let row of filteredRows">
+        <span class="export-category">{{ row.category }}</span>
+        <div class="export-options">
+          <span class="menu-icon">⋮</span>
+          <div class="dropdown-menu">
+            <button class="dropdown-item" (mouseenter)="showSubMenu('peliculasMasVendidas')">Películas más vendidas</button>
+            <div class="sub-dropdown-menu" *ngIf="activeSubMenu === 'peliculasMasVendidas'">
+              <button class="sub-dropdown-item">Descargar PDF</button>
+              <button class="sub-dropdown-item">Descargar Excel</button>
+            </div>
+            <button class="dropdown-item" (mouseenter)="showSubMenu('listadoPeliculas')">Listado</button>
+            <div class="sub-dropdown-menu" *ngIf="activeSubMenu === 'listadoPeliculas'">
+              <button class="sub-dropdown-item">Descargar PDF</button>
+              <button class="sub-dropdown-item">Descargar Excel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -61,6 +61,7 @@ body {
   --dropdown-logout-color: #e74c3c;
   --yellow: #FFD700;
   --hover-link: rgba(64, 64, 64, 0.3);
+  --bg-submenu: #090909;
 }
 
 /* Tema claro */
@@ -83,6 +84,7 @@ body.light-mode {
   --dropdown-logout-color: #c0392b;
   --yellow: #FFA500;
   --hover-link: rgba(192, 192, 192, 0.3);
+  --bg-submenu: #cdcdcd;
 }
 
 hr {
