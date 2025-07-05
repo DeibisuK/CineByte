@@ -11,6 +11,7 @@ import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ListarSedesComponent } from '../admin/components/sedes/listar-sedes/listar-sedes.component';
 import { TerminosYCondicionesComponent } from './features/legal/terminos-y-condiciones/terminos-y-condiciones.component';
 import { AcercaDeNosotrosComponent } from './features/legal/acerca-de-nosotros/acerca-de-nosotros.component';
+import { PoliticaDePrivacidadComponent } from './features/legal/politica-de-privacidad/politica-de-privacidad.component';
 
 
 export const clienteRoutes: Routes = [
@@ -26,5 +27,6 @@ export const clienteRoutes: Routes = [
   {path: 'perfil', component: PerfilComponent},
   {path: 'donde-estamos', component: ListarSedesComponent},
   {path: 'terminos-y-condiciones', component: TerminosYCondicionesComponent},
-  {path: 'acerca-de-nosotros', component: AcercaDeNosotrosComponent}
+  {path: 'acerca-de-nosotros', component: AcercaDeNosotrosComponent},
+  {path: 'politica-de-privacidad', component: PoliticaDePrivacidadComponent}
 ];
