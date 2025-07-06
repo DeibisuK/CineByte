@@ -4,7 +4,7 @@ import { ActoresService } from '../../../../services/actores.service';
 import { PaisesService } from '../../../../services/paises.service';
 import { CommonModule } from '@angular/common';
 import { Actores } from '../../../models/actores.model';
-import Swal from 'sweetalert2';
+import { AlertaService } from '../../../../services/alerta.service';
 
 @Component({
   selector: 'app-listar-actores',
@@ -27,7 +27,8 @@ export class ListarActoresComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private actorService: ActoresService,
-    private paisService: PaisesService
+    private paisService: PaisesService,
+    private alerta: AlertaService
   ) {
     this.formActor = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2)]],
@@ -54,7 +55,7 @@ export class ListarActoresComponent implements OnInit {
         this.actoresFiltrados = [...this.actores];
       },
       error: (err) => {
-        Swal.fire('Error', 'No se pudieron cargar los actores', 'error');
+        this.alerta.error('Error', 'No se pudieron cargar los actores');
         console.error(err);
       }
     });
@@ -68,7 +69,7 @@ export class ListarActoresComponent implements OnInit {
           resolve();
         },
         error: (err) => {
-          Swal.fire('Error', 'No se pudieron cargar los países', 'error');
+          this.alerta.error('Error', 'No se pudieron cargar los países');
           reject(err);
         }
       });
@@ -82,22 +83,21 @@ export class ListarActoresComponent implements OnInit {
   addActor(): void {
     if (this.formActor.valid) {
       const actorData = this.formActor.value;
-      // Asegurar el formato correcto de la fecha
       actorData.fecha_nacimiento = new Date(actorData.fecha_nacimiento).toISOString();
 
       this.actorService.addActor(actorData).subscribe({
         next: () => {
-          Swal.fire('Éxito', 'Actor agregado correctamente', 'success');
+          this.alerta.success('Éxito', 'Actor agregado correctamente');
           this.cargarActores();
           this.formActor.reset();
         },
         error: (err) => {
-          Swal.fire('Error', 'No se pudo agregar el actor', 'error');
+          this.alerta.error('Error', 'No se pudo agregar el actor');
           console.error(err);
         }
       });
     } else {
-      Swal.fire('Advertencia', 'Por favor complete todos los campos requeridos', 'warning');
+      this.alerta.warning('Advertencia', 'Por favor complete todos los campos requeridos');
     }
   }
 
@@ -130,13 +130,12 @@ export class ListarActoresComponent implements OnInit {
 
   guardarEdicion(): void {
     if (!this.actorEditando) {
-      Swal.fire('Error', 'ID de actor inválido', 'error');
+      this.alerta.error('Error', 'ID de actor inválido');
       return;
     }
 
-    // Validar campos requeridos
     if (!this.nombreTemporal || !this.apellidosTemporal || !this.fechaNacimientoTemporal || !this.nacionalidadTemporal) {
-      Swal.fire('Advertencia', 'Todos los campos son requeridos', 'warning');
+      this.alerta.warning('Advertencia', 'Todos los campos son requeridos');
       return;
     }
 
@@ -149,12 +148,12 @@ export class ListarActoresComponent implements OnInit {
 
     this.actorService.updateActor(this.actorEditando, actorActualizado).subscribe({
       next: () => {
-        Swal.fire('Éxito', 'Actor actualizado correctamente', 'success');
+        this.alerta.success('Éxito', 'Actor actualizado correctamente');
         this.cargarActores();
         this.cancelarEdicion();
       },
       error: (err) => {
-        Swal.fire('Error', 'No se pudo actualizar el actor', 'error');
+        this.alerta.error('Error', 'No se pudo actualizar el actor');
         console.error(err);
       }
     });
@@ -169,24 +168,15 @@ export class ListarActoresComponent implements OnInit {
   }
 
   deleteActor(id: number, nombre: string): void {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: `Esta acción eliminará al actor ${nombre} permanentemente`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6'
-    }).then((result) => {
+    this.alerta.confirmacion('¿Estás seguro?', `Esta acción eliminará al actor ${nombre} permanentemente`, 'Sí, eliminar', 'Cancelar').then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         this.actorService.deleteActor(id).subscribe({
           next: () => {
-            Swal.fire('Eliminado', 'El actor ha sido eliminado', 'success');
+            this.alerta.success('Eliminado', 'El actor ha sido eliminado');
             this.cargarActores();
           },
           error: (err) => {
-            Swal.fire('Error', 'No se pudo eliminar el actor', 'error');
+            this.alerta.error('Error', 'No se pudo eliminar el actor');
             console.error(err);
           }
         });

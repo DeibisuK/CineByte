@@ -6,7 +6,7 @@
         [attr.aria-label]="sidebarClosed ? 'Abrir menú' : 'Cerrar menú'" [attr.aria-expanded]="!sidebarClosed">
         <i class="fa-solid" [class.fa-bars]="sidebarClosed" [class.fa-xmark]="!sidebarClosed"></i>
       </button>
-      <img *ngIf="!sidebarClosed" src="Disenos Proyecto/Imagotipo v2 blanco.svg" alt="Logo de la empresa"
+      <img *ngIf="!sidebarClosed" src="Disenos Proyecto/Imagotipo blanco.svg" alt="Logo de la empresa"
         [class.logo-invertido]="!modoOscuro" />
     </a>
   </div>
@@ -78,19 +78,21 @@
         <i class="fa-solid fa-chevron-down dropdown-arrow" [class.rotated]="cinesMenuOpen"></i>
 
       </a>
-      <ul class="cines-menu" *ngIf="cinesMenuOpen">
+      <ul class="cines-menu" [class.show]="cinesMenuOpen">
 
-        <a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
+        <li><a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
+          (click)="stopPropagation($event)"
           [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
           <i class="fa-solid fa-location-dot"></i>
           <span *ngIf="!sidebarClosed">Sedes</span>
-        </a>
+        </a></li>
 
-        <a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
+        <li><a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
+          (click)="stopPropagation($event)"
           [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
           <i class="fa-solid fa-sitemap"></i>
           <span *ngIf="!sidebarClosed">Asignar Salas</span>
-        </a>
+        </a></li>
 
       </ul>
     </li>

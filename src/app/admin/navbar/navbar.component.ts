@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from '@angular/core';
 import { Router, RouterLink, RouterModule } from '@angular/router';
-import Swal from 'sweetalert2';
 import { AuthService } from '../../services/AuthService';
+import { AlertaService } from '../../services/alerta.service';
 
 @Component({
   selector: 'app-navbar',
@@ -21,14 +21,14 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   @Output() sidebarState = new EventEmitter<boolean>();
 
-  constructor(private router: Router,private authService:AuthService) {
+  constructor(private router: Router, private authService: AuthService, private alerta: AlertaService) {
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   }
 
   ngOnInit() {
     this.loadPreferences();
 
-    this.applyTheme();
+    this.aplicarTema(this.modoOscuro);
 
     this.mediaQuery.addEventListener('change', this.handleSystemThemeChange.bind(this));
 
@@ -89,9 +89,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
   }
 
   // Cambiar tema con transición suave
-  cambiarTema() {
+  cambiarTema(): void {
     this.modoOscuro = !this.modoOscuro;
-    this.applyTheme();
+    this.aplicarTema(this.modoOscuro);
     this.savePreferences();
 
     // Animación de transición suave
@@ -101,14 +101,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }, 300);
   }
 
-  // Aplicar tema
-  private applyTheme() {
-    document.body.classList.toggle('light-mode', !this.modoOscuro);
+  // Aplicar tema - unificado con el cliente
+  private aplicarTema(oscuro: boolean): void {
+    const body = document.body;
+    if (oscuro) {
+      body.classList.remove('light-mode');
+    } else {
+      body.classList.add('light-mode');
+    }
 
     // Cambiar meta theme-color para móviles
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', this.modoOscuro ? '#121212' : '#ffffff');
+      metaThemeColor.setAttribute('content', oscuro ? '#121212' : '#ffffff');
     }
   }
 
@@ -118,22 +123,22 @@ export class NavbarComponent implements OnInit, OnDestroy {
     const hasUserPreference = localStorage.getItem('userThemePreference');
     if (!hasUserPreference) {
       this.modoOscuro = e.matches;
-      this.applyTheme();
+      this.aplicarTema(this.modoOscuro);
     }
   }
 
-  // Cargar preferencias del usuario
+  // Cargar preferencias del usuario - unificado con cliente
   private loadPreferences() {
     try {
       const savedSidebarState = localStorage.getItem('sidebarClosed');
-      const savedTheme = localStorage.getItem('modoOscuro');
+      const savedTheme = localStorage.getItem('tema'); // Usar mismo key que cliente
 
       if (savedSidebarState !== null) {
         this.sidebarClosed = JSON.parse(savedSidebarState);
       }
 
       if (savedTheme !== null) {
-        this.modoOscuro = JSON.parse(savedTheme);
+        this.modoOscuro = savedTheme !== 'claro'; // Mismo sistema que cliente
         localStorage.setItem('userThemePreference', 'true');
       } else {
         // Usar preferencia del sistema si no hay preferencia guardada
@@ -144,11 +149,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Guardar preferencias del usuario
+  // Guardar preferencias del usuario - unificado con cliente
   private savePreferences() {
     try {
       localStorage.setItem('sidebarClosed', JSON.stringify(this.sidebarClosed));
-      localStorage.setItem('modoOscuro', JSON.stringify(this.modoOscuro));
+      localStorage.setItem('tema', this.modoOscuro ? 'oscuro' : 'claro'); // Usar mismo key que cliente
       localStorage.setItem('userThemePreference', 'true');
     } catch (error) {
       console.warn('Error guardando preferencias:', error);
@@ -157,27 +162,23 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   // Logout con confirmación
   async logout() {
-    const resultado = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: '¿Quieres cerrar sesión?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Sí, cerrar sesión',
-      cancelButtonText: 'Cancelar'
-    });
-
-    if (resultado.isConfirmed) {
-      try {
-        await this.authService.logout();
-        await Swal.fire('Sesión cerrada', 'Has salido correctamente.', 'success');
-        this.router.navigate(['/']); // o a login o home
-      } catch (err) {
-        console.error(err);
-        Swal.fire('Error', 'No se pudo cerrar la sesión.', 'error');
+    this.alerta.confirmacion(
+      '¿Estás seguro?',
+      '¿Quieres cerrar sesión?',
+      'Sí, cerrar sesión',
+      'Cancelar'
+    ).then(async (resultado: { isConfirmed: boolean }) => {
+      if (resultado.isConfirmed) {
+        try {
+          await this.authService.logout();
+          this.alerta.success('Sesión cerrada', 'Has salido correctamente.');
+          this.router.navigate(['/']); // o a login o home
+        } catch (err) {
+          console.error(err);
+          this.alerta.error('Error', 'No se pudo cerrar la sesión.');
+        }
       }
-    }
+    });
   }
 
   getSidebarState(): boolean {
@@ -218,6 +219,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
   // Método para alternar el estado del menú de Cines
   toggleCinesMenu() {
     this.cinesMenuOpen = !this.cinesMenuOpen;
+  }
+
+  // Método para manejar navegación sin cerrar menú
+  navigateToRoute(route: string): void {
+    this.router.navigate([route]);
+  }
+
+  // Método para prevenir cambios de tema accidentales
+  stopPropagation(event: Event): void {
+    event.stopPropagation();
   }
 
 }

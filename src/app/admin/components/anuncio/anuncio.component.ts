@@ -4,6 +4,7 @@ import { AnuncioService } from '../../../services/anuncio.service';
 import { Anuncio } from '../../models/anuncio.model';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../pipes/pipe';
+import { AlertaService } from '../../../services/alerta.service';
 
 @Component({
   selector: 'app-anuncio',
@@ -18,7 +19,8 @@ export class AnuncioComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private anuncioService: AnuncioService
+    private anuncioService: AnuncioService,
+    private alerta: AlertaService
   ) {
     this.anuncioForm = this.fb.group({
       mensaje: ['', Validators.required],
@@ -40,7 +42,10 @@ export class AnuncioComponent implements OnInit {
         this.anuncios = anuncios;
         this.anuncioActivo = anuncios.find(a => a.estado === 'Activo') || null;
       },
-      error: (err) => console.error('Error cargando anuncios', err)
+      error: (err) => {
+        console.error('Error cargando anuncios', err);
+        this.alerta.error('Error', 'No se pudieron cargar los anuncios');
+      }
     });
   }
 
@@ -50,6 +55,7 @@ export class AnuncioComponent implements OnInit {
       
       this.anuncioService.createAnuncio(nuevoAnuncio).subscribe({
         next: () => {
+          this.alerta.success('Éxito', 'Anuncio creado correctamente');
           this.cargarAnuncios();
           this.anuncioForm.reset({
             color_inicio: '#ffd966',
@@ -57,24 +63,48 @@ export class AnuncioComponent implements OnInit {
             estado: 'Inactivo'
           });
         },
-        error: (err) => console.error('Error creando anuncio', err)
+        error: (err) => {
+          console.error('Error creando anuncio', err);
+          this.alerta.error('Error', 'No se pudo crear el anuncio');
+        }
       });
+    } else {
+      this.alerta.warning('Formulario incompleto', 'Por favor complete todos los campos requeridos');
     }
   }
 
   cambiarEstado(id: number, nuevoEstado: 'Activo' | 'Inactivo'): void {
     this.anuncioService.updateEstadoAnuncio(id, nuevoEstado).subscribe({
-      next: () => this.cargarAnuncios(),
-      error: (err) => console.error('Error actualizando estado', err)
+      next: () => {
+        this.alerta.success('Éxito', `Anuncio ${nuevoEstado.toLowerCase()} correctamente`);
+        this.cargarAnuncios();
+      },
+      error: (err) => {
+        console.error('Error actualizando estado', err);
+        this.alerta.error('Error', 'No se pudo cambiar el estado del anuncio');
+      }
     });
   }
 
   eliminarAnuncio(id: number): void {
-    if (confirm('¿Estás seguro de eliminar este anuncio?')) {
-      this.anuncioService.deleteAnuncio(id).subscribe({
-        next: () => this.cargarAnuncios(),
-        error: (err) => console.error('Error eliminando anuncio', err)
-      });
-    }
+    this.alerta.confirmacion(
+      '¿Estás seguro?', 
+      '¿Quieres eliminar este anuncio? Esta acción no se puede deshacer.',
+      'Sí, eliminar',
+      'Cancelar'
+    ).then((result: { isConfirmed: boolean }) => {
+      if (result.isConfirmed) {
+        this.anuncioService.deleteAnuncio(id).subscribe({
+          next: () => {
+            this.alerta.success('Eliminado', 'El anuncio ha sido eliminado correctamente');
+            this.cargarAnuncios();
+          },
+          error: (err) => {
+            console.error('Error eliminando anuncio', err);
+            this.alerta.error('Error', 'No se pudo eliminar el anuncio');
+          }
+        });
+      }
+    });
   }
 }

@@ -167,3 +167,88 @@ body.light-mode ::-webkit-scrollbar-thumb:horizontal {
 .logo-invertido {
   filter: invert(1);
 }
+
+/* Estilos personalizados para SweetAlert2 */
+.swal-custom-popup {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.swal2-popup {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+.swal2-title {
+  color: var(--text-color) !important;
+  font-weight: 600 !important;
+}
+
+.swal2-html-container {
+  color: var(--text-color) !important;
+}
+
+.swal2-confirm {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0.8rem 1.5rem !important;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2) !important;
+}
+
+.swal2-confirm:hover {
+  background: linear-gradient(135deg, #FFA500, #FFD700) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3) !important;
+}
+
+.swal2-cancel {
+  background: var(--btn-bg-crud) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0.8rem 1.5rem !important;
+}
+
+.swal2-cancel:hover {
+  background: var(--dropdown-item-hover-bg) !important;
+  transform: translateY(-2px) !important;
+}
+
+.swal2-overlay {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(3px) !important;
+}
+
+/* Modo claro para SweetAlert2 */
+body.light-mode .swal2-popup,
+body.light-mode .swal-custom-popup {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+}
+
+body.light-mode .swal2-title,
+body.light-mode .swal2-html-container {
+  color: var(--text-color) !important;
+}
+
+body.light-mode .swal2-confirm {
+  background: linear-gradient(135deg, #FFA500, #FFD700) !important;
+  color: #222 !important;
+}
+
+body.light-mode .swal2-cancel {
+  background: var(--btn-bg-crud) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+}

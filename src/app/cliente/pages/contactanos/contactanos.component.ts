@@ -51,7 +51,13 @@ export class ContactanosComponent implements OnInit {
           title: 'Error',
           text: 'No se pudieron cargar las sedes disponibles',
           icon: 'error',
-          confirmButtonColor: '#FFD700'
+          confirmButtonText: 'Aceptar',
+          confirmButtonColor: '#FFD700',
+          background: 'var(--footer-esp)',
+          color: 'var(--text-color)',
+          customClass: {
+            popup: 'swal-custom-popup'
+          }
         });
       }
     });
@@ -97,7 +103,13 @@ export class ContactanosComponent implements OnInit {
         title: 'Formulario incompleto',
         text: 'Por favor complete todos los campos requeridos correctamente',
         icon: 'warning',
-        confirmButtonColor: '#FFD700'
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#FFD700',
+        background: 'var(--footer-esp)',
+        color: 'var(--text-color)',
+        customClass: {
+          popup: 'swal-custom-popup'
+        }
       });
       return;
     }
@@ -113,6 +125,11 @@ export class ContactanosComponent implements OnInit {
       allowOutsideClick: false,
       didOpen: () => {
         Swal.showLoading();
+      },
+      background: 'var(--footer-esp)',
+      color: 'var(--text-color)',
+      customClass: {
+        popup: 'swal-custom-popup'
       }
     });
 
@@ -123,7 +140,13 @@ export class ContactanosComponent implements OnInit {
             title: '¡Mensaje enviado!',
             text: 'Hemos recibido tu mensaje correctamente',
             icon: 'success',
-            confirmButtonColor: '#FFD700'
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#FFD700',
+            background: 'var(--footer-esp)',
+            color: 'var(--text-color)',
+            customClass: {
+              popup: 'swal-custom-popup'
+            }
           });
           this.contactoForm.reset();
         },
@@ -133,7 +156,13 @@ export class ContactanosComponent implements OnInit {
             title: 'Error',
             text: 'No se pudo enviar el mensaje. Por favor intente nuevamente',
             icon: 'error',
-            confirmButtonColor: '#FFD700'
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#FFD700',
+            background: 'var(--footer-esp)',
+            color: 'var(--text-color)',
+            customClass: {
+              popup: 'swal-custom-popup'
+            }
           });
         }
       });

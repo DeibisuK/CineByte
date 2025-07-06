@@ -6,7 +6,6 @@ import { AlertaService } from '../../../../services/alerta.service';
 import { ActorCreateDTO } from '../../../models/actores.model';
 import { Pais } from '../../../models/paises.model';
 import { PaisesService } from '../../../../services/paises.service';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-actor',
@@ -46,7 +45,7 @@ export class CrearActorComponent implements OnInit {
         this.paises = data;
       },
       error: (err) => {
-        Swal.fire('Error', 'No se pudieron cargar los países', 'error');
+        this.alerta.error('Error', 'No se pudieron cargar los países');
         console.error(err);
       }
     });
@@ -54,7 +53,7 @@ export class CrearActorComponent implements OnInit {
 
   saveActor(): void {
     if (!this.actorForm.valid) {
-      this.alerta.error("Formulario Inválido", "Por favor complete todos los campos requeridos");
+      this.alerta.error('Formulario Inválido', 'Por favor complete todos los campos requeridos');
       return;
     }
 
@@ -69,14 +68,14 @@ export class CrearActorComponent implements OnInit {
 
     this.service.addActor(actorData).subscribe({
       next: () => {
-        Swal.fire('Éxito', 'Actor creado correctamente', 'success');
+        this.alerta.success('Éxito', 'Actor creado correctamente');
         this.actorForm.reset();
         this.cerrarModal();
         this.actorCreado.emit(); // Notificar que se creó un nuevo actor
       },
       error: (err) => {
         this.cargando = false;
-        Swal.fire('Error', 'No se pudo crear el actor', 'error');
+        this.alerta.error('Error', 'No se pudo crear el actor');
         console.error(err);
       },
       complete: () => {

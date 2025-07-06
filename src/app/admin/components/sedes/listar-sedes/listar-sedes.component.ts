@@ -5,58 +5,45 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
 import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
 import { Subscription } from 'rxjs';
-import { AlertConfirmComponent } from '../../../../shared/alert-confirm/alert-confirm.component';
+import { AlertaService } from '../../../../services/alerta.service';
 
 
 @Component({
   selector: 'app-listar-sedes',
-  imports: [CommonModule, RouterModule, AlertConfirmComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './listar-sedes.component.html',
   styleUrls: ['./listar-sedes.component.css']
 })
 export class ListarSedesComponent implements OnInit {
   sedes: Sede[] = [];
-  showConfirm = false;
-  sedeAEliminar: Sede | null = null;
-  alertTheme: 'light' | 'dark' = 'light';
-  private temaSub!: Subscription;
 
   constructor(
     private sedeService: SedeService,
     private sanitizer: DomSanitizer,
     private router: Router,
-    private temaService: TemaService,
     private cdr: ChangeDetectorRef,
+    private alerta: AlertaService
   ) { }
 
   ngOnInit(): void {
     this.cargarSedes();
-    this.temaSub = this.temaService.modoOscuro$.subscribe(modoOscuro => {
-      this.alertTheme = 'light'; // se cambia aquí primero
-      setTimeout(() => {
-        this.alertTheme = modoOscuro ? 'dark' : 'light'; // se reestablece
-      }, 0);
-    });
   }
 
-  ngOnDestroy(): void {
-    if (this.temaSub) this.temaSub.unsubscribe();
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['theme']) {
-      // Forzar redibujado para que se apliquen las variables
-      this.cdr.detectChanges();
-    }
-  }
 
   isClientRoute(): boolean {
     return this.router.url.includes('/donde-estamos');
   }
 
   cargarSedes() {
-    this.sedeService.getSedes().subscribe(data => {
-      this.sedes = data;
+    this.sedeService.getSedes().subscribe({
+      next: (data) => {
+        this.sedes = data;
+      },
+      error: (err) => {
+        console.error('Error cargando sedes', err);
+        this.alerta.error('Error', 'No se pudieron cargar las sedes');
+      }
     });
   }
 
@@ -72,28 +59,26 @@ export class ListarSedesComponent implements OnInit {
   }
 
   eliminarSede(sede: Sede) {
-    this.sedeAEliminar = sede;
-    this.showConfirm = true;
-  }
-
-  confirmarEliminar() {
-    if (!this.sedeAEliminar?.id_sede) return;
-    this.sedeService.eliminarSede(this.sedeAEliminar.id_sede).subscribe({
-      next: () => {
-        this.sedes = this.sedes.filter(s => s.id_sede !== this.sedeAEliminar?.id_sede);
-        this.showConfirm = false;
-        this.sedeAEliminar = null;
-      },
-      error: (err) => {
-        alert('No se pudo eliminar la sede: ' + (err.error?.mensaje || 'Error desconocido'));
-        this.showConfirm = false;
-        this.sedeAEliminar = null;
+    if (!sede.id_sede) return;
+    
+    this.alerta.confirmacion(
+      '¿Estás seguro?',
+      `¿Quieres eliminar la sede "${sede.nombre}"? Esta acción no se puede deshacer.`,
+      'Sí, eliminar',
+      'Cancelar'
+    ).then((result: { isConfirmed: boolean }) => {
+      if (result.isConfirmed) {
+        this.sedeService.eliminarSede(sede.id_sede!).subscribe({
+          next: () => {
+            this.sedes = this.sedes.filter(s => s.id_sede !== sede.id_sede);
+            this.alerta.success('Eliminada', 'La sede ha sido eliminada correctamente');
+          },
+          error: (err) => {
+            console.error('Error eliminando sede', err);
+            this.alerta.error('Error', 'No se pudo eliminar la sede: ' + (err.error?.mensaje || 'Error desconocido'));
+          }
+        });
       }
     });
-  }
-
-  cancelarEliminar() {
-    this.showConfirm = false;
-    this.sedeAEliminar = null;
   }
 }

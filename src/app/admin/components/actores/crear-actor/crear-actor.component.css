@@ -190,3 +190,50 @@ select:focus {
   transform: translateY(-2px) scale(1.02); /* Efecto hover mejorado */
   box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3); /* Sombra amarilla */
 }
+
+/* Estilos personalizados para SweetAlert2 */
+:global(.swal-custom-popup) {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+:global(.swal2-popup) {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+:global(.swal2-title) {
+  color: var(--text-color) !important;
+  font-weight: 600 !important;
+}
+
+:global(.swal2-html-container) {
+  color: var(--text-color) !important;
+}
+
+:global(.swal2-confirm) {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0.8rem 1.5rem !important;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2) !important;
+}
+
+:global(.swal2-confirm:hover) {
+  background: linear-gradient(135deg, #FFA500, #FFD700) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3) !important;
+}
+
+:global(.swal2-overlay) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(3px) !important;
+}
