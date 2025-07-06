@@ -7,12 +7,16 @@ import { DetallePeliculaComponent } from './features/movies/pages/detalle-pelicu
 import { DetallePromocionComponent } from './features/promotions/pages/detalle-promocion/detalle-promocion.component';
 import { BuscarComponent } from './features/movies/pages/buscar/buscar.component';
 import { ContactanosComponent } from './pages/contactanos/contactanos.component';
-import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ListarSedesComponent } from '../admin/components/sedes/listar-sedes/listar-sedes.component';
 import { TerminosYCondicionesComponent } from './features/legal/terminos-y-condiciones/terminos-y-condiciones.component';
 import { AcercaDeNosotrosComponent } from './features/legal/acerca-de-nosotros/acerca-de-nosotros.component';
 import { PoliticaDePrivacidadComponent } from './features/legal/politica-de-privacidad/politica-de-privacidad.component';
 import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.component';
+import { PerfilComponent } from './pages/menu-usuario/perfil/perfil.component';
+import { ListMetodoComponent } from './pages/menu-usuario/metodos-pago/list-metodo/list-metodo.component';
+import { CrearMetodoComponent } from './pages/menu-usuario/metodos-pago/crear-metodo/crear-metodo.component';
+import { EditarMetodoComponent } from './pages/menu-usuario/metodos-pago/editar-metodo/editar-metodo.component';
+import { DetalleMetodoComponent } from './pages/menu-usuario/metodos-pago/detalle-metodo/detalle-metodo.component';
 
 
 export const clienteRoutes: Routes = [
@@ -29,5 +33,10 @@ export const clienteRoutes: Routes = [
   {path: 'donde-estamos', component: ListarSedesComponent},
   {path: 'terminos-y-condiciones', component: TerminosYCondicionesComponent},
   {path: 'acerca-de-nosotros', component: AcercaDeNosotrosComponent},
-  {path: 'politica-de-privacidad', component: PoliticaDePrivacidadComponent}
+  {path: 'politica-de-privacidad', component: PoliticaDePrivacidadComponent},
+  //Metodos de pago
+  {path: 'metodos-de-pago', component: ListMetodoComponent},
+  {path: 'metodos-de-pago/:id', component: DetalleMetodoComponent},
+  {path: 'metodos-de-pago/agregar', component: CrearMetodoComponent},
+  {path: 'metodos-de-pago/editar-metodo/:id', component: EditarMetodoComponent}
 ];

@@ -1,0 +1,427 @@
+/* Estilos para el modal de agregar tarjeta */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-container {
+  background: var(--footer-esp);
+  border-radius: 20px;
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+  max-width: 600px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Botón cerrar */
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.modal-close:hover {
+  transform: scale(1.2);
+}
+
+/* Header del modal */
+.modal-header {
+  text-align: center;
+  padding: 2rem 2rem 1rem;
+  border-bottom: 1px solid var(--footer-line);
+}
+
+.modal-header h2 {
+  color: var(--text-color);
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Subtítulo de seguridad */
+.security-subtitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin: 1.5rem 2rem;
+  padding: 1rem;
+  background: var(--footer-bg);
+  border-radius: 12px;
+  border: 1px solid var(--footer-line);
+}
+
+.security-subtitle i {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.security-subtitle span {
+  color: var(--text-color);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Métodos de pago disponibles */
+.payment-methods-available {
+  padding: 0 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.payment-method-icons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-method-icon {
+  height: 20px;
+  width: auto;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.payment-method-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Formulario */
+.card-form {
+  padding: 0 2rem 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group-half {
+  width: 48%;
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.help-link-inline {
+  color: var(--yellow);
+  text-decoration: none;
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.help-link-inline:hover {
+  color: #FFA500;
+}
+
+.input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.8rem 3rem 0.8rem 3rem;
+  border: 2px solid var(--footer-line);
+  border-radius: 8px;
+  background: var(--footer-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--yellow);
+}
+
+.form-input::placeholder {
+  color: #888;
+}
+
+/* Iconos de los inputs */
+.input-icon-left {
+  position: absolute;
+  right: 12px;
+  color: #28a745;
+  font-size: 1.1rem;
+  z-index: 2;
+}
+
+.input-icon-card {
+  position: absolute;
+  left: 12px;
+  color: var(--text-color);
+  font-size: 1.1rem;
+  z-index: 2;
+}
+
+.input-icon-right {
+  position: absolute;
+  right: 12px;
+  color: #888;
+  font-size: 1rem;
+  z-index: 2;
+}
+
+/* Ajustar padding para el input con dos iconos */
+.form-group:first-of-type .form-input {
+  padding-left: 3rem;
+  padding-right: 3rem;
+}
+
+/* Información de protección */
+.protection-info {
+  background: var(--footer-bg);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--footer-line);
+}
+
+.protection-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.protection-header i {
+  color: #28a745;
+  font-size: 1.2rem;
+}
+
+.protection-header h4 {
+  color: var(--text-color);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.protection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.protection-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.6rem;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+.protection-list li i {
+  color: #28a745;
+  font-size: 0.9rem;
+  min-width: 14px;
+}
+
+/* Botón agregar tarjeta */
+.add-card-submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #222;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.add-card-submit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3);
+}
+
+.add-card-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.add-card-submit-btn i {
+  font-size: 1.2rem;
+}
+
+/* Validación de formulario */
+.form-input.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+.form-input.ng-valid.ng-touched {
+  border-color: #28a745;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modal-container {
+    width: 95%;
+    margin: 1rem;
+  }
+  
+  .modal-header {
+    padding: 1.5rem 1.5rem 1rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.6rem;
+  }
+  
+  .security-subtitle {
+    margin: 1rem 1.5rem;
+  }
+  
+  .payment-methods-available {
+    padding: 0 1.5rem;
+  }
+  
+  .card-form {
+    padding: 0 1.5rem 1.5rem;
+  }
+  
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group-half {
+    width: 100%;
+  }
+  
+  .payment-method-icons {
+    gap: 1rem;
+  }
+  
+  .payment-method-icon {
+    height: 17px;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-container {
+    width: 98%;
+    margin: 0.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.4rem;
+  }
+  
+  .form-input {
+    padding: 0.7rem 2.5rem 0.7rem 2.5rem;
+  }
+  
+  .form-group:first-of-type .form-input {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+}
+
+/* Estilos personalizados para SweetAlert2 */
+:global(.swal-custom-popup) {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+:global(.swal2-popup) {
+  background-color: var(--footer-esp) !important;
+  color: var(--text-color) !important;
+  border: 1px solid var(--footer-line) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+}
+
+:global(.swal2-title) {
+  color: var(--text-color) !important;
+  font-weight: 600 !important;
+}
+
+:global(.swal2-html-container) {
+  color: var(--text-color) !important;
+}
+
+:global(.swal2-confirm) {
+  background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  padding: 0.8rem 1.5rem !important;
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2) !important;
+}
+
+:global(.swal2-confirm:hover) {
+  background: linear-gradient(135deg, #FFA500, #FFD700) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3) !important;
+}
+
+:global(.swal2-overlay) {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(3px) !important;
+}

@@ -7,7 +7,7 @@
 
       <!-- Logo -->
       <a class="logo" [routerLink]="['inicio']">
-        <img src="Imagotipo Proyecto.png" alt="Logo" [class.logo-invertido]="!modoOscuro" />
+        <img src="Disenos Proyecto/Imagotipo blanco.svg" alt="Logo" [class.logo-invertido]="!modoOscuro" />
       </a>
 
       <!-- Links SOLO en escritorio -->
@@ -60,15 +60,28 @@
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </span>
+
         <div class="dropdown-menu">
           <button class="dropdown-item" (click)="verPerfil()">
-            <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            Ver perfil
+            <i class="fa-solid fa-user"></i>
+            Mi cuenta
           </button>
+
+          <button class="dropdown-item" [routerLink]="['metodos-de-pago']">
+            <i class="fa-solid fa-credit-card"></i>
+            Métodos de Pago
+          </button>
+
+          <button class="dropdown-item" [routerLink]="['contactanos']">
+            <i class="fa-solid fa-phone-volume"></i>
+            Contacto
+          </button>
+
+          <button class="dropdown-item" [routerLink]="['acerca-de-nosotros']">
+            <i class="fa-solid fa-circle-info"></i>
+            Acerca de Cinebyte
+          </button>
+
           <button class="dropdown-item logout" (click)="cerrarSesion()">
             <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
               stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -78,6 +91,7 @@
             </svg>
             Cerrar sesión
           </button>
+
         </div>
       </div>
 

@@ -73,7 +73,7 @@
 }
 
 .logo img {
-  height: 45px;
+  height: 4.2rem;
   width: auto;
   transition: all var(--transition-smooth);
   border-radius: 8px;
