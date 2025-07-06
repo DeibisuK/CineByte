@@ -62,6 +62,10 @@ body {
   --yellow: #FFD700;
   --hover-link: rgba(64, 64, 64, 0.3);
   --bg-submenu: #090909;
+  --error-color: #e74c3c;
+  --success-color: #27ae60;
+  --info-color: #3498db;
+  --warning-color: #f39c12;
 }
 
 /* Tema claro */

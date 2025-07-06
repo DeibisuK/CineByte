@@ -50,13 +50,15 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   
   // Estados de UI
   isSubmitting = false;
+  isLoadingInitialData = true;
+  isLoadingSalas = false;
+  isLoadingIdiomas = false;
   
   // Opciones para dropdown de estado
   estadosDisponibles = [
-    { value: 'activo', label: 'Activo' },
-    { value: 'inactivo', label: 'Inactivo' },
-    { value: 'cancelado', label: 'Cancelado' },
-    { value: 'agotado', label: 'Agotado' }
+    { value: 'activa', label: 'Activa' },
+    { value: 'suspendida', label: 'Suspendida' },
+    { value: 'cancelada', label: 'Cancelada' }
   ];
   
   // Fecha calculada
@@ -74,8 +76,8 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
       pelicula_search: ['', Validators.required],
       sede_search: ['', Validators.required],
       sala_search: ['', Validators.required],
-      fecha_hora_inicio: ['', Validators.required],
-      precio: ['', [Validators.required, Validators.min(0)]],
+      fecha_hora_inicio: ['', [Validators.required, this.fechaFuturaValidator]],
+      precio: ['', [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
       id_idioma: ['', Validators.required],
       trailer_url: ['', [Validators.required, Validators.pattern(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/)]],
       estado: ['activo', Validators.required],
@@ -105,6 +107,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   }
 
   private loadInitialData(): void {
+    this.isLoadingInitialData = true;
     forkJoin({
       peliculas: this.peliculasService.getPeliculas(),
       sedes: this.sedesService.getSedes(),
@@ -116,10 +119,12 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         this.peliculas = this.filteredPeliculas = peliculas;
         this.sedes = this.filteredSedes = sedes;
         this.idiomas = this.idiomasOriginales = idiomas;
+        this.isLoadingInitialData = false;
       },
       error: (error) => {
         console.error('Error loading initial data:', error);
         this.alerta.error('Error', 'Error al cargar los datos iniciales.');
+        this.isLoadingInitialData = false;
       }
     });
   }
@@ -197,15 +202,18 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
 
   // Métodos para Salas
   loadSalasBySede(sedeId: number): void {
+    this.isLoadingSalas = true;
     this.sedesSalasService.getSalasBySede(sedeId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (salas) => {
           this.salas = this.filteredSalas = salas;
+          this.isLoadingSalas = false;
         },
         error: (error) => {
           console.error('Error loading salas:', error);
           this.alerta.error('Error', 'Error al cargar las salas.');
+          this.isLoadingSalas = false;
         }
       });
   }
@@ -215,11 +223,16 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
 
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
-    const salasDeSede = this.salas.filter(sala => sala.id_sede === this.selectedSedeId);
-
-    this.filteredSalas = salasDeSede.filter(sala =>
-      sala.nombre.toLowerCase().includes(query)
-    );
+    
+    // Optimización: solo filtrar si hay query, sino mostrar todas las salas de la sede
+    if (query.trim()) {
+      this.filteredSalas = this.salas.filter(sala => 
+        sala.id_sede === this.selectedSedeId && 
+        sala.nombre.toLowerCase().includes(query)
+      );
+    } else {
+      this.filteredSalas = this.salas.filter(sala => sala.id_sede === this.selectedSedeId);
+    }
     this.showSalasDropdown = true;
   }
 
@@ -246,40 +259,49 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
     }, this.DROPDOWN_DELAY);
   }
 
-  // Método para enviar el formulario
   onSubmit(): void {
     if (this.funcionesForm.valid && this.areIdsSelected() && this.fechaHoraFin) {
       this.isSubmitting = true;
       
+      // Validación adicional del precio
+      const precioValue = this.funcionesForm.value.precio;
+      if (!precioValue || isNaN(Number(precioValue)) || Number(precioValue) <= 0) {
+        this.alerta.error('Error', 'El precio debe ser un número válido mayor a 0.');
+        this.isSubmitting = false;
+        return;
+      }
+      
       const formData: Funciones = {
-        id_funcion: '',
+        id_funcion: '', // El backend lo generará
         id_pelicula: this.selectedPeliculaId!,
         id_sala: this.selectedSalaId!,
         fecha_hora_inicio: new Date(this.funcionesForm.value.fecha_hora_inicio),
         fecha_hora_fin: this.fechaHoraFin,
-        precio: this.funcionesForm.value.precio,
-        id_idioma: this.funcionesForm.value.id_idioma,
-        trailer_url: this.funcionesForm.value.trailer_url,
+        precio_funcion: Number(precioValue),
+        id_idioma: Number(this.funcionesForm.value.id_idioma),
+        trailer_url: this.funcionesForm.value.trailer_url.trim(),
         estado: this.funcionesForm.value.estado
       };
+
+      console.log('Datos a enviar:', formData); // Para debug
 
       this.funcionesService.addFuncion(formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
-          next: () => {
-            this.alerta.success('Éxito', 'Función creada exitosamente!');
+          next: (response) => {
+            this.alerta.successRoute('Éxito', 'Función creada exitosamente!', 'funciones');
             this.limpiarFormulario();
           },
           error: (err) => {
             console.error('Error creating function:', err);
-            this.alerta.error('Error', 'Error al crear la función.');
-          },
-          complete: () => {
+            const mensaje = err.error?.message || 'Error al crear la función.';
+            this.alerta.error('Error', mensaje);
             this.isSubmitting = false;
           }
         });
     } else {
-      this.alerta.error('Error', 'Por favor, completa todos los campos requeridos.');
+      this.markFormGroupTouched();
+      this.alerta.warning('Formulario incompleto', 'Por favor, completa todos los campos requeridos correctamente.');
     }
   }
 
@@ -307,7 +329,6 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Método para limpiar el formulario
   limpiarFormulario(): void {
     this.funcionesForm.reset();
     this.funcionesForm.patchValue({ estado: 'activo' }); // Restaurar valor por defecto
@@ -320,9 +341,15 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
     this.filteredSalas = [];
     this.idiomas = [...this.idiomasOriginales]; // Restaurar idiomas originales
     this.isSubmitting = false;
+    
+    // Cerrar todos los dropdowns
+    this.showPeliculasDropdown = false;
+    this.showSedesDropdown = false;
+    this.showSalasDropdown = false;
   }
 
   private getIdiomasPorPelicula(pelicula: Pelicula): void {
+    this.isLoadingIdiomas = true;
     this.peliculasService.getIdiomasByPeliculaId(pelicula.id_pelicula)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -334,11 +361,67 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
           this.idiomas = this.idiomasOriginales.filter(idioma => 
             idiomasPelicula.includes(idioma.id_idioma)
           );
+          
+          // Reset del idioma seleccionado si no está disponible para esta película
+          const currentIdiomaId = this.funcionesForm.get('id_idioma')?.value;
+          if (currentIdiomaId && !idiomasPelicula.includes(Number(currentIdiomaId))) {
+            this.funcionesForm.patchValue({ id_idioma: '' });
+          }
+          
+          this.isLoadingIdiomas = false;
         },
         error: (error) => {
           console.error('Error loading idiomas for pelicula:', error);
           this.alerta.error('Error', 'Error al cargar los idiomas de la película.');
+          this.isLoadingIdiomas = false;
         }
       });
+  }
+
+  // Validador personalizado para fechas futuras
+  private fechaFuturaValidator(control: any): {[key: string]: any} | null {
+    if (!control.value) return null;
+    
+    const fechaSeleccionada = new Date(control.value);
+    const fechaActual = new Date();
+    fechaActual.setHours(0, 0, 0, 0); // Ignorar la hora para la comparación
+    
+    return fechaSeleccionada >= fechaActual ? null : { fechaPasada: true };
+  }
+
+  // Marcar todos los campos como tocados para mostrar errores
+  private markFormGroupTouched(): void {
+    Object.keys(this.funcionesForm.controls).forEach(key => {
+      const control = this.funcionesForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  // Getter para verificar si un campo específico tiene errores
+  hasFieldError(fieldName: string): boolean {
+    const field = this.funcionesForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
+
+  // Getter para obtener el mensaje de error de un campo
+  getFieldError(fieldName: string): string {
+    const field = this.funcionesForm.get(fieldName);
+    if (field && field.errors && (field.dirty || field.touched)) {
+      if (field.errors['required']) return 'Este campo es requerido';
+      if (field.errors['min']) return 'El valor debe ser mayor a 0';
+      if (field.errors['max']) return 'El valor es demasiado alto';
+      if (field.errors['pattern']) return 'URL de YouTube inválida';
+      if (field.errors['fechaPasada']) return 'La fecha debe ser futura';
+    }
+    return '';
+  }
+
+  // Método opcional: Verificar conflictos de horarios (implementar según necesidad)
+  private checkHorarioConflicts(): void {
+    if (this.selectedSalaId && this.funcionesForm.get('fecha_hora_inicio')?.value && this.fechaHoraFin) {
+      // Aquí puedes implementar una validación para verificar si ya existe una función
+      // en esa sala durante ese horario
+      // this.funcionesService.checkConflicts(salaId, fechaInicio, fechaFin).subscribe(...)
+    }
   }
 }

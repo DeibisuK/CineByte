@@ -1,6 +1,183 @@
-<button class="btn btn-primary"
-    style="height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none;">
-    <a routerLink="/admin/funciones/add" class="text-white" style="text-decoration: none;">
-        <i class="fa-solid fa-arrow-left"></i> Volver
-    </a>
-</button>
+<div class="funciones-container">
+    <!-- Header -->
+    <div class="funciones-header">
+        <h1 class="funciones-title">
+            <i class="fas fa-film"></i>
+            Gestión de Funciones
+        </h1>
+        <div class="funciones-count">
+            <i class="fas fa-list"></i>
+            <span>{{ filteredFunciones.length }}</span>
+            <div>funciones</div>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="funciones-filters">
+        <div class="filter-group">
+            <label class="filter-label">Buscar por ID</label>
+            <input 
+                type="text" 
+                class="filter-input" 
+                [(ngModel)]="filterById"
+                (input)="filterFunciones()"
+                placeholder="ID de función...">
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Estado</label>
+            <select 
+                class="filter-select" 
+                [(ngModel)]="filterByEstado"
+                (change)="filterFunciones()">
+                <option value="">Todos los estados</option>
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+                <option value="pendiente">Pendiente</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label class="filter-label">Fecha</label>
+            <input 
+                type="date" 
+                class="filter-input"
+                [(ngModel)]="filterByDate"
+                (change)="filterFunciones()">
+        </div>
+        <button class="clear-filters-btn" (click)="clearFilters()">
+            <i class="fas fa-times"></i>
+            Limpiar
+        </button>
+        <div class="btn-new">
+            <button class="action-btn" (click)="nuevaFuncion()">
+                <i class="fas fa-plus"></i>
+                Nueva Función
+            </button>
+        </div>
+    </div>
+
+    <!-- Grid de funciones -->
+    <div class="funciones-grid">
+        <!-- Loading state -->
+        <div class="loading-state" *ngIf="isLoading">
+            <div class="loading-spinner"></div>
+            <p>Cargando funciones...</p>
+        </div>
+
+        <!-- Funciones Cards -->
+        <div *ngFor="let funcion of filteredFunciones" class="funcion-card">
+            <div class="funcion-card-header">
+                <div class="funcion-id">{{ funcion.id_funcion }}</div>
+                <div class="funcion-estado estado-{{ funcion.estado }}">
+                    {{ funcion.estado }}
+                </div>
+            </div>
+            
+            <div class="funcion-info">
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-film"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Película:</div>
+                        <div class="funcion-value">{{ funcion.titulo_pelicula }}</div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Sala:</div>
+                        <div class="funcion-value">{{ funcion.nombre_sala }}</div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Inicio:</div>
+                        <div class="funcion-datetime">
+                            <div class="funcion-date">{{ formatDate(funcion.fecha_hora_inicio) }}</div>
+                            <div class="funcion-time">{{ formatTime(funcion.fecha_hora_inicio) }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Fin:</div>
+                        <div class="funcion-datetime">
+                            <div class="funcion-date">{{ formatDate(funcion.fecha_hora_fin) }}</div>
+                            <div class="funcion-time">{{ formatTime(funcion.fecha_hora_fin) }}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Idioma:</div>
+                        <div class="funcion-value">{{ funcion.idioma }}</div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Precio:</div>
+                        <div class="funcion-precio">${{ getPrecio(funcion) }}</div>
+                    </div>
+                </div>
+                
+                <div class="funcion-detail">
+                    <div class="funcion-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                    <div class="funcion-text">
+                        <div class="funcion-label">Trailer:</div>
+                        <a *ngIf="isValidTrailerUrl(getTrailerUrl(funcion))" 
+                           [href]="getTrailerUrl(funcion)" 
+                           target="_blank" 
+                           class="trailer-link">
+                            <i class="fab fa-youtube"></i>
+                            Ver trailer
+                        </a>
+                        <span *ngIf="!isValidTrailerUrl(getTrailerUrl(funcion))" class="trailer-unavailable">
+                            No disponible
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="funcion-actions">
+                <button class="action-btn edit-btn" (click)="editarFuncion(funcion.id_funcion)">
+                    <i class="fas fa-edit"></i>
+                    Editar
+                </button>
+                <button class="action-btn delete-btn" (click)="eliminarFuncion(funcion.id_funcion)">
+                    <i class="fas fa-trash"></i>
+                    Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" *ngIf="!isLoading && filteredFunciones.length === 0">
+        <div class="empty-icon">
+            <i class="fas fa-film"></i>
+        </div>
+        <div class="empty-message">No hay funciones disponibles</div>
+        <div class="empty-submessage">Agrega nuevas funciones para comenzar</div>
+    </div>
+</div>
