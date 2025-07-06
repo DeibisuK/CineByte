@@ -1,6 +1,12 @@
 <div class="main-content">
     <div class="content-wrapper">
         <div class="page-header">
+            <button class="btn btn-primary" routerLink="/admin/peliculas/list"
+                style="height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none;">
+                <a class="text-white" style="text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Volver
+                </a>
+            </button>
             <h2>Agregar Nueva Película</h2>
         </div>
 
@@ -78,9 +84,9 @@
                     <div class="field-row-three">
                         <div class="form-field">
                             <label for="idiomas">Agregar Idiomas</label>
-                            <select id="idiomas" #idiomaSelect
-                                (change)="addIdioma(idiomas[idiomaSelect.selectedIndex - 1])">
-                                <option value="" >Seleccione un idioma</option>
+                            <select id="idiomas" #idiomasSelect
+                                (change)="addIdioma(idiomas[idiomasSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un idioma</option>
                                 <option *ngFor="let idioma of idiomas" [value]="idioma">
                                     {{ idioma.nombre }}
                                 </option>
@@ -89,9 +95,9 @@
 
                         <div class="form-field">
                             <label for="generos">Agregar Género</label>
-                            <select id="generos" #generoSelect
-                                (change)="addGenre(generos[generoSelect.selectedIndex - 1])">
-                                <option value="" >Seleccione un genero</option>
+                            <select id="generos" #generosSelect
+                                (change)="addGenre(generos[generosSelect.selectedIndex - 1])">
+                                <option value="">Seleccione un genero</option>
                                 <option *ngFor="let genero of generos" [value]="genero">
                                     {{ genero.nombre }}
                                 </option>
@@ -222,39 +228,38 @@
 
                     <div class="adicionales-section">
                         <label class="adicionales-label">Imágenes Adicionales (máx. 5)</label>
-                        
+
                         <!-- Carrusel de imágenes adicionales -->
                         <div class="carousel-wrapper">
-                            <button class="carousel-nav left" 
-                                    (click)="navigateCarousel(-1)" 
-                                    type="button"
-                                    [disabled]="!canNavigateLeft()">
+                            <button class="carousel-nav left" (click)="navigateCarousel(-1)" type="button"
+                                [disabled]="!canNavigateLeft()">
                                 <i class="fa-solid fa-chevron-left"></i>
                             </button>
-                            
+
                             <div class="carousel-container">
-                                <div class="carousel-track" [style.transform]="'translateX(' + getCarouselOffset() + 'px)'">
+                                <div class="carousel-track"
+                                    [style.transform]="'translateX(' + getCarouselOffset() + 'px)'">
                                     <!-- Imágenes subidas -->
-                                    <div class="carousel-slide" *ngFor="let imagen of imagenesAdicionales; let i = index">
+                                    <div class="carousel-slide"
+                                        *ngFor="let imagen of imagenesAdicionales; let i = index">
                                         <img [src]="imagen.preview" [alt]="'Imagen ' + (i + 1)">
                                         <button class="delete-btn" (click)="removeImage(i)" type="button">×</button>
                                     </div>
-                                    
+
                                     <!-- Botón para agregar nueva imagen -->
                                     <div class="carousel-slide add-slide" *ngIf="imagenesAdicionales.length < 5">
                                         <label class="upload-label">
-                                            <input type="file" (change)="onAdicionalImageSelected($event)" accept="image/*" style="display: none;">
+                                            <input type="file" (change)="onAdicionalImageSelected($event)"
+                                                accept="image/*" style="display: none;">
                                             <i class="fa-solid fa-plus"></i>
                                             <span>Agregar Imagen</span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <button class="carousel-nav right" 
-                                    (click)="navigateCarousel(1)" 
-                                    type="button"
-                                    [disabled]="!canNavigateRight()">
+
+                            <button class="carousel-nav right" (click)="navigateCarousel(1)" type="button"
+                                [disabled]="!canNavigateRight()">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </button>
                         </div>
@@ -275,6 +280,7 @@
 
 
 <div class="modal-global-container">
-  <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
-  <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor" (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
+    <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>
+    <app-crear-distribuidor [mostrar]="mostrarModalDistribuidor"
+        (cerrar)="cerrarModal('distribuidor')"></app-crear-distribuidor>
 </div>

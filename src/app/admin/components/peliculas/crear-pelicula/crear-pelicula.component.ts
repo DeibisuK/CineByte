@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pelicula } from '../../../models/pelicula.model';
 import { PeliculaService } from '../../../../services/pelicula.service';
@@ -14,20 +14,23 @@ import { Generos } from '../../../models/generos.model';
 import { Distribuidor } from '../../../models/distribuidor.model';
 import { Idiomas } from '../../../models/idiomas.model';
 import { Actores } from '../../../models/actores.model';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AlertaService } from '../../../../services/alerta.service';
 import { CrearActorComponent } from "../../actores/crear-actor/crear-actor.component";
 import { CrearDistribuidorComponent } from '../../distribuidor/crear-distribuidor/crear-distribuidor.component';
+import { Subject, forkJoin } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-crear-pelicula',
-  imports: [ReactiveFormsModule, CommonModule, CrearActorComponent, CrearActorComponent,
-    CrearDistribuidorComponent
+  imports: [ReactiveFormsModule, CommonModule, CrearActorComponent,
+    CrearDistribuidorComponent, RouterModule
   ],
   templateUrl: './crear-pelicula.component.html',
   styleUrl: './crear-pelicula.component.css'
 })
-export class CrearPeliculaComponent {
+export class CrearPeliculaComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   peliculaForm: FormGroup;
   generos: Generos[] = [];
@@ -44,6 +47,14 @@ export class CrearPeliculaComponent {
   imagenPreview: string = '';
   mostrarModalActor = false;
   mostrarModalDistribuidor = false;
+
+  imagenesAdicionales: { preview: string, file: File }[] = [];
+  currentSlideIndex = 0;
+
+  @ViewChild('generosSelect') generosSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('etiquetasSelect') etiquetasSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('actoresSelect') actoresSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('idiomasSelect') idiomasSelect!: ElementRef<HTMLSelectElement>;
 
   abrirModal(tipo: 'actor' | 'distribuidor') {
     if (tipo === 'actor') {
@@ -62,13 +73,17 @@ export class CrearPeliculaComponent {
     this.cargarDatos();
     this.reset();
   }
-  constructor(private peliculaService: PeliculaService, private generosService: GenerosService,
-    private etiquetasService: EtiquetasService, private distribuidorService: DistribuidorService,
-    private actoresService: ActoresService, private router: Router
-    , private idiomaService: IdiomasService, private imgbbService: ImgbbService,
-    private alerta: AlertaService) {
-    this.cargarDatos();
-
+  constructor(
+    private peliculaService: PeliculaService,
+    private generosService: GenerosService,
+    private etiquetasService: EtiquetasService,
+    private distribuidorService: DistribuidorService,
+    private actoresService: ActoresService,
+    private router: Router,
+    private idiomaService: IdiomasService,
+    private imgbbService: ImgbbService,
+    private alerta: AlertaService
+  ) {
     this.peliculaForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
       descripcion: new FormControl('', Validators.required),
@@ -81,14 +96,21 @@ export class CrearPeliculaComponent {
     });
   }
 
+  ngOnInit(): void {
+    this.cargarDatos();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   addGenre(genre: Generos) {
     if (genre && !this.selectedGenres.some(a => a.id_genero === genre.id_genero)) {
       this.selectedGenres.push(genre);
     }
-
-    const select = document.getElementById('generos') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.generosSelect?.nativeElement) {
+      this.generosSelect.nativeElement.value = '';
     }
   }
   removeGenre(genre: Generos) {
@@ -99,10 +121,8 @@ export class CrearPeliculaComponent {
     if (tag && !this.selectedTags.some(a => a.id_etiqueta === tag.id_etiqueta)) {
       this.selectedTags.push(tag);
     }
-    // Siempre resetea el select visualmente
-    const select = document.getElementById('etiquetas') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.etiquetasSelect?.nativeElement) {
+      this.etiquetasSelect.nativeElement.value = '';
     }
   }
   removeTag(tag: Etiquetas) {
@@ -113,9 +133,8 @@ export class CrearPeliculaComponent {
     if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
       this.selectedActores.push(actor);
     }
-    const select = document.getElementById('actores') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.actoresSelect?.nativeElement) {
+      this.actoresSelect.nativeElement.value = '';
     }
   }
   removeActor(actor: Actores) {
@@ -126,10 +145,8 @@ export class CrearPeliculaComponent {
     if (idioma && !this.selectedIdiomas.some(a => a.id_idioma === idioma.id_idioma)) {
       this.selectedIdiomas.push(idioma);
     }
-    // Siempre resetea el select visualmente
-    const select = document.getElementById('idiomas') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.idiomasSelect?.nativeElement) {
+      this.idiomasSelect.nativeElement.value = '';
     }
   }
   removeIdioma(idioma: Idiomas) {
@@ -137,7 +154,7 @@ export class CrearPeliculaComponent {
   }
 
   async onSubmit() {
-    if (!this.peliculaForm.valid) {
+   if (!this.peliculaForm.valid) {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
     }
@@ -175,16 +192,20 @@ export class CrearPeliculaComponent {
         pelicula.img_carrusel = [];
       }
 
-    this.peliculaService.addPelicula(pelicula).subscribe({
+    this.peliculaService.addPelicula(pelicula)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
         next: () => {
-          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "/peliculas/list");
+          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "peliculas/list");
         },
-        error: () => {
-          this.alerta.error("Error", "Error al guardar la pelicula");
+        error: (error) => {
+          console.error('Error al guardar película:', error);
+          this.alerta.error("Error", "Error al guardar la película");
         }
       });
 
     } catch (error) {
+      console.error('Error en onSubmit:', error);
       this.alerta.error("Error", "Error al guardar la película");
     }
   }
@@ -205,20 +226,26 @@ export class CrearPeliculaComponent {
   }
 
   cargarDatos() {
-    this.etiquetasService.getEtiquetas().subscribe(data => {
-      this.etiquetas = data;
-    });
-    this.generosService.getGeneros().subscribe(data => {
-      this.generos = data;
-    });
-    this.distribuidorService.getDistribuidor().subscribe(data => {
-      this.distribuidor = data;
-    });
-    this.actoresService.getActor().subscribe(data => {
-      this.actores = data;
-    });
-    this.idiomaService.getIdiomas().subscribe(data => {
-      this.idiomas = data;
+    forkJoin({
+      etiquetas: this.etiquetasService.getEtiquetas(),
+      generos: this.generosService.getGeneros(),
+      distribuidor: this.distribuidorService.getDistribuidor(),
+      actores: this.actoresService.getActor(),
+      idiomas: this.idiomaService.getIdiomas()
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (data) => {
+        this.etiquetas = data.etiquetas;
+        this.generos = data.generos;
+        this.distribuidor = data.distribuidor;
+        this.actores = data.actores;
+        this.idiomas = data.idiomas;
+      },
+      error: (error) => {
+        console.error('Error al cargar datos:', error);
+        this.alerta.error('Error', 'No se pudieron cargar los datos necesarios');
+      }
     });
   }
 
@@ -231,16 +258,10 @@ export class CrearPeliculaComponent {
     });
   }
 
-  imagenesAdicionales: { preview: string, file: File }[] = [];
-
-  // Carrusel fijo
-  currentSlideIndex = 0;
-
   onAdicionalImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0] && this.imagenesAdicionales.length < 5) {
       const file = input.files[0];
-      //console.log('Archivo seleccionado:', file.name);
 
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -249,8 +270,6 @@ export class CrearPeliculaComponent {
           file: file
         };
         this.imagenesAdicionales.push(nuevaImagen);
-        //console.log('Imagen agregada. Total imágenes:', this.imagenesAdicionales.length);
-        //console.log('Preview URL:', e.target.result.substring(0, 50) + '...');
 
         // Ajustar el índice del carrusel si es necesario
         const totalSlides = this.getTotalSlides();
@@ -265,12 +284,9 @@ export class CrearPeliculaComponent {
     } else if (this.imagenesAdicionales.length >= 5) {
       this.alerta.warning('Advertencia', 'Máximo de 5 imágenes alcanzado');
     }
-
-    console.log('Imágenes adicionales:', this.imagenesAdicionales);
   }
 
   removeImage(index: number): void {
-    console.log('Eliminando imagen en índice:', index);
     this.imagenesAdicionales.splice(index, 1);
 
     // Ajustar el índice del carrusel si es necesario
@@ -278,9 +294,6 @@ export class CrearPeliculaComponent {
     if (this.currentSlideIndex > totalSlides - 2) {
       this.currentSlideIndex = Math.max(0, totalSlides - 2);
     }
-
-    console.log('Imágenes restantes:', this.imagenesAdicionales.length);
-    console.log('Índice actual del carrusel:', this.currentSlideIndex);
   }
 
   // Navegación del carrusel
@@ -292,8 +305,6 @@ export class CrearPeliculaComponent {
     } else if (direction === 1 && this.canNavigateRight()) {
       this.currentSlideIndex++;
     }
-
-    console.log('Navegando carrusel, índice actual:', this.currentSlideIndex);
   }
 
   // Obtener el número total de slides (imágenes + botón agregar si corresponde)
@@ -319,10 +330,5 @@ export class CrearPeliculaComponent {
     const slideWidth = 220; // Ancho de cada slide
     const gap = 15; // Gap entre slides
     return -(this.currentSlideIndex * (slideWidth + gap));
-  }
-
-  scrollCarousel(direction: number): void {
-    // Método legacy - redirigir a la nueva implementación
-    this.navigateCarousel(direction);
   }
 }

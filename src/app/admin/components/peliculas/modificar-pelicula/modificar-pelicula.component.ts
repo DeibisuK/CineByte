@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pelicula, PeliculaEditar } from '../../../models/pelicula.model';
 import { PeliculaService } from '../../../../services/pelicula.service';
@@ -14,20 +14,23 @@ import { Generos } from '../../../models/generos.model';
 import { Distribuidor } from '../../../models/distribuidor.model';
 import { Idiomas } from '../../../models/idiomas.model';
 import { Actores } from '../../../models/actores.model';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, RouterModule } from '@angular/router';
 import { AlertaService } from '../../../../services/alerta.service';
 import { CrearActorComponent } from "../../actores/crear-actor/crear-actor.component";
 import { CrearDistribuidorComponent } from '../../distribuidor/crear-distribuidor/crear-distribuidor.component';
+import { Subject, forkJoin } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-modificar-pelicula',
   imports: [ReactiveFormsModule, CommonModule, CrearActorComponent,
-    CrearDistribuidorComponent
+    CrearDistribuidorComponent,RouterModule
   ],
   templateUrl: './modificar-pelicula.component.html',
   styleUrl: './modificar-pelicula.component.css'
 })
-export class ModificarPeliculaComponent implements OnInit {
+export class ModificarPeliculaComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
 
   peliculaForm: FormGroup;
   generos: Generos[] = [];
@@ -52,6 +55,11 @@ export class ModificarPeliculaComponent implements OnInit {
 
   imagenesAdicionales: { preview: string, file: File | null }[] = [];
   currentSlideIndex = 0;
+
+  @ViewChild('generosSelect') generosSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('etiquetasSelect') etiquetasSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('actoresSelect') actoresSelect!: ElementRef<HTMLSelectElement>;
+  @ViewChild('idiomasSelect') idiomasSelect!: ElementRef<HTMLSelectElement>;
 
   constructor(
     private peliculaService: PeliculaService,
@@ -83,39 +91,54 @@ export class ModificarPeliculaComponent implements OnInit {
     this.cargarPelicula();
   }
 
-  cargarPelicula() {
-    this.peliculaService.getPeliculaById(this.peliculaId).subscribe({
-      next: async (pelicula) => {
-        this.peliculaActual = pelicula;
-        console.log('Imagenes adicionales cargadas:', pelicula);
-
-        await this.cargarDatosAsync();
-        const peliculaEditar = this.peliculaActual as PeliculaEditar;
-        this.llenarFormulario(peliculaEditar);
-      },
-      error: () => {
-        this.alerta.error('Error', 'No se pudo cargar la película');
-        this.router.navigate(['/admin/peliculas/list']);
-      }
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
-  private cargarDatosAsync() {
+  cargarPelicula() {
+    this.peliculaService.getPeliculaById(this.peliculaId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (pelicula) => {
+          this.peliculaActual = pelicula;
+          this.cargarDatosRelacionados().then(() => {
+            const peliculaEditar = this.peliculaActual as PeliculaEditar;
+            this.llenarFormulario(peliculaEditar);
+          });
+        },
+        error: (error) => {
+          console.error('Error al cargar la película:', error);
+          this.alerta.error('Error', 'No se pudo cargar la película');
+          this.router.navigate(['/admin/peliculas/list']);
+        }
+      });
+  }
+
+  private cargarDatosRelacionados(): Promise<void> {
     const etiquetas$ = this.peliculaService.getEtiquetasByPeliculaId(this.peliculaId);
     const generos$ = this.peliculaService.getGenerosByPeliculaId(this.peliculaId);
     const actores$ = this.peliculaService.getActoresByPeliculaId(this.peliculaId);
     const idiomas$ = this.peliculaService.getIdiomasByPeliculaId(this.peliculaId);
 
-    return Promise.all([
-      etiquetas$.toPromise(),
-      generos$.toPromise(),
-      actores$.toPromise(),
-      idiomas$.toPromise()
-    ]).then(([etiquetas, generos, actores, idiomas]) => {
-      this.peliculaActual.etiquetas = etiquetas || [];
-      this.peliculaActual.generos = generos || [];
-      this.peliculaActual.actores = actores || [];
-      this.peliculaActual.idiomas = idiomas || [];
+    return forkJoin({
+      etiquetas: etiquetas$,
+      generos: generos$,
+      actores: actores$,
+      idiomas: idiomas$
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).toPromise().then((result) => {
+      if (result) {
+        this.peliculaActual.etiquetas = result.etiquetas || [];
+        this.peliculaActual.generos = result.generos || [];
+        this.peliculaActual.actores = result.actores || [];
+        this.peliculaActual.idiomas = result.idiomas || [];
+      }
+    }).catch((error) => {
+      console.error('Error al cargar datos relacionados:', error);
+      this.alerta.error('Error', 'No se pudieron cargar todos los datos de la película');
+      return Promise.resolve();
     });
   }
 
@@ -206,16 +229,20 @@ export class ModificarPeliculaComponent implements OnInit {
 
       pelicula.img_carrusel = imagenesCarruselFinal;
 
-      this.peliculaService.updatePelicula(pelicula).subscribe({
-        next: () => {
-          this.alerta.successRoute("Película actualizada", "La película se actualizó correctamente", "/admin/peliculas/list");
-        },
-        error: () => {
-          this.alerta.error("Error", "Error al actualizar la película");
-        }
-      });
+      this.peliculaService.updatePelicula(pelicula)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.alerta.successRoute("Película actualizada", "La película se actualizó correctamente", "peliculas/list");
+          },
+          error: (error) => {
+            console.error('Error al actualizar película:', error);
+            this.alerta.error("Error", "Error al actualizar la película");
+          }
+        });
 
     } catch (error) {
+      console.error('Error en onSubmit:', error);
       this.alerta.error("Error", "Error al actualizar la película");
     }
   }
@@ -242,9 +269,8 @@ export class ModificarPeliculaComponent implements OnInit {
     if (genre && !this.selectedGenres.some(a => a.id_genero === genre.id_genero)) {
       this.selectedGenres.push(genre);
     }
-    const select = document.getElementById('generos') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.generosSelect?.nativeElement) {
+      this.generosSelect.nativeElement.value = '';
     }
   }
 
@@ -256,9 +282,8 @@ export class ModificarPeliculaComponent implements OnInit {
     if (tag && !this.selectedTags.some(a => a.id_etiqueta === tag.id_etiqueta)) {
       this.selectedTags.push(tag);
     }
-    const select = document.getElementById('etiquetas') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.etiquetasSelect?.nativeElement) {
+      this.etiquetasSelect.nativeElement.value = '';
     }
   }
 
@@ -270,9 +295,8 @@ export class ModificarPeliculaComponent implements OnInit {
     if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
       this.selectedActores.push(actor);
     }
-    const select = document.getElementById('actores') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.actoresSelect?.nativeElement) {
+      this.actoresSelect.nativeElement.value = '';
     }
   }
 
@@ -284,9 +308,8 @@ export class ModificarPeliculaComponent implements OnInit {
     if (idioma && !this.selectedIdiomas.some(a => a.id_idioma === idioma.id_idioma)) {
       this.selectedIdiomas.push(idioma);
     }
-    const select = document.getElementById('idiomas') as HTMLSelectElement | null;
-    if (select) {
-      select.value = '';
+    if (this.idiomasSelect?.nativeElement) {
+      this.idiomasSelect.nativeElement.value = '';
     }
   }
 
@@ -309,20 +332,26 @@ export class ModificarPeliculaComponent implements OnInit {
   }
 
   cargarDatos() {
-    this.etiquetasService.getEtiquetas().subscribe(data => {
-      this.etiquetas = data;
-    });
-    this.generosService.getGeneros().subscribe(data => {
-      this.generos = data;
-    });
-    this.distribuidorService.getDistribuidor().subscribe(data => {
-      this.distribuidor = data;
-    });
-    this.actoresService.getActor().subscribe(data => {
-      this.actores = data;
-    });
-    this.idiomaService.getIdiomas().subscribe(data => {
-      this.idiomas = data;
+    forkJoin({
+      etiquetas: this.etiquetasService.getEtiquetas(),
+      generos: this.generosService.getGeneros(),
+      distribuidor: this.distribuidorService.getDistribuidor(),
+      actores: this.actoresService.getActor(),
+      idiomas: this.idiomaService.getIdiomas()
+    }).pipe(
+      takeUntil(this.destroy$)
+    ).subscribe({
+      next: (data) => {
+        this.etiquetas = data.etiquetas;
+        this.generos = data.generos;
+        this.distribuidor = data.distribuidor;
+        this.actores = data.actores;
+        this.idiomas = data.idiomas;
+      },
+      error: (error) => {
+        console.error('Error al cargar datos:', error);
+        this.alerta.error('Error', 'No se pudieron cargar los datos necesarios');
+      }
     });
   }
 
@@ -366,8 +395,6 @@ export class ModificarPeliculaComponent implements OnInit {
     } else if (direction === 1 && this.canNavigateRight()) {
       this.currentSlideIndex++;
     }
-
-    console.log('Navegando carrusel, índice actual:', this.currentSlideIndex);
   }
 
   // Obtener el número total de slides (imágenes + botón agregar si corresponde)
@@ -393,11 +420,6 @@ export class ModificarPeliculaComponent implements OnInit {
     const slideWidth = 220; // Ancho de cada slide
     const gap = 15; // Gap entre slides
     return -(this.currentSlideIndex * (slideWidth + gap));
-  }
-
-  scrollCarousel(direction: number): void {
-    // Método legacy - redirigir a la nueva implementación
-    this.navigateCarousel(direction);
   }
 
 }

@@ -230,11 +230,15 @@
 }
 
 .page-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   margin-bottom: 40px;
   animation: fadeInDown 0.8s ease-out;
 }
 
 .page-header h2 {
+  flex: 1;
   font-size: 2.5rem;
   font-weight: 800;
   background-clip: text;
