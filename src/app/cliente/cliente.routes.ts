@@ -15,7 +15,6 @@ import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.com
 import { PerfilComponent } from './pages/menu-usuario/perfil/perfil.component';
 import { ListMetodoComponent } from './pages/menu-usuario/metodos-pago/list-metodo/list-metodo.component';
 import { CrearMetodoComponent } from './pages/menu-usuario/metodos-pago/crear-metodo/crear-metodo.component';
-import { EditarMetodoComponent } from './pages/menu-usuario/metodos-pago/editar-metodo/editar-metodo.component';
 import { DetalleMetodoComponent } from './pages/menu-usuario/metodos-pago/detalle-metodo/detalle-metodo.component';
 
 
@@ -38,5 +37,4 @@ export const clienteRoutes: Routes = [
   {path: 'metodos-de-pago', component: ListMetodoComponent},
   {path: 'metodos-de-pago/:id', component: DetalleMetodoComponent},
   {path: 'metodos-de-pago/agregar', component: CrearMetodoComponent},
-  {path: 'metodos-de-pago/editar-metodo/:id', component: EditarMetodoComponent}
 ];

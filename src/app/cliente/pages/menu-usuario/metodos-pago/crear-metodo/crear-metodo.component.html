@@ -1,5 +1,5 @@
 <!-- Modal overlay -->
-<div class="modal-overlay" *ngIf="isModalOpen" (click)="closeModal()">
+<div class="modal-overlay" *ngIf="isModalOpen">
   <div class="modal-container" (click)="$event.stopPropagation()">
     <!-- Botón cerrar -->
     <button class="modal-close" (click)="closeModal()">
@@ -33,7 +33,9 @@
         <label class="form-label">*Número de tarjeta</label>
         <div class="input-container">
           <i class="fas fa-shield-alt input-icon-left"></i>
-          <i class="fas fa-credit-card input-icon-card"></i>
+          <i [class]="getCardIcon() + ' input-icon-card'" 
+             [style.color]="getCardColor()"
+             *ngIf="cardType"></i>
           <input 
             type="text" 
             formControlName="cardNumber"
@@ -41,6 +43,9 @@
             class="form-input"
             maxlength="19"
             (input)="formatCardNumber($event)">
+          <span class="card-type-indicator" *ngIf="cardType">
+            {{ cardType }}
+          </span>
         </div>
       </div>
 
@@ -93,9 +98,10 @@
       </div>
 
       <!-- Botón agregar tarjeta -->
-      <button type="submit" class="add-card-submit-btn" [disabled]="!cardForm.valid">
-        <i class="fas fa-plus"></i>
-        Agregar tu tarjeta
+      <button type="submit" class="add-card-submit-btn" [disabled]="!cardForm.valid || isLoading">
+        <i class="fas fa-spinner fa-spin" *ngIf="isLoading"></i>
+        <i class="fas fa-plus" *ngIf="!isLoading"></i>
+        {{ isLoading ? 'Procesando...' : 'Agregar tu tarjeta' }}
       </button>
     </form>
   </div>

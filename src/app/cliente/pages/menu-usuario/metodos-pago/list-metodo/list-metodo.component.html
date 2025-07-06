@@ -14,8 +14,37 @@
     <div class="cards-section">
       <h3>Tarjetas de crédito y débito ({{ totalCards }})</h3>
       
-      <!-- Card de método de pago -->
-      <div class="payment-card">
+      <!-- Estado de carga -->
+      <div class="loading-state" *ngIf="isLoading">
+        <i class="fas fa-spinner fa-spin"></i>
+        <span>Cargando métodos de pago...</span>
+      </div>
+
+      <!-- Lista de tarjetas -->
+      <div class="cards-list" *ngIf="!isLoading && cards.length > 0">
+        <div class="payment-card" *ngFor="let card of cards">
+          <div class="card-content">
+            <div class="card-header">
+              <i [class]="getCardIcon(card.tipo_tarjeta) + ' card-type-icon'" 
+                 [style.color]="getCardColor(card.tipo_tarjeta)"></i>
+              <span class="card-type">{{ card.tipo_tarjeta }}</span>
+              <button class="card-delete-btn" (click)="deleteCard(card)" title="Eliminar tarjeta">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+            <div class="card-info">
+              <span class="card-number">**** **** **** {{ card.numero_tarjeta.slice(-4) }}</span>
+              <span class="card-expiry">{{ formatExpiryDate(card.fecha_expiracion) }}</span>
+            </div>
+            <div class="card-bank">
+              <span>{{ card.banco }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder cuando no hay tarjetas -->
+      <div class="payment-card" *ngIf="!isLoading && cards.length === 0">
         <div class="card-placeholder">
           <i class="fas fa-credit-card"></i>
           <span>No hay tarjetas registradas</span>
