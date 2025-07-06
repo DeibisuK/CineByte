@@ -12,6 +12,7 @@ export interface Pelicula {
     idiomas:number[] | string[];
     clasificacion: string;
     imagen: string;
+    img_carrusel: { url: string }[];
 };
 
 export interface PeliculaEditar {
@@ -28,4 +29,5 @@ export interface PeliculaEditar {
   etiquetas: number[];
   actores: number[];
   idiomas: number[];
+  img_carrusel: { url: string }[];
 }

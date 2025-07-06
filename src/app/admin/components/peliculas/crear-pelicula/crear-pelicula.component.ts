@@ -127,7 +127,7 @@ export class CrearPeliculaComponent {
       this.selectedIdiomas.push(idioma);
     }
     // Siempre resetea el select visualmente
-   const select = document.getElementById('idiomas') as HTMLSelectElement | null;
+    const select = document.getElementById('idiomas') as HTMLSelectElement | null;
     if (select) {
       select.value = '';
     }
@@ -163,8 +163,19 @@ export class CrearPeliculaComponent {
     try {
       const file = this.imagenSeleccionada;
       pelicula.imagen = await this.imgbbService.subirImagen(file);
+      // Subir imágenes adicionales si existen
+      if (this.imagenesAdicionales.length > 0) {
+        const urlsImagenesAdicionales: { url: string }[] = await Promise.all(
+          this.imagenesAdicionales.map(async (img) => {
+            return { url: await this.imgbbService.subirImagen(img.file) };
+          })
+        );
+        pelicula.img_carrusel = urlsImagenesAdicionales;
+      } else {
+        pelicula.img_carrusel = [];
+      }
 
-      this.peliculaService.addPelicula(pelicula).subscribe({
+    this.peliculaService.addPelicula(pelicula).subscribe({
         next: () => {
           this.alerta.successRoute("Película creada", "La película se guardó correctamente", "/peliculas/list");
         },
@@ -172,6 +183,7 @@ export class CrearPeliculaComponent {
           this.alerta.error("Error", "Error al guardar la pelicula");
         }
       });
+
     } catch (error) {
       this.alerta.error("Error", "Error al guardar la película");
     }
@@ -228,18 +240,18 @@ export class CrearPeliculaComponent {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0] && this.imagenesAdicionales.length < 5) {
       const file = input.files[0];
-      console.log('Archivo seleccionado:', file.name);
-      
+      //console.log('Archivo seleccionado:', file.name);
+
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        const nuevaImagen = { 
-          preview: e.target.result, 
-          file: file 
+        const nuevaImagen = {
+          preview: e.target.result,
+          file: file
         };
         this.imagenesAdicionales.push(nuevaImagen);
-        console.log('Imagen agregada. Total imágenes:', this.imagenesAdicionales.length);
-        console.log('Preview URL:', e.target.result.substring(0, 50) + '...');
-        
+        //console.log('Imagen agregada. Total imágenes:', this.imagenesAdicionales.length);
+        //console.log('Preview URL:', e.target.result.substring(0, 50) + '...');
+
         // Ajustar el índice del carrusel si es necesario
         const totalSlides = this.getTotalSlides();
         if (this.currentSlideIndex > totalSlides - 2) {
@@ -247,24 +259,26 @@ export class CrearPeliculaComponent {
         }
       };
       reader.readAsDataURL(file);
-      
+
       // Limpiar input para permitir seleccionar la misma imagen
       input.value = '';
     } else if (this.imagenesAdicionales.length >= 5) {
-      console.log('Máximo de 5 imágenes alcanzado');
+      this.alerta.warning('Advertencia', 'Máximo de 5 imágenes alcanzado');
     }
+
+    console.log('Imágenes adicionales:', this.imagenesAdicionales);
   }
 
   removeImage(index: number): void {
     console.log('Eliminando imagen en índice:', index);
     this.imagenesAdicionales.splice(index, 1);
-    
+
     // Ajustar el índice del carrusel si es necesario
     const totalSlides = this.getTotalSlides();
     if (this.currentSlideIndex > totalSlides - 2) {
       this.currentSlideIndex = Math.max(0, totalSlides - 2);
     }
-    
+
     console.log('Imágenes restantes:', this.imagenesAdicionales.length);
     console.log('Índice actual del carrusel:', this.currentSlideIndex);
   }
@@ -272,13 +286,13 @@ export class CrearPeliculaComponent {
   // Navegación del carrusel
   navigateCarousel(direction: number): void {
     const totalSlides = this.getTotalSlides();
-    
+
     if (direction === -1 && this.canNavigateLeft()) {
       this.currentSlideIndex--;
     } else if (direction === 1 && this.canNavigateRight()) {
       this.currentSlideIndex++;
     }
-    
+
     console.log('Navegando carrusel, índice actual:', this.currentSlideIndex);
   }
 

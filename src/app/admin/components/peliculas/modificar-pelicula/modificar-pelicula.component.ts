@@ -35,17 +35,23 @@ export class ModificarPeliculaComponent implements OnInit {
   distribuidor: Distribuidor[] = [];
   actores: Actores[] = [];
   idiomas: Idiomas[] = [];
+
   selectedGenres: Generos[] = [];
   selectedTags: Etiquetas[] = [];
   selectedActores: Actores[] = [];
   selectedIdiomas: Idiomas[] = [];
+
   clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
   imagenSeleccionada!: File;
   imagenPreview: string = '';
   mostrarModalActor = false;
   mostrarModalDistribuidor = false;
+
   peliculaId!: number;
   peliculaActual!: Pelicula;
+
+  imagenesAdicionales: { preview: string, file: File | null }[] = [];
+  currentSlideIndex = 0;
 
   constructor(
     private peliculaService: PeliculaService,
@@ -81,8 +87,10 @@ export class ModificarPeliculaComponent implements OnInit {
     this.peliculaService.getPeliculaById(this.peliculaId).subscribe({
       next: async (pelicula) => {
         this.peliculaActual = pelicula;
+        console.log('Imagenes adicionales cargadas:', pelicula);
+
         await this.cargarDatosAsync();
-        const peliculaEditar = this.peliculaActual as unknown as PeliculaEditar;
+        const peliculaEditar = this.peliculaActual as PeliculaEditar;
         this.llenarFormulario(peliculaEditar);
       },
       error: () => {
@@ -115,7 +123,6 @@ export class ModificarPeliculaComponent implements OnInit {
     // Convertir fecha a formato yyyy-MM-dd
     const fechaEstreno = pelicula.fecha_estreno ? new Date(pelicula.fecha_estreno).toISOString().split('T')[0] : '';
 
-    // Llenar el formulario con los datos de la película
     this.peliculaForm.patchValue({
       titulo: pelicula.titulo,
       descripcion: pelicula.descripcion,
@@ -127,8 +134,14 @@ export class ModificarPeliculaComponent implements OnInit {
       id_distribuidor: pelicula.id_distribuidor
     });
 
-    // Configurar imagen preview
     this.imagenPreview = pelicula.imagen || '';
+
+    if (pelicula.img_carrusel && Array.isArray(pelicula.img_carrusel)) {
+      this.imagenesAdicionales = pelicula.img_carrusel.map((img: any) => ({
+        preview: img.url,
+        file: null
+      }));
+    }
 
     // Cargar los elementos seleccionados basados en los IDs
     if (pelicula.generos && pelicula.generos.length > 0) {
@@ -157,16 +170,8 @@ export class ModificarPeliculaComponent implements OnInit {
   }
 
   async onSubmit() {
-    if (!this.peliculaForm.valid) {
-      this.alerta.error("Formulario Inválido", "Rellene todos los campos");
-      return;
-    }
-    if (
-      this.selectedGenres.length === 0 ||
-      this.selectedTags.length === 0 ||
-      this.selectedIdiomas.length === 0 ||
-      this.selectedActores.length === 0
-    ) {
+    if (!this.peliculaForm.valid || this.selectedGenres.length === 0 || this.selectedTags.length === 0 ||
+      this.selectedIdiomas.length === 0 || this.selectedActores.length === 0) {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
     }
@@ -182,11 +187,24 @@ export class ModificarPeliculaComponent implements OnInit {
     };
 
     try {
-      // Si se seleccionó una nueva imagen, subirla
+      // Subir imagen principal si fue modificada
       if (this.imagenSeleccionada) {
-        const file = this.imagenSeleccionada;
-        pelicula.imagen = await this.imgbbService.subirImagen(file);
+        pelicula.imagen = await this.imgbbService.subirImagen(this.imagenSeleccionada);
       }
+
+      // Subir solo las imágenes nuevas del carrusel
+      const imagenesCarruselFinal: { url: string }[] = [];
+
+      for (const imagen of this.imagenesAdicionales) {
+        if (imagen.file) {
+          const url = await this.imgbbService.subirImagen(imagen.file);
+          imagenesCarruselFinal.push({ url });
+        } else {
+          imagenesCarruselFinal.push({ url: imagen.preview });
+        }
+      }
+
+      pelicula.img_carrusel = imagenesCarruselFinal;
 
       this.peliculaService.updatePelicula(pelicula).subscribe({
         next: () => {
@@ -196,6 +214,7 @@ export class ModificarPeliculaComponent implements OnInit {
           this.alerta.error("Error", "Error al actualizar la película");
         }
       });
+
     } catch (error) {
       this.alerta.error("Error", "Error al actualizar la película");
     }
@@ -306,4 +325,79 @@ export class ModificarPeliculaComponent implements OnInit {
       this.idiomas = data;
     });
   }
+
+  onAdicionalImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0] && this.imagenesAdicionales.length < 5) {
+      const file = input.files[0];
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagenesAdicionales.push({
+          preview: e.target.result,
+          file: file
+        });
+
+        const totalSlides = this.getTotalSlides();
+        if (this.currentSlideIndex > totalSlides - 2) {
+          this.currentSlideIndex = Math.max(0, totalSlides - 2);
+        }
+      };
+      reader.readAsDataURL(file);
+      input.value = '';
+    } else if (this.imagenesAdicionales.length >= 5) {
+      this.alerta.warning('Advertencia', 'Máximo de 5 imágenes alcanzado');
+    }
+  }
+
+  removeImage(index: number): void {
+    this.imagenesAdicionales.splice(index, 1);
+    const totalSlides = this.getTotalSlides();
+    if (this.currentSlideIndex > totalSlides - 2) {
+      this.currentSlideIndex = Math.max(0, totalSlides - 2);
+    }
+  }
+  // Navegación del carrusel
+  navigateCarousel(direction: number): void {
+    const totalSlides = this.getTotalSlides();
+
+    if (direction === -1 && this.canNavigateLeft()) {
+      this.currentSlideIndex--;
+    } else if (direction === 1 && this.canNavigateRight()) {
+      this.currentSlideIndex++;
+    }
+
+    console.log('Navegando carrusel, índice actual:', this.currentSlideIndex);
+  }
+
+  // Obtener el número total de slides (imágenes + botón agregar si corresponde)
+  getTotalSlides(): number {
+    const imagesCount = this.imagenesAdicionales.length;
+    const hasAddButton = imagesCount < 5 ? 1 : 0;
+    return imagesCount + hasAddButton;
+  }
+
+  // Verificar si se puede navegar a la izquierda
+  canNavigateLeft(): boolean {
+    return this.currentSlideIndex > 0;
+  }
+
+  // Verificar si se puede navegar a la derecha
+  canNavigateRight(): boolean {
+    const totalSlides = this.getTotalSlides();
+    return this.currentSlideIndex < totalSlides - 2; // -2 porque mostramos 2 slides a la vez
+  }
+
+  // Obtener el offset del carrusel para mostrar los slides correctos
+  getCarouselOffset(): number {
+    const slideWidth = 220; // Ancho de cada slide
+    const gap = 15; // Gap entre slides
+    return -(this.currentSlideIndex * (slideWidth + gap));
+  }
+
+  scrollCarousel(direction: number): void {
+    // Método legacy - redirigir a la nueva implementación
+    this.navigateCarousel(direction);
+  }
+
 }
