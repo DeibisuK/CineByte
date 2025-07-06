@@ -219,6 +219,47 @@
                         </div>
 
                     </div>
+
+                    <div class="adicionales-section">
+                        <label class="adicionales-label">Imágenes Adicionales (máx. 5)</label>
+                        
+                        <!-- Carrusel de imágenes adicionales -->
+                        <div class="carousel-wrapper">
+                            <button class="carousel-nav left" 
+                                    (click)="navigateCarousel(-1)" 
+                                    type="button"
+                                    [disabled]="!canNavigateLeft()">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            
+                            <div class="carousel-container">
+                                <div class="carousel-track" [style.transform]="'translateX(' + getCarouselOffset() + 'px)'">
+                                    <!-- Imágenes subidas -->
+                                    <div class="carousel-slide" *ngFor="let imagen of imagenesAdicionales; let i = index">
+                                        <img [src]="imagen.preview" [alt]="'Imagen ' + (i + 1)">
+                                        <button class="delete-btn" (click)="removeImage(i)" type="button">×</button>
+                                    </div>
+                                    
+                                    <!-- Botón para agregar nueva imagen -->
+                                    <div class="carousel-slide add-slide" *ngIf="imagenesAdicionales.length < 5">
+                                        <label class="upload-label">
+                                            <input type="file" (change)="onAdicionalImageSelected($event)" accept="image/*" style="display: none;">
+                                            <i class="fa-solid fa-plus"></i>
+                                            <span>Agregar Imagen</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button class="carousel-nav right" 
+                                    (click)="navigateCarousel(1)" 
+                                    type="button"
+                                    [disabled]="!canNavigateRight()">
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="submit-section">
                     <button type="submit" class="submit-btn">
@@ -229,6 +270,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 <div class="modal-global-container">
   <app-crear-actor [mostrar]="mostrarModalActor" (cerrar)="cerrarModal('actor')"></app-crear-actor>

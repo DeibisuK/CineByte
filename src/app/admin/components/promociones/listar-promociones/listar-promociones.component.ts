@@ -26,7 +26,7 @@ export class ListarPromocionesComponent implements OnInit {
   }
 
   isClientRoute(): boolean {
-    return this.router.url.includes('/promociones');
+    return this.router.url.includes('/cliente/promociones');
   }
 
   cargarPromociones(): void {
@@ -55,7 +55,7 @@ export class ListarPromocionesComponent implements OnInit {
 
   editarPromocion(promo: Promocion, event: Event) {
     event.stopPropagation();
-    this.router.navigate(['/admin/edit-promocion', promo.id_promo]);
+    this.router.navigate(['/admin/promociones/editar', promo.id_promo]);
   }
 
   eliminarPromocion(promo: Promocion, event: Event): void {

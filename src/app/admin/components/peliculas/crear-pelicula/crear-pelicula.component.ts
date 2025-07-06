@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Pelicula } from '../../../models/pelicula.model';
 import { PeliculaService } from '../../../../services/pelicula.service';
@@ -217,5 +217,98 @@ export class CrearPeliculaComponent {
       idiomas: '',
       actores: '',
     });
+  }
+
+  imagenesAdicionales: { preview: string, file: File }[] = [];
+
+  // Carrusel fijo
+  currentSlideIndex = 0;
+
+  onAdicionalImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0] && this.imagenesAdicionales.length < 5) {
+      const file = input.files[0];
+      console.log('Archivo seleccionado:', file.name);
+      
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const nuevaImagen = { 
+          preview: e.target.result, 
+          file: file 
+        };
+        this.imagenesAdicionales.push(nuevaImagen);
+        console.log('Imagen agregada. Total imágenes:', this.imagenesAdicionales.length);
+        console.log('Preview URL:', e.target.result.substring(0, 50) + '...');
+        
+        // Ajustar el índice del carrusel si es necesario
+        const totalSlides = this.getTotalSlides();
+        if (this.currentSlideIndex > totalSlides - 2) {
+          this.currentSlideIndex = Math.max(0, totalSlides - 2);
+        }
+      };
+      reader.readAsDataURL(file);
+      
+      // Limpiar input para permitir seleccionar la misma imagen
+      input.value = '';
+    } else if (this.imagenesAdicionales.length >= 5) {
+      console.log('Máximo de 5 imágenes alcanzado');
+    }
+  }
+
+  removeImage(index: number): void {
+    console.log('Eliminando imagen en índice:', index);
+    this.imagenesAdicionales.splice(index, 1);
+    
+    // Ajustar el índice del carrusel si es necesario
+    const totalSlides = this.getTotalSlides();
+    if (this.currentSlideIndex > totalSlides - 2) {
+      this.currentSlideIndex = Math.max(0, totalSlides - 2);
+    }
+    
+    console.log('Imágenes restantes:', this.imagenesAdicionales.length);
+    console.log('Índice actual del carrusel:', this.currentSlideIndex);
+  }
+
+  // Navegación del carrusel
+  navigateCarousel(direction: number): void {
+    const totalSlides = this.getTotalSlides();
+    
+    if (direction === -1 && this.canNavigateLeft()) {
+      this.currentSlideIndex--;
+    } else if (direction === 1 && this.canNavigateRight()) {
+      this.currentSlideIndex++;
+    }
+    
+    console.log('Navegando carrusel, índice actual:', this.currentSlideIndex);
+  }
+
+  // Obtener el número total de slides (imágenes + botón agregar si corresponde)
+  getTotalSlides(): number {
+    const imagesCount = this.imagenesAdicionales.length;
+    const hasAddButton = imagesCount < 5 ? 1 : 0;
+    return imagesCount + hasAddButton;
+  }
+
+  // Verificar si se puede navegar a la izquierda
+  canNavigateLeft(): boolean {
+    return this.currentSlideIndex > 0;
+  }
+
+  // Verificar si se puede navegar a la derecha
+  canNavigateRight(): boolean {
+    const totalSlides = this.getTotalSlides();
+    return this.currentSlideIndex < totalSlides - 2; // -2 porque mostramos 2 slides a la vez
+  }
+
+  // Obtener el offset del carrusel para mostrar los slides correctos
+  getCarouselOffset(): number {
+    const slideWidth = 220; // Ancho de cada slide
+    const gap = 15; // Gap entre slides
+    return -(this.currentSlideIndex * (slideWidth + gap));
+  }
+
+  scrollCarousel(direction: number): void {
+    // Método legacy - redirigir a la nueva implementación
+    this.navigateCarousel(direction);
   }
 }

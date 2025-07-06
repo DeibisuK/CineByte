@@ -93,7 +93,7 @@ export class EditarPromocionComponent implements OnInit {
           text: 'No se pudo cargar la promoción',
           confirmButtonColor: '#3085d6',
         }).then(() => {
-          this.router.navigate(['/admin/promociones']);
+          this.router.navigate(['/admin/promociones/list']);
         });
       },
     });
@@ -190,7 +190,7 @@ export class EditarPromocionComponent implements OnInit {
             text: 'Promoción actualizada exitosamente',
             confirmButtonColor: '#3085d6',
           }).then(() => {
-            this.router.navigate(['/admin/promociones']);
+            this.router.navigate(['/admin/promociones/list']);
           });
         },
         error: (err) => {
