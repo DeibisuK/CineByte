@@ -1,0 +1,324 @@
+/* Estilos para el componente de métodos de pago */
+.payment-methods-container {
+    max-width: 800px;
+    margin: 2.5rem auto;
+    padding: 0 1rem;
+}
+
+.payment-methods-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.payment-methods-header h2 {
+    color: var(--text-color);
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.payment-methods-card {
+    background: var(--footer-esp);
+    color: var(--text-color);
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+    overflow: hidden;
+    padding: 2rem;
+}
+
+/* Subtítulo de seguridad */
+.security-subtitle {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background: var(--footer-bg);
+    border-radius: 12px;
+    border: 1px solid var(--footer-line);
+}
+
+.security-subtitle i {
+    color: #28a745;
+    font-size: 1.2rem;
+}
+
+.security-subtitle span {
+    color: #28a745;
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+/* Sección de tarjetas */
+.cards-section {
+    background: var(--footer-bg);
+    border: 1px solid var(--footer-line);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.cards-section h3 {
+    color: var(--text-color);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+}
+
+/* Card de método de pago */
+.payment-card {
+    background: var(--footer-bg);
+    border-radius: 12px;
+    border: 2px dashed var(--footer-line);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.card-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.card-placeholder i {
+    font-size: 3rem;
+    color: var(--yellow);
+}
+
+.card-placeholder span {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* Mensajes de seguridad */
+.security-messages {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.security-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6c757d;
+    font-size: 0.95rem;
+}
+
+.security-message i {
+    color: #28a745;
+    font-size: 1.1rem;
+}
+
+/* Botón agregar tarjeta */
+.add-card-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #222;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+}
+
+.add-card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 215, 0, 0.3);
+}
+
+.add-card-btn i {
+    font-size: 1.2rem;
+}
+
+/* Iconos de métodos de pago */
+.payment-icons {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.payment-icon {
+    width: 50px;
+    height: 32px;
+    object-fit: contain;
+    filter: grayscale(50%);
+    transition: filter 0.3s ease;
+}
+
+.payment-icon:hover {
+    filter: grayscale(0%);
+}
+
+/* Sección informativa */
+.info-section {
+    background: var(--footer-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid var(--footer-line);
+}
+
+.info-subsection {
+    margin-bottom: 2rem;
+}
+
+.info-subsection:last-child {
+    margin-bottom: 0;
+}
+
+.info-header {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.info-header i {
+    color: #28a745;
+    font-size: 1.3rem;
+}
+
+.info-header h4 {
+    color: #28a745;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.info-section p {
+    color: var(--text-color);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+/* Lista de información */
+.info-list {
+    list-style: none;
+
+    padding: 0;
+    margin: 0;
+}
+
+.info-list li {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.info-list li i {
+    color: #28a745;
+    font-size: 1rem;
+    min-width: 16px;
+}
+
+/* Enlaces de ayuda */
+.help-link {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--footer-line);
+}
+
+.help-link span {
+    display: block;
+    color: var(--text-color);
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.contact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--yellow);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+    color: #FFA500;
+}
+
+.contact-link i {
+    font-size: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .payment-methods-container {
+        margin: 1.5rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .payment-methods-card {
+        padding: 1.5rem;
+    }
+
+    .cards-section {
+        padding: 1.5rem;
+    }
+
+    .info-section {
+        padding: 1.5rem;
+    }
+
+    .security-messages {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .payment-icons {
+        gap: 1rem;
+    }
+
+    .payment-icon {
+        width: 40px;
+        height: 26px;
+    }
+}
+
+@media (max-width: 480px) {
+    .payment-methods-header h2 {
+        font-size: 1.6rem;
+    }
+
+    .add-card-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+
+    .card-placeholder i {
+        font-size: 2.5rem;
+    }
+
+    .info-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .info-header i {
+        font-size: 1.2rem;
+    }
+}

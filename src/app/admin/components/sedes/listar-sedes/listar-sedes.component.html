@@ -47,8 +47,3 @@
     </div>
   </div>
 </div>
-
-<app-alert-confirm *ngIf="showConfirm"
-  [message]="'¿Estás seguro de eliminar la sede ' + (sedeAEliminar?.nombre || '') + '?'" [theme]="alertTheme"
-  type="warning" (confirm)="confirmarEliminar()" (close)="cancelarEliminar()">
-</app-alert-confirm>

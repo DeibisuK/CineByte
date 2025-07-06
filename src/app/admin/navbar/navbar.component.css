@@ -22,7 +22,9 @@
 
 .fa-chevron-down {
   color: var(--text-color);
-  padding-right: 60px;
+  position: absolute;
+  right: 1rem;
+  transition: transform var(--transition-fast);
 }
 
 .sidebar {
@@ -73,7 +75,7 @@
 }
 
 .logo img {
-  height: 45px;
+  height: 4.2rem;
   width: auto;
   transition: all var(--transition-smooth);
   border-radius: 8px;
@@ -223,10 +225,9 @@ body.light-mode .sidebar-menu a:hover {
 
 .dropdown-arrow {
   margin-left: auto;
-  padding-right: 1rem;
-  /* Consistent alignment */
+  position: absolute;
+  right: 1rem;
   transition: transform var(--transition-fast);
-  position: relative;
 }
 
 .dropdown-arrow.rotated {
@@ -625,6 +626,15 @@ input:checked+.slider:before {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.cines-menu.show {
+  max-height: 120px;
+  opacity: 1;
 }
 
 .cines-menu a {

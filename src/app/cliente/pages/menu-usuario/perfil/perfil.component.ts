@@ -16,8 +16,8 @@ import {
 import { getIdTokenResult } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { AuthService } from '../../../services/AuthService';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../services/AuthService';
 
 @Component({
   selector: 'app-perfil',

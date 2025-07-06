@@ -1,0 +1,105 @@
+<div class="payment-methods-container">
+  <div class="payment-methods-header">
+    <h2>MÉTODOS DE PAGO</h2>
+  </div>
+
+  <div class="payment-methods-card">
+    <!-- Subtítulo de seguridad -->
+    <div class="security-subtitle">
+      <i class="fas fa-lock"></i>
+      <span>Todos los datos están cifrados</span>
+    </div>
+
+    <!-- Sección de tarjetas -->
+    <div class="cards-section">
+      <h3>Tarjetas de crédito y débito ({{ totalCards }})</h3>
+      
+      <!-- Card de método de pago -->
+      <div class="payment-card">
+        <div class="card-placeholder">
+          <i class="fas fa-credit-card"></i>
+          <span>No hay tarjetas registradas</span>
+        </div>
+      </div>
+
+      <!-- Mensajes de seguridad -->
+      <div class="security-messages">
+        <div class="security-message">
+          <i class="fas fa-shield-alt"></i>
+          <span>Pago seguro</span>
+        </div>
+        <div class="security-message">
+          <i class="fa-solid fa-shield-virus"></i>
+          <span>Pago conveniente</span>
+        </div>
+      </div>
+
+      <!-- Botón agregar tarjeta -->
+      <button class="add-card-btn" (click)="openModal()">
+        <i class="fas fa-plus"></i>
+        Agregar una tarjeta de crédito o débito
+      </button>
+
+      <!-- Iconos de métodos de pago -->
+      <div class="payment-icons">
+        <img src="Metodos Pago/Visa_Inc._logo.svg" alt="Visa" class="payment-icon">
+        <img src="Metodos Pago/Mastercard-logo.svg" alt="Mastercard" class="payment-icon">
+        <img src="Metodos Pago/PayPal_logo.png" alt="PayPal" class="payment-icon">
+      </div>
+    </div>
+
+    <!-- Sección informativa -->
+    <div class="info-section">
+      <div class="info-subsection">
+        <div class="info-header">
+          <i class="fas fa-shield-alt"></i>
+          <h4>CineByte protege la información de tu tarjeta</h4>
+        </div>
+        <ul class="info-list">
+          <li><i class="fas fa-check"></i> Encriptación de extremo a extremo</li>
+          <li><i class="fas fa-check"></i> Certificación SSL de 256 bits</li>
+          <li><i class="fas fa-check"></i> Cumplimiento con estándares PCI DSS</li>
+          <li><i class="fas fa-check"></i> Monitoreo 24/7 de transacciones</li>
+          <li><i class="fas fa-check"></i> Detección automática de fraudes</li>
+        </ul>
+      </div>
+
+      <div class="info-subsection">
+        <div class="info-header">
+          <i class="fas fa-lock"></i>
+          <h4>Seguro y confiable</h4>
+        </div>
+        <p>Utilizamos tecnología de vanguardia para proteger tus datos financieros. Todas las transacciones están respaldadas por los más altos estándares de seguridad bancaria.</p>
+        <div class="help-link">
+          <span>¿Necesitas ayuda con un problema de seguridad?</span>
+          <a routerLink="/contactanos" class="contact-link">
+            <i class="fas fa-comment"></i>
+            Contáctanos
+          </a>
+        </div>
+      </div>
+
+      <div class="info-subsection">
+        <div class="info-header">
+          <i class="fas fa-headset"></i>
+          <h4>Atención al cliente</h4>
+        </div>
+        <p>Nuestro equipo de soporte está disponible para ayudarte con cualquier consulta sobre tus métodos de pago y transacciones.</p>
+        <div class="help-link">
+          <span>¿Tienes dudas sobre tus transacciones?</span>
+          <a routerLink="/contactanos" class="contact-link">
+            <i class="fas fa-comment"></i>
+            Contáctanos
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para agregar tarjeta -->
+<app-crear-metodo 
+  [isModalOpen]="isModalOpen"
+  (modalClosed)="closeModal()"
+  (cardAdded)="onCardAdded($event)">
+</app-crear-metodo>
