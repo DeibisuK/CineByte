@@ -41,7 +41,7 @@
           <div class="form-group">
             <label class="form-label" for="id_nacionalidad">Nacionalidad</label>
             <select formControlName="id_nacionalidad" id="id_nacionalidad" class="form-select">
-              <option value="">Seleccione nacionalidad</option>
+              <option [value]="null">Seleccione nacionalidad</option>
               <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
             </select>
             <small *ngIf="formActor.get('id_nacionalidad')?.invalid && formActor.get('id_nacionalidad')?.touched" class="error-message">
@@ -108,7 +108,7 @@
                   {{actor.nombrePais}}
                 </span>
                 <select *ngIf="actorEditando === actor.id_actor" [(ngModel)]="nacionalidadTemporal" class="edit-select" required>
-                  <option value="">Seleccione país</option>
+                  <option [value]="null">Seleccione país</option>
                   <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
                 </select>
               </td>

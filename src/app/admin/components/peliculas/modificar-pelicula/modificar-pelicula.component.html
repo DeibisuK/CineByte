@@ -10,7 +10,18 @@
             <h2>Modificar Película</h2>
         </div>
 
-        <div class="form-container">
+        <!-- Loading State -->
+        <div *ngIf="isLoadingInitialData || isLoadingPelicula" class="loading-container">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p *ngIf="isLoadingInitialData && isLoadingPelicula">Cargando datos...</p>
+                <p *ngIf="isLoadingInitialData && !isLoadingPelicula">Cargando catálogos...</p>
+                <p *ngIf="!isLoadingInitialData && isLoadingPelicula">Cargando película...</p>
+            </div>
+        </div>
+
+        <!-- Form Content -->
+        <div *ngIf="!isLoadingInitialData && !isLoadingPelicula" class="form-container">
             <form [formGroup]="peliculaForm" (ngSubmit)="onSubmit()" class="form-grid">
 
                 <div class="image-upload-section">
@@ -268,8 +279,11 @@
                     </div>
                 </div>
                 <div class="submit-section">
-                    <button type="submit" class="submit-btn">
-                        Actualizar Película
+                    <button type="submit" class="submit-btn" [disabled]="isSubmitting || peliculaForm.invalid">
+                        <div *ngIf="isSubmitting" class="button-spinner"></div>
+                        <span *ngIf="isUploadingImage && isSubmitting">Subiendo imágenes...</span>
+                        <span *ngIf="!isUploadingImage && isSubmitting">Actualizando película...</span>
+                        <span *ngIf="!isSubmitting">Actualizar Película</span>
                     </button>
                 </div>
             </form>

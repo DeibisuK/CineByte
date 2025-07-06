@@ -12,7 +12,7 @@ export const funcionesRoutes: Routes = [
     component: ListarFuncionesComponent
   },
   {
-    path: 'editar/:id',
+    path: 'edit/:id',
     component: EditarFuncionesComponent
   }
 ]

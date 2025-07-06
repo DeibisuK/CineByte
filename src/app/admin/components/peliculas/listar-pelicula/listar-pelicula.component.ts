@@ -16,6 +16,10 @@ import Swal from 'sweetalert2';
 export class ListarPeliculaComponent implements OnInit, OnDestroy {
   peliculas: Pelicula[] = [];
   private destroy$ = new Subject<void>();
+  
+  // Estados de carga
+  isLoadingPeliculas = true;
+  isDeleting = false;
 
   constructor(
     private peliculaService: PeliculaService
@@ -31,14 +35,17 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   obtenerPeliculas(): void {
+    this.isLoadingPeliculas = true;
     this.peliculaService.getPeliculasCompletas()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
           this.peliculas = data.sort((a: Pelicula, b: Pelicula) => a.id_pelicula - b.id_pelicula);
+          this.isLoadingPeliculas = false;
         },
         error: (error) => {
           console.error('Error al obtener películas', error);
+          this.isLoadingPeliculas = false;
           Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -59,6 +66,8 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   eliminarPelicula(id: number): void {
+    if (this.isDeleting) return; // Prevenir múltiples eliminaciones simultáneas
+    
     Swal.fire({
       title: '¿Estás seguro?',
       text: 'Esta acción eliminará la película permanentemente',
@@ -68,14 +77,17 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
+        this.isDeleting = true;
         this.peliculaService.deletePelicula(id)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (res) => {
+              this.isDeleting = false;
               Swal.fire('Eliminado', res.mensaje, 'success');
               this.obtenerPeliculas();
             },
             error: (err) => {
+              this.isDeleting = false;
               const mensaje =
                 err.error?.error || 'No se pudo eliminar la película.';
               Swal.fire('Error', mensaje, 'error');

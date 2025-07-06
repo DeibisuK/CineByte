@@ -37,9 +37,7 @@ export class ListarFuncionesComponent implements OnInit {
     this.isLoading = true;
     this.funcionesService.getFuncionesConDetalles().subscribe({
       next: (data) => {
-        console.log('Datos recibidos del backend:', data); // Para debug
         if (data && data.length > 0) {
-          console.log('Primera función de ejemplo:', data[0]); // Para ver la estructura
         }
         this.funciones = data;
         this.filteredFunciones = [...data];
@@ -118,7 +116,7 @@ export class ListarFuncionesComponent implements OnInit {
   }
 
   editarFuncion(id: number): void {
-    this.router.navigate(['/admin/funciones/editar', id]);
+    this.router.navigate(['/admin/funciones/edit', id]);
   }
 
   eliminarFuncion(id: number): void {

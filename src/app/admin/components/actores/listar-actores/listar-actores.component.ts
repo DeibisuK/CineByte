@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActoresService } from '../../../../services/actores.service';
 import { PaisesService } from '../../../../services/paises.service';
 import { CommonModule } from '@angular/common';
 import { Actores } from '../../../models/actores.model';
 import { AlertaService } from '../../../../services/alerta.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-listar-actores',
@@ -12,17 +14,26 @@ import { AlertaService } from '../../../../services/alerta.service';
   templateUrl: './listar-actores.component.html',
   styleUrl: './listar-actores.component.css'
 })
-export class ListarActoresComponent implements OnInit {
+export class ListarActoresComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  
   formActor: FormGroup;
   actores: Actores[] = [];
   actoresFiltrados: Actores[] = [];
-  paises: any[] = [];
+  paises: { id_pais: number; nombre: string }[] = [];
   filtroActores: string = '';
   actorEditando: number | null = null;
   nombreTemporal: string = '';
   apellidosTemporal: string = '';
   fechaNacimientoTemporal: string = '';
   nacionalidadTemporal: number | null = null;
+  
+  // Estados de carga
+  isLoadingActores = true;
+  isLoadingPaises = true;
+  isSubmitting = false;
+  isDeleting = false;
+  isUpdating = false;
 
   constructor(
     private fb: FormBuilder,
@@ -34,7 +45,7 @@ export class ListarActoresComponent implements OnInit {
       nombre: ['', [Validators.required, Validators.minLength(2)]],
       apellidos: ['', [Validators.required, Validators.minLength(2)]],
       fecha_nacimiento: ['', Validators.required],
-      id_nacionalidad: ['', Validators.required]
+      id_nacionalidad: [null, Validators.required]
     });
   }
 
@@ -44,35 +55,50 @@ export class ListarActoresComponent implements OnInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   cargarActores(): void {
-    this.actorService.getActor().subscribe({
-      next: (data) => {
-        this.actores = data.map(actor => ({
-          ...actor,
-          nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
-          fecha_nacimiento: new Date(actor.fecha_nacimiento)
-        }));
-        this.actoresFiltrados = [...this.actores];
-      },
-      error: (err) => {
-        this.alerta.error('Error', 'No se pudieron cargar los actores');
-        console.error(err);
-      }
-    });
+    this.isLoadingActores = true;
+    this.actorService.getActor()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.actores = data.map(actor => ({
+            ...actor,
+            nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
+            fecha_nacimiento: new Date(actor.fecha_nacimiento)
+          }));
+          this.actoresFiltrados = [...this.actores];
+          this.isLoadingActores = false;
+        },
+        error: (err) => {
+          this.alerta.error('Error', 'No se pudieron cargar los actores');
+          console.error(err);
+          this.isLoadingActores = false;
+        }
+      });
   }
 
   cargarPaises(): Promise<void> {
+    this.isLoadingPaises = true;
     return new Promise((resolve, reject) => {
-      this.paisService.getPais().subscribe({
-        next: (data) => {
-          this.paises = data;
-          resolve();
-        },
-        error: (err) => {
-          this.alerta.error('Error', 'No se pudieron cargar los países');
-          reject(err);
-        }
-      });
+      this.paisService.getPais()
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (data) => {
+            this.paises = data;
+            this.isLoadingPaises = false;
+            resolve();
+          },
+          error: (err) => {
+            this.alerta.error('Error', 'No se pudieron cargar los países');
+            this.isLoadingPaises = false;
+            reject(err);
+          }
+        });
     });
   }
 
@@ -82,20 +108,25 @@ export class ListarActoresComponent implements OnInit {
 
   addActor(): void {
     if (this.formActor.valid) {
+      this.isSubmitting = true;
       const actorData = this.formActor.value;
       actorData.fecha_nacimiento = new Date(actorData.fecha_nacimiento).toISOString();
 
-      this.actorService.addActor(actorData).subscribe({
-        next: () => {
-          this.alerta.success('Éxito', 'Actor agregado correctamente');
-          this.cargarActores();
-          this.formActor.reset();
-        },
-        error: (err) => {
-          this.alerta.error('Error', 'No se pudo agregar el actor');
-          console.error(err);
-        }
-      });
+      this.actorService.addActor(actorData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.alerta.success('Éxito', 'Actor agregado correctamente');
+            this.cargarActores();
+            this.resetForm();
+            this.isSubmitting = false;
+          },
+          error: (err) => {
+            this.alerta.error('Error', 'No se pudo agregar el actor');
+            console.error(err);
+            this.isSubmitting = false;
+          }
+        });
     } else {
       this.alerta.warning('Advertencia', 'Por favor complete todos los campos requeridos');
     }
@@ -111,7 +142,8 @@ export class ListarActoresComponent implements OnInit {
     this.actoresFiltrados = this.actores.filter(actor => 
       actor.nombre.toLowerCase().includes(filtro) || 
       actor.apellidos.toLowerCase().includes(filtro)
-  )}
+    );
+  }
 
   activarEdicion(actor: Actores): void {
     this.actorEditando = actor.id_actor;
@@ -122,6 +154,11 @@ export class ListarActoresComponent implements OnInit {
   }
 
   private formatDateForInput(date: Date): string {
+    if (!date || isNaN(date.getTime())) {
+      console.warn('Invalid date provided to formatDateForInput');
+      return '';
+    }
+    
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const day = ('0' + date.getDate()).slice(-2);
@@ -139,24 +176,29 @@ export class ListarActoresComponent implements OnInit {
       return;
     }
 
+    this.isUpdating = true;
     const actorActualizado = {
-      nombre: this.nombreTemporal,
-      apellidos: this.apellidosTemporal,
+      nombre: this.nombreTemporal.trim(),
+      apellidos: this.apellidosTemporal.trim(),
       fecha_nacimiento: new Date(this.fechaNacimientoTemporal).toISOString(),
       id_nacionalidad: this.nacionalidadTemporal
     };
 
-    this.actorService.updateActor(this.actorEditando, actorActualizado).subscribe({
-      next: () => {
-        this.alerta.success('Éxito', 'Actor actualizado correctamente');
-        this.cargarActores();
-        this.cancelarEdicion();
-      },
-      error: (err) => {
-        this.alerta.error('Error', 'No se pudo actualizar el actor');
-        console.error(err);
-      }
-    });
+    this.actorService.updateActor(this.actorEditando, actorActualizado)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.alerta.success('Éxito', 'Actor actualizado correctamente');
+          this.cargarActores();
+          this.cancelarEdicion();
+          this.isUpdating = false;
+        },
+        error: (err) => {
+          this.alerta.error('Error', 'No se pudo actualizar el actor');
+          console.error(err);
+          this.isUpdating = false;
+        }
+      });
   }
 
   cancelarEdicion(): void {
@@ -168,18 +210,30 @@ export class ListarActoresComponent implements OnInit {
   }
 
   deleteActor(id: number, nombre: string): void {
-    this.alerta.confirmacion('¿Estás seguro?', `Esta acción eliminará al actor ${nombre} permanentemente`, 'Sí, eliminar', 'Cancelar').then((result: { isConfirmed: boolean }) => {
+    if (this.isDeleting) return; // Prevenir múltiples eliminaciones
+    
+    this.alerta.confirmacion(
+      '¿Estás seguro?', 
+      `Esta acción eliminará al actor ${nombre} permanentemente`, 
+      'Sí, eliminar', 
+      'Cancelar'
+    ).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
-        this.actorService.deleteActor(id).subscribe({
-          next: () => {
-            this.alerta.success('Eliminado', 'El actor ha sido eliminado');
-            this.cargarActores();
-          },
-          error: (err) => {
-            this.alerta.error('Error', 'No se pudo eliminar el actor');
-            console.error(err);
-          }
-        });
+        this.isDeleting = true;
+        this.actorService.deleteActor(id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: () => {
+              this.alerta.success('Eliminado', 'El actor ha sido eliminado');
+              this.cargarActores();
+              this.isDeleting = false;
+            },
+            error: (err) => {
+              this.alerta.error('Error', 'No se pudo eliminar el actor');
+              console.error(err);
+              this.isDeleting = false;
+            }
+          });
       }
     });
   }
@@ -188,5 +242,42 @@ export class ListarActoresComponent implements OnInit {
     if (!idPais) return 'Desconocido';
     const pais = this.paises.find(p => p.id_pais === idPais);
     return pais?.nombre || 'Desconocido';
+  }
+
+  /**
+   * Verifica si hay operaciones de carga en progreso
+   */
+  isLoading(): boolean {
+    return this.isLoadingActores || this.isLoadingPaises;
+  }
+
+  /**
+   * Verifica si hay operaciones de escritura en progreso  
+   */
+  isBusy(): boolean {
+    return this.isSubmitting || this.isDeleting || this.isUpdating;
+  }
+
+  /**
+   * Verifica si se pueden realizar operaciones de edición
+   */
+  canEdit(): boolean {
+    return !this.isLoading() && !this.isBusy();
+  }
+
+  /**
+   * Resetea el formulario y mantiene los valores por defecto
+   */
+  private resetForm(): void {
+    this.formActor.reset({
+      nombre: '',
+      apellidos: '',
+      fecha_nacimiento: '',
+      id_nacionalidad: null
+    });
+    
+    // Marcar el formulario como pristine y untouched
+    this.formActor.markAsPristine();
+    this.formActor.markAsUntouched();
   }
 }

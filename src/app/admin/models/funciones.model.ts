@@ -1,5 +1,5 @@
 export interface Funciones {
-    id_funcion: string;
+    id_funcion: number;
     id_pelicula: number;
     id_sala: number;
     fecha_hora_inicio: Date;

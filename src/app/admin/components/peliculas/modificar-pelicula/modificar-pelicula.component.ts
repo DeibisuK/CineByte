@@ -48,6 +48,12 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   imagenSeleccionada!: File;
   imagenPreview: string = '';
   mostrarModalActor = false;
+  
+  // Estados de carga
+  isLoadingInitialData = true;
+  isLoadingPelicula = true;
+  isSubmitting = false;
+  isUploadingImage = false;
   mostrarModalDistribuidor = false;
 
   peliculaId!: number;
@@ -97,6 +103,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   cargarPelicula() {
+    this.isLoadingPelicula = true;
     this.peliculaService.getPeliculaById(this.peliculaId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -105,12 +112,14 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
           this.cargarDatosRelacionados().then(() => {
             const peliculaEditar = this.peliculaActual as PeliculaEditar;
             this.llenarFormulario(peliculaEditar);
+            this.isLoadingPelicula = false;
           });
         },
         error: (error) => {
           console.error('Error al cargar la película:', error);
           this.alerta.error('Error', 'No se pudo cargar la película');
           this.router.navigate(['/admin/peliculas/list']);
+          this.isLoadingPelicula = false;
         }
       });
   }
@@ -193,11 +202,15 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
+    if (this.isSubmitting) return; // Prevenir múltiples envíos
+    
     if (!this.peliculaForm.valid || this.selectedGenres.length === 0 || this.selectedTags.length === 0 ||
       this.selectedIdiomas.length === 0 || this.selectedActores.length === 0) {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
     }
+
+    this.isSubmitting = true;
 
     const pelicula: Pelicula = {
       id_pelicula: this.peliculaId,
@@ -212,7 +225,9 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
     try {
       // Subir imagen principal si fue modificada
       if (this.imagenSeleccionada) {
+        this.isUploadingImage = true;
         pelicula.imagen = await this.imgbbService.subirImagen(this.imagenSeleccionada);
+        this.isUploadingImage = false;
       }
 
       // Subir solo las imágenes nuevas del carrusel
@@ -233,17 +248,21 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
+            this.isSubmitting = false;
             this.alerta.successRoute("Película actualizada", "La película se actualizó correctamente", "peliculas/list");
           },
           error: (error) => {
             console.error('Error al actualizar película:', error);
             this.alerta.error("Error", "Error al actualizar la película");
+            this.isSubmitting = false;
           }
         });
 
     } catch (error) {
       console.error('Error en onSubmit:', error);
       this.alerta.error("Error", "Error al actualizar la película");
+      this.isSubmitting = false;
+      this.isUploadingImage = false;
     }
   }
 
@@ -332,6 +351,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   cargarDatos() {
+    this.isLoadingInitialData = true;
     forkJoin({
       etiquetas: this.etiquetasService.getEtiquetas(),
       generos: this.generosService.getGeneros(),
@@ -347,10 +367,12 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
         this.distribuidor = data.distribuidor;
         this.actores = data.actores;
         this.idiomas = data.idiomas;
+        this.isLoadingInitialData = false;
       },
       error: (error) => {
         console.error('Error al cargar datos:', error);
         this.alerta.error('Error', 'No se pudieron cargar los datos necesarios');
+        this.isLoadingInitialData = false;
       }
     });
   }

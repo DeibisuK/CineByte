@@ -272,7 +272,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
       }
       
       const formData: Funciones = {
-        id_funcion: '', // El backend lo generará
+        id_funcion: 0, // El backend lo generará
         id_pelicula: this.selectedPeliculaId!,
         id_sala: this.selectedSalaId!,
         fecha_hora_inicio: new Date(this.funcionesForm.value.fecha_hora_inicio),
@@ -282,9 +282,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         trailer_url: this.funcionesForm.value.trailer_url.trim(),
         estado: this.funcionesForm.value.estado
       };
-
-      console.log('Datos a enviar:', formData); // Para debug
-
+      
       this.funcionesService.addFuncion(formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
