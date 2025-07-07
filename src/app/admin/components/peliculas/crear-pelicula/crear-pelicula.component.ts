@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Pelicula } from '../../../models/pelicula.model';
 import { PeliculaService } from '../../../../services/pelicula.service';
 import { GenerosService } from '../../../../services/generos.service';
@@ -24,7 +24,7 @@ import { takeUntil } from 'rxjs/operators';
 @Component({
   selector: 'app-crear-pelicula',
   imports: [ReactiveFormsModule, CommonModule, CrearActorComponent,
-    CrearDistribuidorComponent, RouterModule
+    CrearDistribuidorComponent, RouterModule, FormsModule
   ],
   templateUrl: './crear-pelicula.component.html',
   styleUrl: './crear-pelicula.component.css'
@@ -42,19 +42,34 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   selectedTags: Etiquetas[] = [];
   selectedActores: Actores[] = [];
   selectedIdiomas: Idiomas[] = [];
+  selectedDistribuidor: Distribuidor | null = null;
   clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
   imagenSeleccionada!: File;
   imagenPreview: string = '';
   mostrarModalActor = false;
   mostrarModalDistribuidor = false;
 
+  // Propiedades para los selectores tipo buscador
+  idiomasSearchTerm: string = '';
+  generosSearchTerm: string = '';
+  actoresSearchTerm: string = '';
+  etiquetasSearchTerm: string = '';
+  distribuidorSearchTerm: string = '';
+  
+  filteredIdiomas: Idiomas[] = [];
+  filteredGeneros: Generos[] = [];
+  filteredActores: Actores[] = [];
+  filteredEtiquetas: Etiquetas[] = [];
+  filteredDistribuidores: Distribuidor[] = [];
+  
+  showIdiomasDropdown: boolean = false;
+  showGenerosDropdown: boolean = false;
+  showActoresDropdown: boolean = false;
+  showEtiquetasDropdown: boolean = false;
+  showDistribuidorDropdown: boolean = false;
+
   imagenesAdicionales: { preview: string, file: File }[] = [];
   currentSlideIndex = 0;
-
-  @ViewChild('generosSelect') generosSelect!: ElementRef<HTMLSelectElement>;
-  @ViewChild('etiquetasSelect') etiquetasSelect!: ElementRef<HTMLSelectElement>;
-  @ViewChild('actoresSelect') actoresSelect!: ElementRef<HTMLSelectElement>;
-  @ViewChild('idiomasSelect') idiomasSelect!: ElementRef<HTMLSelectElement>;
 
   abrirModal(tipo: 'actor' | 'distribuidor') {
     if (tipo === 'actor') {
@@ -73,6 +88,224 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     this.cargarDatos();
     this.reset();
   }
+
+  // Métodos de filtrado para los selectores tipo buscador
+  filterIdiomas(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase();
+    
+    // Filtrar idiomas disponibles (no seleccionados)
+    const availableIdiomas = this.idiomas.filter(idioma => 
+      !this.selectedIdiomas.some(selected => selected.id_idioma === idioma.id_idioma)
+    );
+    
+    this.filteredIdiomas = availableIdiomas.filter(idioma =>
+      idioma.nombre.toLowerCase().includes(query)
+    );
+    this.showIdiomasDropdown = true;
+  }
+
+  filterGeneros(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase();
+    
+    // Filtrar géneros disponibles (no seleccionados)
+    const availableGeneros = this.generos.filter(genero => 
+      !this.selectedGenres.some(selected => selected.id_genero === genero.id_genero)
+    );
+    
+    this.filteredGeneros = availableGeneros.filter(genero =>
+      genero.nombre.toLowerCase().includes(query)
+    );
+    this.showGenerosDropdown = true;
+  }
+
+  filterActores(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase();
+    
+    // Filtrar actores disponibles (no seleccionados)
+    const availableActores = this.actores.filter(actor => 
+      !this.selectedActores.some(selected => selected.id_actor === actor.id_actor)
+    );
+    
+    this.filteredActores = availableActores.filter(actor =>
+      actor.nombre.toLowerCase().includes(query) || 
+      actor.apellidos.toLowerCase().includes(query) ||
+      `${actor.nombre} ${actor.apellidos}`.toLowerCase().includes(query)
+    );
+    this.showActoresDropdown = true;
+  }
+
+  filterEtiquetas(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase();
+    
+    // Filtrar etiquetas disponibles (no seleccionadas)
+    const availableEtiquetas = this.etiquetas.filter(etiqueta => 
+      !this.selectedTags.some(selected => selected.id_etiqueta === etiqueta.id_etiqueta)
+    );
+    
+    this.filteredEtiquetas = availableEtiquetas.filter(etiqueta =>
+      etiqueta.nombre.toLowerCase().includes(query)
+    );
+    this.showEtiquetasDropdown = true;
+  }
+
+  filterDistribuidores(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const query = target.value.toLowerCase();
+    
+    // Filtrar distribuidores disponibles (no seleccionados)
+    const availableDistribuidores = this.distribuidor.filter(distribuidor => 
+      (!this.selectedDistribuidor || this.selectedDistribuidor.id_distribuidora !== distribuidor.id_distribuidora)
+    );
+    
+    this.filteredDistribuidores = availableDistribuidores.filter(distribuidor =>
+      distribuidor.nombre.toLowerCase().includes(query)
+    );
+    this.showDistribuidorDropdown = true;
+  }
+
+  // Métodos auxiliares para inicialización de filtros
+  private initializeIdiomasFilter(): void {
+    this.filteredIdiomas = this.idiomas.filter(idioma => 
+      !this.selectedIdiomas.some(selected => selected.id_idioma === idioma.id_idioma)
+    );
+  }
+
+  private initializeGenerosFilter(): void {
+    this.filteredGeneros = this.generos.filter(genero => 
+      !this.selectedGenres.some(selected => selected.id_genero === genero.id_genero)
+    );
+  }
+
+  private initializeActoresFilter(): void {
+    this.filteredActores = this.actores.filter(actor => 
+      !this.selectedActores.some(selected => selected.id_actor === actor.id_actor)
+    );
+  }
+
+  private initializeEtiquetasFilter(): void {
+    this.filteredEtiquetas = this.etiquetas.filter(etiqueta => 
+      !this.selectedTags.some(selected => selected.id_etiqueta === etiqueta.id_etiqueta)
+    );
+  }
+
+  private initializeDistribuidoresFilter(): void {
+    this.filteredDistribuidores = this.distribuidor.filter(distribuidor => 
+      (!this.selectedDistribuidor || this.selectedDistribuidor.id_distribuidora !== distribuidor.id_distribuidora)
+    );
+  }
+
+  // Métodos de selección para los selectores tipo buscador
+  selectIdioma(idioma: Idiomas): void {
+    if (!this.selectedIdiomas.some(selected => selected.id_idioma === idioma.id_idioma)) {
+      this.selectedIdiomas.push(idioma);
+      this.idiomasSearchTerm = '';
+      this.initializeIdiomasFilter();
+    }
+    this.showIdiomasDropdown = false;
+  }
+
+  selectGenero(genero: Generos): void {
+    if (!this.selectedGenres.some(selected => selected.id_genero === genero.id_genero)) {
+      this.selectedGenres.push(genero);
+      this.generosSearchTerm = '';
+      this.initializeGenerosFilter();
+    }
+    this.showGenerosDropdown = false;
+  }
+
+  selectActor(actor: Actores): void {
+    if (!this.selectedActores.some(selected => selected.id_actor === actor.id_actor)) {
+      this.selectedActores.push(actor);
+      this.actoresSearchTerm = '';
+      this.initializeActoresFilter();
+    }
+    this.showActoresDropdown = false;
+  }
+
+  selectEtiqueta(etiqueta: Etiquetas): void {
+    if (!this.selectedTags.some(selected => selected.id_etiqueta === etiqueta.id_etiqueta)) {
+      this.selectedTags.push(etiqueta);
+      this.etiquetasSearchTerm = '';
+      this.initializeEtiquetasFilter();
+    }
+    this.showEtiquetasDropdown = false;
+  }
+
+  // Métodos para dropdowns
+  toggleIdiomasDropdown(): void {
+    this.showIdiomasDropdown = !this.showIdiomasDropdown;
+    if (this.showIdiomasDropdown) {
+      this.initializeIdiomasFilter();
+    }
+  }
+
+  toggleGenerosDropdown(): void {
+    this.showGenerosDropdown = !this.showGenerosDropdown;
+    if (this.showGenerosDropdown) {
+      this.initializeGenerosFilter();
+    }
+  }
+
+  toggleActoresDropdown(): void {
+    this.showActoresDropdown = !this.showActoresDropdown;
+    if (this.showActoresDropdown) {
+      this.initializeActoresFilter();
+    }
+  }
+
+  toggleEtiquetasDropdown(): void {
+    this.showEtiquetasDropdown = !this.showEtiquetasDropdown;
+    if (this.showEtiquetasDropdown) {
+      this.initializeEtiquetasFilter();
+    }
+  }
+
+  toggleDistribuidorDropdown(): void {
+    this.showDistribuidorDropdown = !this.showDistribuidorDropdown;
+    if (this.showDistribuidorDropdown) {
+      this.initializeDistribuidoresFilter();
+    }
+  }
+
+  selectDistribuidor(distribuidor: Distribuidor): void {
+    this.selectedDistribuidor = distribuidor;
+    this.peliculaForm.patchValue({ id_distribuidor: distribuidor.id_distribuidora });
+    this.distribuidorSearchTerm = '';
+    this.initializeDistribuidoresFilter();
+    this.showDistribuidorDropdown = false;
+  }
+
+  removeDistribuidor(): void {
+    this.selectedDistribuidor = null;
+    this.peliculaForm.patchValue({ id_distribuidor: '' });
+    this.distribuidorSearchTerm = '';
+    this.initializeDistribuidoresFilter();
+  }
+  // Métodos de blur para cerrar dropdowns
+  onIdiomasBlur(): void {
+    setTimeout(() => this.showIdiomasDropdown = false, 200);
+  }
+
+  onGenerosBlur(): void {
+    setTimeout(() => this.showGenerosDropdown = false, 200);
+  }
+
+  onActoresBlur(): void {
+    setTimeout(() => this.showActoresDropdown = false, 200);
+  }
+
+  onEtiquetasBlur(): void {
+    setTimeout(() => this.showEtiquetasDropdown = false, 200);
+  }
+
+  onDistribuidorBlur(): void {
+    setTimeout(() => this.showDistribuidorDropdown = false, 200);
+  }
+
   constructor(
     private peliculaService: PeliculaService,
     private generosService: GenerosService,
@@ -91,66 +324,38 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       fecha_estreno: new FormControl('', Validators.required),
       estado: new FormControl('', Validators.required),
       clasificacion: new FormControl('', Validators.required),
-      imagen: new FormControl('', Validators.required),
-      id_distribuidor: new FormControl('', Validators.required)
+      imagen: new FormControl('', Validators.required)
     });
   }
 
   ngOnInit(): void {
     this.cargarDatos();
+    this.initializeFilteredArrays();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  initializeFilteredArrays(): void {
+    this.filteredIdiomas = [...this.idiomas];
+    this.filteredGeneros = [...this.generos];
+    this.filteredActores = [...this.actores];
+    this.filteredEtiquetas = [...this.etiquetas];
+    this.filteredDistribuidores = [...this.distribuidor];
+    
+    // Aplicar filtros iniciales para excluir elementos ya seleccionados
+    this.initializeIdiomasFilter();
+    this.initializeGenerosFilter();
+    this.initializeActoresFilter();
+    this.initializeEtiquetasFilter();
+    this.initializeDistribuidoresFilter();
   }
 
-  addGenre(genre: Generos) {
-    if (genre && !this.selectedGenres.some(a => a.id_genero === genre.id_genero)) {
-      this.selectedGenres.push(genre);
-    }
-    if (this.generosSelect?.nativeElement) {
-      this.generosSelect.nativeElement.value = '';
-    }
-  }
   removeGenre(genre: Generos) {
     this.selectedGenres = this.selectedGenres.filter((g: Generos) => g !== genre);
+    this.initializeGenerosFilter();
   }
 
-  addTag(tag: Etiquetas) {
-    if (tag && !this.selectedTags.some(a => a.id_etiqueta === tag.id_etiqueta)) {
-      this.selectedTags.push(tag);
-    }
-    if (this.etiquetasSelect?.nativeElement) {
-      this.etiquetasSelect.nativeElement.value = '';
-    }
-  }
   removeTag(tag: Etiquetas) {
     this.selectedTags = this.selectedTags.filter((t: Etiquetas) => t !== tag);
-  }
-
-  addActor(actor: Actores) {
-    if (actor && !this.selectedActores.some(a => a.id_actor === actor.id_actor)) {
-      this.selectedActores.push(actor);
-    }
-    if (this.actoresSelect?.nativeElement) {
-      this.actoresSelect.nativeElement.value = '';
-    }
-  }
-  removeActor(actor: Actores) {
-    this.selectedActores = this.selectedActores.filter((a: Actores) => a !== actor);
-  }
-
-  addIdioma(idioma: Idiomas) {
-    if (idioma && !this.selectedIdiomas.some(a => a.id_idioma === idioma.id_idioma)) {
-      this.selectedIdiomas.push(idioma);
-    }
-    if (this.idiomasSelect?.nativeElement) {
-      this.idiomasSelect.nativeElement.value = '';
-    }
-  }
-  removeIdioma(idioma: Idiomas) {
-    this.selectedIdiomas = this.selectedIdiomas.filter((a: Idiomas) => a !== idioma);
+    this.initializeEtiquetasFilter();
   }
 
   async onSubmit() {
@@ -162,7 +367,8 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       this.selectedGenres.length === 0 ||
       this.selectedTags.length === 0 ||
       this.selectedIdiomas.length === 0 ||
-      this.selectedActores.length === 0
+      this.selectedActores.length === 0 ||
+      !this.selectedDistribuidor
     ) {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
@@ -174,7 +380,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       etiquetas: this.selectedTags.map(t => t.id_etiqueta),
       idiomas: this.selectedIdiomas.map(i => i.id_idioma),
       actores: this.selectedActores.map(a => a.id_actor),
-      id_distribuidor: Number(this.peliculaForm.value.id_distribuidor)
+      id_distribuidor: this.selectedDistribuidor.id_distribuidora
     };
 
     try {
@@ -241,6 +447,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
         this.distribuidor = data.distribuidor;
         this.actores = data.actores;
         this.idiomas = data.idiomas;
+        this.initializeFilteredArrays();
       },
       error: (error) => {
         console.error('Error al cargar datos:', error);
@@ -323,6 +530,32 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   canNavigateRight(): boolean {
     const totalSlides = this.getTotalSlides();
     return this.currentSlideIndex < totalSlides - 2; // -2 porque mostramos 2 slides a la vez
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // Métodos de removeItem para quitar elementos seleccionados
+  removeIdioma(idioma: Idiomas): void {
+    this.selectedIdiomas = this.selectedIdiomas.filter(i => i.id_idioma !== idioma.id_idioma);
+    this.initializeIdiomasFilter();
+  }
+
+  removeGenero(genero: Generos): void {
+    this.selectedGenres = this.selectedGenres.filter(g => g.id_genero !== genero.id_genero);
+    this.initializeGenerosFilter();
+  }
+
+  removeActor(actor: Actores): void {
+    this.selectedActores = this.selectedActores.filter(a => a.id_actor !== actor.id_actor);
+    this.initializeActoresFilter();
+  }
+
+  removeEtiqueta(etiqueta: Etiquetas): void {
+    this.selectedTags = this.selectedTags.filter(t => t.id_etiqueta !== etiqueta.id_etiqueta);
+    this.initializeEtiquetasFilter();
   }
 
   // Obtener el offset del carrusel para mostrar los slides correctos
