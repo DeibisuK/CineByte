@@ -1,11 +1,8 @@
 <div class="main-content">
     <div class="content-wrapper">
         <div class="page-header">
-            <button class="btn btn-primary" routerLink="/admin/peliculas/list"
-                style="height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none;">
-                <a class="text-white" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
-                </a>
+            <button class="btn btn-primary back-button" routerLink="/admin/peliculas/list" type="button">
+                <i class="fa-solid fa-arrow-left"></i> Volver
             </button>
             <h2>Agregar Nueva Película</h2>
         </div>
@@ -85,17 +82,27 @@
                         <div class="form-field">
                             <label for="idiomas">Idiomas</label>
                             <div class="search-select-container">
-                <input type="text" 
-                       class="search-input" 
-                       placeholder="Buscar idiomas..."
-                       [(ngModel)]="idiomasSearchTerm"
-                       (input)="filterIdiomas($event)"
-                       (focus)="showIdiomasDropdown = true"
-                       (blur)="onIdiomasBlur()">
+                                <input type="text" 
+                                       id="idiomas-search"
+                                       class="search-input" 
+                                       placeholder="Buscar idiomas..."
+                                       [value]="idiomasSearchTerm"
+                                       (input)="filterIdiomas($event)"
+                                       (focus)="showIdiomasDropdown = true"
+                                       (blur)="onIdiomasBlur()"
+                                       autocomplete="off"
+                                       role="combobox"
+                                       [attr.aria-expanded]="showIdiomasDropdown"
+                                       aria-haspopup="listbox">
                                 <i class="fas fa-chevron-down search-arrow" [class.open]="showIdiomasDropdown"></i>
-                                <div class="search-dropdown" [class.show]="showIdiomasDropdown && filteredIdiomas.length > 0">
+                                <div class="search-dropdown" 
+                                     [class.show]="showIdiomasDropdown && filteredIdiomas.length > 0"
+                                     role="listbox"
+                                     [attr.aria-label]="'Lista de idiomas disponibles'">
                                     <div *ngFor="let idioma of filteredIdiomas" 
                                          class="dropdown-item"
+                                         role="option"
+                                         [attr.aria-selected]="false"
                                          (click)="selectIdioma(idioma)">
                                         {{ idioma.nombre }}
                                     </div>
@@ -110,17 +117,27 @@
                         <div class="form-field">
                             <label for="generos">Géneros</label>
                             <div class="search-select-container">
-                <input type="text" 
-                       class="search-input" 
-                       placeholder="Buscar géneros..."
-                       [(ngModel)]="generosSearchTerm"
-                       (input)="filterGeneros($event)"
-                       (focus)="showGenerosDropdown = true"
-                       (blur)="onGenerosBlur()">
+                                <input type="text" 
+                                       id="generos-search"
+                                       class="search-input" 
+                                       placeholder="Buscar géneros..."
+                                       [value]="generosSearchTerm"
+                                       (input)="filterGeneros($event)"
+                                       (focus)="showGenerosDropdown = true"
+                                       (blur)="onGenerosBlur()"
+                                       autocomplete="off"
+                                       role="combobox"
+                                       [attr.aria-expanded]="showGenerosDropdown"
+                                       aria-haspopup="listbox">
                                 <i class="fas fa-chevron-down search-arrow" [class.open]="showGenerosDropdown"></i>
-                                <div class="search-dropdown" [class.show]="showGenerosDropdown && filteredGeneros.length > 0">
+                                <div class="search-dropdown" 
+                                     [class.show]="showGenerosDropdown && filteredGeneros.length > 0"
+                                     role="listbox"
+                                     [attr.aria-label]="'Lista de géneros disponibles'">
                                     <div *ngFor="let genero of filteredGeneros" 
                                          class="dropdown-item"
+                                         role="option"
+                                         [attr.aria-selected]="false"
                                          (click)="selectGenero(genero)">
                                         {{ genero.nombre }}
                                     </div>
@@ -164,17 +181,27 @@
                         <div class="form-field">
                             <label for="actores">Actores</label>
                             <div class="search-select-container">
-                <input type="text" 
-                       class="search-input" 
-                       placeholder="Buscar actores..."
-                       [(ngModel)]="actoresSearchTerm"
-                       (input)="filterActores($event)"
-                       (focus)="showActoresDropdown = true"
-                       (blur)="onActoresBlur()">
+                                <input type="text" 
+                                       id="actores-search"
+                                       class="search-input" 
+                                       placeholder="Buscar actores..."
+                                       [value]="actoresSearchTerm"
+                                       (input)="filterActores($event)"
+                                       (focus)="showActoresDropdown = true"
+                                       (blur)="onActoresBlur()"
+                                       autocomplete="off"
+                                       role="combobox"
+                                       [attr.aria-expanded]="showActoresDropdown"
+                                       aria-haspopup="listbox">
                                 <i class="fas fa-chevron-down search-arrow" [class.open]="showActoresDropdown"></i>
-                                <div class="search-dropdown" [class.show]="showActoresDropdown && filteredActores.length > 0">
+                                <div class="search-dropdown" 
+                                     [class.show]="showActoresDropdown && filteredActores.length > 0"
+                                     role="listbox"
+                                     [attr.aria-label]="'Lista de actores disponibles'">
                                     <div *ngFor="let actor of filteredActores" 
                                          class="dropdown-item"
+                                         role="option"
+                                         [attr.aria-selected]="false"
                                          (click)="selectActor(actor)">
                                         {{ actor.nombre }} {{ actor.apellidos }}
                                     </div>
@@ -192,17 +219,27 @@
                         <div class="form-field">
                             <label for="etiquetas">Etiquetas</label>
                             <div class="search-select-container">
-                <input type="text" 
-                       class="search-input" 
-                       placeholder="Buscar etiquetas..."
-                       [(ngModel)]="etiquetasSearchTerm"
-                       (input)="filterEtiquetas($event)"
-                       (focus)="showEtiquetasDropdown = true"
-                       (blur)="onEtiquetasBlur()">
+                                <input type="text" 
+                                       id="etiquetas-search"
+                                       class="search-input" 
+                                       placeholder="Buscar etiquetas..."
+                                       [value]="etiquetasSearchTerm"
+                                       (input)="filterEtiquetas($event)"
+                                       (focus)="showEtiquetasDropdown = true"
+                                       (blur)="onEtiquetasBlur()"
+                                       autocomplete="off"
+                                       role="combobox"
+                                       [attr.aria-expanded]="showEtiquetasDropdown"
+                                       aria-haspopup="listbox">
                                 <i class="fas fa-chevron-down search-arrow" [class.open]="showEtiquetasDropdown"></i>
-                                <div class="search-dropdown" [class.show]="showEtiquetasDropdown && filteredEtiquetas.length > 0">
+                                <div class="search-dropdown" 
+                                     [class.show]="showEtiquetasDropdown && filteredEtiquetas.length > 0"
+                                     role="listbox"
+                                     [attr.aria-label]="'Lista de etiquetas disponibles'">
                                     <div *ngFor="let etiqueta of filteredEtiquetas" 
                                          class="dropdown-item"
+                                         role="option"
+                                         [attr.aria-selected]="false"
                                          (click)="selectEtiqueta(etiqueta)">
                                         {{ etiqueta.nombre }}
                                     </div>
@@ -248,16 +285,26 @@
                             <label for="id_distribuidor">Distribuidor</label>
                             <div class="search-select-container">
                                 <input type="text" 
+                                       id="distribuidor-search"
                                        class="search-input" 
                                        placeholder="Buscar distribuidor..."
-                                       [(ngModel)]="distribuidorSearchTerm"
+                                       [value]="distribuidorSearchTerm"
                                        (input)="filterDistribuidores($event)"
                                        (focus)="showDistribuidorDropdown = true"
-                                       (blur)="onDistribuidorBlur()">
+                                       (blur)="onDistribuidorBlur()"
+                                       autocomplete="off"
+                                       role="combobox"
+                                       [attr.aria-expanded]="showDistribuidorDropdown"
+                                       aria-haspopup="listbox">
                                 <i class="fas fa-chevron-down search-arrow" [class.open]="showDistribuidorDropdown"></i>
-                                <div class="search-dropdown" [class.show]="showDistribuidorDropdown && filteredDistribuidores.length > 0">
+                                <div class="search-dropdown" 
+                                     [class.show]="showDistribuidorDropdown && filteredDistribuidores.length > 0"
+                                     role="listbox"
+                                     [attr.aria-label]="'Lista de distribuidores disponibles'">
                                     <div *ngFor="let distri of filteredDistribuidores" 
                                          class="dropdown-item"
+                                         role="option"
+                                         [attr.aria-selected]="false"
                                          (click)="selectDistribuidor(distri)">
                                         {{ distri.nombre }}
                                     </div>
@@ -270,7 +317,7 @@
                                     <i class="fa-solid fa-plus"></i> Nuevo Distribuidor
                                 </button>
                             </div>
-                            <div class="selected-distribuidor" *ngIf="selectedDistribuidor" style="margin-top: 10px;">
+                            <div class="selected-distribuidor" *ngIf="selectedDistribuidor">
                                 <span class="selected-tag">
                                     {{ selectedDistribuidor.nombre }}
                                     <button type="button" class="remove-tag" (click)="removeDistribuidor()">×</button>
@@ -331,8 +378,16 @@
 
                 </div>
                 <div class="submit-section">
-                    <button type="submit" class="submit-btn">
+                    <button type="submit" 
+                            class="submit-btn"
+                            [disabled]="!canSubmit()"
+                            [class.disabled]="!canSubmit()">
                         Crear Película
+                    </button>
+                    <button type="button" 
+                            class="clear-btn"
+                            (click)="clearForm()">
+                        Limpiar Formulario
                     </button>
                 </div>
             </form>

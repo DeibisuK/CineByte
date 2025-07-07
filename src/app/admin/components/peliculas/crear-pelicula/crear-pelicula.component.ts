@@ -93,6 +93,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   filterIdiomas(event: Event): void {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
+    this.idiomasSearchTerm = target.value;
     
     // Filtrar idiomas disponibles (no seleccionados)
     const availableIdiomas = this.idiomas.filter(idioma => 
@@ -108,6 +109,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   filterGeneros(event: Event): void {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
+    this.generosSearchTerm = target.value;
     
     // Filtrar géneros disponibles (no seleccionados)
     const availableGeneros = this.generos.filter(genero => 
@@ -123,6 +125,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   filterActores(event: Event): void {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
+    this.actoresSearchTerm = target.value;
     
     // Filtrar actores disponibles (no seleccionados)
     const availableActores = this.actores.filter(actor => 
@@ -140,6 +143,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   filterEtiquetas(event: Event): void {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
+    this.etiquetasSearchTerm = target.value;
     
     // Filtrar etiquetas disponibles (no seleccionadas)
     const availableEtiquetas = this.etiquetas.filter(etiqueta => 
@@ -155,6 +159,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   filterDistribuidores(event: Event): void {
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
+    this.distribuidorSearchTerm = target.value;
     
     // Filtrar distribuidores disponibles (no seleccionados)
     const availableDistribuidores = this.distribuidor.filter(distribuidor => 
@@ -320,11 +325,12 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     this.peliculaForm = new FormGroup({
       titulo: new FormControl('', Validators.required),
       descripcion: new FormControl('', Validators.required),
-      duracion_minutos: new FormControl('', Validators.required),
+      duracion_minutos: new FormControl('', [Validators.required, Validators.min(1)]),
       fecha_estreno: new FormControl('', Validators.required),
       estado: new FormControl('', Validators.required),
       clasificacion: new FormControl('', Validators.required),
-      imagen: new FormControl('', Validators.required)
+      imagen: new FormControl('', Validators.required),
+      id_distribuidor: new FormControl('', Validators.required)
     });
   }
 
@@ -348,21 +354,23 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     this.initializeDistribuidoresFilter();
   }
 
-  removeGenre(genre: Generos) {
+  removeGenre(genre: Generos): void {
     this.selectedGenres = this.selectedGenres.filter((g: Generos) => g !== genre);
     this.initializeGenerosFilter();
   }
 
-  removeTag(tag: Etiquetas) {
+  removeTag(tag: Etiquetas): void {
     this.selectedTags = this.selectedTags.filter((t: Etiquetas) => t !== tag);
     this.initializeEtiquetasFilter();
   }
 
-  async onSubmit() {
-   if (!this.peliculaForm.valid) {
-      this.alerta.error("Formulario Inválido", "Rellene todos los campos");
+  async onSubmit(): Promise<void> {
+    if (!this.peliculaForm.valid) {
+      this.peliculaForm.markAllAsTouched();
+      this.alerta.error("Formulario Inválido", "Por favor complete todos los campos obligatorios");
       return;
     }
+    
     if (
       this.selectedGenres.length === 0 ||
       this.selectedTags.length === 0 ||
@@ -370,7 +378,12 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       this.selectedActores.length === 0 ||
       !this.selectedDistribuidor
     ) {
-      this.alerta.error("Formulario Inválido", "Rellene todos los campos");
+      this.alerta.error("Formulario Inválido", "Por favor seleccione al menos un elemento de cada categoría");
+      return;
+    }
+
+    if (!this.imagenSeleccionada) {
+      this.alerta.error("Imagen requerida", "Por favor seleccione una imagen principal");
       return;
     }
 
@@ -386,6 +399,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     try {
       const file = this.imagenSeleccionada;
       pelicula.imagen = await this.imgbbService.subirImagen(file);
+      
       // Subir imágenes adicionales si existen
       if (this.imagenesAdicionales.length > 0) {
         const urlsImagenesAdicionales: { url: string }[] = await Promise.all(
@@ -398,40 +412,54 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
         pelicula.img_carrusel = [];
       }
 
-    this.peliculaService.addPelicula(pelicula)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: () => {
-          this.alerta.successRoute("Película creada", "La película se guardó correctamente", "peliculas/list");
-        },
-        error: (error) => {
-          console.error('Error al guardar película:', error);
-          this.alerta.error("Error", "Error al guardar la película");
-        }
-      });
+      this.peliculaService.addPelicula(pelicula)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.alerta.successRoute("Película creada", "La película se guardó correctamente", "peliculas/list");
+          },
+          error: (error) => {
+            console.error('Error al guardar película:', error);
+            this.alerta.error("Error", "Error al guardar la película");
+          }
+        });
 
     } catch (error) {
       console.error('Error en onSubmit:', error);
-      this.alerta.error("Error", "Error al guardar la película");
+      this.alerta.error("Error", "Error al procesar las imágenes");
     }
   }
 
-  onImageSelected(event: Event) {
+  onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
+      
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        this.alerta.error("Archivo inválido", "Por favor seleccione una imagen válida");
+        return;
+      }
+      
+      // Validar tamaño (5MB máximo)
+      const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+      if (file.size > maxSize) {
+        this.alerta.error("Archivo muy grande", "La imagen debe ser menor a 5MB");
+        return;
+      }
+      
       this.imagenSeleccionada = file;
-      this.peliculaForm.get('imagen')?.setValue(file.name); // O file si necesitas el archivo completo
+      this.peliculaForm.get('imagen')?.setValue(file.name);
       this.peliculaForm.get('imagen')?.markAsTouched();
-      // Opcional: mostrar preview local
+      
+      // Mostrar preview local
       const reader = new FileReader();
       reader.onload = () => this.imagenPreview = reader.result as string;
       reader.readAsDataURL(file);
-
     }
   }
 
-  cargarDatos() {
+  cargarDatos(): void {
     forkJoin({
       etiquetas: this.etiquetasService.getEtiquetas(),
       generos: this.generosService.getGeneros(),
@@ -456,13 +484,23 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     });
   }
 
-  reset() {
+  reset(): void {
     this.peliculaForm.patchValue({
       etiquetas: '',
       generos: '',
       idiomas: '',
       actores: '',
     });
+    
+    // Limpiar arrays de selección
+    this.selectedIdiomas = [];
+    this.selectedGenres = [];
+    this.selectedActores = [];
+    this.selectedTags = [];
+    this.selectedDistribuidor = null;
+    
+    // Reinicializar filtros
+    this.initializeFilteredArrays();
   }
 
   onAdicionalImageSelected(event: Event): void {
@@ -470,18 +508,33 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (input.files && input.files[0] && this.imagenesAdicionales.length < 5) {
       const file = input.files[0];
 
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const nuevaImagen = {
-          preview: e.target.result,
-          file: file
-        };
-        this.imagenesAdicionales.push(nuevaImagen);
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        this.alerta.error("Archivo inválido", "Por favor seleccione una imagen válida");
+        return;
+      }
+      
+      // Validar tamaño (5MB máximo)
+      const maxSize = 5 * 1024 * 1024; // 5MB en bytes
+      if (file.size > maxSize) {
+        this.alerta.error("Archivo muy grande", "La imagen debe ser menor a 5MB");
+        return;
+      }
 
-        // Ajustar el índice del carrusel si es necesario
-        const totalSlides = this.getTotalSlides();
-        if (this.currentSlideIndex > totalSlides - 2) {
-          this.currentSlideIndex = Math.max(0, totalSlides - 2);
+      const reader = new FileReader();
+      reader.onload = (e: ProgressEvent<FileReader>) => {
+        if (e.target?.result) {
+          const nuevaImagen = {
+            preview: e.target.result as string,
+            file: file
+          };
+          this.imagenesAdicionales.push(nuevaImagen);
+
+          // Ajustar el índice del carrusel si es necesario
+          const totalSlides = this.getTotalSlides();
+          if (this.currentSlideIndex > totalSlides - 2) {
+            this.currentSlideIndex = Math.max(0, totalSlides - 2);
+          }
         }
       };
       reader.readAsDataURL(file);
@@ -543,11 +596,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     this.initializeIdiomasFilter();
   }
 
-  removeGenero(genero: Generos): void {
-    this.selectedGenres = this.selectedGenres.filter(g => g.id_genero !== genero.id_genero);
-    this.initializeGenerosFilter();
-  }
-
   removeActor(actor: Actores): void {
     this.selectedActores = this.selectedActores.filter(a => a.id_actor !== actor.id_actor);
     this.initializeActoresFilter();
@@ -556,6 +604,48 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   removeEtiqueta(etiqueta: Etiquetas): void {
     this.selectedTags = this.selectedTags.filter(t => t.id_etiqueta !== etiqueta.id_etiqueta);
     this.initializeEtiquetasFilter();
+  }
+
+  // Método para limpiar completamente el formulario
+  clearForm(): void {
+    this.peliculaForm.reset();
+    this.selectedIdiomas = [];
+    this.selectedGenres = [];
+    this.selectedActores = [];
+    this.selectedTags = [];
+    this.selectedDistribuidor = null;
+    this.imagenSeleccionada = null as any;
+    this.imagenPreview = '';
+    this.imagenesAdicionales = [];
+    this.currentSlideIndex = 0;
+    
+    // Limpiar términos de búsqueda
+    this.idiomasSearchTerm = '';
+    this.generosSearchTerm = '';
+    this.actoresSearchTerm = '';
+    this.etiquetasSearchTerm = '';
+    this.distribuidorSearchTerm = '';
+    
+    // Cerrar dropdowns
+    this.showIdiomasDropdown = false;
+    this.showGenerosDropdown = false;
+    this.showActoresDropdown = false;
+    this.showEtiquetasDropdown = false;
+    this.showDistribuidorDropdown = false;
+    
+    // Reinicializar filtros
+    this.initializeFilteredArrays();
+  }
+
+  // Método para validar si el formulario puede ser enviado
+  canSubmit(): boolean {
+    return this.peliculaForm.valid && 
+           this.selectedGenres.length > 0 &&
+           this.selectedTags.length > 0 &&
+           this.selectedIdiomas.length > 0 &&
+           this.selectedActores.length > 0 &&
+           this.selectedDistribuidor !== null &&
+           this.imagenSeleccionada !== null;
   }
 
   // Obtener el offset del carrusel para mostrar los slides correctos
