@@ -20,6 +20,7 @@ import { CrearActorComponent } from "../../actores/crear-actor/crear-actor.compo
 import { CrearDistribuidorComponent } from '../../distribuidor/crear-distribuidor/crear-distribuidor.component';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-crear-pelicula',
@@ -196,6 +197,17 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Mostrar SweetAlert de carga para subida de imágenes
+    Swal.fire({
+      title: 'Subiendo imágenes...',
+      text: 'Por favor espera mientras se suben las imágenes',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     const pelicula: Pelicula = {
       ...this.peliculaForm.value,
       generos: this.selectedGenres.map(g => g.id_genero),
@@ -208,6 +220,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     try {
       const file = this.imagenSeleccionada;
       pelicula.imagen = await this.imgbbService.subirImagen(file);
+      
       // Subir imágenes adicionales si existen
       if (this.imagenesAdicionales.length > 0) {
         const urlsImagenesAdicionales: { url: string }[] = await Promise.all(
@@ -219,6 +232,9 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
       } else {
         pelicula.img_carrusel = [];
       }
+
+      // Cerrar el SweetAlert de carga
+      Swal.close();
 
       this.peliculaService.addPelicula(pelicula)
         .pipe(takeUntil(this.destroy$))
@@ -234,6 +250,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
 
     } catch (error) {
       console.error('Error en onSubmit:', error);
+      Swal.close(); // Cerrar SweetAlert en caso de error
       this.alerta.error("Error", "Error al guardar la película");
     }
   }

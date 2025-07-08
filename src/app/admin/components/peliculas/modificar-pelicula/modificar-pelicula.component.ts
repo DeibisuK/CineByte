@@ -20,6 +20,7 @@ import { CrearActorComponent } from "../../actores/crear-actor/crear-actor.compo
 import { CrearDistribuidorComponent } from '../../distribuidor/crear-distribuidor/crear-distribuidor.component';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-modificar-pelicula',
@@ -240,6 +241,17 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
 
     this.isSubmitting = true;
 
+    // Mostrar SweetAlert de carga para guardado de cambios
+    Swal.fire({
+      title: 'Guardando cambios...',
+      text: 'Por favor espera mientras se guardan los cambios',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     const pelicula: Pelicula = {
       id_pelicula: this.peliculaId,
       ...this.peliculaForm.value,
@@ -277,20 +289,23 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
         .subscribe({
           next: () => {
             this.isSubmitting = false;
+            Swal.close(); // Cerrar SweetAlert antes de mostrar el mensaje de éxito
             this.alerta.successRoute("Película actualizada", "La película se actualizó correctamente", "peliculas/list");
           },
           error: (error) => {
             console.error('Error al actualizar película:', error);
-            this.alerta.error("Error", "Error al actualizar la película");
             this.isSubmitting = false;
+            Swal.close(); // Cerrar SweetAlert en caso de error
+            this.alerta.error("Error", "Error al actualizar la película");
           }
         });
 
     } catch (error) {
       console.error('Error en onSubmit:', error);
-      this.alerta.error("Error", "Error al actualizar la película");
       this.isSubmitting = false;
       this.isUploadingImage = false;
+      Swal.close(); // Cerrar SweetAlert en caso de error
+      this.alerta.error("Error", "Error al actualizar la película");
     }
   }
 

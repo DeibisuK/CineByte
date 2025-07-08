@@ -1,10 +1,39 @@
 <div class="main-content">
     <div class="content-wrapper">
-        <div class="page-header">
-            <h1>Catálogo de Películas</h1>
-            <div class="header-actions">
-                <div class="search-container">
+        <!-- Header con título y estadísticas -->
+        <div class="header-container">
+            <div class="header-content">
+                <h1 class="page-title">Catálogo de Películas</h1>
+                <div class="stats-container">
+                    <div class="stat-item">
+                        <div class="stat-number">{{totalPeliculas()}}</div>
+                        <div class="stat-label">películas</div>
+                    </div>
                 </div>
+            </div>
+            
+            <!-- Barra de búsqueda y botón agregar -->
+            <div class="search-actions-row">
+                <div class="search-bar">
+                    <svg class="search-icon" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                    </svg>
+                    <input type="text" 
+                           class="search-input" 
+                           placeholder="Buscar por título..." 
+                           [(ngModel)]="filtroPelicula"
+                           (input)="onSearchChange()" />
+                    <button type="button" 
+                            class="clear-search-btn" 
+                            *ngIf="filtroPelicula" 
+                            (click)="limpiarBusqueda()"
+                            title="Limpiar búsqueda">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+                
                 <button routerLink="/admin/peliculas/add" class="add-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                         <path
@@ -23,9 +52,17 @@
             </div>
         </div>
 
+        <!-- Searching State -->
+        <div *ngIf="isSearching && !isLoadingPeliculas" class="loading-container">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Buscando películas...</p>
+            </div>
+        </div>
+
         <!-- Content -->
-        <div *ngIf="!isLoadingPeliculas" class="movie-grid">
-            <div *ngFor="let pelicula of peliculas" class="movie-card fade-in">
+        <div *ngIf="!isLoadingPeliculas && !isSearching" class="movie-grid">
+            <div *ngFor="let pelicula of peliculasFiltradas" class="movie-card fade-in">
                 <div class="movie-content">
                     <div class="movie-image-container">
                         <img src="{{pelicula.imagen}}" alt="Poster de Avatar">
@@ -113,16 +150,16 @@
         </div>
 
         <!-- Empty State -->
-        <div *ngIf="!isLoadingPeliculas && peliculas.length === 0" class="empty-state" id="empty-state">
+        <div *ngIf="!isLoadingPeliculas && !isSearching && peliculasFiltradas.length === 0" class="empty-state" id="empty-state">
             <div class="icon-circle">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 3v12a2 2 0 002 2h8a2 2 0 002-2V7M9 7h6M9 11h6m-3 4h3" />
                 </svg>
             </div>
-            <h3>No hay películas disponibles</h3>
-            <p>Comienza agregando tu primera película al catálogo</p>
-            <button class="add-btn">
+            <h3>{{ filtroPelicula ? 'No hubieron coincidencias' : 'No hay películas disponibles' }}</h3>
+            <p>{{ filtroPelicula ? 'Intenta con otros términos en el título' : 'Comienza agregando tu primera película al catálogo' }}</p>
+            <button *ngIf="!filtroPelicula" class="add-btn" routerLink="/admin/peliculas/add">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path
                         d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />

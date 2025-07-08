@@ -4,22 +4,29 @@ import { Pelicula } from '../../../models/pelicula.model';
 import { PeliculaService } from '../../../../services/pelicula.service';
 import { RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-listar-pelicula',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './listar-pelicula.component.html',
   styleUrl: './listar-pelicula.component.css',
 })
 export class ListarPeliculaComponent implements OnInit, OnDestroy {
   peliculas: Pelicula[] = [];
+  peliculasFiltradas: Pelicula[] = [];
   private destroy$ = new Subject<void>();
+  private searchSubject = new Subject<string>();
   
   // Estados de carga
   isLoadingPeliculas = true;
   isDeleting = false;
+  isSearching = false;
+  
+  // Búsqueda
+  filtroPelicula: string = '';
 
   constructor(
     private peliculaService: PeliculaService
@@ -27,11 +34,24 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.obtenerPeliculas();
+    this.setupSearch();
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  setupSearch(): void {
+    this.searchSubject
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(() => {
+        this.aplicarFiltro();
+      });
   }
 
   obtenerPeliculas(): void {
@@ -41,6 +61,7 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           this.peliculas = data.sort((a: Pelicula, b: Pelicula) => a.id_pelicula - b.id_pelicula);
+          this.aplicarFiltro(); // Inicializa la lista filtrada
           this.isLoadingPeliculas = false;
         },
         error: (error) => {
@@ -104,5 +125,34 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
    */
   toStringArray(arr: number[] | string[]): string[] {
     return arr.map(x => x.toString());
+  }
+
+  // Métodos de búsqueda
+  onSearchChange(): void {
+    this.isSearching = true;
+    this.searchSubject.next(this.filtroPelicula);
+  }
+
+  aplicarFiltro(): void {
+    const termino = this.filtroPelicula.toLowerCase().trim();
+    
+    if (termino === '') {
+      this.peliculasFiltradas = [...this.peliculas];
+    } else {
+      this.peliculasFiltradas = this.peliculas.filter(pelicula =>
+        pelicula.titulo.toLowerCase().includes(termino)
+      );
+    }
+    
+    this.isSearching = false;
+  }
+
+  limpiarBusqueda(): void {
+    this.filtroPelicula = '';
+    this.aplicarFiltro();
+  }
+
+  totalPeliculas(): number {
+    return this.peliculas.length;
   }
 }
