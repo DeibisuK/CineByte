@@ -1,7 +1,9 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ExportService } from '../../../services/export.service';
+import { ExportarService } from '../../../services/export.service';
+import Swal from 'sweetalert2';
+
 
 interface ExportCategory {
   id: string;
@@ -175,7 +177,7 @@ export class ExportarComponent {
 
   filteredCategories: ExportCategory[] = [...this.allCategories];
 
-  constructor(private exportService: ExportService) {}
+  constructor(private exportService: ExportarService) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -216,33 +218,99 @@ export class ExportarComponent {
   downloadFile(category: string, option: string, format: 'pdf' | 'excel'): void {
     console.log(`Downloading ${category} - ${option} as ${format}`);
     
-    // Close menu after download
+    // Close menu after selection
     this.activeMenu = null;
     
-    try {
-      // Call the export service with the appropriate parameters
-      // Using 'any' to bypass TypeScript checking temporarily
-      const service = this.exportService as any;
-      
-      if (service.exportFile && typeof service.exportFile === 'function') {
-        service.exportFile(category, option, format);
-      } else {
-        // Fallback to original methods
-        if (format === 'pdf') {
-          this.exportService.exportPDF();
-        } else {
-          this.exportService.exportExcel();
+    // Show SweetAlert2 confirmation with custom theme
+    Swal.fire({
+      title: 'Generar Reporte',
+      html: `
+        <div style="text-align: left; margin: 20px 0;">
+          <p><strong>Categoría:</strong> ${category}</p>
+          <p><strong>Tipo de reporte:</strong> ${option}</p>
+          <p><strong>Formato:</strong> ${format.toUpperCase()}</p>
+        </div>
+        <p style="color: #666; font-size: 14px;">¿Deseas continuar con la generación?</p>
+      `,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#FFA726', // Naranja del proyecto
+      cancelButtonColor: '#6B7280',  // Gris
+      confirmButtonText: `Generar ${format.toUpperCase()}`,
+      cancelButtonText: 'Cancelar',
+      backdrop: true,
+      customClass: {
+        popup: 'cinebyte-swal-popup',
+        title: 'cinebyte-swal-title',
+        htmlContainer: 'cinebyte-swal-content',
+        confirmButton: 'cinebyte-swal-confirm',
+        cancelButton: 'cinebyte-swal-cancel'
+      },
+      background: '#FFFFFF',
+      color: '#2D3748'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show loading alert
+        Swal.fire({
+          title: 'Generando reporte...',
+          html: `
+            <div style="text-align: center; margin: 20px 0;">
+              <div class="loading-spinner" style="
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #FFA726;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 2s linear infinite;
+                margin: 0 auto 15px;
+              "></div>
+              <p style="color: #666;">Preparando tu archivo ${format.toUpperCase()}...</p>
+            </div>
+            <style>
+              @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+              }
+            </style>
+          `,
+          allowEscapeKey: false,
+          allowOutsideClick: false,
+          showConfirmButton: false,
+          customClass: {
+            popup: 'cinebyte-swal-popup'
+          },
+          background: '#FFFFFF',
+          color: '#2D3748'
+        });
+        
+        try {
+          // Call the export service
+          this.exportService.exportFile(category, option, format);
+          
+          // Success will be handled by the service, just close loading after delay
+          setTimeout(() => {
+            if (Swal.isVisible()) {
+              Swal.close();
+            }
+          }, 2000);
+          
+        } catch (error) {
+          console.error('Error al generar el archivo:', error);
+          Swal.fire({
+            title: '❌ Error',
+            text: `No se pudo generar el archivo de ${option} de ${category}`,
+            icon: 'error',
+            confirmButtonColor: '#FFA726',
+            customClass: {
+              popup: 'cinebyte-swal-popup',
+              confirmButton: 'cinebyte-swal-confirm'
+            },
+            background: '#FFFFFF',
+            color: '#2D3748'
+          });
         }
       }
-      
-      // Show success message
-      const message = `✅ Generando ${option} de ${category} en formato ${format.toUpperCase()}`;
-      console.log(message);
-      
-    } catch (error) {
-      console.error('Error al generar el archivo:', error);
-      alert(`❌ Error al generar el archivo de ${option} de ${category}`);
-    }
+    });
   }
 
   clearSearch(): void {

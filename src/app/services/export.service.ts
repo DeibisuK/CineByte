@@ -1,289 +1,284 @@
 import { Injectable } from '@angular/core';
-import jsPDF from 'jspdf';
-import * as XLSX from 'xlsx';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
 
-interface SedeData {
-  id: number;
-  nombre: string;
-  direccion: string;
-  ciudad: string;
-  telefono: string;
-  email: string;
-  capacidadTotal: number;
-  numeroSalas: number;
-  estado: string;
-  fechaApertura: string;
+interface ExportRequest {
+  category: string;
+  reportType: string;
+  format: 'pdf' | 'excel';
+}
+
+interface ExportResponse {
+  data: Blob;
+  filename: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class ExportService {
+export class ExportarService {
+  //private apiURL = 'https://api-cinebyte.onrender.com/api';
+  private apiURL = 'http://localhost:3000/api';
 
-  constructor() {}
+  constructor(private http: HttpClient) { }
 
-  // Datos de ejemplo para sedes
-  private sedesData: SedeData[] = [
-    {
-      id: 1,
-      nombre: "CineByte Plaza Central",
-      direccion: "Av. Principal 123",
-      ciudad: "Santiago",
-      telefono: "+56 2 2234 5678",
-      email: "plazacentral@cinebyte.cl",
-      capacidadTotal: 1250,
-      numeroSalas: 8,
-      estado: "Activa",
-      fechaApertura: "2020-03-15"
-    },
-    {
-      id: 2,
-      nombre: "CineByte Mall Norte",
-      direccion: "Mall Norte, Local 201",
-      ciudad: "Santiago",
-      telefono: "+56 2 2345 6789",
-      email: "mallnorte@cinebyte.cl",
-      capacidadTotal: 980,
-      numeroSalas: 6,
-      estado: "Activa",
-      fechaApertura: "2019-11-22"
-    },
-    {
-      id: 3,
-      nombre: "CineByte Valparaíso",
-      direccion: "Calle Errázuriz 456",
-      ciudad: "Valparaíso",
-      telefono: "+56 32 2456 7890",
-      email: "valparaiso@cinebyte.cl",
-      capacidadTotal: 750,
-      numeroSalas: 5,
-      estado: "Activa",
-      fechaApertura: "2021-07-10"
-    },
-    {
-      id: 4,
-      nombre: "CineByte Concepción",
-      direccion: "Plaza Independencia 789",
-      ciudad: "Concepción",
-      telefono: "+56 41 2567 8901",
-      email: "concepcion@cinebyte.cl",
-      capacidadTotal: 1100,
-      numeroSalas: 7,
-      estado: "Activa",
-      fechaApertura: "2022-01-05"
-    },
-    {
-      id: 5,
-      nombre: "CineByte La Serena",
-      direccion: "Av. Francisco de Aguirre 321",
-      ciudad: "La Serena",
-      telefono: "+56 51 2678 9012",
-      email: "laserena@cinebyte.cl",
-      capacidadTotal: 600,
-      numeroSalas: 4,
-      estado: "En Mantenimiento",
-      fechaApertura: "2023-05-18"
-    }
-  ];
+  /**
+   * Exporta datos según la categoría, tipo de reporte y formato especificados
+   */
+  exportFile(category: string, reportType: string, format: 'pdf' | 'excel'): void {
+    const exportRequest: ExportRequest = {
+      category,
+      reportType,
+      format
+    };
 
-  exportFile(category: string, option: string, format: 'pdf' | 'excel'): void {
-    if (format === 'pdf') {
-      this.exportCustomPDF(category, option);
-    } else {
-      this.exportCustomExcel(category, option);
-    }
-  }
+    // Configurar headers para recibir blob
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
 
-  private exportCustomPDF(category: string, option: string): void {
-    const doc = new jsPDF();
-    
-    // Configuración de colores de CineByte
-    const primaryColor = [247, 218, 0]; // Amarillo CineByte
-    const darkColor = [40, 40, 40];
-    const grayColor = [100, 100, 100];
-    
-    // Header con logo y título
-    this.addPDFHeader(doc, primaryColor, darkColor);
-    
-    // Título del reporte
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-    doc.text(`${category} - ${option}`, 20, 60);
-    
-    // Fecha de generación
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    const today = new Date().toLocaleDateString('es-ES');
-    doc.text(`Fecha de generación: ${today}`, 20, 70);
-    
-    // Contenido específico según la categoría y opción
-    if (category === 'Sedes' && option === 'Listado completo') {
-      this.addSedesListadoCompleto(doc, darkColor, grayColor);
-    } else {
-      // Contenido genérico para otras opciones
-      this.addGenericContent(doc, category, option, darkColor, grayColor);
-    }
-    
-    // Footer
-    this.addPDFFooter(doc, grayColor);
-    
-    // Guardar archivo
-    const fileName = `CineByte_${category}_${option.replace(/\s+/g, '_')}_${today.replace(/\//g, '-')}.pdf`;
-    doc.save(fileName);
-  }
+    // Realizar petición con responseType 'blob'
+    this.http.post(`${this.apiURL}/export/`, exportRequest, {
+      headers,
+      responseType: 'blob',
+      observe: 'response'
+    }).subscribe({
+      next: (response) => {
+        // Extraer el nombre del archivo del header Content-Disposition si está disponible
+        const contentDisposition = response.headers.get('Content-Disposition');
+        let filename = `${category}_${reportType.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}`;
+        
+        if (contentDisposition) {
+          const matches = contentDisposition.match(/filename="(.+)"/);
+          if (matches && matches[1]) {
+            filename = matches[1];
+          }
+        } else {
+          // Agregar extensión si no está en el nombre
+          filename += format === 'pdf' ? '.pdf' : '.xlsx';
+        }
 
-  private addPDFHeader(doc: jsPDF, primaryColor: number[], darkColor: number[]): void {
-    // Fondo amarillo para el header
-    doc.setFillColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    // Título principal
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(24);
-    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-    doc.text('CINEBYTE', 20, 25);
-    
-    // Subtítulo
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.text('Sistema de Gestión Cinematográfica', 20, 35);
-  }
-
-  private addSedesListadoCompleto(doc: jsPDF, darkColor: number[], grayColor: number[]): void {
-    let yPosition = 90;
-    
-    // Estadísticas generales
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-    doc.text('Resumen General', 20, yPosition);
-    
-    yPosition += 15;
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-    
-    const totalSedes = this.sedesData.length;
-    const totalSalas = this.sedesData.reduce((sum, sede) => sum + sede.numeroSalas, 0);
-    const totalCapacidad = this.sedesData.reduce((sum, sede) => sum + sede.capacidadTotal, 0);
-    const sedesActivas = this.sedesData.filter(sede => sede.estado === 'Activa').length;
-    
-    doc.text(`• Total de sedes: ${totalSedes}`, 20, yPosition);
-    doc.text(`• Sedes activas: ${sedesActivas}`, 20, yPosition + 10);
-    doc.text(`• Total de salas: ${totalSalas}`, 20, yPosition + 20);
-    doc.text(`• Capacidad total: ${totalCapacidad.toLocaleString()} espectadores`, 20, yPosition + 30);
-    
-    yPosition += 50;
-    
-    // Lista detallada de sedes
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-    doc.text('Listado Detallado de Sedes', 20, yPosition);
-    
-    yPosition += 20;
-    
-    this.sedesData.forEach((sede, index) => {
-      // Verificar si necesitamos una nueva página
-      if (yPosition > 250) {
-        doc.addPage();
-        this.addPDFHeader(doc, [247, 218, 0], darkColor);
-        yPosition = 60;
+        // Descargar el archivo usando URL.createObjectURL
+        if (response.body) {
+          const blob = response.body;
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+          this.showSuccessMessage(category, reportType, format);
+        }
+      },
+      error: (error) => {
+        console.error('Error al exportar archivo:', error);
+        this.showErrorMessage(category, reportType, format, error);
       }
-      
-      // Información de cada sede
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(darkColor[0], darkColor[1], darkColor[2]);
-      doc.text(`${index + 1}. ${sede.nombre}`, 20, yPosition);
-      
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(grayColor[0], grayColor[1], grayColor[2]);
-      
-      yPosition += 10;
-      doc.text(`Dirección: ${sede.direccion}, ${sede.ciudad}`, 25, yPosition);
-      yPosition += 8;
-      doc.text(`Contacto: ${sede.telefono} | ${sede.email}`, 25, yPosition);
-      yPosition += 8;
-      doc.text(`Salas: ${sede.numeroSalas} | Capacidad: ${sede.capacidadTotal} espectadores`, 25, yPosition);
-      yPosition += 8;
-      doc.text(`Estado: ${sede.estado} | Apertura: ${sede.fechaApertura}`, 25, yPosition);
-      
-      yPosition += 15;
     });
   }
 
-  private addGenericContent(doc: jsPDF, category: string, option: string, darkColor: number[], grayColor: number[]): void {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor(grayColor[0]);
-    
-    doc.text(`Este es el reporte de ${option} para la categoría ${category}.`, 20, 90);
-    doc.text('Contenido del reporte en desarrollo...', 20, 110);
-    doc.text('Este PDF ha sido generado automáticamente por el sistema CineByte.', 20, 130);
+  /**
+   * Obtiene la lista de reportes disponibles
+   */
+  getAvailableReports(): Observable<any> {
+    return this.http.get(`${this.apiURL}/reports`);
   }
 
-  private addPDFFooter(doc: jsPDF, grayColor: number[]): void {
-    const pageHeight = doc.internal.pageSize.height;
-    
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(grayColor[0]);
-    
-    // Línea separadora
-    doc.setDrawColor(grayColor[0], grayColor[1], grayColor[2]);
-    doc.line(20, pageHeight - 20, 190, pageHeight - 20);
-    
-    // Texto del footer
-    doc.text('© 2025 CineByte - Sistema de Gestión Cinematográfica', 20, pageHeight - 10);
-    doc.text(`Página 1 de 1`, 170, pageHeight - 10);
-  }
-
-  private exportCustomExcel(category: string, option: string): void {
-    let data: any[] = [];
-    let sheetName = 'Datos';
-    
-    if (category === 'Sedes' && option === 'Listado completo') {
-      data = this.sedesData.map(sede => ({
-        'ID': sede.id,
-        'Nombre': sede.nombre,
-        'Dirección': sede.direccion,
-        'Ciudad': sede.ciudad,
-        'Teléfono': sede.telefono,
-        'Email': sede.email,
-        'Número de Salas': sede.numeroSalas,
-        'Capacidad Total': sede.capacidadTotal,
-        'Estado': sede.estado,
-        'Fecha de Apertura': sede.fechaApertura
-      }));
-      sheetName = 'Sedes_Listado_Completo';
-    } else {
-      // Datos genéricos para otras opciones
-      data = [
-        { 'Categoría': category, 'Opción': option, 'Estado': 'En desarrollo' }
-      ];
-      sheetName = `${category}_${option}`.replace(/\s+/g, '_');
-    }
-    
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-    
-    // Guardar archivo
-    const today = new Date().toLocaleDateString('es-ES');
-    const fileName = `CineByte_${category}_${option.replace(/\s+/g, '_')}_${today.replace(/\//g, '-')}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-  }
-
-  // Métodos originales para compatibilidad
+  /**
+   * Método legacy para PDF (mantenido para compatibilidad)
+   */
   exportPDF(): void {
-    this.exportCustomPDF('General', 'Reporte');
+    console.warn('Método exportPDF() está deprecado. Use exportFile() en su lugar.');
+    this.exportFile('General', 'Listado completo', 'pdf');
   }
 
+  /**
+   * Método legacy para Excel (mantenido para compatibilidad)
+   */
   exportExcel(): void {
-    this.exportCustomExcel('General', 'Reporte');
+    console.warn('Método exportExcel() está deprecado. Use exportFile() en su lugar.');
+    this.exportFile('General', 'Listado completo', 'excel');
+  }
+
+  /**
+   * Exporta múltiples reportes en batch
+   */
+  exportBatch(exports: ExportRequest[]): void {
+    exports.forEach((exportReq, index) => {
+      // Agregar delay entre exportaciones para no sobrecargar el servidor
+      setTimeout(() => {
+        this.exportFile(exportReq.category, exportReq.reportType, exportReq.format);
+      }, index * 1000); // 1 segundo de delay entre cada exportación
+    });
+  }
+
+  /**
+   * Valida si una combinación de categoría y reporte es válida
+   */
+  isValidExport(category: string, reportType: string): boolean {
+    const validCombinations: { [key: string]: string[] } = {
+      'Peliculas': [
+        'Películas más vendidas',
+        'Listado completo',
+        'Por género'
+      ],
+      'Actores': [
+        'Actores que han participado en mas películas',
+        'Listado completo'
+      ],
+      'Generos': [
+        'Generos más populares en ventas',
+        'Generos con más películas publicadas',
+        'Listado completo'
+      ],
+      'Distribuidores': [
+        'Distribuidores que han publicado más películas',
+        'Distribuidores con más películas exitosas',
+        'Distribuidores con más películas fracasadas',
+        'Listado completo'
+      ],
+      'Funciones': [
+        'Funciones con mayor asistencia',
+        'Funciones por horario más populares',
+        'Funciones más vendidas en los ultimos 30 días',
+        'Funciones por tipo',
+        'Listado completo'
+      ],
+      'Salas': [
+        'Salas disponibles',
+        'Ocupación por sala',
+        'Listado completo'
+      ],
+      'Sedes': [
+        'Sedes principales',
+        'Listado completo'
+      ],
+      'Usuarios': [
+        'Usuarios con más compras',
+        'Listado completo'
+      ]
+    };
+
+    return validCombinations[category]?.includes(reportType) || false;
+  }
+
+  /**
+   * Muestra mensaje de éxito con SweetAlert2
+   */
+  private showSuccessMessage(category: string, reportType: string, format: string): void {
+    // Cerrar cualquier SweetAlert2 abierto
+    Swal.close();
+    
+    Swal.fire({
+      title: 'Descarga exitosa',
+      html: `
+        <div style="text-align: left; margin: 15px 0;">
+          <p><strong>Archivo:</strong> ${reportType}</p>
+          <p><strong>Categoría:</strong> ${category}</p>
+          <p><strong>Formato:</strong> ${format.toUpperCase()}</p>
+        </div>
+        <p style="color: #22C55E; font-weight: 600;">¡El archivo se ha descargado correctamente!</p>
+      `,
+      icon: 'success',
+      timer: 4000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      customClass: {
+        popup: 'cinebyte-swal-popup',
+        title: 'cinebyte-swal-title'
+      },
+      background: '#FFFFFF',
+      color: '#2D3748'
+    });
+  }
+
+  /**
+   * Muestra mensaje de error con SweetAlert2
+   */
+  private showErrorMessage(category: string, reportType: string, format: string, error: any): void {
+    // Cerrar cualquier SweetAlert2 abierto
+    Swal.close();
+    
+    let errorMessage = 'Error al descargar el archivo';
+    let detailMessage = '';
+    
+    if (error.status === 404) {
+      errorMessage = 'Reporte no encontrado';
+      detailMessage = 'El tipo de reporte solicitado no está disponible.';
+    } else if (error.status === 500) {
+      errorMessage = 'Error interno del servidor';
+      detailMessage = 'Hubo un problema al generar el archivo. Intenta nuevamente.';
+    } else if (error.status === 0) {
+      errorMessage = 'Error de conexión';
+      detailMessage = 'No se pudo conectar con el servidor. Verifica tu conexión.';
+    } else {
+      detailMessage = 'Intenta nuevamente en unos momentos.';
+    }
+
+    console.error('Detalles del error:', error);
+    
+    Swal.fire({
+      title: `❌ ${errorMessage}`,
+      html: `
+        <div style="text-align: left; margin: 15px 0;">
+          <p><strong>Archivo solicitado:</strong> ${reportType}</p>
+          <p><strong>Categoría:</strong> ${category}</p>
+          <p><strong>Formato:</strong> ${format.toUpperCase()}</p>
+        </div>
+        <hr style="border: 1px solid #E5E7EB; margin: 15px 0;">
+        <p style="color: #6B7280;">${detailMessage}</p>
+      `,
+      icon: 'error',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#FFA726',
+      customClass: {
+        popup: 'cinebyte-swal-popup',
+        title: 'cinebyte-swal-title',
+        confirmButton: 'cinebyte-swal-confirm'
+      },
+      background: '#FFFFFF',
+      color: '#2D3748'
+    });
+  }
+
+  /**
+   * Crea una notificación temporal en la pantalla
+   */
+  private createNotification(message: string, type: 'success' | 'error'): void {
+    const notification = document.createElement('div');
+    notification.className = `export-notification export-notification-${type}`;
+    notification.textContent = message;
+    
+    // Estilos
+    Object.assign(notification.style, {
+      position: 'fixed',
+      top: '20px',
+      right: '20px',
+      padding: '12px 20px',
+      borderRadius: '8px',
+      color: 'white',
+      fontWeight: 'bold',
+      zIndex: '10000',
+      maxWidth: '400px',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      backgroundColor: type === 'success' ? '#4CAF50' : '#f44336',
+      animation: 'slideInRight 0.3s ease-out'
+    });
+
+    // Agregar al DOM
+    document.body.appendChild(notification);
+
+    // Remover después de 5 segundos
+    setTimeout(() => {
+      notification.style.animation = 'slideOutRight 0.3s ease-in';
+      setTimeout(() => {
+        if (notification.parentNode) {
+          notification.parentNode.removeChild(notification);
+        }
+      }, 300);
+    }, 5000);
   }
 }

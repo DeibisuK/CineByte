@@ -229,29 +229,141 @@
   border: 2px dashed var(--footer-line);
 }
 
-/* Responsive */
+/* =================================================================== */
+/* ESTILOS PERSONALIZADOS PARA SWEETALERT2 - TEMA CINEBYTE */
+/* =================================================================== */
+
+/* Popup principal con diseño moderno */
+:global(.cinebyte-swal-popup) {
+  border-radius: 15px !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+  border: 2px solid #E2E8F0 !important;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+/* Título con estilo del proyecto */
+:global(.cinebyte-swal-title) {
+  color: #2D3748 !important;
+  font-weight: 700 !important;
+  font-size: 1.5rem !important;
+  margin-bottom: 15px !important;
+  border-bottom: 2px solid #FFA726 !important;
+  padding-bottom: 10px !important;
+}
+
+/* Contenido del popup */
+:global(.cinebyte-swal-content) {
+  color: #4A5568 !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
+/* Botón de confirmación con colores del proyecto */
+:global(.cinebyte-swal-confirm) {
+  background: linear-gradient(135deg, #FFA726, #F57C00) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 12px 25px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  box-shadow: 0 4px 12px rgba(255, 167, 38, 0.3) !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cinebyte-swal-confirm:hover) {
+  background: linear-gradient(135deg, #F57C00, #E65100) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 16px rgba(255, 167, 38, 0.4) !important;
+}
+
+/* Botón de cancelar */
+:global(.cinebyte-swal-cancel) {
+  background: #6B7280 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 12px 25px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  transition: all 0.3s ease !important;
+}
+
+:global(.cinebyte-swal-cancel:hover) {
+  background: #4B5563 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Efecto de aparición suave */
+:global(.swal2-show) {
+  animation: swal2-show-custom 0.4s ease-out !important;
+}
+
+@keyframes swal2-show-custom {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Spinner de carga personalizado */
+:global(.loading-spinner) {
+  border: 4px solid #f3f3f3 !important;
+  border-top: 4px solid #FFA726 !important;
+  border-radius: 50% !important;
+  width: 40px !important;
+  height: 40px !important;
+  animation: spin 2s linear infinite !important;
+  margin: 0 auto 15px !important;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Overlay/backdrop personalizado */
+:global(.swal2-backdrop-show) {
+  background: rgba(45, 55, 72, 0.6) !important;
+  backdrop-filter: blur(5px) !important;
+}
+
+/* Responsive para SweetAlert2 */
 @media (max-width: 768px) {
-  .export-grid {
-    grid-template-columns: 1fr;
-    gap: 15px;
-    padding: 15px;
+  :global(.cinebyte-swal-popup) {
+    margin: 20px !important;
+    max-width: 90% !important;
   }
   
-  .export-card {
-    padding: 15px;
+  :global(.cinebyte-swal-title) {
+    font-size: 1.3rem !important;
   }
   
-  .card-title {
-    font-size: 1.1rem;
+  :global(.cinebyte-swal-confirm),
+  :global(.cinebyte-swal-cancel) {
+    padding: 10px 20px !important;
+    font-size: 13px !important;
   }
-  
-  .dropdown-menu {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 90%;
-    max-width: 400px;
-    margin-top: 0;
-  }
+}
+
+body {
+  /*Encabezado*/
+  color: #333;
+  color: #ffc800;
+
+  /*Contenido Principal*/
+  color: #ff0000; /*Color de fuente*/
+  color: #00ff00; /*Subtitulo*/
+  color: #FFA726; /*Contenedor del total de registros*/
+
+  /*Fondos y Contenedores*/
+  color: #F7FAFC; /*Contenedor que dice la entidad*/
+  color: #FFFFFF; /*Fila 1*/
+  color: #f1f1f1; /*Fila 2*/
+
+  /*Bordes y Divisores*/
+  color: #E2E8F0;
+  color: #CBD5E0;
 }
