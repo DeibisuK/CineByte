@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { SedeService } from '../../../services/sede.service'; // Asegúrate de tener este servicio
+import { SedeService, Sede } from '../../../services/sede.service'; // Importar la interfaz Sede
 import Swal from 'sweetalert2';
 
 @Component({
@@ -18,7 +18,7 @@ import Swal from 'sweetalert2';
 export class ContactanosComponent implements OnInit {
   contactoForm: FormGroup;
   menuSedesAbiertoContacto = false;
-  ciudadesConSedes: { nombre: string, sedes: any[] }[] = [];
+  ciudadesConSedes: { nombre: string, sedes: Sede[] }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -63,35 +63,27 @@ export class ContactanosComponent implements OnInit {
     });
   }
 
-  agruparSedesPorCiudad(sedes: any[]): { nombre: string, sedes: any[] }[] {
-    const ciudadesMap: { [key: string]: { nombre: string, sedes: any[] } } = {};
-    
-    sedes.forEach(sede => {
-      const ciudadNombre = this.getNombreCiudad(sede.id_ciudad);
+  agruparSedesPorCiudad(sedes: Sede[]): { nombre: string, sedes: Sede[] }[] {
+    const ciudadesMap: { [ciudad: string]: { nombre: string, sedes: Sede[] } } = {};
+
+    for (const sede of sedes) {
+      const ciudadNombre = sede.ciudad?.trim() || 'Sin ciudad';
+
       if (!ciudadesMap[ciudadNombre]) {
         ciudadesMap[ciudadNombre] = { nombre: ciudadNombre, sedes: [] };
       }
-      ciudadesMap[ciudadNombre].sedes.push(sede);
-    });
-    
-    return Object.values(ciudadesMap);
-  }
 
-  getNombreCiudad(id: number): string {
-    const ciudadesMap: { [id: number]: string } = {
-      1: 'Quito', 2: 'Guayaquil', 3: 'Cuenca', 4: 'Manta',
-      5: 'Machala', 6: 'Ambato', 7: 'Riobamba', 8: 'Loja',
-      9: 'Ibarra', 10: 'Esmeraldas', 11: 'Babahoyo',
-      12: 'Santa Elena', 13: 'Santo Domingo'
-    };
-    return ciudadesMap[id] || 'Ciudad';
+      ciudadesMap[ciudadNombre].sedes.push(sede);
+    }
+
+    return Object.values(ciudadesMap);
   }
 
   toggleMenuSedesContacto() {
     this.menuSedesAbiertoContacto = !this.menuSedesAbiertoContacto;
   }
 
-  seleccionarSedeContacto(sede: any) {
+  seleccionarSedeContacto(sede: Sede) {
     this.contactoForm.get('cine')?.setValue(sede);
     this.menuSedesAbiertoContacto = false;
   }
@@ -117,7 +109,7 @@ export class ContactanosComponent implements OnInit {
     const formData = {
       ...this.contactoForm.value,
       cine: this.contactoForm.value.cine.nombre,
-      ciudad: this.getNombreCiudad(this.contactoForm.value.cine.id_ciudad)
+      ciudad: this.contactoForm.value.cine.ciudad || 'Sin ciudad'
     };
 
     Swal.fire({

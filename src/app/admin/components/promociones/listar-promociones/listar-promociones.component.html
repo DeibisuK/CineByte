@@ -39,7 +39,7 @@
                         </span>
                     </div>
 
-                    <div class="acciones" *ngIf="!isClientRoute()">
+                    <div class="acciones" *ngIf="isClientRoute()">
                         <button class="action-btn" (click)="editarPromocion(promo, $event)" title="Editar">
                             <svg class="action-icon" viewBox="0 0 24 24">
                                 <path

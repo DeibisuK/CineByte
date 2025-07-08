@@ -347,23 +347,3 @@
     font-size: 13px !important;
   }
 }
-
-body {
-  /*Encabezado*/
-  color: #333;
-  color: #ffc800;
-
-  /*Contenido Principal*/
-  color: #ff0000; /*Color de fuente*/
-  color: #00ff00; /*Subtitulo*/
-  color: #FFA726; /*Contenedor del total de registros*/
-
-  /*Fondos y Contenedores*/
-  color: #F7FAFC; /*Contenedor que dice la entidad*/
-  color: #FFFFFF; /*Fila 1*/
-  color: #f1f1f1; /*Fila 2*/
-
-  /*Bordes y Divisores*/
-  color: #E2E8F0;
-  color: #CBD5E0;
-}
