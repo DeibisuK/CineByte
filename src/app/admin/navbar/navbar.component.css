@@ -107,7 +107,7 @@
 
 .toggle-btn:hover {
   background: var(--sidebar-hover);
-  color: var(--sidebar-active);
+  color: var(--yellow);
   transform: scale(1.05);
 }
 

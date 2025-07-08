@@ -285,7 +285,7 @@
 
 .ciudad-titulo {
   font-weight: 600;
-  color: #FFA500;
+  color: var(--yellow);
   margin: 0.5rem 0 0.2rem;
   font-size: 0.95rem;
   display: flex;
