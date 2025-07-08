@@ -28,7 +28,7 @@ export class ExportarComponent {
       title: 'Actores:',
       sections: [
         {
-          name: 'Actores destacados',
+          name: 'Actores que han participado en mas películas',
           options: ['pdf', 'excel']
         },
         {
@@ -37,6 +37,77 @@ export class ExportarComponent {
         }
       ]
     },
+
+    {
+      id: 'Generos',
+      title: 'Generos:',
+      sections: [
+        {
+          name: 'Generos más populares en ventas',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Generos con más películas publicadas',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Listado completo',
+          options: ['pdf', 'excel']
+        }
+      ]
+    },
+
+    {
+      id: 'Distribuidores',
+      title: 'Distribuidores:',
+      sections: [
+        {
+          name: 'Distribuidores que han publicado más películas',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Distribuidores con más películas exitosas',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Distribuidores con más películas fracasadas',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Listado completo',
+          options: ['pdf', 'excel']
+        }
+      ]
+    },
+
+
+    {
+      id: 'Funciones',
+      title: 'Funciones:',
+      sections: [
+        {
+          name: 'Funciones con mayor asistencia',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Funciones por horario más populares',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Funciones más vendidas en los ultimos 30 días',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Funciones por tipo',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Listado completo',
+          options: ['pdf', 'excel']
+        }
+      ]
+    },
+
     {
       id: 'Películas',
       title: 'Películas:',
@@ -55,6 +126,7 @@ export class ExportarComponent {
         }
       ]
     },
+
     {
       id: 'Salas',
       title: 'Salas:',
@@ -69,6 +141,7 @@ export class ExportarComponent {
         }
       ]
     },
+
     {
       id: 'Sedes',
       title: 'Sedes:',
@@ -82,7 +155,22 @@ export class ExportarComponent {
           options: ['pdf', 'excel']
         }
       ]
-    }
+    },
+
+    {
+      id: 'Usuarios',
+      title: 'Usuarios:',
+      sections: [
+        {
+          name: 'Usuarios con más compras',
+          options: ['pdf', 'excel']
+        },
+        {
+          name: 'Listado completo',
+          options: ['pdf', 'excel']
+        }
+      ]
+    },
   ];
 
   filteredCategories: ExportCategory[] = [...this.allCategories];
