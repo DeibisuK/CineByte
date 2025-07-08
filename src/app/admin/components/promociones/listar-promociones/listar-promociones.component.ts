@@ -26,7 +26,7 @@ export class ListarPromocionesComponent implements OnInit {
   }
 
   isClientRoute(): boolean {
-    return this.router.url.includes('/cliente/promociones');
+    return this.router.url.includes('admin/promociones/list');
   }
 
   cargarPromociones(): void {

@@ -11,7 +11,7 @@
     </div>
 
     <!-- Mensaje introductorio solo para ruta de clientes -->
-    <div *ngIf="isClientRoute()" class="intro-mensaje">
+    <div *ngIf="!isClientRoute()" class="intro-mensaje">
         <p>A continuación encontrarás todas nuestras sedes disponibles. Selecciona tu ubicación preferida para disfrutar
             de
             la mejor experiencia cinematográfica.</p>

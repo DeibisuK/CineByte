@@ -372,14 +372,14 @@ body.light-mode .usuario.active-link .material-icons {
 }
 
 input:checked+.slider {
-  background-color: #f7cb5a;
+  background-color: #FFD700;
 }
 
 input:checked+.slider:before {
   transform: translateX(30px);
   content: "dark_mode";
   background-color: #121212;
-  color: #f7cb5a;
+  color: #FFD700;
 }
 
 /* --- MENÚ HAMBURGUESA Y RESPONSIVE --- */
