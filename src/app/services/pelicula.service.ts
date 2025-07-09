@@ -8,7 +8,9 @@ import { Observable } from 'rxjs/internal/Observable';
 })
 export class PeliculaService {
   apiURL = 'https://api-cinebyte.onrender.com/api/peliculas';
+  //funcionesApiURL = 'https://api-cinebyte.onrender.com/api/funciones';
   //apiURL = 'http://localhost:3000/api/peliculas';
+  funcionesApiURL = 'http://localhost:3000/api/funciones';
   constructor(private http: HttpClient) { }
 
   getPeliculas(): Observable<Pelicula[]> {
@@ -46,6 +48,6 @@ export class PeliculaService {
     return this.http.get<Pelicula>(`${this.apiURL}/completas/${id}`);
   }
   getFuncionesByPeliculaId(id: number): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/funciones/pelicula/${id}`);
+    return this.http.get(`${this.funcionesApiURL}/pelicula/${id}`);
   }
 }

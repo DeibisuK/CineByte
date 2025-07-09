@@ -1,19 +1,18 @@
 import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
-import { Movie } from '../../../../../core/models/movie.model';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { Pelicula } from '../../../../../admin/models/pelicula.model';
+import { PeliculaService } from '../../../../../services/pelicula.service';
 
 @Component({
   selector: 'app-eventos-especiales',
-  imports: [CommonModule],
+  imports: [CommonModule,EdadesComponent],
   templateUrl: './eventos-especiales.component.html',
   styleUrl: './eventos-especiales.component.css'
 })
 export class EventosEspecialesComponent implements OnInit, OnDestroy {
-  eventosEspeciales: Movie[] = [];
+  eventosEspeciales: Pelicula[] = [];
   visibleStart = 0;
   visibleCount = 4;
   autoSlideInterval: any;
@@ -21,14 +20,34 @@ export class EventosEspecialesComponent implements OnInit, OnDestroy {
   hoveredIndex: number = -1;
 
  constructor(
-    private movieService: MovieService, private movieNav: MovieNavigationService,
+    private peliculasService: PeliculaService, 
+    private movieNav: MovieNavigationService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-    this.eventosEspeciales = this.movieService.getPeliculasEventoOEspecial() || [];
+    this.peliculasService.getPeliculasCompletas().subscribe({
+      next: (peliculas: Pelicula[]) => {
+        // Filtrar películas que tengan etiquetas "Eventos" o "Especiales"
+        this.eventosEspeciales = peliculas.filter(pelicula => {
+          // Verificar si las etiquetas contienen "Eventos" o "Especiales"
+          if (!pelicula.etiquetas) return false;
+          
+          const etiquetasString = Array.isArray(pelicula.etiquetas) 
+            ? pelicula.etiquetas.join(',').toLowerCase()
+            : String(pelicula.etiquetas).toLowerCase();
+          
+          return etiquetasString.includes('eventos') || etiquetasString.includes('especiales');
+        });
+      },
+      error: (err: any) => {
+        console.error('Error fetching películas:', err);
+        this.eventosEspeciales = [];
+      }
+    });
+    
     if (this.isBrowser) {
       this.updateVisibleCount();
       this.startAutoSlide();
@@ -98,5 +117,14 @@ export class EventosEspecialesComponent implements OnInit, OnDestroy {
 
     verDetalle(movie: Pelicula) {
     this.movieNav.verDetalle(movie);
+  }
+
+  /**
+   * Convierte un array de números o strings a un array de strings
+   * @param arr Array de números o strings
+   * @returns Array de strings
+   */
+  toStringArray(arr: number[] | string[]): string[] {
+    return arr.map(x => x.toString());
   }
 }

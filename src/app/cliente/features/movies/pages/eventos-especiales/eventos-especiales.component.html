@@ -6,17 +6,18 @@
 
   <div class="grid-carousel">
     <div class="movie-card" *ngFor="let movie of visibleMovies"
-      (mouseenter)="hoveredIndex = movie.id"
+      (mouseenter)="hoveredIndex = movie.id_pelicula"
       (mouseleave)="hoveredIndex = -1"
-      [style.zIndex]="hoveredIndex === movie.id ? 2 : 1">
-      <img [src]="movie.img" alt="{{ movie.titulo }}" />
+      [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1">
+      <img [src]="movie.imagen" alt="{{ movie.titulo }}" />
       <div class="hover-overlay">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
       </div>
       <div class="etiquetas">
-        <span class="etiqueta" *ngFor="let et of movie.etiqueta">{{ et }}</span>
+        <span class="etiqueta" *ngFor="let et of toStringArray(movie.etiquetas)">{{ et }}</span>
       </div>
       <div class="edad-icono">
+        <app-edades [edad]="movie.clasificacion"></app-edades>
       </div>
       <div class="info">
         <h3>{{ movie.titulo }}</h3>

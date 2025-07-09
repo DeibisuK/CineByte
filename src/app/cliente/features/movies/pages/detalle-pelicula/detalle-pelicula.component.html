@@ -28,18 +28,22 @@
   <section class="detalle-info">
     <header>
       <h2 class="detalle-titulo">{{ p.titulo }}</h2>
-      <div class="detalle-edad">Para mayores de {{ p.clasificacion }} años</div>
-      <div class="detalle-duracion">{{ p.duracion_minutos }}</div>
+      <div class="detalle-edad">Clasificacion: {{ p.clasificacion }}</div>
+      <div class="detalle-duracion">{{ p.duracion_minutos }} min</div>
       <p class="detalle-descripcion">{{ p.descripcion }}</p>
     </header>
-    <div class="detalle-idiomas">
+    <div class="detalle-idiomas" *ngIf="funcionesPorIdioma.length > 0">
       <button
         *ngFor="let idioma of funcionesPorIdioma"
         [class.active]="idioma.idioma === idiomaSeleccionado"
-        (click)="idiomaSeleccionado = idioma.idioma; safeTrailerUrl = sanitizer.bypassSecurityTrustResourceUrl(idioma.trailer)"
+        (click)="cambiarIdioma(idioma.idioma, idioma.trailer)"
       >
         {{ idioma.idioma }}
       </button>
+    </div>
+    
+    <div class="no-funciones-message" *ngIf="funcionesPorIdioma.length === 0">
+      <p class="info-message">No hay funciones disponibles para esta película en este momento.</p>
     </div>
     <div class="detalle-horarios" *ngIf="obtenerHorariosPorIdioma().length > 0">
       <h3>Horarios disponibles</h3>
@@ -64,7 +68,17 @@
     </div>
     <hr>
     <div class="detalle-btn-row">
-      <button class="btn-siguiente" (click)="irASiguiente()">Siguiente</button>
+      <button class="btn-trailer" 
+              (click)="abrirTrailer()" 
+              *ngIf="safeTrailerUrl"
+              aria-label="Ver tráiler">
+        Ver Tráiler
+      </button>
+      <button class="btn-siguiente" 
+              (click)="irASiguiente()"
+              [disabled]="funcionesPorIdioma.length === 0">
+        Siguiente
+      </button>
     </div>
   </section>
 </div>

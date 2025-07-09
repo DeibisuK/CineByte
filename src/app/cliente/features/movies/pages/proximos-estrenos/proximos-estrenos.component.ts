@@ -1,8 +1,8 @@
 import { Component, HostListener, Inject, PLATFORM_ID } from '@angular/core';
-import { Movie } from '../../../../../core/models/movie.model';
-import { MovieService } from '../../services/movie.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
+import { Pelicula } from '../../../../../admin/models/pelicula.model';
+import { PeliculaService } from '../../../../../services/pelicula.service';
 
 @Component({
   selector: 'app-proximos-estrenos',
@@ -11,21 +11,31 @@ import { EdadesComponent } from '../../../../../shared/components/edades/edades.
   styleUrl: './proximos-estrenos.component.css'
 })
 export class ProximosEstrenosComponent {
-  upcomingMovies: Movie[] = [];
+  upcomingMovies: Pelicula[] = [];
   visibleStart = 0;
   visibleCount = 4;
   autoSlideInterval: any;
   isBrowser: boolean;
 
  constructor(
-    private movieService: MovieService,
+    private peliculasService: PeliculaService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-    this.upcomingMovies = this.movieService.getUpcomingMovies() || [];
+    this.peliculasService.getPeliculasCompletas().subscribe({
+      next: (peliculas: Pelicula[]) => {
+        // Filtrar solo las películas con estado "proximamente"
+        this.upcomingMovies = peliculas.filter(pelicula => pelicula.estado === 'proximamente');
+      },
+      error: (err: any) => {
+        console.error('Error fetching películas:', err);
+        this.upcomingMovies = [];
+      }
+    });
+    
     if (this.isBrowser) {
       this.updateVisibleCount();
       this.startAutoSlide();
@@ -91,5 +101,14 @@ export class ProximosEstrenosComponent {
         this.visibleStart = 0;
       }
     }, 5000);
+  }
+
+  /**
+   * Convierte un array de números o strings a un array de strings
+   * @param arr Array de números o strings
+   * @returns Array de strings
+   */
+  toStringArray(arr: number[] | string[]): string[] {
+    return arr.map(x => x.toString());
   }
 }

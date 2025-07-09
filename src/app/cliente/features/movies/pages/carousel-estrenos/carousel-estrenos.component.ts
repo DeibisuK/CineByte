@@ -1,8 +1,8 @@
 import { Component, HostListener, Inject, PLATFORM_ID } from '@angular/core';
-import { Movie } from '../../../../../core/models/movie.model';
-import { MovieService } from '../../services/movie.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
+import { Pelicula } from '../../../../../admin/models/pelicula.model';
+import { PeliculaService } from '../../../../../services/pelicula.service';
 
 @Component({
   selector: 'app-carousel-estrenos',
@@ -11,21 +11,33 @@ import { EdadesComponent } from '../../../../../shared/components/edades/edades.
   styleUrl: './carousel-estrenos.component.css'
 })
 export class CarouselEstrenosComponent {
-peliculasCartelera: Movie[] = [];
+peliculasCartelera: Pelicula[] = [];
   visibleStart = 0;
   visibleCount = 4;
   autoSlideInterval: any;
   isBrowser: boolean;
 
   constructor(
-    private movieService: MovieService,
+    private peliculasService: PeliculaService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
   }
 
   ngOnInit(): void {
-    this.peliculasCartelera = this.movieService.getMoviesByType('cartelera') || [];
+    this.peliculasService.getPeliculasCompletas().subscribe({
+      next: (peliculas: Pelicula[]) => {
+        // Filtrar películas con estado "proximamente" y tomar los primeros 5
+        const peliculasEstreno = peliculas.filter(pelicula => pelicula.estado === 'proximamente');
+        
+        this.peliculasCartelera = peliculasEstreno.slice(0, 5);
+      },
+      error: (err: any) => {
+        console.error('Error fetching películas:', err);
+        this.peliculasCartelera = [];
+      }
+    });
+    
     if (this.isBrowser) {
       this.updateVisibleCount();
       this.startAutoSlide();
@@ -48,7 +60,9 @@ peliculasCartelera: Movie[] = [];
 
   updateVisibleCount() {
     if (!this.isBrowser) return;
+    
     const width = window.innerWidth;
+    
     if (width <= 600) {
       this.visibleCount = 1;
     } else if (width <= 900) {
@@ -91,5 +105,14 @@ peliculasCartelera: Movie[] = [];
         this.visibleStart = 0;
       }
     }, 5000);
+  }
+
+  /**
+   * Convierte un array de números o strings a un array de strings
+   * @param arr Array de números o strings
+   * @returns Array de strings
+   */
+  toStringArray(arr: number[] | string[]): string[] {
+    return arr.map(x => x.toString());
   }
 }
