@@ -29,7 +29,6 @@
   font-weight: 700;
   color: var(--yellow);
   margin: 0;
-  text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
 }
