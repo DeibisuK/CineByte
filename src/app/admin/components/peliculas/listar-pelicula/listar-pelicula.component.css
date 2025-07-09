@@ -54,7 +54,7 @@
     margin: 0;
     font-size: 2.25rem;
     font-weight: 700;
-    color: var(--text-color);
+    color: var(--yellow);
 }
 
 /* Estadísticas */
@@ -74,7 +74,7 @@
 }
 
 .stat-number {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     font-weight: bold;
     color: var(--yellow);
     font-family: 'Courier New', monospace;
@@ -82,9 +82,8 @@
 }
 
 .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--footer-link);
-    text-transform: lowercase;
     letter-spacing: 0.3px;
 }
 
@@ -248,6 +247,7 @@
 .movie-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 2rem;
     gap: 32px;
 }
 
