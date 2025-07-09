@@ -80,7 +80,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
       precio: ['', [Validators.required, Validators.min(0.01), Validators.max(999.99)]],
       id_idioma: ['', Validators.required],
       trailer_url: ['', [Validators.required, Validators.pattern(/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/)]],
-      estado: ['activo', Validators.required],
+      estado: ['', Validators.required],
       id_pelicula: [''],
       id_sede: [''],
       id_sala: ['']

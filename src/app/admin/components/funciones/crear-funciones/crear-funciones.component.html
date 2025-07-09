@@ -4,30 +4,18 @@
     <div class="form-group">
         <label for="id_pelicula">Película:</label>
         <div class="dropdown-container">
-            <input 
-                type="text" 
-                id="id_pelicula" 
-                class="dropdown-input"
-                formControlName="pelicula_search"
-                placeholder="Buscar película..."
-                (input)="filterPeliculas($event)"
-                (focus)="showPeliculasDropdown = true"
-                (blur)="hidePeliculasDropdown()"
-                autocomplete="off"
-                aria-label="Buscar película"
-                [attr.aria-expanded]="showPeliculasDropdown"
-                aria-haspopup="listbox">
-            <div class="dropdown-arrow" (click)="togglePeliculasDropdown()" role="button" aria-label="Abrir lista de películas">
+            <input type="text" id="id_pelicula" class="dropdown-input" formControlName="pelicula_search"
+                placeholder="Buscar película..." (input)="filterPeliculas($event)"
+                (focus)="showPeliculasDropdown = true" (blur)="hidePeliculasDropdown()" autocomplete="off"
+                aria-label="Buscar película" [attr.aria-expanded]="showPeliculasDropdown" aria-haspopup="listbox">
+            <div class="dropdown-arrow" (click)="togglePeliculasDropdown()" role="button"
+                aria-label="Abrir lista de películas">
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <ul class="dropdown-list" 
-                *ngIf="showPeliculasDropdown && filteredPeliculas.length > 0"
-                role="listbox"
+            <ul class="dropdown-list" *ngIf="showPeliculasDropdown && filteredPeliculas.length > 0" role="listbox"
                 aria-label="Lista de películas">
-                <li *ngFor="let pelicula of filteredPeliculas" 
-                    class="dropdown-item"
-                    (mousedown)="selectPelicula(pelicula)"
-                    role="option"
+                <li *ngFor="let pelicula of filteredPeliculas" class="dropdown-item"
+                    (mousedown)="selectPelicula(pelicula)" role="option"
                     [attr.aria-selected]="selectedPeliculaId === pelicula.id_pelicula">
                     {{pelicula.titulo}}
                 </li>
@@ -42,31 +30,17 @@
     <div class="form-group">
         <label for="id_sede">Sede:</label>
         <div class="dropdown-container">
-            <input 
-                type="text" 
-                id="id_sede" 
-                class="dropdown-input"
-                formControlName="sede_search"
-                placeholder="Buscar sede..."
-                (input)="filterSedes($event)"
-                (focus)="showSedesDropdown = true"
-                (blur)="hideSedesDropdown()"
-                autocomplete="off"
-                aria-label="Buscar sede"
-                [attr.aria-expanded]="showSedesDropdown"
-                aria-haspopup="listbox">
+            <input type="text" id="id_sede" class="dropdown-input" formControlName="sede_search"
+                placeholder="Buscar sede..." (input)="filterSedes($event)" (focus)="showSedesDropdown = true"
+                (blur)="hideSedesDropdown()" autocomplete="off" aria-label="Buscar sede"
+                [attr.aria-expanded]="showSedesDropdown" aria-haspopup="listbox">
             <div class="dropdown-arrow" (click)="toggleSedesDropdown()" role="button" aria-label="Abrir lista de sedes">
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <ul class="dropdown-list" 
-                *ngIf="showSedesDropdown && filteredSedes.length > 0"
-                role="listbox"
+            <ul class="dropdown-list" *ngIf="showSedesDropdown && filteredSedes.length > 0" role="listbox"
                 aria-label="Lista de sedes">
-                <li *ngFor="let sede of filteredSedes" 
-                    class="dropdown-item"
-                    (mousedown)="selectSede(sede)"
-                    role="option"
-                    [attr.aria-selected]="selectedSedeId === sede.id_sede">
+                <li *ngFor="let sede of filteredSedes" class="dropdown-item" (mousedown)="selectSede(sede)"
+                    role="option" [attr.aria-selected]="selectedSedeId === sede.id_sede">
                     {{sede.nombre}}
                 </li>
             </ul>
@@ -80,36 +54,18 @@
     <div class="form-group">
         <label for="id_sala">Sala:</label>
         <div class="dropdown-container">
-            <input 
-                type="text" 
-                id="id_sala" 
-                class="dropdown-input"
-                formControlName="sala_search"
-                placeholder="Buscar sala..."
-                (input)="filterSalas($event)"
-                (focus)="showSalasDropdown = true"
-                (blur)="hideSalasDropdown()"
-                [disabled]="!selectedSedeId"
-                autocomplete="off"
-                aria-label="Buscar sala"
-                [attr.aria-expanded]="showSalasDropdown"
-                aria-haspopup="listbox">
-            <div class="dropdown-arrow" 
-                 (click)="toggleSalasDropdown()" 
-                 role="button" 
-                 aria-label="Abrir lista de salas"
-                 [class.disabled]="!selectedSedeId">
+            <input type="text" id="id_sala" class="dropdown-input" formControlName="sala_search"
+                placeholder="Buscar sala..." (input)="filterSalas($event)" (focus)="showSalasDropdown = true"
+                (blur)="hideSalasDropdown()" [disabled]="!selectedSedeId" autocomplete="off" aria-label="Buscar sala"
+                [attr.aria-expanded]="showSalasDropdown" aria-haspopup="listbox">
+            <div class="dropdown-arrow" (click)="toggleSalasDropdown()" role="button" aria-label="Abrir lista de salas"
+                [class.disabled]="!selectedSedeId">
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <ul class="dropdown-list" 
-                *ngIf="showSalasDropdown && filteredSalas.length > 0"
-                role="listbox"
+            <ul class="dropdown-list" *ngIf="showSalasDropdown && filteredSalas.length > 0" role="listbox"
                 aria-label="Lista de salas">
-                <li *ngFor="let sala of filteredSalas" 
-                    class="dropdown-item"
-                    (mousedown)="selectSala(sala)"
-                    role="option"
-                    [attr.aria-selected]="selectedSalaId === sala.id_sala">
+                <li *ngFor="let sala of filteredSalas" class="dropdown-item" (mousedown)="selectSala(sala)"
+                    role="option" [attr.aria-selected]="selectedSalaId === sala.id_sala">
                     {{sala.nombre}} - {{sala.cantidad_asientos}} asientos
                 </li>
             </ul>
@@ -123,47 +79,35 @@
     </div>
 
     <!-- Fecha y Hora de Inicio -->
-    <div class="form-group">
-        <label for="fecha_hora_inicio">Fecha y Hora de Inicio:</label>
-        <input 
-            type="datetime-local" 
-            id="fecha_hora_inicio" 
-            class="form-input"
-            formControlName="fecha_hora_inicio" 
-            required
-            aria-label="Fecha y hora de inicio de la función">
-        <div *ngIf="funcionesForm.get('fecha_hora_inicio')?.invalid && funcionesForm.get('fecha_hora_inicio')?.touched" class="error-message">
-            La fecha y hora son requeridas
+    <div class="form-flex">
+        <div class="form-group">
+            <label for="fecha_hora_inicio">Fecha y Hora de Inicio:</label>
+            <input type="datetime-local" id="fecha_hora_inicio" class="form-input" formControlName="fecha_hora_inicio"
+                required aria-label="Fecha y hora de inicio de la función">
+            <div *ngIf="funcionesForm.get('fecha_hora_inicio')?.invalid && funcionesForm.get('fecha_hora_inicio')?.touched"
+                class="error-message">
+                La fecha y hora son requeridas
+            </div>
         </div>
-    </div>
 
-    <!-- Precio -->
-    <div class="form-group">
-        <label for="precio">Precio:</label>
-        <input 
-            type="number" 
-            id="precio" 
-            class="form-input"
-            formControlName="precio" 
-            step="0.01"
-            min="0"
-            required
-            aria-label="Precio de la función">
-        <div *ngIf="funcionesForm.get('precio')?.invalid && funcionesForm.get('precio')?.touched" class="error-message">
-            <span *ngIf="funcionesForm.get('precio')?.errors?.['required']">El precio es requerido</span>
-            <span *ngIf="funcionesForm.get('precio')?.errors?.['min']">El precio debe ser mayor a 0</span>
+        <!-- Precio -->
+        <div class="form-group">
+            <label for="precio">Precio:</label>
+            <input type="number" id="precio" class="form-input" formControlName="precio" step="0.01" min="0" required
+                aria-label="Precio de la función">
+            <div *ngIf="funcionesForm.get('precio')?.invalid && funcionesForm.get('precio')?.touched"
+                class="error-message">
+                <span *ngIf="funcionesForm.get('precio')?.errors?.['required']">El precio es requerido</span>
+                <span *ngIf="funcionesForm.get('precio')?.errors?.['min']">El precio debe ser mayor a 0</span>
+            </div>
         </div>
     </div>
 
     <!-- Fecha y Hora de Fin (calculada automáticamente) -->
     <div class="form-group" *ngIf="fechaHoraFin">
         <label for="fecha_hora_fin">Fecha y Hora de Fin:</label>
-        <input 
-            type="datetime-local" 
-            id="fecha_hora_fin" 
-            class="form-input"
-            [value]="fechaHoraFin | date:'yyyy-MM-ddTHH:mm'"
-            readonly
+        <input type="datetime-local" id="fecha_hora_fin" class="form-input"
+            [value]="fechaHoraFin | date:'yyyy-MM-ddTHH:mm'" readonly
             aria-label="Fecha y hora de fin calculada automáticamente">
         <div class="info-message">
             Calculada automáticamente basada en la duración de la película
@@ -173,76 +117,64 @@
     <!-- URL del Trailer -->
     <div class="form-group">
         <label for="trailer_url">URL del Trailer (YouTube):</label>
-        <input 
-            type="url" 
-            id="trailer_url" 
-            class="form-input"
-            formControlName="trailer_url" 
-            placeholder="https://www.youtube.com/watch?v=..."
-            required
-            aria-label="URL del trailer de YouTube">
-        <div *ngIf="funcionesForm.get('trailer_url')?.invalid && funcionesForm.get('trailer_url')?.touched" class="error-message">
+        <input type="url" id="trailer_url" class="form-input" formControlName="trailer_url"
+            placeholder="https://www.youtube.com/watch?v=..." required aria-label="URL del trailer de YouTube">
+        <div *ngIf="funcionesForm.get('trailer_url')?.invalid && funcionesForm.get('trailer_url')?.touched"
+            class="error-message">
             <span *ngIf="funcionesForm.get('trailer_url')?.errors?.['required']">La URL del trailer es requerida</span>
-            <span *ngIf="funcionesForm.get('trailer_url')?.errors?.['pattern']">Debe ser una URL válida de YouTube</span>
+            <span *ngIf="funcionesForm.get('trailer_url')?.errors?.['pattern']">Debe ser una URL válida de
+                YouTube</span>
         </div>
     </div>
+    <div class="form-flex">
+        <div class="form-group">
+            <label for="estado">Estado:</label>
+            <div class="dropdown-container">
+                <select id="estado" class="form-select" formControlName="estado" required
+                    aria-label="Seleccionar estado de la función">
+                    <option value="">Seleccionar estado</option>
+                    <option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
+                        {{estado.label}}
+                    </option>
+                </select>
+            </div>
+            <div *ngIf="funcionesForm.get('estado')?.invalid && funcionesForm.get('estado')?.touched"
+                class="error-message">
+                Debe seleccionar un estado
+            </div>
+        </div>
 
+        <!-- Dropdown simple para Idiomas -->
+        <div class="form-group">
+            <label for="id_idioma">Idioma:</label>
+            <div class="dropdown-container">
+                <select id="id_idioma" class="form-select" formControlName="id_idioma" required
+                    aria-label="Seleccionar idioma de la función">
+                    <option value="">Seleccionar idioma</option>
+                    <option *ngFor="let idioma of idiomas" [value]="idioma.id_idioma">
+                        {{idioma.nombre}}
+                    </option>
+                </select>
+            </div>
+            <div *ngIf="funcionesForm.get('id_idioma')?.invalid && funcionesForm.get('id_idioma')?.touched"
+                class="error-message">
+                Debe seleccionar un idioma
+            </div>
+            <div *ngIf="idiomas.length === 0 && selectedPeliculaId" class="info-message">
+                No hay idiomas disponibles para esta película
+            </div>
+        </div>
+    </div>
     <!-- Estado -->
-    <div class="form-group">
-        <label for="estado">Estado:</label>
-        <div class="dropdown-container">
-            <select 
-                id="estado" 
-                class="form-select"
-                formControlName="estado" 
-                required
-                aria-label="Seleccionar estado de la función">
-                <option *ngFor="let estado of estadosDisponibles" [value]="estado.value">
-                    {{estado.label}}
-                </option>
-            </select>
-        </div>
-        <div *ngIf="funcionesForm.get('estado')?.invalid && funcionesForm.get('estado')?.touched" class="error-message">
-            Debe seleccionar un estado
-        </div>
-    </div>
 
-    <!-- Dropdown simple para Idiomas -->
-    <div class="form-group">
-        <label for="id_idioma">Idioma:</label>
-        <div class="dropdown-container">
-            <select 
-                id="id_idioma" 
-                class="form-select"
-                formControlName="id_idioma" 
-                required
-                aria-label="Seleccionar idioma de la función">
-                <option value="">Seleccionar idioma</option>
-                <option *ngFor="let idioma of idiomas" [value]="idioma.id_idioma">
-                    {{idioma.nombre}}
-                </option>
-            </select>
-        </div>
-        <div *ngIf="funcionesForm.get('id_idioma')?.invalid && funcionesForm.get('id_idioma')?.touched" class="error-message">
-            Debe seleccionar un idioma
-        </div>
-        <div *ngIf="idiomas.length === 0 && selectedPeliculaId" class="info-message">
-            No hay idiomas disponibles para esta película
-        </div>
-    </div>
 
     <div class="form-actions">
-        <button type="submit" 
-                class="submit-btn" 
-                [disabled]="!funcionesForm.valid || !areFormReady()"
-                aria-label="Crear nueva función">
+        <button type="submit" class="submit-btn" [disabled]="!funcionesForm.valid || !areFormReady()"
+            aria-label="Crear nueva función">
             <span *ngIf="!isSubmitting">Crear Función</span>
             <span *ngIf="isSubmitting">Creando...</span>
         </button>
-        <button type="button" 
-                class="cancel-btn" 
-                (click)="limpiarFormulario()"
-                aria-label="Limpiar formulario">
+        <button type="button" class="cancel-btn" (click)="limpiarFormulario()" aria-label="Limpiar formulario">
             Limpiar
         </button>
     </div>

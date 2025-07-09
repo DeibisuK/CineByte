@@ -28,6 +28,16 @@
     position: relative;
 }
 
+.form-flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.form-flex .form-group {
+    flex: 1;
+    margin-right: 0.5rem;
+}
+
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
@@ -120,6 +130,7 @@
 }
 
 .dropdown-arrow.disabled {
+    display: none;
     opacity: 0.3;
     cursor: not-allowed;
 }
@@ -148,6 +159,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -228,6 +240,7 @@
         opacity: 0;
         transform: translateY(-5px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -238,8 +251,8 @@
 .form-actions {
     display: flex;
     gap: 1rem;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 0.6rem;
+    padding-top: 1rem;
     border-top: 1px solid var(--dropdown-border);
 }
 
@@ -336,11 +349,11 @@
         padding: 1.5rem;
         max-width: none;
     }
-    
+
     .form-actions {
         flex-direction: column;
     }
-    
+
     .submit-btn,
     .cancel-btn {
         width: 100%;
@@ -378,6 +391,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -404,6 +418,11 @@
 }
 
 @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }

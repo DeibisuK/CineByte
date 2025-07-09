@@ -132,7 +132,8 @@
     </div>
 
     <!-- Fecha y Hora de Inicio -->
-    <div class="form-group">
+   <div class="form-flex">
+     <div class="form-group">
         <label for="fecha_hora_inicio">Fecha y Hora de Inicio:</label>
         <input 
             type="datetime-local" 
@@ -163,6 +164,7 @@
             <span *ngIf="funcionesForm.get('precio')?.errors?.['min']">El precio debe ser mayor a 0</span>
         </div>
     </div>
+   </div>
 
     <!-- Fecha y Hora de Fin (calculada automáticamente) -->
     <div class="form-group" *ngIf="fechaHoraFin">
@@ -195,9 +197,8 @@
             <span *ngIf="funcionesForm.get('trailer_url')?.errors?.['pattern']">Debe ser una URL válida de YouTube</span>
         </div>
     </div>
-
-    <!-- Estado -->
-    <div class="form-group">
+    <div class="form-flex">
+         <div class="form-group">
         <label for="estado">Estado:</label>
         <div class="dropdown-container">
             <select 
@@ -239,6 +240,10 @@
             No hay idiomas disponibles para esta película
         </div>
     </div>
+    </div>
+
+    <!-- Estado -->
+   
 
     <div class="form-actions">
         <button type="submit" 

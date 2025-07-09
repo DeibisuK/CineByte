@@ -771,8 +771,8 @@
 }
 
 /* Pantallas grandes */
-@media (min-width: 1201px) {
+@media (min-width: 1280px) {
     .movie-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
