@@ -41,4 +41,11 @@ export class PeliculaService {
   getPeliculasCompletas(): Observable<any> {
     return this.http.get(`${this.apiURL}/completas`);
   }
+
+  getPeliculaByIdComplete(id: number): Observable<Pelicula> {
+    return this.http.get<Pelicula>(`${this.apiURL}/completas/${id}`);
+  }
+  getFuncionesByPeliculaId(id: number): Observable<any> {
+    return this.http.get(`http://localhost:3000/api/funciones/pelicula/${id}`);
+  }
 }

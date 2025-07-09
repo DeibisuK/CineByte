@@ -8,19 +8,8 @@
 
 <div class="detalle-content" *ngIf="pelicula as p">
   <div class="detalle-img">
-    <img [src]="p.img" [alt]="p.titulo" class="detalle-img-portada" />
-    <button
-      *ngIf="p.trailer"
-      class="trailer-play-btn"
-      (click)="abrirTrailer()"
-      aria-label="Ver tráiler"
-    >
-      <svg width="64" height="44" viewBox="0 0 64 44" fill="none">
-        <rect width="64" height="44" rx="12" fill="#FF0000"/>
-        <polygon points="26,14 48,22 26,30" fill="#fff"/>
-        <rect x="0.5" y="0.5" width="63" height="43" rx="11.5" stroke="rgba(0,0,0,0.08)"/>
-      </svg>
-    </button>
+    <img [src]="p.imagen" [alt]="p.titulo" class="detalle-img-portada" />
+    
     <div class="trailer-modal" *ngIf="mostrarTrailer">
       <button class="trailer-close" (click)="cerrarTrailer()" aria-label="Cerrar tráiler">
         <span class="material-icons">close</span>
@@ -39,18 +28,24 @@
   <section class="detalle-info">
     <header>
       <h2 class="detalle-titulo">{{ p.titulo }}</h2>
-      <div class="detalle-edad">Para mayores de {{ p.edad }} años</div>
-      <div class="detalle-duracion">{{ p.duracion }}</div>
+      <div class="detalle-edad">Para mayores de {{ p.clasificacion }} años</div>
+      <div class="detalle-duracion">{{ p.duracion_minutos }}</div>
       <p class="detalle-descripcion">{{ p.descripcion }}</p>
     </header>
     <div class="detalle-idiomas">
       <button
-        *ngFor="let idioma of p.idiomas"
-        [class.active]="idioma === idiomaSeleccionado"
-        (click)="idiomaSeleccionado = idioma"
+        *ngFor="let idioma of funcionesPorIdioma"
+        [class.active]="idioma.idioma === idiomaSeleccionado"
+        (click)="idiomaSeleccionado = idioma.idioma; safeTrailerUrl = sanitizer.bypassSecurityTrustResourceUrl(idioma.trailer)"
       >
-        {{ idioma }}
+        {{ idioma.idioma }}
       </button>
+    </div>
+    <div class="detalle-horarios" *ngIf="obtenerHorariosPorIdioma().length > 0">
+      <h3>Horarios disponibles</h3>
+      <ul>
+        <li *ngFor="let horario of obtenerHorariosPorIdioma()">{{ horario }}</li>
+      </ul>
     </div>
     <hr>
     <div class="detalle-cantidad-precio">
@@ -62,9 +57,9 @@
           <button (click)="cambiarCantidad(1)">+</button>
         </div>
       </div>
-      <div class="detalle-precio">
+      <div class="detalle-precio" *ngIf="funcionesPorIdioma.length > 0">
         <span class="detalle-precio-label">Precio</span>
-        <span class="detalle-precio-valor">${{ p.precio }}</span>
+        <span class="detalle-precio-valor">${{ obtenerPrecioPorIdioma() }}</span>
       </div>
     </div>
     <hr>

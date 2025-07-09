@@ -33,7 +33,6 @@ export class FuncionesService {
   }
 
   getFuncionesConDetalles(): Observable<FuncionesList[]> {
-    // Primero intentamos el endpoint específico, si no existe usamos el básico
     return this.http.get<FuncionesList[]>(`${this.apiURL}`);
   }
 }

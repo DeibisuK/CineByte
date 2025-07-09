@@ -5,6 +5,8 @@ import { MovieNavigationService } from '../../services/navigation.service';
 import { CommonModule } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { RouterModule } from '@angular/router';
+import { Pelicula } from '../../../../../admin/models/pelicula.model';
+import { PeliculaService } from '../../../../../services/pelicula.service';
 
 @Component({
   selector: 'app-catalogo',
@@ -13,8 +15,8 @@ import { RouterModule } from '@angular/router';
   styleUrl: './catalogo.component.css'
 })
 export class CatalogoComponent {
-  peliculas: Movie[] = [];
-  peliculasFiltradas: Movie[] = [];
+  peliculas: Pelicula[] = [];
+  peliculasFiltradas: Pelicula[] = [];
   hoveredIndex: number = -1;
 
   menuActivo: 'formato' | 'genero' | 'idioma' = 'formato';
@@ -32,16 +34,16 @@ export class CatalogoComponent {
     idioma: []
   };
 
-  constructor(private moviesService: MovieService, private movieNav: MovieNavigationService) {}
+  constructor(private moviesService: PeliculaService, private movieNav: MovieNavigationService) {}
 
   ngOnInit(): void {
-    this.moviesService.getAllMovies().subscribe((peliculas: Movie[]) => {
+    this.moviesService.getPeliculasCompletas().subscribe((peliculas: Pelicula[]) => {
       this.peliculas = peliculas;
       this.peliculasFiltradas = peliculas;
 
-      this.filtros['formato'] = [...new Set(peliculas.flatMap(p => p.etiqueta))];
-      this.filtros['genero'] = [...new Set(peliculas.flatMap(p => p.generos))];
-      this.filtros['idioma'] = [...new Set(peliculas.flatMap(p => p.idiomas))];
+      this.filtros['formato'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.etiquetas)))];
+      this.filtros['genero'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.generos)))];
+      this.filtros['idioma'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.idiomas)))];
     });
   }
 
@@ -59,15 +61,15 @@ export class CatalogoComponent {
     this.peliculasFiltradas = this.peliculas.filter(pelicula => {
       const cumpleFormato =
         this.filtroActivo['formato'].length === 0 ||
-        this.filtroActivo['formato'].some(f => pelicula.etiqueta.includes(f));
+        this.filtroActivo['formato'].some(f => this.toStringArray(pelicula.etiquetas).includes(f));
 
       const cumpleGenero =
         this.filtroActivo['genero'].length === 0 ||
-        this.filtroActivo['genero'].some(g => pelicula.generos.includes(g));
+        this.filtroActivo['genero'].some(g => this.toStringArray(pelicula.generos).includes(g));
 
       const cumpleIdioma =
         this.filtroActivo['idioma'].length === 0 ||
-        this.filtroActivo['idioma'].some(i => pelicula.idiomas.includes(i));
+        this.filtroActivo['idioma'].some(i => this.toStringArray(pelicula.idiomas).includes(i));
 
       return cumpleFormato && cumpleGenero && cumpleIdioma;
     });
@@ -112,7 +114,16 @@ export class CatalogoComponent {
     }
   }
 
-  verDetalle(movie: Movie) {
+  verDetalle(movie: Pelicula) {
     this.movieNav.verDetalle(movie);
+  }
+
+   /**
+   * Convierte un array de números o strings a un array de strings
+   * @param arr Array de números o strings
+   * @returns Array de strings
+   */
+  toStringArray(arr: number[] | string[]): string[] {
+    return arr.map(x => x.toString());
   }
 }

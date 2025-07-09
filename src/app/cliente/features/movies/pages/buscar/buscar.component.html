@@ -9,23 +9,23 @@
     <div
       class="movie-card"
       *ngFor="let pelicula of resultados"
-      (mouseenter)="hoveredIndex = pelicula.id"
+      (mouseenter)="hoveredIndex = pelicula.id_pelicula"
       (mouseleave)="hoveredIndex = null"
       (click)="verDetalle(pelicula)"
-      [style.zIndex]="hoveredIndex === pelicula.id ? 2 : 1"
+      [style.zIndex]="hoveredIndex === pelicula.id_pelicula ? 2 : 1"
     >
-      <img [src]="pelicula.img" [alt]="pelicula.titulo" />
+      <img [src]="pelicula.imagen" [alt]="pelicula.titulo" />
 
-      <div class="hover-overlay" *ngIf="hoveredIndex === pelicula.id">
+      <div class="hover-overlay" *ngIf="hoveredIndex === pelicula.id_pelicula">
         {{ pelicula.descripcion.length > 150 ? (pelicula.descripcion | slice:0:150) + '...' : pelicula.descripcion }}
       </div>
 
       <div class="etiquetas">
-        <span class="etiqueta" *ngFor="let et of pelicula.etiqueta">{{ et }}</span>
+        <span class="etiqueta" *ngFor="let et of toStringArray(pelicula.etiquetas)">{{ et }}</span>
       </div>
 
       <div class="edad-icono">
-        <app-edades [edad]="pelicula.edad"></app-edades>
+        <app-edades [edad]="pelicula.clasificacion"></app-edades>
       </div>
 
       <div class="info">

@@ -42,17 +42,17 @@
   <div class="grid-cartelera"
      [ngClass]="{'solo-uno': peliculasFiltradas.length === 1, 'solo-dos': peliculasFiltradas.length === 2, 'solo-tres': peliculasFiltradas.length === 3, 'menu-abierto': menuAbierto}">
     <div class="movie-card" *ngFor="let pelicula of peliculasFiltradas"
-        (mouseenter)="hoveredIndex = pelicula.id"
+        (mouseenter)="hoveredIndex = pelicula.id_pelicula"
         (mouseleave)="hoveredIndex = -1"
         (click)="verDetalle(pelicula)"
-        [style.zIndex]="hoveredIndex === pelicula.id ? 2 : 1">
+        [style.zIndex]="hoveredIndex === pelicula.id_pelicula ? 2 : 1">
       <div class="etiquetas">
-        <span class="etiqueta" *ngFor="let et of pelicula.etiqueta">{{ et }}</span>
+        <span class="etiqueta" *ngFor="let et of toStringArray(pelicula.etiquetas)">{{ et }}</span>
       </div>
       <div class="edad-icono">
-        <app-edades [edad]="pelicula.edad"></app-edades>
+        <app-edades [edad]="pelicula.clasificacion"></app-edades>
       </div>
-      <img [src]="pelicula.img" [alt]="pelicula.titulo" />
+      <img [src]="pelicula.imagen" [alt]="pelicula.titulo" />
       <div class="hover-overlay">
         {{ pelicula.descripcion | slice: 0:150 }}{{ pelicula.descripcion.length > 150 ? '...' : '' }}
       </div>

@@ -1,159 +1,159 @@
 <nav class="navbar-container" [class.with-anuncio]="anuncioVisible">
-    <div class="navbar-content">
-      <!-- Botón hamburguesa SOLO en móvil -->
-      <button class="menu-toggle" (click)="menuAbierto = !menuAbierto">
-        <span class="material-icons">menu</span>
-      </button>
+  <div class="navbar-content">
+    <!-- Botón hamburguesa SOLO en móvil -->
+    <button class="menu-toggle" (click)="menuAbierto = !menuAbierto">
+      <span class="material-icons">menu</span>
+    </button>
 
-      <!-- Logo -->
-      <a class="logo" [routerLink]="['inicio']">
-        <img src="Disenos Proyecto/Imagotipo blanco.svg" alt="Logo" [class.logo-invertido]="!modoOscuro" />
-      </a>
+    <!-- Logo -->
+    <a class="logo" [routerLink]="['inicio']">
+      <img src="Disenos Proyecto/Imagotipo blanco.svg" alt="Logo" [class.logo-invertido]="!modoOscuro" />
+    </a>
 
-      <!-- Links SOLO en escritorio -->
-      <ul class="nav-links">
-        <li><a routerLink="/inicio" routerLinkActive="active-link">INICIO</a></li>
-        <li><a routerLink="/peliculas" routerLinkActive="active-link">PELÍCULAS</a></li>
-        <li><a routerLink="/promociones" routerLinkActive="active-link">PROMOCIONES</a></li>
-      </ul>
+    <!-- Links SOLO en escritorio -->
+    <ul class="nav-links">
+      <li><a routerLink="/inicio" routerLinkActive="active-link">INICIO</a></li>
+      <li><a routerLink="/peliculas" routerLinkActive="active-link">PELÍCULAS</a></li>
+      <li><a routerLink="/promociones" routerLinkActive="active-link">PROMOCIONES</a></li>
+    </ul>
 
-      <!-- Selector sede SOLO en escritorio -->
-      <div class="selector-sede">
-        <button class="btn-selector-sede">
-          <span class="material-icons">location_on</span>
-          <span>
-            {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
-          </span>
-          <span class="material-icons flecha">expand_more</span>
-        </button>
-
-        <div class="menu-sedes">
-          <div *ngFor="let ciudad of ciudadesConSedes">
-            <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
-            <hr class="linea-ciudad" />
-            <button class="sede-opcion" *ngFor="let sede of ciudad.sedes" (click)="seleccionarSede(sede)">
-              {{ sede.nombre }} - {{ sede.direccion }}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Buscador SOLO en escritorio -->
-      <div class="buscador">
-        <span class="material-icons">search</span>
-        <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
-      </div>
-
-      <!-- Switch SOLO en escritorio -->
-      <div class="switch-container">
-        <label class="theme-switch">
-          <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
-          <span class="slider round"></span>
-        </label>
-      </div>
-
-      <div *ngIf="usuario; else noLogueado" class="menu-container usuario">
-        <span class="user-display-name">
-          {{ truncateUsername(usuario.displayName) }}
-          <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="6 9 12 15 18 9"></polyline>
-          </svg>
+    <!-- Selector sede SOLO en escritorio -->
+    <div class="selector-sede">
+      <button class="btn-selector-sede">
+        <span class="material-icons">location_on</span>
+        <span>
+          {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
         </span>
-
-        <div class="dropdown-menu">
-          <button class="dropdown-item" (click)="verPerfil()">
-            <i class="fa-solid fa-user"></i>
-            Mi cuenta
-          </button>
-
-          <button class="dropdown-item" [routerLink]="['metodos-de-pago']">
-            <i class="fa-solid fa-credit-card"></i>
-            Métodos de Pago
-          </button>
-
-          <button class="dropdown-item" [routerLink]="['contactanos']">
-            <i class="fa-solid fa-phone-volume"></i>
-            Contacto
-          </button>
-
-          <button class="dropdown-item" [routerLink]="['acerca-de-nosotros']">
-            <i class="fa-solid fa-circle-info"></i>
-            Acerca de Cinebyte
-          </button>
-
-          <button class="dropdown-item logout" (click)="cerrarSesion()">
-            <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-              <polyline points="17 16 22 12 17 8"></polyline>
-              <line x1="22" y1="12" x2="10" y2="12"></line>
-            </svg>
-            Cerrar sesión
-          </button>
-
-        </div>
-      </div>
-
-      <ng-template #noLogueado>
-        <button (click)="openLoginModal()" class="usuario">
-          <span class="material-icons">account_circle</span>
-        </button>
-      </ng-template>
-
-      <div>
-
-      </div>
-    </div>
-
-    <!-- Segunda fila SOLO en móvil -->
-    <div class="navbar-mobile-row">
-      <div class="selector-sede-movil" [class.abierto]="menuSedesAbierto">
-        <button class="btn-selector-sede" (click)="abrirMenuSedes()">
-          <span class="material-icons">location_on</span>
-          <span>
-            {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
-          </span>
-          <span class="material-icons flecha" [class.abierto]="menuSedesAbierto">expand_more</span>
-        </button>
-
-        <div class="menu-sedes" *ngIf="menuSedesAbierto">
-          <div *ngFor="let ciudad of ciudadesConSedes">
-            <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
-            <hr class="linea-ciudad" />
-            <button class="sede-opcion" *ngFor="let sede of ciudad.sedes" (click)="seleccionarSede(sede)">
-              {{ sede.nombre }} - {{ sede.direccion }}
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="switch-container">
-        <label class="theme-switch">
-          <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
-          <span class="slider round"></span>
-        </label>
-      </div>
-    </div>
-
-    <!-- Menú hamburguesa SOLO en móvil -->
-
-    <div class="mobile-menu" *ngIf="menuAbierto" [ngClass]="{'closing': menuCerrando}">
-      <button class="close-menu" (click)="cerrarMenu()">
-        <span class="material-icons">close</span>
+        <span class="material-icons flecha">expand_more</span>
       </button>
-      <hr class="mobile-menu-divider" />
-      <ul>
-        <li><a routerLink="inicio" (click)="navegarCerrarMenu()">INICIO</a></li>
-        <li><a routerLink="peliculas" (click)="navegarCerrarMenu()">PELÍCULAS</a></li>
-        <li><a routerLink="promociones" (click)="navegarCerrarMenu()">PROMOCIONES</a></li>
-      </ul>
-      <div class="buscador">
-        <span class="material-icons">search</span>
-        <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+
+      <div class="menu-sedes">
+        <div *ngFor="let ciudad of ciudadesConSedes">
+          <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
+          <hr class="linea-ciudad" />
+          <button class="sede-opcion" *ngFor="let sede of ciudad.sedes" (click)="seleccionarSede(sede)">
+            {{ sede.nombre }} - {{ sede.direccion }}
+          </button>
+        </div>
       </div>
     </div>
 
-  </nav>
+    <!-- Buscador SOLO en escritorio -->
+    <div class="buscador">
+      <span class="material-icons">search</span>
+      <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+    </div>
+
+    <!-- Switch SOLO en escritorio -->
+    <div class="switch-container">
+      <label class="theme-switch">
+        <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+
+    <div *ngIf="usuario; else noLogueado" class="menu-container usuario">
+      <span class="user-display-name">
+        {{ truncateUsername(usuario.displayName) }}
+        <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </span>
+
+      <div class="dropdown-menu">
+        <button class="dropdown-item" (click)="verPerfil()">
+          <i class="fa-solid fa-user"></i>
+          Mi cuenta
+        </button>
+
+        <button class="dropdown-item" [routerLink]="['metodos-de-pago']">
+          <i class="fa-solid fa-credit-card"></i>
+          Métodos de Pago
+        </button>
+
+        <button class="dropdown-item" [routerLink]="['contactanos']">
+          <i class="fa-solid fa-phone-volume"></i>
+          Contacto
+        </button>
+
+        <button class="dropdown-item" [routerLink]="['acerca-de-nosotros']">
+          <i class="fa-solid fa-circle-info"></i>
+          Acerca de Cinebyte
+        </button>
+
+        <button class="dropdown-item logout" (click)="cerrarSesion()">
+          <svg class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="17 16 22 12 17 8"></polyline>
+            <line x1="22" y1="12" x2="10" y2="12"></line>
+          </svg>
+          Cerrar sesión
+        </button>
+
+      </div>
+    </div>
+
+    <ng-template #noLogueado>
+      <button (click)="openLoginModal()" class="usuario">
+        <span class="material-icons">account_circle</span>
+      </button>
+    </ng-template>
+
+    <div>
+
+    </div>
+  </div>
+
+  <!-- Segunda fila SOLO en móvil -->
+  <div class="navbar-mobile-row">
+    <div class="selector-sede-movil" [class.abierto]="menuSedesAbierto">
+      <button class="btn-selector-sede" (click)="abrirMenuSedes()">
+        <span class="material-icons">location_on</span>
+        <span>
+          {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
+        </span>
+        <span class="material-icons flecha" [class.abierto]="menuSedesAbierto">expand_more</span>
+      </button>
+
+      <div class="menu-sedes" *ngIf="menuSedesAbierto">
+        <div *ngFor="let ciudad of ciudadesConSedes">
+          <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
+          <hr class="linea-ciudad" />
+          <button class="sede-opcion" *ngFor="let sede of ciudad.sedes" (click)="seleccionarSede(sede)">
+            {{ sede.nombre }} - {{ sede.direccion }}
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="switch-container">
+      <label class="theme-switch">
+        <input type="checkbox" [checked]="modoOscuro" (change)="cambiarTema()" />
+        <span class="slider round"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Menú hamburguesa SOLO en móvil -->
+
+  <div class="mobile-menu" *ngIf="menuAbierto" [ngClass]="{'closing': menuCerrando}">
+    <button class="close-menu" (click)="cerrarMenu()">
+      <span class="material-icons">close</span>
+    </button>
+    <hr class="mobile-menu-divider" />
+    <ul>
+      <li><a routerLink="inicio" (click)="navegarCerrarMenu()">INICIO</a></li>
+      <li><a routerLink="peliculas" (click)="navegarCerrarMenu()">PELÍCULAS</a></li>
+      <li><a routerLink="promociones" (click)="navegarCerrarMenu()">PROMOCIONES</a></li>
+    </ul>
+    <div class="buscador">
+      <span class="material-icons">search</span>
+      <input [(ngModel)]="busqueda" (keyup.enter)="buscarPelicula()" placeholder="Buscar película..." />
+    </div>
+  </div>
+
+</nav>
 
 
 <app-login [showLoginRegisterModal]="showLoginModal" (cerrarLoginRegister)="closeLoginModal()"></app-login>

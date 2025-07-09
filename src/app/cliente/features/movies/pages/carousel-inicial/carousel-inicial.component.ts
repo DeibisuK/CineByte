@@ -3,6 +3,7 @@ import { Movie } from '../../../../../core/models/movie.model';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
+import { Pelicula } from '../../../../../admin/models/pelicula.model';
 
 @Component({
   selector: 'app-carousel-inicial',
@@ -69,7 +70,7 @@ ngOnInit(): void {
     this.autoSlideInterval = setInterval(() => this.next(), 5000);
   }
 
-  verDetalle(movie: Movie) {
+  verDetalle(movie: Pelicula) {
     this.movieNav.verDetalle(movie);
   }
 }

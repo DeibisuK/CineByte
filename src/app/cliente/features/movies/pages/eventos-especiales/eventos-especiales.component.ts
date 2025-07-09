@@ -4,6 +4,7 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
+import { Pelicula } from '../../../../../admin/models/pelicula.model';
 
 @Component({
   selector: 'app-eventos-especiales',
@@ -95,7 +96,7 @@ export class EventosEspecialesComponent implements OnInit, OnDestroy {
     }, 5000);
   }
 
-    verDetalle(movie: Movie) {
+    verDetalle(movie: Pelicula) {
     this.movieNav.verDetalle(movie);
   }
 }

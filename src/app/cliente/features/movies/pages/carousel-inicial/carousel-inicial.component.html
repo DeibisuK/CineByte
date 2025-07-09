@@ -12,7 +12,6 @@
       <button class="estreno-btn"
       (mouseenter)="hoveredIndex = movie.id"
     (mouseleave)="hoveredIndex = -1"
-    (click)="verDetalle(movie)"
     [style.zIndex]="hoveredIndex === movie.id ? 2 : 1">Ver más</button>
     </div>
     <div class="carrusel-controles">
