@@ -20,10 +20,45 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="id_pais_origen">País Origen</label>
-            <select formControlName="id_pais_origen" id="id_pais_origen" class="form-select">
-              <option value="">Seleccione país</option>
-              <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
-            </select>
+            <div class="dropdown-container paises" 
+                 [class.active]="showPaisesDropdown">
+              <input type="text" 
+                     id="id_pais_origen_search" 
+                     class="dropdown-input form-select"
+                     [(ngModel)]="paisSearchTerm"
+                     [ngModelOptions]="{standalone: true}"
+                     placeholder="Buscar país..." 
+                     (input)="filterPaises($event)"
+                     (focus)="showPaisesDropdown = true"
+                     (blur)="hidePaisesDropdown()" 
+                     autocomplete="off"
+                     aria-label="Buscar país"
+                     [attr.aria-expanded]="showPaisesDropdown" 
+                     aria-haspopup="listbox">
+              <div class="dropdown-arrow" 
+                   (click)="togglePaisesDropdown()" 
+                   role="button"
+                   aria-label="Abrir lista de países">
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <ul class="dropdown-list"
+                  *ngIf="showPaisesDropdown && filteredPaises.length > 0"
+                  role="listbox" 
+                  aria-label="Lista de países">
+                <li *ngFor="let pais of filteredPaises; let i = index" 
+                    class="dropdown-item"
+                    [class.selected]="formDistribuidor.get('id_pais_origen')?.value === pais.id_pais"
+                    (mousedown)="selectPais(pais)" 
+                    role="option"
+                    [style.animation-delay]="(i * 50) + 'ms'">
+                  {{pais.nombre}}
+                </li>
+              </ul>
+              <div *ngIf="showPaisesDropdown && filteredPaises.length === 0" 
+                   class="no-results">
+                No se encontraron países
+              </div>
+            </div>
           </div>
         </div>
         
@@ -86,9 +121,44 @@
                 <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">
                   {{obtenerNombrePais(distribuidor.id_pais_origen)}}
                 </span>
-                <select *ngIf="distribuidorEditando === distribuidor.id_distribuidora" [(ngModel)]="paisOrigenTemporal" class="edit-select">
-                  <option *ngFor="let pais of paises" [value]="pais.id_pais">{{pais.nombre}}</option>
-                </select>
+                <div *ngIf="distribuidorEditando === distribuidor.id_distribuidora" class="dropdown-container paises-edit" 
+                     [class.active]="showPaisesEditDropdown">
+                  <input type="text" 
+                         class="dropdown-input edit-select"
+                         [(ngModel)]="paisEditSearchTerm"
+                         [ngModelOptions]="{standalone: true}"
+                         placeholder="Buscar país..." 
+                         (input)="filterPaisesEdit($event)"
+                         (focus)="showPaisesEditDropdown = true"
+                         (blur)="hidePaisesEditDropdown()" 
+                         autocomplete="off"
+                         aria-label="Buscar país"
+                         [attr.aria-expanded]="showPaisesEditDropdown" 
+                         aria-haspopup="listbox">
+                  <div class="dropdown-arrow" 
+                       (click)="togglePaisesEditDropdown()" 
+                       role="button"
+                       aria-label="Abrir lista de países">
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <ul class="dropdown-list"
+                      *ngIf="showPaisesEditDropdown && filteredPaisesEdit.length > 0"
+                      role="listbox" 
+                      aria-label="Lista de países">
+                    <li *ngFor="let pais of filteredPaisesEdit; let i = index" 
+                        class="dropdown-item"
+                        [class.selected]="paisOrigenTemporal === pais.id_pais"
+                        (mousedown)="selectPaisEdit(pais)" 
+                        role="option"
+                        [style.animation-delay]="(i * 50) + 'ms'">
+                      {{pais.nombre}}
+                    </li>
+                  </ul>
+                  <div *ngIf="showPaisesEditDropdown && filteredPaisesEdit.length === 0" 
+                       class="no-results">
+                    No se encontraron países
+                  </div>
+                </div>
               </td>
               <td>
                 <span *ngIf="distribuidorEditando !== distribuidor.id_distribuidora">

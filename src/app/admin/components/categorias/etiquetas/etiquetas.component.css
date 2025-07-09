@@ -20,11 +20,10 @@
 }
 
 .generos-title {
-  font-size: 1.8rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: var(--yellow);
   margin: 0;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 

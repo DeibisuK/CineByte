@@ -1,5 +1,5 @@
 <div class="promociones-container">
-    <div class="flex-header">
+    <div class="flex-header" style="margin-bottom: 3rem;">
         <h1 class="titulo-promociones">{{ !isClientRoute() ? 'Promociones' : 'Administrar Promociones' }}</h1>
         <button *ngIf="isClientRoute()" class="btn-agregar-promo" routerLink="/admin/promociones/add">
             <svg class="icono-mas" viewBox="0 0 20 20" fill="currentColor">

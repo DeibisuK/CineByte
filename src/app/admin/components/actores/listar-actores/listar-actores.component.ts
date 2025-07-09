@@ -35,6 +35,16 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
   isDeleting = false;
   isUpdating = false;
 
+  // Propiedades para el dropdown con buscador - Formulario
+  paisSearchTerm: string = '';
+  filteredPaises: { id_pais: number; nombre: string }[] = [];
+  showPaisesDropdown: boolean = false;
+
+  // Propiedades para el dropdown con buscador - Edición
+  paisEditSearchTerm: string = '';
+  filteredPaisesEdit: { id_pais: number; nombre: string }[] = [];
+  showPaisesEditDropdown: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private actorService: ActoresService,
@@ -89,7 +99,10 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (data) => {
-            this.paises = data;
+            // Ordenar alfabéticamente
+            this.paises = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            this.filteredPaises = [...this.paises];
+            this.filteredPaisesEdit = [...this.paises];
             this.isLoadingPaises = false;
             resolve();
           },
@@ -151,6 +164,11 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.apellidosTemporal = actor.apellidos;
     this.fechaNacimientoTemporal = this.formatDateForInput(new Date(actor.fecha_nacimiento));
     this.nacionalidadTemporal = actor.id_nacionalidad;
+    
+    // Inicializar dropdown de edición
+    const paisSeleccionado = this.paises.find(p => p.id_pais === actor.id_nacionalidad);
+    this.paisEditSearchTerm = paisSeleccionado ? paisSeleccionado.nombre : '';
+    this.filteredPaisesEdit = [...this.paises];
   }
 
   private formatDateForInput(date: Date): string {
@@ -279,5 +297,61 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     // Marcar el formulario como pristine y untouched
     this.formActor.markAsPristine();
     this.formActor.markAsUntouched();
+    
+    // Resetear dropdown
+    this.paisSearchTerm = '';
+    this.filteredPaises = [...this.paises];
+  }
+
+  // Métodos para el dropdown con buscador - Formulario
+  filterPaises(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredPaises = this.paises.filter(pais =>
+      pais.nombre.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectPais(pais: { id_pais: number; nombre: string }): void {
+    this.formActor.get('id_nacionalidad')?.setValue(pais.id_pais);
+    this.paisSearchTerm = pais.nombre;
+    this.showPaisesDropdown = false;
+  }
+
+  togglePaisesDropdown(): void {
+    this.showPaisesDropdown = !this.showPaisesDropdown;
+    if (this.showPaisesDropdown) {
+      this.filteredPaises = [...this.paises];
+    }
+  }
+
+  hidePaisesDropdown(): void {
+    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.filteredPaises = [...this.paises];
+  }
+
+  // Métodos para el dropdown con buscador - Edición
+  filterPaisesEdit(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredPaisesEdit = this.paises.filter(pais =>
+      pais.nombre.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectPaisEdit(pais: { id_pais: number; nombre: string }): void {
+    this.nacionalidadTemporal = pais.id_pais;
+    this.paisEditSearchTerm = pais.nombre;
+    this.showPaisesEditDropdown = false;
+  }
+
+  togglePaisesEditDropdown(): void {
+    this.showPaisesEditDropdown = !this.showPaisesEditDropdown;
+    if (this.showPaisesEditDropdown) {
+      this.filteredPaisesEdit = [...this.paises];
+    }
+  }
+
+  hidePaisesEditDropdown(): void {
+    setTimeout(() => this.showPaisesEditDropdown = false, 200);
+    this.filteredPaisesEdit = [...this.paises];
   }
 }
