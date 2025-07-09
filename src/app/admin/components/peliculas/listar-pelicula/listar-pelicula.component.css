@@ -54,7 +54,7 @@
     margin: 0;
     font-size: 2.25rem;
     font-weight: 700;
-    color: var(--yellow);
+  color: var(--text-color);
 }
 
 /* Estadísticas */

@@ -1,6 +1,6 @@
 <div class="sedes-container" [class.modo-cliente]="isClientRoute()">
   <div class="flex-header" style="margin-bottom: 3rem;">
-    <h1 class="titulo-sedes">{{ isClientRoute() ? 'Sedes de CineByte' : 'Administrar Sedes' }}</h1>
+    <h1 class="titulo-sedes">{{ isClientRoute() ? 'SEDES DE CINEBYTE' : 'Administrar Sedes' }}</h1>
     <button *ngIf="!isClientRoute()" class="btn-agregar-sede" routerLink="/admin/sedes/add">
       <svg class="icono-mas" viewBox="0 0 20 20" fill="currentColor">
         <path

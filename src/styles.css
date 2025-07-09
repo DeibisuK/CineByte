@@ -256,3 +256,8 @@ body.light-mode .swal2-cancel {
   color: var(--text-color) !important;
   border: 1px solid var(--footer-line) !important;
 }
+
+/* Bloquear scroll del body cuando el menú desplegable de catálogo está abierto */
+body.menu-abierto {
+  overflow: hidden !important;
+}

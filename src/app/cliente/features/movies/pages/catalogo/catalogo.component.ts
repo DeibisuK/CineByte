@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Movie } from '../../../../../core/models/movie.model';
 import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
@@ -14,7 +14,7 @@ import { PeliculaService } from '../../../../../services/pelicula.service';
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.css'
 })
-export class CatalogoComponent {
+export class CatalogoComponent implements OnDestroy {
   peliculas: Pelicula[] = [];
   peliculasFiltradas: Pelicula[] = [];
   hoveredIndex: number = -1;
@@ -80,14 +80,26 @@ export class CatalogoComponent {
   cambiarMenu(menu: 'formato' | 'genero' | 'idioma') {
     if (this.menuActivo === menu && this.menuAbierto) {
       this.menuAbierto = false;
+      this.removerClaseMenuAbierto();
     } else {
       this.menuActivo = menu;
       this.menuAbierto = true;
+      this.agregarClaseMenuAbierto();
     }
   }
 
   cerrarMenu() {
     this.menuAbierto = false;
+    this.removerClaseMenuAbierto();
+  }
+
+  // Métodos para controlar el scroll del body
+  private agregarClaseMenuAbierto(): void {
+    document.body.classList.add('menu-abierto');
+  }
+
+  private removerClaseMenuAbierto(): void {
+    document.body.classList.remove('menu-abierto');
   }
 
   // Añade este método para saber si hay filtros activos
@@ -125,5 +137,9 @@ export class CatalogoComponent {
    */
   toStringArray(arr: number[] | string[]): string[] {
     return arr.map(x => x.toString());
+  }
+
+  ngOnDestroy(): void {
+    this.removerClaseMenuAbierto();
   }
 }

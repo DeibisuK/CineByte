@@ -8,7 +8,7 @@ import { Pelicula } from '../../../../../admin/models/pelicula.model';
 
 @Component({
   selector: 'app-eventos-especiales',
-  imports: [CommonModule,EdadesComponent],
+  imports: [CommonModule],
   templateUrl: './eventos-especiales.component.html',
   styleUrl: './eventos-especiales.component.css'
 })

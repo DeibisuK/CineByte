@@ -209,7 +209,7 @@
   margin: 0; /* Eliminamos cualquier margen por defecto */
   font-size: 2.25rem;
   font-weight: 700;
-  color: var(--yellow);
+  color: var(--text-color);
 }
 
 /* Responsive */

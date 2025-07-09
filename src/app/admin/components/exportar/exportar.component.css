@@ -14,7 +14,7 @@
 .export-title {
   font-size: 2.25rem;
   font-weight: 700;
-  color: var(--yellow);
+  color: var(--text-color);
   margin-bottom: 10px;
   letter-spacing: 1px;
   text-align: justify;
