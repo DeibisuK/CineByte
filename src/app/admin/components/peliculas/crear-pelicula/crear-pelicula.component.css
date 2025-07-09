@@ -1,3 +1,12 @@
+/* === ESTILOS GLOBALES DEL COMPONENTE === */
+:host {
+  font-family: 'Open Sans', sans-serif;
+}
+
+* {
+  font-family: 'Open Sans', sans-serif;
+}
+
 /* === CARRUSEL DE IMÁGENES ADICIONALES FIJO === */
 .carousel-wrapper {
   display: flex;
@@ -182,11 +191,11 @@
   border: 2px solid var(--dropdown-border);
   border-radius: 16px;
   font-size: 1.05rem;
-  background: linear-gradient(135deg, var(--bg-color), var(--footer-esp));
+  background: var(--bg-color); /* Fondo sólido sin gradient */
   color: var(--text-color);
   width: 100%;
   box-sizing: border-box;
-  font-family: inherit;
+  font-family: 'Open Sans', sans-serif;
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
@@ -208,7 +217,7 @@
 .dropdown-input:focus {
   outline: none;
   border-color: var(--yellow);
-  background: var(--footer-esp);
+  background: var(--bg-color); /* Mantener fondo consistente */
   transform: translateY(-2px);
   box-shadow: 
     0 10px 30px rgba(255, 215, 0, 0.15),
@@ -476,13 +485,113 @@
   }
 }
 
-/* Efecto de brillo en hover */
-.dropdown-input:hover {
-  background: linear-gradient(135deg, var(--footer-esp), var(--dropdown-bg));
-  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.05);
+/* === DROPDOWN DE CLASIFICACION Y ESTADO === */
+.dropdown-container.clasificacion .dropdown-input,
+.dropdown-container.estado .dropdown-input {
+  background: var(--bg-color) !important; /* Fondo negro sólido */
+  border: 2px solid var(--dropdown-border) !important;
+  color: var(--text-color) !important;
+  opacity: 1 !important;
 }
 
-/* === FIN ESTADOS ESPECIALES === */
+.dropdown-container.clasificacion .dropdown-input:focus,
+.dropdown-container.estado .dropdown-input:focus {
+  border-color: var(--yellow) !important;
+  background: var(--footer-esp) !important;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1) !important;
+}
+
+.dropdown-container.clasificacion .dropdown-input.placeholder,
+.dropdown-container.estado .dropdown-input.placeholder {
+  color: var(--footer-line) !important;
+}
+
+.dropdown-container.clasificacion .dropdown-arrow,
+.dropdown-container.estado .dropdown-arrow {
+  color: var(--footer-line);
+  transition: all 0.3s ease;
+}
+
+.dropdown-container.clasificacion.active .dropdown-arrow,
+.dropdown-container.estado.active .dropdown-arrow {
+  color: #ffd700 !important;
+  transform: rotate(180deg) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* También cuando está en focus */
+.form-field .dropdown-container.clasificacion:focus-within .dropdown-arrow,
+.form-field .dropdown-container.estado:focus-within .dropdown-arrow {
+  color: var(--yellow) !important;
+}
+
+/* Y cuando está siendo hover */
+.form-field .dropdown-container.clasificacion:hover .dropdown-arrow,
+.form-field .dropdown-container.estado:hover .dropdown-arrow {
+  color: var(--yellow) !important;
+}
+
+/* Agregar cursor pointer para evitar cursor de carga */
+.dropdown-container.clasificacion .dropdown-input,
+.dropdown-container.estado .dropdown-input {
+  cursor: pointer !important;
+}
+
+.dropdown-container.clasificacion .dropdown-input:hover,
+.dropdown-container.estado .dropdown-input:hover {
+  cursor: pointer !important;
+}
+
+.dropdown-container.clasificacion .dropdown-input:focus,
+.dropdown-container.estado .dropdown-input:focus {
+  cursor: pointer !important;
+}
+
+/* === REGLAS DE MÁXIMA PRIORIDAD PARA CURSOR === */
+.form-field .dropdown-container.clasificacion .dropdown-input[readonly],
+.form-field .dropdown-container.estado .dropdown-input[readonly] {
+  cursor: pointer !important;
+}
+
+.form-field .dropdown-container.clasificacion .dropdown-input[readonly]:hover,
+.form-field .dropdown-container.estado .dropdown-input[readonly]:hover {
+  cursor: pointer !important;
+}
+
+.form-field .dropdown-container.clasificacion .dropdown-input[readonly]:focus,
+.form-field .dropdown-container.estado .dropdown-input[readonly]:focus {
+  cursor: pointer !important;
+}
+
+/* === CORRECCIÓN ESPECÍFICA PARA CURSOR DE CARGA === */
+input[readonly].dropdown-input {
+  cursor: pointer !important;
+}
+
+input[readonly].dropdown-input:hover {
+  cursor: pointer !important;
+}
+
+input[readonly].dropdown-input:focus {
+  cursor: pointer !important;
+}
+
+/* Asegurar que la flecha cambie de color correctamente */
+.dropdown-container.clasificacion:hover .dropdown-arrow,
+.dropdown-container.estado:hover .dropdown-arrow {
+  color: var(--yellow);
+}
+
+/* === PLACEHOLDER STYLING === */
+.dropdown-input.placeholder {
+  color: var(--footer-line);
+  font-style: italic;
+}
+
+.dropdown-input:not(.placeholder) {
+  color: var(--text-color);
+  font-weight: 500;
+}
 
 /* Responsivo */
 @media (max-width: 768px) {
@@ -520,6 +629,11 @@
   .upload-label i {
     font-size: 2rem;
   }
+
+  .tooltip-content {
+    min-width: 280px;
+    font-size: 0.85rem;
+  }
 }
 
 .main-content {
@@ -553,6 +667,25 @@
   align-items: center;
   margin-bottom: 40px;
   animation: fadeInDown 0.8s ease-out;
+}
+
+.back-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 20px;
+  opacity: 0.8;
+}
+
+.back-link:hover {
+  opacity: 1;
+  color: var(--yellow);
+}
+
+.back-link i {
+  margin-right: 8px;
 }
 
 .page-header h2 {
@@ -722,8 +855,8 @@
   color: var(--text-color);
   font-weight: 700;
   margin-bottom: 10px;
+  font: 'Open Sans', sans-serif;
   font-size: 1rem;
-  text-transform: uppercase;
   letter-spacing: 0.8px;
 }
 
@@ -780,7 +913,7 @@
   font-weight: 700;
   margin-bottom: 10px;
   font-size: 1rem;
-  text-transform: uppercase;
+  font: 'Open Sans', sans-serif;
   letter-spacing: 0.8px;
 }
 
@@ -1169,4 +1302,38 @@ app-crear-distribuidor .form-input {
   width: 100% !important;
   padding: 0.75rem 1rem !important;
   font-size: 0.95rem !important;
+}
+
+/* ============================================================ */
+/* === CORRECCIONES FINALES PARA FLECHA Y CURSOR === */
+/* ============================================================ */
+
+/* FLECHA AMARILLA - MÁXIMA PRIORIDAD */
+.dropdown-container.clasificacion.active .dropdown-arrow,
+.dropdown-container.estado.active .dropdown-arrow {
+  color: #ffd700 !important;
+  transform: rotate(180deg) !important;
+  transition: all 0.3s ease !important;
+}
+
+/* CURSOR POINTER - MÁXIMA PRIORIDAD */
+.dropdown-container.clasificacion input[readonly],
+.dropdown-container.estado input[readonly],
+.dropdown-container.clasificacion .dropdown-input,
+.dropdown-container.estado .dropdown-input {
+  cursor: pointer !important;
+}
+
+.dropdown-container.clasificacion input[readonly]:hover,
+.dropdown-container.estado input[readonly]:hover,
+.dropdown-container.clasificacion .dropdown-input:hover,
+.dropdown-container.estado .dropdown-input:hover {
+  cursor: pointer !important;
+}
+
+.dropdown-container.clasificacion input[readonly]:focus,
+.dropdown-container.estado input[readonly]:focus,
+.dropdown-container.clasificacion .dropdown-input:focus,
+.dropdown-container.estado .dropdown-input:focus {
+  cursor: pointer !important;
 }

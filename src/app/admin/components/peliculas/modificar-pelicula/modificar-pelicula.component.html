@@ -1,12 +1,9 @@
 <div class="main-content">
     <div class="content-wrapper">
         <div class="page-header">
-            <button class="btn btn-primary" routerLink="/admin/peliculas/list"
-                style="height: 50px; background: linear-gradient(135deg, #FFD700, #FFA500); border: none;">
-                <a  class="text-white" style="text-decoration: none;">
-                    <i class="fa-solid fa-arrow-left"></i> Volver
-                </a>
-            </button>
+            <a routerLink="/admin/peliculas/list" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i> Volver
+            </a>
             <h2>Modificar Película</h2>
         </div>
 
@@ -69,12 +66,35 @@
                         </div>
                         <div class="form-field">
                             <label for="clasificacion">Clasificación</label>
-                            <select id="clasificacion" formControlName="clasificacion" required>
-                                <option value="">Seleccione una clasificación</option>
-                                <option *ngFor="let clasificacion of clasificaciones" [value]="clasificacion">
-                                    {{ clasificacion }}
-                                </option>
-                            </select>
+                            <div class="dropdown-container clasificacion" 
+                                 [class.active]="showClasificacionDropdown">
+                                <input type="text" 
+                                       id="clasificacion" 
+                                       class="dropdown-input" 
+                                       [value]="selectedClasificacion || 'Seleccione una clasificación'"
+                                       readonly
+                                       (focus)="showClasificacionDropdown = true"
+                                       (blur)="hideClasificacionDropdown()" 
+                                       [class.placeholder]="!selectedClasificacion"
+                                       autocomplete="off">
+                                <div class="dropdown-arrow" 
+                                     (click)="toggleClasificacionDropdown()" 
+                                     role="button">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <ul class="dropdown-list" 
+                                    *ngIf="showClasificacionDropdown"
+                                    role="listbox">
+                                    <li *ngFor="let clasificacion of clasificaciones; let i = index" 
+                                        class="dropdown-item"
+                                        [class.selected]="selectedClasificacion === clasificacion"
+                                        (mousedown)="selectClasificacion(clasificacion)" 
+                                        role="option"
+                                        [style.animation-delay]="(i * 50) + 'ms'">
+                                        {{clasificacion}}
+                                    </li>
+                                </ul>
+                            </div>
                             <div *ngIf="peliculaForm.get('clasificacion')?.invalid && peliculaForm.get('clasificacion')?.touched"
                                 class="validation-error">
                                 La clasificación es obligatoria.
@@ -185,12 +205,35 @@
 
                         <div class="form-field">
                             <label for="estado">Estado</label>
-                            <select id="estado" formControlName="estado">
-                                <option value="">Seleccione un estado</option>
-                                <option value="activo">Estreno</option>
-                                <option value="proximamente">Próximamente</option>
-                                <option value="retirada">Retirada</option>
-                            </select>
+                            <div class="dropdown-container estado" 
+                                 [class.active]="showEstadoDropdown">
+                                <input type="text" 
+                                       id="estado" 
+                                       class="dropdown-input" 
+                                       [value]="selectedEstado?.label || 'Seleccione un estado'"
+                                       readonly
+                                       (focus)="showEstadoDropdown = true"
+                                       (blur)="hideEstadoDropdown()" 
+                                       [class.placeholder]="!selectedEstado"
+                                       autocomplete="off">
+                                <div class="dropdown-arrow" 
+                                     (click)="toggleEstadoDropdown()" 
+                                     role="button">
+                                    <i class="fas fa-chevron-down"></i>
+                                </div>
+                                <ul class="dropdown-list" 
+                                    *ngIf="showEstadoDropdown"
+                                    role="listbox">
+                                    <li *ngFor="let estado of estados; let i = index" 
+                                        class="dropdown-item"
+                                        [class.selected]="selectedEstado?.value === estado.value"
+                                        (mousedown)="selectEstado(estado)" 
+                                        role="option"
+                                        [style.animation-delay]="(i * 50) + 'ms'">
+                                        {{estado.label}}
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="field-row">

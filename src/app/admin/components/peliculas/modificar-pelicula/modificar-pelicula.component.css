@@ -237,6 +237,25 @@
   animation: fadeInDown 0.8s ease-out;
 }
 
+.back-link {
+  color: var(--text-color);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 20px;
+  opacity: 0.8;
+}
+
+.back-link:hover {
+  opacity: 1;
+  color: var(--yellow);
+}
+
+.back-link i {
+  margin-right: 8px;
+}
+
 .page-header h2 {
   flex: 1;
   font-size: 2.5rem;
@@ -405,7 +424,7 @@
   font-weight: 700;
   margin-bottom: 10px;
   font-size: 1rem;
-  text-transform: uppercase;
+  font: 'Open Sans', sans-serif;
   letter-spacing: 0.8px;
 }
 
@@ -462,7 +481,7 @@
   font-weight: 700;
   margin-bottom: 10px;
   font-size: 1rem;
-  text-transform: uppercase;
+  font: 'Open Sans', sans-serif;
   letter-spacing: 0.8px;
 }
 
@@ -1239,4 +1258,86 @@ app-crear-distribuidor .form-input {
 .dropdown-input:hover {
   background: linear-gradient(135deg, var(--footer-esp), var(--dropdown-bg));
   box-shadow: 0 5px 15px rgba(255, 215, 0, 0.05);
+}
+
+/* === TOOLTIP PARA CLASIFICACIONES === */
+.label-with-tooltip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+.tooltip-icon {
+  color: var(--yellow);
+  font-size: 1rem;
+  cursor: help;
+  transition: all 0.3s ease;
+}
+
+.tooltip-icon:hover {
+  color: var(--text-color);
+}
+
+.tooltip-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: linear-gradient(135deg, var(--footer-esp), var(--dropdown-bg));
+  border: 2px solid var(--yellow);
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 1000;
+  min-width: 320px;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 215, 0, 0.1);
+  animation: tooltipFadeIn 0.3s ease-out;
+  margin-top: 8px;
+}
+
+.tooltip-item {
+  color: var(--text-color);
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+
+.tooltip-item:last-child {
+  margin-bottom: 0;
+}
+
+.tooltip-item strong {
+  color: var(--yellow);
+  font-weight: 600;
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === PLACEHOLDER STYLING === */
+.dropdown-input.placeholder {
+  color: var(--footer-line);
+  font-style: italic;
+}
+
+.dropdown-input:not(.placeholder) {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+/* Responsivo para tooltip */
+@media (max-width: 768px) {
+  .tooltip-content {
+    min-width: 280px;
+    font-size: 0.85rem;
+  }
 }

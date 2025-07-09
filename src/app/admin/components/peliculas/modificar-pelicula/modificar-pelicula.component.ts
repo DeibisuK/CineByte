@@ -74,6 +74,18 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   loadingDistribuidores: boolean = false;
 
   clasificaciones: string[] = ['G', 'PG', 'PG-13', 'R', 'NC-17'];
+  estados = [
+    { value: 'activo', label: 'Estreno' },
+    { value: 'proximamente', label: 'Próximamente' }, 
+    { value: 'retirada', label: 'Retirada' }
+  ];
+
+  // Propiedades para dropdowns personalizados de clasificación y estado
+  showClasificacionDropdown: boolean = false;
+  showEstadoDropdown: boolean = false;
+  selectedClasificacion: string = '';
+  selectedEstado: { value: string, label: string } | null = null;
+
   imagenSeleccionada!: File;
   imagenPreview: string = '';
   mostrarModalActor = false;
@@ -196,6 +208,10 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
     });
 
     this.imagenPreview = pelicula.imagen || '';
+
+    // Establecer valores para dropdowns personalizados
+    this.selectedClasificacion = pelicula.clasificacion || '';
+    this.selectedEstado = this.estados.find(e => e.value === pelicula.estado) || null;
 
     if (pelicula.img_carrusel && Array.isArray(pelicula.img_carrusel)) {
       this.imagenesAdicionales = pelicula.img_carrusel.map((img: any) => ({
@@ -405,13 +421,14 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$)
     ).subscribe({
       next: (data) => {
-        this.etiquetas = data.etiquetas;
-        this.generos = data.generos;
-        this.distribuidor = data.distribuidor;
-        this.actores = data.actores;
-        this.idiomas = data.idiomas;
+        // Ordenar alfabéticamente por nombre
+        this.etiquetas = data.etiquetas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.generos = data.generos.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.distribuidor = data.distribuidor.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.actores = data.actores.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.idiomas = data.idiomas.sort((a, b) => a.nombre.localeCompare(b.nombre));
 
-        // Inicializar arrays filtrados
+        // Inicializar arrays filtrados ordenados
         this.filteredEtiquetas = [...this.etiquetas];
         this.filteredGeneros = [...this.generos];
         this.filteredDistribuidores = [...this.distribuidor];
@@ -498,37 +515,37 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   // Métodos para filtrar
   filterIdiomas(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredIdiomas = this.idiomas.filter(idioma =>
-      idioma.nombre.toLowerCase().includes(searchTerm)
-    );
+    this.filteredIdiomas = this.idiomas
+      .filter(idioma => idioma.nombre.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   filterGeneros(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredGeneros = this.generos.filter(genero =>
-      genero.nombre.toLowerCase().includes(searchTerm)
-    );
+    this.filteredGeneros = this.generos
+      .filter(genero => genero.nombre.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   filterActores(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredActores = this.actores.filter(actor =>
-      actor.nombre.toLowerCase().includes(searchTerm)
-    );
+    this.filteredActores = this.actores
+      .filter(actor => actor.nombre.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   filterEtiquetas(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredEtiquetas = this.etiquetas.filter(etiqueta =>
-      etiqueta.nombre.toLowerCase().includes(searchTerm)
-    );
+    this.filteredEtiquetas = this.etiquetas
+      .filter(etiqueta => etiqueta.nombre.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   filterDistribuidores(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredDistribuidores = this.distribuidor.filter(distribuidor =>
-      distribuidor.nombre.toLowerCase().includes(searchTerm)
-    );
+    this.filteredDistribuidores = this.distribuidor
+      .filter(distribuidor => distribuidor.nombre.toLowerCase().includes(searchTerm))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   // Métodos para seleccionar
@@ -566,7 +583,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   toggleIdiomasDropdown(): void {
     this.showIdiomasDropdown = !this.showIdiomasDropdown;
     if (this.showIdiomasDropdown) {
-      this.filteredIdiomas = [...this.idiomas];
+      this.filteredIdiomas = [...this.idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     this.updateDropdownClass('idiomas');
   }
@@ -574,7 +591,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   toggleGenerosDropdown(): void {
     this.showGenerosDropdown = !this.showGenerosDropdown;
     if (this.showGenerosDropdown) {
-      this.filteredGeneros = [...this.generos];
+      this.filteredGeneros = [...this.generos].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     this.updateDropdownClass('generos');
   }
@@ -582,7 +599,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   toggleActoresDropdown(): void {
     this.showActoresDropdown = !this.showActoresDropdown;
     if (this.showActoresDropdown) {
-      this.filteredActores = [...this.actores];
+      this.filteredActores = [...this.actores].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     this.updateDropdownClass('actores');
   }
@@ -590,7 +607,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   toggleEtiquetasDropdown(): void {
     this.showEtiquetasDropdown = !this.showEtiquetasDropdown;
     if (this.showEtiquetasDropdown) {
-      this.filteredEtiquetas = [...this.etiquetas];
+      this.filteredEtiquetas = [...this.etiquetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     this.updateDropdownClass('etiquetas');
   }
@@ -598,7 +615,7 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   toggleDistribuidoresDropdown(): void {
     this.showDistribuidoresDropdown = !this.showDistribuidoresDropdown;
     if (this.showDistribuidoresDropdown) {
-      this.filteredDistribuidores = [...this.distribuidor];
+      this.filteredDistribuidores = [...this.distribuidor].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
     this.updateDropdownClass('distribuidores');
   }
@@ -630,27 +647,56 @@ export class ModificarPeliculaComponent implements OnInit, OnDestroy {
   // Métodos para ocultar dropdown
   hideIdiomasDropdown(): void {
     setTimeout(() => this.showIdiomasDropdown = false, 200);
-    this.filteredIdiomas = [...this.idiomas];
+    this.filteredIdiomas = [...this.idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideGenerosDropdown(): void {
     setTimeout(() => this.showGenerosDropdown = false, 200);
-    this.filteredGeneros = [...this.generos];
+    this.filteredGeneros = [...this.generos].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideActoresDropdown(): void {
     setTimeout(() => this.showActoresDropdown = false, 200);
-    this.filteredActores = [...this.actores];
+    this.filteredActores = [...this.actores].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideEtiquetasDropdown(): void {
     setTimeout(() => this.showEtiquetasDropdown = false, 200);
-    this.filteredEtiquetas = [...this.etiquetas];
+    this.filteredEtiquetas = [...this.etiquetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideDistribuidoresDropdown(): void {
     setTimeout(() => this.showDistribuidoresDropdown = false, 200);
-    this.filteredDistribuidores = [...this.distribuidor];
+    this.filteredDistribuidores = [...this.distribuidor].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
+  // Métodos para dropdown de clasificación personalizado
+  toggleClasificacionDropdown(): void {
+    this.showClasificacionDropdown = !this.showClasificacionDropdown;
+  }
+
+  hideClasificacionDropdown(): void {
+    setTimeout(() => this.showClasificacionDropdown = false, 200);
+  }
+
+  selectClasificacion(clasificacion: string): void {
+    this.selectedClasificacion = clasificacion;
+    this.peliculaForm.get('clasificacion')?.setValue(clasificacion);
+    this.showClasificacionDropdown = false;
+  }
+
+  // Métodos para dropdown de estado personalizado
+  toggleEstadoDropdown(): void {
+    this.showEstadoDropdown = !this.showEstadoDropdown;
+  }
+
+  hideEstadoDropdown(): void {
+    setTimeout(() => this.showEstadoDropdown = false, 200);
+  }
+
+  selectEstado(estado: { value: string, label: string }): void {
+    this.selectedEstado = estado;
+    this.peliculaForm.get('estado')?.setValue(estado.value);
+    this.showEstadoDropdown = false;
+  }
 }
