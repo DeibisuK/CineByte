@@ -29,12 +29,45 @@
 
       <div class="form-group">
         <label for="id_nacionalidad" class="form-label">Nacionalidad</label>
-        <select id="id_nacionalidad" formControlName="id_nacionalidad" class="form-input" required>
-          <option value="" disabled selected>Seleccione una nacionalidad</option>
-          <option *ngFor="let pais of paises" [value]="pais.id_pais">
-            {{ pais.nombre }}
-          </option>
-        </select>
+        <div class="dropdown-container paises" 
+             [class.active]="showPaisesDropdown">
+          <input type="text" 
+                 id="id_nacionalidad_search" 
+                 class="dropdown-input form-input"
+                 [(ngModel)]="paisSearchTerm"
+                 [ngModelOptions]="{standalone: true}"
+                 placeholder="Buscar nacionalidad..." 
+                 (input)="filterPaises($event)"
+                 (focus)="showPaisesDropdown = true"
+                 (blur)="hidePaisesDropdown()" 
+                 autocomplete="off"
+                 aria-label="Buscar nacionalidad"
+                 [attr.aria-expanded]="showPaisesDropdown" 
+                 aria-haspopup="listbox">
+          <div class="dropdown-arrow" 
+               (click)="togglePaisesDropdown()" 
+               role="button"
+               aria-label="Abrir lista de nacionalidades">
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <ul class="dropdown-list"
+              *ngIf="showPaisesDropdown && filteredPaises.length > 0"
+              role="listbox" 
+              aria-label="Lista de nacionalidades">
+            <li *ngFor="let pais of filteredPaises; let i = index" 
+                class="dropdown-item"
+                [class.selected]="actorForm.get('id_nacionalidad')?.value === pais.id_pais"
+                (mousedown)="selectPais(pais)" 
+                role="option"
+                [style.animation-delay]="(i * 50) + 'ms'">
+              {{pais.nombre}}
+            </li>
+          </ul>
+          <div *ngIf="showPaisesDropdown && filteredPaises.length === 0" 
+               class="no-results">
+            No se encontraron países
+          </div>
+        </div>
         <div *ngIf="actorForm.get('id_nacionalidad')?.invalid && actorForm.get('id_nacionalidad')?.touched" class="validation-error">
           La nacionalidad es obligatoria.
         </div>

@@ -14,7 +14,7 @@
 }
 
 .header-content h1 {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     color: var(--yellow);
     margin-bottom: 10px;
 }
@@ -156,7 +156,7 @@
     padding: 8px 12px;
     border: 1px solid var(--dropdown-border);
     border-radius: 5px;
-    background-color: var(--dropdown-bg);
+    background-color: var(--bg-color);
     color: var(--text-color);
     font-size: 0.9rem;
 }

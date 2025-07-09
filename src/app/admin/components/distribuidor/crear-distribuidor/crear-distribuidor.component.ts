@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { AlertaService } from '../../../../services/alerta.service';
 import { Distribuidor } from '../../../models/distribuidor.model';
 import { DistribuidorService } from '../../../../services/distribuidor.service';
@@ -9,15 +9,20 @@ import { PaisesService } from '../../../../services/paises.service';
 
 @Component({
   selector: 'app-crear-distribuidor',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './crear-distribuidor.component.html',
   styleUrl: './crear-distribuidor.component.css'
 })
-export class CrearDistribuidorComponent {
+export class CrearDistribuidorComponent implements OnInit {
   @Input() mostrar = false;
   @Output() cerrar = new EventEmitter<void>();
   distribuidorform: FormGroup;
   paises: Pais[] = [];
+
+  // Propiedades para el dropdown con buscador
+  paisSearchTerm: string = '';
+  filteredPaises: Pais[] = [];
+  showPaisesDropdown: boolean = false;
 
   constructor(private service: DistribuidorService, private alerta: AlertaService,
     private paisService: PaisesService
@@ -27,6 +32,24 @@ export class CrearDistribuidorComponent {
       ano_fundacion: new FormControl('', Validators.required),
       sitio_web: new FormControl('', Validators.required),
       id_pais_origen: new FormControl('', Validators.required)
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarPaises();
+  }
+
+  cargarPaises(): void {
+    this.paisService.getPais().subscribe({
+      next: (data) => {
+        // Ordenar alfabéticamente
+        this.paises = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
+        this.filteredPaises = [...this.paises];
+      },
+      error: (err) => {
+        this.alerta.error('Error', 'No se pudieron cargar los países');
+        console.error(err);
+      }
     });
   }
   saveDistribuidor() {
@@ -52,6 +75,33 @@ export class CrearDistribuidorComponent {
   cerrarModal() {
     this.cerrar.emit();
   }
+
+  // Métodos para el dropdown con buscador
+  filterPaises(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredPaises = this.paises.filter(pais =>
+      pais.nombre.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectPais(pais: Pais): void {
+    this.distribuidorform.get('id_pais_origen')?.setValue(pais.id_pais);
+    this.paisSearchTerm = pais.nombre;
+    this.showPaisesDropdown = false;
+  }
+
+  togglePaisesDropdown(): void {
+    this.showPaisesDropdown = !this.showPaisesDropdown;
+    if (this.showPaisesDropdown) {
+      this.filteredPaises = [...this.paises];
+    }
+  }
+
+  hidePaisesDropdown(): void {
+    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.filteredPaises = [...this.paises];
+  }
+
   getPaisOrigen(): Pais[] {
     this.paisService.getPais().subscribe({
       next: (data) => {

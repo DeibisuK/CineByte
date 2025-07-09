@@ -12,11 +12,10 @@
 
 /* Título */
 .export-title {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 700;
   color: var(--yellow);
   margin-bottom: 10px;
-  text-transform: uppercase;
   letter-spacing: 1px;
   text-align: justify;
 }
@@ -53,7 +52,7 @@
   padding: 10px;
   border: 1px solid var(--dropdown-border);
   border-radius: 6px;
-  background-color: var(--dropdown-bg);
+  background-color: var(--bg-color);
   color: var(--text-color);
   font-size: 1rem;
 }

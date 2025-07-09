@@ -117,7 +117,7 @@
 .search-input {
     width: 100%;
     padding: 0.8rem 1rem 0.8rem 3rem;
-    background: var(--dropdown-bg);
+    background: var(--bg-color);
     border: 2px solid var(--dropdown-border);
     border-radius: 12px;
     color: var(--text-color);

@@ -13,15 +13,48 @@
       </div>
 
       <div class="form-group">
-        <label for="id_pais_origen" class="form-label">Pais Origen</label>
-        <select id="id_pais_origen" formControlName="id_pais_origen">
-          <option value="" disabled>Seleccione un pais</option>
-          <option *ngFor="let distru of getPaisOrigen()" [value]="distru.id_pais">
-            {{ distru.nombre }}
-          </option>
-        </select>
-        <div *ngIf="distribuidorform.get('pais_origen')?.invalid && distribuidorform.get('pais_origen')?.touched" class="validation-error">
-          El pais es obligatorio.
+        <label for="id_pais_origen" class="form-label">País Origen</label>
+        <div class="dropdown-container paises" 
+             [class.active]="showPaisesDropdown">
+          <input type="text" 
+                 id="id_pais_origen_search" 
+                 class="dropdown-input form-input"
+                 [(ngModel)]="paisSearchTerm"
+                 [ngModelOptions]="{standalone: true}"
+                 placeholder="Buscar país..." 
+                 (input)="filterPaises($event)"
+                 (focus)="showPaisesDropdown = true"
+                 (blur)="hidePaisesDropdown()" 
+                 autocomplete="off"
+                 aria-label="Buscar país"
+                 [attr.aria-expanded]="showPaisesDropdown" 
+                 aria-haspopup="listbox">
+          <div class="dropdown-arrow" 
+               (click)="togglePaisesDropdown()" 
+               role="button"
+               aria-label="Abrir lista de países">
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <ul class="dropdown-list"
+              *ngIf="showPaisesDropdown && filteredPaises.length > 0"
+              role="listbox" 
+              aria-label="Lista de países">
+            <li *ngFor="let pais of filteredPaises; let i = index" 
+                class="dropdown-item"
+                [class.selected]="distribuidorform.get('id_pais_origen')?.value === pais.id_pais"
+                (mousedown)="selectPais(pais)" 
+                role="option"
+                [style.animation-delay]="(i * 50) + 'ms'">
+              {{pais.nombre}}
+            </li>
+          </ul>
+          <div *ngIf="showPaisesDropdown && filteredPaises.length === 0" 
+               class="no-results">
+            No se encontraron países
+          </div>
+        </div>
+        <div *ngIf="distribuidorform.get('id_pais_origen')?.invalid && distribuidorform.get('id_pais_origen')?.touched" class="validation-error">
+          El país es obligatorio.
         </div>
       </div>
 

@@ -26,6 +26,16 @@ export class ListDistribuidorComponent implements OnInit {
   sitioWebTemporal: string = '';
   paisOrigenTemporal: number | null = null;
 
+  // Propiedades para el dropdown con buscador - Formulario
+  paisSearchTerm: string = '';
+  filteredPaises: any[] = [];
+  showPaisesDropdown: boolean = false;
+
+  // Propiedades para el dropdown con buscador - Edición
+  paisEditSearchTerm: string = '';
+  filteredPaisesEdit: any[] = [];
+  showPaisesEditDropdown: boolean = false;
+
 
   constructor(
     private fb: FormBuilder,
@@ -59,7 +69,10 @@ export class ListDistribuidorComponent implements OnInit {
   cargarPaises(): void {
     this.paisService.getPais().subscribe({
       next: (data) => {
-        this.paises = data;
+        // Ordenar alfabéticamente
+        this.paises = data.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+        this.filteredPaises = [...this.paises];
+        this.filteredPaisesEdit = [...this.paises];
       },
       error: (err) => console.error('Error cargando países:', err)
     });
@@ -82,6 +95,9 @@ export class ListDistribuidorComponent implements OnInit {
         next: () => {
           this.cargarDistribuidores();
           this.formDistribuidor.reset();
+          // Resetear dropdown
+          this.paisSearchTerm = '';
+          this.filteredPaises = [...this.paises];
         },
         error: (err) => console.error('Error agregando distribuidor:', err)
       });
@@ -107,6 +123,11 @@ export class ListDistribuidorComponent implements OnInit {
     this.anoFundacionTemporal = distribuidor.ano_fundacion;
     this.sitioWebTemporal = distribuidor.sitio_web;
     this.paisOrigenTemporal = distribuidor.id_pais_origen;
+    
+    // Inicializar dropdown de edición
+    const paisSeleccionado = this.paises.find(p => p.id_pais === distribuidor.id_pais_origen);
+    this.paisEditSearchTerm = paisSeleccionado ? paisSeleccionado.nombre : '';
+    this.filteredPaisesEdit = [...this.paises];
   }
 
   guardarEdicion(): void {
@@ -166,5 +187,57 @@ export class ListDistribuidorComponent implements OnInit {
   obtenerNombrePais(idPais: number): string {
     const pais = this.paises.find(p => p.id_pais === idPais);
     return pais ? pais.nombre : 'Desconocido';
+  }
+
+  // Métodos para el dropdown con buscador - Formulario
+  filterPaises(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredPaises = this.paises.filter(pais =>
+      pais.nombre.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectPais(pais: any): void {
+    this.formDistribuidor.get('id_pais_origen')?.setValue(pais.id_pais);
+    this.paisSearchTerm = pais.nombre;
+    this.showPaisesDropdown = false;
+  }
+
+  togglePaisesDropdown(): void {
+    this.showPaisesDropdown = !this.showPaisesDropdown;
+    if (this.showPaisesDropdown) {
+      this.filteredPaises = [...this.paises];
+    }
+  }
+
+  hidePaisesDropdown(): void {
+    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.filteredPaises = [...this.paises];
+  }
+
+  // Métodos para el dropdown con buscador - Edición
+  filterPaisesEdit(event: any): void {
+    const searchTerm = event.target.value.toLowerCase();
+    this.filteredPaisesEdit = this.paises.filter(pais =>
+      pais.nombre.toLowerCase().includes(searchTerm)
+    );
+  }
+
+  selectPaisEdit(pais: any): void {
+    this.paisOrigenTemporal = pais.id_pais;
+    this.paisEditSearchTerm = pais.nombre;
+    this.showPaisesEditDropdown = false;
+  }
+
+  togglePaisesEditDropdown(): void {
+    this.showPaisesEditDropdown = !this.showPaisesEditDropdown;
+    if (this.showPaisesEditDropdown) {
+      this.filteredPaisesEdit = [...this.paises];
+    }
+  }
+
+  hidePaisesEditDropdown(): void {
+    setTimeout(() => this.showPaisesEditDropdown = false, 200);
+    this.filteredPaisesEdit = [...this.paises];
   }
 }
