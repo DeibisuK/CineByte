@@ -6,18 +6,22 @@
 
   <div class="grid-carousel">
     <div class="movie-card" *ngFor="let movie of visibleMovies">
-      <img [src]="movie.img" alt="{{ movie.titulo }}" />
+      <img [src]="movie.imagen" alt="{{ movie.titulo }}" />
       <div class="hover-overlay">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
       </div>
       <div class="etiquetas">
-        <span class="etiqueta" *ngFor="let et of movie.etiqueta">{{ et }}</span>
+        <span class="etiqueta" *ngFor="let et of toStringArray(movie.etiquetas)">{{ et }}</span>
       </div>
       <div class="edad-icono">
+<<<<<<< HEAD
+=======
+        <app-edades [edad]="movie.clasificacion"></app-edades>
+>>>>>>> fc342e32a7333c82e592a23580bf74d942763a77
       </div>
       <div class="info">
         <h3>{{ movie.titulo }}</h3>
-        <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+        <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
       </div>
     </div>
   </div>

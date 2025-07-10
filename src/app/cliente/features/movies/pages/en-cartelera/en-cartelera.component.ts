@@ -3,9 +3,10 @@ import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { CommonModule } from '@angular/common';
 import { Pelicula } from '../../../../../admin/models/pelicula.model';
+import { Funciones } from '../../../../../admin/models/funciones.model';
 import { PeliculaService } from '../../../../../services/pelicula.service';
-import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { forkJoin, of, timer } from 'rxjs';
+import { catchError, map, timeout, race } from 'rxjs/operators';
 
 @Component({
   selector: 'app-en-cartelera',
@@ -25,7 +26,7 @@ export class EnCarteleraComponent {
   ngOnInit(): void {
     this.peliculasService.getPeliculasCompletas().subscribe({
       next: (peliculas: Pelicula[]) => {
-        // Verificar qué películas tienen funciones
+        // Verificar qué películas tienen funciones con manejo robusto de errores
         this.verificarPeliculasConFunciones(peliculas);
       },
       error: (err) => {
@@ -35,19 +36,35 @@ export class EnCarteleraComponent {
   }
 
   private verificarPeliculasConFunciones(peliculas: Pelicula[]): void {
+    // Filtrar primero por estado para reducir llamadas
+    const peliculasCandidatas = peliculas.filter(pelicula =>
+      pelicula.estado === 'activo' || pelicula.estado === 'cartelera'
+    );
+
+    if (peliculasCandidatas.length === 0) {
+      this.peliculasCartelera = [];
+      return;
+    }
+
+    // Crear un timeout de 10 segundos para evitar esperas largas
+    const timeoutDuration = 10000;
+
     // Crear un array de observables para verificar funciones de cada película
-    const funcionesObservables = peliculas.map(pelicula => 
+    const funcionesObservables = peliculasCandidatas.map(pelicula =>
       this.peliculasService.getFuncionesByPeliculaId(pelicula.id_pelicula).pipe(
+        timeout(timeoutDuration),
         map(response => {
-          // Verificar si la película tiene funciones
-          const funcionesData = response[0]?.obtener_funciones_por_id_pelicula_formato_json || [];
+          // Verificar si la película tiene funciones activas
+          const funcionesData = response || [];
+          const funcionesActivas = funcionesData.filter((funcion: Funciones) => funcion.estado === 'activa');
           return {
             pelicula: pelicula,
-            tieneFunciones: funcionesData.length > 0
+            tieneFunciones: funcionesActivas.length > 0
           };
         }),
         catchError(err => {
-          console.error(`Error fetching funciones for película ${pelicula.id_pelicula}:`, err);
+          console.warn(`Error al verificar funciones para película ${pelicula.id_pelicula}:`, err);
+          // En caso de cualquier error, asumir que no tiene funciones para ser conservadores
           return of({
             pelicula: pelicula,
             tieneFunciones: false
@@ -56,8 +73,20 @@ export class EnCarteleraComponent {
       )
     );
 
-    // Ejecutar todas las consultas en paralelo
-    forkJoin(funcionesObservables).subscribe({
+    // Ejecutar todas las consultas en paralelo con timeout global
+    const funcionesCheck = forkJoin(funcionesObservables).pipe(
+      timeout(timeoutDuration + 2000), // Un poco más de tiempo para el forkJoin
+      catchError(err => {
+        console.warn('Timeout o error en verificación de funciones, mostrando todas las películas candidatas:', err.message);
+        // En caso de timeout, retornar todas las películas candidatas como si tuvieran funciones
+        return of(peliculasCandidatas.map(pelicula => ({
+          pelicula: pelicula,
+          tieneFunciones: true
+        })));
+      })
+    );
+
+    funcionesCheck.subscribe({
       next: (resultados) => {
         // Filtrar solo las películas que tienen funciones
         this.peliculasCartelera = resultados
@@ -65,11 +94,30 @@ export class EnCarteleraComponent {
           .map(resultado => resultado.pelicula);
       },
       error: (err) => {
-        console.error('Error verificando funciones:', err);
-        // En caso de error, mostrar todas las películas
-        this.peliculasCartelera = peliculas;
+        console.warn('Error verificando funciones, mostrando todas las películas candidatas:', err);
+        // En caso de error, mostrar todas las películas candidatas
+        this.peliculasCartelera = peliculasCandidatas;
       }
     });
+  }
+
+  /**
+   * Método alternativo más simple que verifica funciones con mejor manejo de errores
+   */
+  private verificarFuncionesSimplificado(peliculas: Pelicula[]): void {
+    // Filtrar películas por estado primero
+    const peliculasCandidatas = peliculas.filter(pelicula =>
+      pelicula.estado === 'activo' || pelicula.estado === 'cartelera'
+    );
+
+    if (peliculasCandidatas.length === 0) {
+      this.peliculasCartelera = [];
+      return;
+    }
+
+    // Si hay problemas con la API de funciones, usar todas las películas candidatas
+    this.peliculasCartelera = peliculasCandidatas;
+    console.log(`Mostrando ${this.peliculasCartelera.length} películas (filtradas por estado)`);
   }
 
   verDetalle(movie: Pelicula) {

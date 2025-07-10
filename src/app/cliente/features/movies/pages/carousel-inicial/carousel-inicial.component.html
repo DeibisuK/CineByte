@@ -1,18 +1,19 @@
 <div class="estreno-carousel-container">
     <div class="estreno-card" *ngFor="let movie of visibleMovies">
     <div class="estreno-img-section">
-    <img [src]="(movie.img_dsc && movie.img_dsc.length > 0 ? movie.img_dsc[0] : movie.img)" [alt]="movie.titulo" />
+    <img [src]="getImageUrl(movie)" [alt]="movie.titulo" />
     </div>
     <div class="estreno-info-section">
-      <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+      <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
       <h2 class="estreno-title">{{ movie.titulo }}</h2>
       <p class="estreno-desc">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
         </p>
       <button class="estreno-btn"
-      (mouseenter)="hoveredIndex = movie.id"
+      (mouseenter)="hoveredIndex = movie.id_pelicula"
     (mouseleave)="hoveredIndex = -1"
-    [style.zIndex]="hoveredIndex === movie.id ? 2 : 1">Ver más</button>
+    [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1"
+    (click)="verDetalle(movie)">Ver más</button>
     </div>
     <div class="carrusel-controles">
       <button class="carrusel-flecha" (click)="prev()">&lt;</button>
