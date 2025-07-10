@@ -6,7 +6,7 @@ import { PeliculaService } from '../../../../../services/pelicula.service';
 
 @Component({
   selector: 'app-carousel-estrenos',
-  imports: [CommonModule],
+  imports: [CommonModule,EdadesComponent],
   templateUrl: './carousel-estrenos.component.html',
   styleUrl: './carousel-estrenos.component.css'
 })

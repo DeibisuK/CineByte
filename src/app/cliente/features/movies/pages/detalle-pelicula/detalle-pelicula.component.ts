@@ -6,7 +6,7 @@ import { CarouselEstrenosComponent } from '../carousel-estrenos/carousel-estreno
 import { Pelicula } from '../../../../../admin/models/pelicula.model';
 import { PeliculaService } from '../../../../../services/pelicula.service';
 import { Subject, forkJoin } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, switchMap } from 'rxjs/operators';
 import { AuthService } from '../../../../../services/AuthService';
 import { FuncionesService } from '../../../../../services/funciones.service';
 import { SedeSalasService } from '../../../../../services/sede-salas.service';
@@ -34,7 +34,7 @@ interface FuncionInfo {
 })
 export class DetallePeliculaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   pelicula?: Pelicula;
   peliculaCompleta?: any; // Para datos expandidos con géneros, actores, etc.
   cantidad = 1;
@@ -42,14 +42,14 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   horarioSeleccionado: string = '';
   safeTrailerUrl?: SafeResourceUrl;
   funcionesPorIdioma: FuncionInfo[] = [];
-  
+
   // Estado de sede
   sedeSeleccionada: any = null; // Cambiar a objeto completo en lugar de string
-  
+
   // Configuración del filtrado de funciones
   private readonly FILTRADO_ESTRICTO = true; // Solo salas asignadas únicamente a la sede
   private readonly MOSTRAR_DEBUG_FILTRADO = true; // Mostrar información de debugging
-  
+
   // Media carousel
   mediaItems: MediaItem[] = [];
   currentMediaIndex = 0;
@@ -64,13 +64,13 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     private sedeSalasService: SedeSalasService,
     private router: Router,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.loadMovieData(id);
     this.checkSedeSeleccionada();
-    
+
     // Escuchar cambios de sede
     window.addEventListener('sedeSeleccionada', this.onSedeChanged.bind(this));
   }
@@ -78,14 +78,14 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
-    
+
     // Limpiar event listener
     window.removeEventListener('sedeSeleccionada', this.onSedeChanged.bind(this));
   }
 
   private onSedeChanged(event: any): void {
     this.checkSedeSeleccionada();
-    
+
     // Si ahora hay sede seleccionada, cargar funciones
     if (this.sedeSeleccionada && this.pelicula) {
       this.loadFunciones(this.pelicula.id_pelicula);
@@ -93,25 +93,22 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   }
 
   private loadMovieData(id: number): void {
-    // Solo usar la película básica ya que /completas/{id} devuelve 404
-    this.movieService.getPeliculaById(id).pipe(
+    // Usar forkJoin para cargar película básica y completa en paralelo
+    const peliculaBasica$ = this.movieService.getPeliculaById(id);
+    const peliculaCompleta$ = this.movieService.getPeliculaByIdComplete(id);
+
+    forkJoin({
+      basica: peliculaBasica$,
+      completa: peliculaCompleta$
+    }).pipe(
       takeUntil(this.destroy$)
     ).subscribe({
-      next: (pelicula) => {
-        this.pelicula = pelicula;
+      next: ({ basica, completa }) => {
+        this.pelicula = basica;
+        this.peliculaCompleta = completa;
         
-        // Intentar obtener datos extendidos del listado completo
-        this.movieService.getPeliculasCompletas().subscribe({
-          next: (peliculasCompletas) => {
-            this.peliculaCompleta = peliculasCompletas.find((p: any) => p.id_pelicula === id);
-            // NO llamar setupMediaCarousel aquí, se llamará después de cargar funciones
-          },
-          error: (err) => {
-            console.warn('No se pudieron cargar datos extendidos:', err);
-            // NO llamar setupMediaCarousel aquí tampoco
-          }
-        });
-        
+        console.log('🎬 Película cargada:', { basica, completa });
+
         if (this.sedeSeleccionada) {
           this.loadFunciones(id);
         } else {
@@ -122,23 +119,42 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       error: (err) => {
         console.error('Error loading movie data:', err);
         
-        let errorMessage = 'No se pudo cargar la información de la película';
-        
-        if (err.status === 404) {
-          errorMessage = 'La película no existe o no se encuentra disponible';
-        } else if (err.status === 500) {
-          errorMessage = 'Error del servidor. Intenta nuevamente más tarde';
-        } else if (err.status === 0) {
-          errorMessage = 'Error de conexión. Verifica tu conexión a internet';
-        }
-        
-        Swal.fire({
-          icon: 'error',
-          title: 'Película no encontrada',
-          text: errorMessage,
-          confirmButtonText: 'Volver al inicio'
-        }).then(() => {
-          this.router.navigate(['/']);
+        // Si falla la película completa, intentar solo la básica
+        this.movieService.getPeliculaById(id).pipe(
+          takeUntil(this.destroy$)
+        ).subscribe({
+          next: (pelicula) => {
+            this.pelicula = pelicula;
+            console.warn('⚠️ Solo se cargó película básica, datos extendidos no disponibles');
+            
+            if (this.sedeSeleccionada) {
+              this.loadFunciones(id);
+            } else {
+              this.setupMediaCarousel();
+            }
+          },
+          error: (basicErr) => {
+            console.error('Error loading basic movie data:', basicErr);
+            
+            let errorMessage = 'No se pudo cargar la información de la película';
+            
+            if (basicErr.status === 404) {
+              errorMessage = 'La película no existe o no se encuentra disponible';
+            } else if (basicErr.status === 500) {
+              errorMessage = 'Error del servidor. Intenta nuevamente más tarde';
+            } else if (basicErr.status === 0) {
+              errorMessage = 'Error de conexión. Verifica tu conexión a internet';
+            }
+            
+            Swal.fire({
+              icon: 'error',
+              title: 'Película no encontrada',
+              text: errorMessage,
+              confirmButtonText: 'Volver al inicio'
+            }).then(() => {
+              this.router.navigate(['/']);
+            });
+          }
         });
       }
     });
@@ -149,135 +165,125 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     if (!this.sedeSeleccionada?.id_sede) {
       console.warn('No hay sede seleccionada');
       this.funcionesPorIdioma = [];
-      // Aún así cargar trailer e imágenes
       this.setupMediaCarousel();
       return;
     }
 
-    console.log('Cargando funciones para película:', peliculaId, 'sede:', this.sedeSeleccionada);
+    console.log('🎬 Cargando funciones optimizadas para película:', peliculaId, 'sede:', this.sedeSeleccionada);
 
-    // Usar el endpoint que SÍ funciona: getFunciones() y filtrar manualmente
-    this.funcionesService.getFunciones().subscribe({
-      next: (todasLasFunciones: any[]) => {
-        console.log('Todas las funciones obtenidas:', todasLasFunciones);
-        
-        // Filtrar funciones por película y estado activo
-        const funcionesDePelicula = todasLasFunciones.filter(f => 
-          f.id_pelicula === peliculaId && 
-          f.estado === 'activa'
-        );
+    // OPTIMIZACIÓN: Usar getFuncionesByPeliculaId para obtener solo las funciones de esta película
+    this.funcionesService.getFuncionesByPeliculaId(peliculaId).pipe(
+      takeUntil(this.destroy$),
+      switchMap((funcionesDePelicula: any[]) => {
+        console.log('✅ Funciones de la película obtenidas:', funcionesDePelicula.length);
 
-        console.log('Funciones de la película filtradas:', funcionesDePelicula);
+        // Filtrar solo funciones activas
+        const funcionesActivas = funcionesDePelicula.filter(f => f.estado === 'activa');
 
-        if (funcionesDePelicula.length === 0) {
+        if (funcionesActivas.length === 0) {
           console.warn('No se encontraron funciones activas para esta película');
           this.funcionesPorIdioma = [];
-          // Aún así cargar trailer e imágenes
           this.setupMediaCarousel();
-          return;
+          return [];
         }
 
-        // Verificar cuáles de estas funciones pertenecen a la sede seleccionada
-        const promesasVerificacion = funcionesDePelicula.map(funcion => {
-          return new Promise((resolve) => {
-            this.sedeSalasService.getSedesBySala(funcion.id_sala).subscribe({
-              next: (sedesSala) => {
-                // Estrategia de filtrado configurable:
-                const asignacionesDeLaSala = sedesSala;
-                let perteneceASede = false;
-                
-                if (this.FILTRADO_ESTRICTO) {
-                  // ESTRATEGIA ESTRICTA: Solo salas asignadas únicamente a la sede seleccionada
-                  const esSalaUnicaDeLaSede = asignacionesDeLaSala.length === 1;
-                  perteneceASede = esSalaUnicaDeLaSede && 
-                    asignacionesDeLaSala[0].id_sede === this.sedeSeleccionada.id_sede;
-                } else {
-                  // ESTRATEGIA FLEXIBLE: Cualquier sala que esté asignada a la sede (aunque también esté en otras)
-                  perteneceASede = asignacionesDeLaSala.some((ss: any) => ss.id_sede === this.sedeSeleccionada.id_sede);
-                }
-                
-                if (this.MOSTRAR_DEBUG_FILTRADO) {
-                  console.log(`Sala ${funcion.id_sala}:`, {
-                    asignaciones: asignacionesDeLaSala.map((ss: any) => ss.id_sede),
-                    sedeSeleccionada: this.sedeSeleccionada.id_sede,
-                    estrategia: this.FILTRADO_ESTRICTO ? 'ESTRICTA' : 'FLEXIBLE',
-                    esSalaUnica: asignacionesDeLaSala.length === 1,
-                    perteneceASede
-                  });
-                }
-                
-                resolve({ funcion, perteneceASede, asignaciones: asignacionesDeLaSala });
-              },
-              error: (err) => {
-                console.warn(`Error verificando sede para sala ${funcion.id_sala}:`, err);
-                resolve({ funcion, perteneceASede: false, asignaciones: [] });
+        // OPTIMIZACIÓN: Obtener salas únicas para evitar verificaciones duplicadas
+        const salasUnicas = [...new Set(funcionesActivas.map(f => f.id_sala))];
+        console.log('🔧 Verificando sedes para', salasUnicas.length, 'salas únicas');
+
+        // Verificar sedes de todas las salas únicas en paralelo
+        const verificacionesDeSedes = salasUnicas.map(idSala =>
+          this.sedeSalasService.getSedesBySala(idSala).pipe(
+            takeUntil(this.destroy$)
+          )
+        );
+
+        return forkJoin(verificacionesDeSedes).pipe(
+          switchMap((resultadosSedesPorSala: any[][]) => {
+            // Crear mapa de sala -> sedes para lookup rápido
+            const mapaSedesPorSala = new Map<number, any[]>();
+            salasUnicas.forEach((idSala, index) => {
+              mapaSedesPorSala.set(idSala, resultadosSedesPorSala[index] || []);
+            });
+
+            // Filtrar funciones que pertenecen a la sede seleccionada
+            const funcionesDeLaSede = funcionesActivas.filter(funcion => {
+              const sedesDeLaSala = mapaSedesPorSala.get(funcion.id_sala) || [];
+
+              let perteneceASede = false;
+              if (this.FILTRADO_ESTRICTO) {
+                // ESTRATEGIA ESTRICTA: Solo salas asignadas únicamente a la sede seleccionada
+                const esSalaUnicaDeLaSede = sedesDeLaSala.length === 1;
+                perteneceASede = esSalaUnicaDeLaSede &&
+                  sedesDeLaSala[0].id_sede === this.sedeSeleccionada.id_sede;
+              } else {
+                // ESTRATEGIA FLEXIBLE: Cualquier sala que esté asignada a la sede
+                perteneceASede = sedesDeLaSala.some((ss: any) => ss.id_sede === this.sedeSeleccionada.id_sede);
               }
+
+              if (this.MOSTRAR_DEBUG_FILTRADO) {
+                console.log(`🏛️ Sala ${funcion.id_sala}:`, {
+                  asignaciones: sedesDeLaSala.map((ss: any) => ss.id_sede),
+                  sedeSeleccionada: this.sedeSeleccionada.id_sede,
+                  estrategia: this.FILTRADO_ESTRICTO ? 'ESTRICTA' : 'FLEXIBLE',
+                  esSalaUnica: sedesDeLaSala.length === 1,
+                  perteneceASede
+                });
+              }
+
+              return perteneceASede;
             });
-          });
-        });
 
-        // Esperar todas las verificaciones
-        Promise.all(promesasVerificacion).then((resultados: any[]) => {
-          // Separar funciones según el tipo de asignación
-          const funcionesDeLaSede = resultados
-            .filter(r => r.perteneceASede)
-            .map(r => r.funcion);
-            
-          const funcionesExcluidas = resultados
-            .filter(r => !r.perteneceASede && r.asignaciones.length > 1)
-            .map(r => ({ funcion: r.funcion, asignaciones: r.asignaciones }));
+            console.log('=== ANÁLISIS OPTIMIZADO DE FILTRADO ===');
+            console.log(`📊 Funciones procesadas: ${funcionesDePelicula.length} total → ${funcionesActivas.length} activas → ${funcionesDeLaSede.length} en sede`);
+            console.log(`🎯 Estrategia: ${this.FILTRADO_ESTRICTO ? 'ESTRICTA' : 'FLEXIBLE'}`);
+            console.log(`⚡ Verificaciones de sede: ${salasUnicas.length} (optimizado)`);
+            console.log('=====================================');
 
-          console.log('=== ANÁLISIS DE FILTRADO DE FUNCIONES ===');
-          console.log(`Estrategia de filtrado: ${this.FILTRADO_ESTRICTO ? 'ESTRICTA (solo salas únicas)' : 'FLEXIBLE (salas compartidas permitidas)'}`);
-          console.log('Funciones incluidas para la sede seleccionada:', funcionesDeLaSede.length);
-          if (funcionesExcluidas.length > 0) {
-            console.log('Funciones excluidas:', funcionesExcluidas.length);
-            funcionesExcluidas.forEach(excluida => {
-              const razon = excluida.asignaciones.length > 1 ? 'sala con múltiples sedes' : 'sala no asignada a esta sede';
-              console.log(`  - Función ${excluida.funcion.id_funcion} de sala ${excluida.funcion.id_sala} (${razon}: ${excluida.asignaciones.map((a: any) => a.id_sede).join(', ')})`);
-            });
-          }
-          console.log('==========================================');
-
-          if (funcionesDeLaSede.length === 0) {
-            console.warn('No se encontraron funciones para esta película en la sede seleccionada');
-            this.funcionesPorIdioma = [];
-            // Cargar trailer de cualquier función de la película y las imágenes
-            this.setupMediaCarouselWithFallback(funcionesDePelicula);
-            return;
-          }
-
-          // Agrupar por idioma SOLO las funciones reales de la sede
-          const funcionesPorIdiomaMap = new Map<string, any[]>();
-          
-          funcionesDeLaSede.forEach((funcion: any) => {
-            const idioma = funcion.idioma || 'Español'; // Fallback si no tiene idioma
-            if (!funcionesPorIdiomaMap.has(idioma)) {
-              funcionesPorIdiomaMap.set(idioma, []);
+            if (funcionesDeLaSede.length === 0) {
+              console.warn('❌ No se encontraron funciones para esta película en la sede seleccionada');
+              this.funcionesPorIdioma = [];
+              this.setupMediaCarouselWithFallback(funcionesActivas);
+              return [];
             }
-            funcionesPorIdiomaMap.get(idioma)?.push(funcion);
-          });
 
-          // Convertir a formato esperado - SOLO los idiomas que realmente tienen funciones
-          this.funcionesPorIdioma = Array.from(funcionesPorIdiomaMap.entries()).map(([idioma, funciones]) => ({
-            idioma: idioma,
-            horarios: funciones.map((f: any) => this.formatearHora(f.fecha_hora_inicio)),
-            trailer: this.convertToEmbedUrl(funciones[0].trailer_url) || this.generarTrailerGenerico(),
-            precio: funciones[0].precio_funcion || 8.50
-          }));
+            // Agrupar por idioma las funciones de la sede
+            const funcionesPorIdiomaMap = new Map<string, any[]>();
 
-          console.log('Funciones por idioma final (REAL):', this.funcionesPorIdioma);
+            funcionesDeLaSede.forEach((funcion: any) => {
+              const idioma = funcion.idioma || 'Español';
+              if (!funcionesPorIdiomaMap.has(idioma)) {
+                funcionesPorIdiomaMap.set(idioma, []);
+              }
+              funcionesPorIdiomaMap.get(idioma)?.push(funcion);
+            });
 
-          if (this.funcionesPorIdioma.length > 0) {
-            this.idiomaSeleccionado = this.funcionesPorIdioma[0].idioma;
-            this.updateTrailerUrl(this.funcionesPorIdioma[0].trailer);
-            this.setupMediaCarousel(); // Actualizar el carrusel con el nuevo trailer
-          }
-        });
+            // Convertir a formato esperado
+            this.funcionesPorIdioma = Array.from(funcionesPorIdiomaMap.entries()).map(([idioma, funciones]) => ({
+              idioma: idioma,
+              horarios: funciones.map((f: any) => this.formatearHora(f.fecha_hora_inicio)),
+              trailer: this.convertToEmbedUrl(funciones[0].trailer_url) || this.generarTrailerGenerico(),
+              precio: funciones[0].precio || 8.50 // Usar 'precio' en lugar de 'precio_funcion'
+            }));
+
+            console.log('🎉 Funciones por idioma optimizadas:', this.funcionesPorIdioma);
+
+            if (this.funcionesPorIdioma.length > 0) {
+              this.idiomaSeleccionado = this.funcionesPorIdioma[0].idioma;
+              this.updateTrailerUrl(this.funcionesPorIdioma[0].trailer);
+              this.setupMediaCarousel();
+            }
+
+            return this.funcionesPorIdioma;
+          })
+        );
+      })
+    ).subscribe({
+      next: () => {
+        console.log('✅ Carga optimizada completada exitosamente');
       },
-      error: (err) => {
-        console.error('Error cargando todas las funciones:', err);
-        // NO usar funciones simuladas cuando falla la API - dejar vacío pero cargar imágenes
+      error: (err: any) => {
+        console.error('❌ Error en carga optimizada de funciones:', err);
         this.funcionesPorIdioma = [];
         this.setupMediaCarousel();
       }
@@ -286,23 +292,17 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
 
 
-  private loadFuncionesSimuladas(): void {
-    // NO usar funciones simuladas - esto causaba que aparecieran todos los idiomas
-    console.warn('Funciones simuladas deshabilitadas para evitar mostrar idiomas incorrectos');
-    this.funcionesPorIdioma = [];
-  }
-
   private convertToEmbedUrl(youtubeUrl: string): string {
     if (!youtubeUrl) return this.generarTrailerGenerico();
-    
+
     // Si ya es una URL de embed, devolverla tal como está
     if (youtubeUrl.includes('embed')) {
       return youtubeUrl;
     }
-    
+
     // Extraer ID del video de diferentes formatos de YouTube
     let videoId = '';
-    
+
     // youtube.com/watch?v=ID
     if (youtubeUrl.includes('watch?v=')) {
       videoId = youtubeUrl.split('watch?v=')[1].split('&')[0];
@@ -315,42 +315,23 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     else if (youtubeUrl.includes('youtube.com/embed/')) {
       return youtubeUrl;
     }
-    
+
     // Si no se pudo extraer ID, usar trailer genérico
     if (!videoId) {
       return this.generarTrailerGenerico();
     }
-    
+
     return `https://www.youtube.com/embed/${videoId}`;
   }
 
   private formatearHora(fechaHora: string): string {
     // Convertir "2025-07-09T20:10:00.000Z" a "20:10"
     const fecha = new Date(fechaHora);
-    return fecha.toLocaleTimeString('es-ES', { 
-      hour: '2-digit', 
+    return fecha.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: false 
+      hour12: false
     });
-  }
-
-  private generarHorarios(): string[] {
-    // Generar horarios realistas basados en el tipo de película
-    const horariosBase = ['14:00', '16:30', '19:00', '21:30'];
-    const horariosExtendidos = ['12:00', '14:30', '17:00', '19:30', '22:00'];
-    
-    // Si es una película familiar (PG, G), incluir horarios más tempranos
-    if (this.pelicula?.clasificacion === 'PG' || this.pelicula?.clasificacion === 'G') {
-      return horariosExtendidos;
-    }
-    
-    // Para películas R o PG-13, horarios más nocturnos
-    return horariosBase;
-  }
-
-  private generarPrecio(): number {
-    // Precio base simulado
-    return 8.50;
   }
 
   private generarTrailerGenerico(): string {
@@ -368,10 +349,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   private setupUnifiedMediaCarousel(funcionesDePelicula?: any[]): void {
     this.mediaItems = [];
-    
+
     // 1. SIEMPRE agregar un trailer, con lógica de fallback inteligente
     let trailerUrl = '';
-    
+
     // Prioridad 1: Trailer de funciones de la sede seleccionada (si hay idioma seleccionado)
     if (this.funcionesPorIdioma.length > 0) {
       const funcionIdioma = this.funcionesPorIdioma.find(f => f.idioma === this.idiomaSeleccionado) || this.funcionesPorIdioma[0];
@@ -379,27 +360,27 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         trailerUrl = funcionIdioma.trailer;
       }
     }
-    
+
     // Prioridad 2: Trailer de cualquier función de la película (si se pasó funcionesDePelicula)
     if (!trailerUrl && funcionesDePelicula && funcionesDePelicula.length > 0) {
       // Preferir función con idioma seleccionado, sino la primera con trailer
-      const funcionPreferida = funcionesDePelicula.find(f => 
+      const funcionPreferida = funcionesDePelicula.find(f =>
         f.idioma === this.idiomaSeleccionado && f.trailer_url
       ) || funcionesDePelicula.find(f => f.trailer_url);
-      
+
       if (funcionPreferida?.trailer_url) {
         trailerUrl = this.convertToEmbedUrl(funcionPreferida.trailer_url) || '';
       }
     }
-    
+
     // Prioridad 3: Trailer genérico basado en el título
     if (!trailerUrl) {
       trailerUrl = this.generarTrailerGenerico();
     }
-    
+
     // Crear array temporal de elementos originales
     const originalItems: MediaItem[] = [];
-    
+
     // Agregar el trailer al array original
     originalItems.push({
       type: 'video',
@@ -407,7 +388,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       thumbnail: this.getVideoThumbnail(trailerUrl),
       title: 'Tráiler'
     });
-    
+
     // 2. SIEMPRE agregar imágenes adicionales (independiente de funciones de sede)
     if (this.pelicula?.img_carrusel && this.pelicula.img_carrusel.length > 0) {
       this.pelicula.img_carrusel.forEach((img, index) => {
@@ -425,13 +406,13 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       // Para un scroll infinito visual, duplicar elementos solo una vez
       // [Original, Duplicado] - más simple y confiable
       this.mediaItems = [...originalItems, ...originalItems];
-      
+
       // Configurar estado inicial del carrusel - empezar en el primer conjunto (posición 0)
       this.selectedMediaIndex = 0; // Índice lógico (del array original)
       this.currentMediaIndex = 0; // Índice visual (empezar en el primer conjunto)
       this.originalItemsCount = originalItems.length;
       this.updateTrailerUrl(trailerUrl); // Actualizar el trailer mostrado
-      
+
       // Asegurar que la vista previa se configure correctamente
       this.updatePreviewFromCurrentIndex();
     }
@@ -487,16 +468,16 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   selectIdioma(idioma: string, trailerUrl: string): void {
     this.idiomaSeleccionado = idioma;
     this.horarioSeleccionado = ''; // Reset horario seleccionado
-    
+
     // Convertir URL a formato embed antes de usar
     const embedUrl = this.convertToEmbedUrl(trailerUrl);
     this.updateTrailerUrl(embedUrl);
-    
+
     // Actualizar el tráiler en el carousel si existe
     if (this.mediaItems.length > 0 && this.mediaItems[0].type === 'video') {
       this.mediaItems[0].url = embedUrl;
       this.mediaItems[0].thumbnail = this.getVideoThumbnail(trailerUrl);
-      
+
       // Si el tráiler está seleccionado, actualizar la vista previa
       if (this.selectedMediaIndex === 0) {
         this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
@@ -547,11 +528,11 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   // Métodos del carousel
   navigateCarousel(direction: number): void {
     if (this.mediaItems.length === 0 || this.originalItemsCount === 0) return;
-    
+
     if (direction === 1) {
       // Avanzar
       this.currentMediaIndex++;
-      
+
       // Si llegamos al final del array duplicado, resetear al principio
       if (this.currentMediaIndex >= this.mediaItems.length) {
         this.currentMediaIndex = this.originalItemsCount; // Ir al inicio del segundo conjunto
@@ -559,18 +540,18 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     } else if (direction === -1) {
       // Retroceder
       this.currentMediaIndex--;
-      
+
       // Si llegamos antes del principio, ir al final
       if (this.currentMediaIndex < 0) {
         this.currentMediaIndex = this.originalItemsCount - 1; // Ir al final del primer conjunto
       }
     }
-    
+
     // Calcular el índice lógico y actualizar vista previa inmediatamente
     const logicalIndex = this.currentMediaIndex % this.originalItemsCount;
     this.selectedMediaIndex = logicalIndex;
     this.updatePreviewFromCurrentIndex();
-    
+
     // Programar reset para crear efecto infinito visual
     this.scheduleInfiniteReset();
   }
@@ -580,21 +561,21 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const track = document.querySelector('.carousel-track') as HTMLElement;
       if (!track) return;
-      
+
       let needsReset = false;
       let newPosition = this.currentMediaIndex;
-      
+
       // Si estamos en el segundo conjunto, resetear al primer conjunto equivalente
       if (this.currentMediaIndex >= this.originalItemsCount && this.currentMediaIndex < this.originalItemsCount * 2) {
         newPosition = this.currentMediaIndex - this.originalItemsCount;
         needsReset = true;
       }
-      
+
       if (needsReset) {
         // Desactivar transición para reset invisible
         track.classList.add('no-transition');
         this.currentMediaIndex = newPosition;
-        
+
         // Forzar repaint y reactivar transición
         track.offsetHeight;
         setTimeout(() => {
@@ -608,7 +589,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     // Obtener el elemento actual del carrusel
     if (this.currentMediaIndex >= 0 && this.currentMediaIndex < this.mediaItems.length) {
       const mediaItem = this.mediaItems[this.currentMediaIndex];
-      
+
       if (mediaItem.type === 'video') {
         this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(mediaItem.url);
       }
@@ -625,7 +606,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   selectMedia(logicalIndex: number): void {
     // Actualizar el índice lógico seleccionado
     this.selectedMediaIndex = logicalIndex;
-    
+
     // Usar el método unificado para actualizar la vista previa
     this.updatePreviewFromCurrentIndex();
   }
@@ -660,10 +641,12 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     return typeof precio === 'number' ? precio * this.cantidad : 'N/A';
   }
 
+
+
   getGeneros(): string {
     if (!this.peliculaCompleta?.generos) return 'No disponible';
     
-    // Si es un array de strings (formato de /completas)
+    // Si es un array de strings (formato optimizado)
     if (Array.isArray(this.peliculaCompleta.generos) && typeof this.peliculaCompleta.generos[0] === 'string') {
       return this.peliculaCompleta.generos.join(', ');
     }
@@ -679,7 +662,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   getActores(): string {
     if (!this.peliculaCompleta?.actores) return 'No disponible';
     
-    // Si es un array de strings (formato de /completas)
+    // Si es un array de strings (formato optimizado)
     if (Array.isArray(this.peliculaCompleta.actores) && typeof this.peliculaCompleta.actores[0] === 'string') {
       return this.peliculaCompleta.actores.join(', ');
     }
@@ -695,7 +678,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   getIdiomas(): string {
     if (!this.peliculaCompleta?.idiomas) return 'No disponible';
     
-    // Si es un array de strings (formato de /completas)
+    // Si es un array de strings (formato optimizado)
     if (Array.isArray(this.peliculaCompleta.idiomas) && typeof this.peliculaCompleta.idiomas[0] === 'string') {
       return this.peliculaCompleta.idiomas.join(', ');
     }
@@ -708,17 +691,43 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     return 'No disponible';
   }
 
-  getDistribuidor(): string {
-    if (!this.peliculaCompleta?.id_distribuidor) return 'No disponible';
+  getEtiquetas(): string {
+    if (!this.peliculaCompleta?.etiquetas) return 'No disponible';
     
-    // Si es un string directo (formato de /completas)
-    if (typeof this.peliculaCompleta.id_distribuidor === 'string') {
-      return this.peliculaCompleta.id_distribuidor;
+    // Si es un array de strings (formato optimizado)
+    if (Array.isArray(this.peliculaCompleta.etiquetas) && typeof this.peliculaCompleta.etiquetas[0] === 'string') {
+      return this.peliculaCompleta.etiquetas.join(', ');
     }
     
-    // Si es un objeto (formato tradicional)
-    if (typeof this.peliculaCompleta.id_distribuidor === 'object') {
-      return this.peliculaCompleta.id_distribuidor.nombre || 'No disponible';
+    // Si es un array de objetos (formato tradicional)
+    if (Array.isArray(this.peliculaCompleta.etiquetas) && typeof this.peliculaCompleta.etiquetas[0] === 'object') {
+      return this.peliculaCompleta.etiquetas.map((e: any) => e.nombre).join(', ');
+    }
+    
+    return 'No disponible';
+  }
+
+  getDistribuidor(): string {
+    if (!this.peliculaCompleta?.distribuidor && !this.peliculaCompleta?.id_distribuidor) return 'No disponible';
+    
+    // Prioridad 1: Campo distribuidor directo (formato optimizado)
+    if (this.peliculaCompleta?.distribuidor) {
+      if (typeof this.peliculaCompleta.distribuidor === 'string') {
+        return this.peliculaCompleta.distribuidor;
+      }
+      if (typeof this.peliculaCompleta.distribuidor === 'object' && this.peliculaCompleta.distribuidor.nombre) {
+        return this.peliculaCompleta.distribuidor.nombre;
+      }
+    }
+    
+    // Prioridad 2: Campo id_distribuidor (formato tradicional)
+    if (this.peliculaCompleta?.id_distribuidor) {
+      if (typeof this.peliculaCompleta.id_distribuidor === 'string') {
+        return this.peliculaCompleta.id_distribuidor;
+      }
+      if (typeof this.peliculaCompleta.id_distribuidor === 'object' && this.peliculaCompleta.id_distribuidor.nombre) {
+        return this.peliculaCompleta.id_distribuidor.nombre;
+      }
     }
     
     return 'No disponible';

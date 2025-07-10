@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FuncionesService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/funciones';
-  //apiURL = 'http://localhost:3000/api/funciones';
+ // apiURL = 'https://api-cinebyte.onrender.com/api/funciones';
+  apiURL = 'http://localhost:3000/api/funciones';
 
   constructor(private http: HttpClient) { }
 
@@ -36,8 +36,7 @@ export class FuncionesService {
     return this.http.get<FuncionesList[]>(`${this.apiURL}`);
   }
 
-  // Método comentado porque el endpoint no existe en el backend
-  // getFuncionesByPeliculaId(peliculaId: number): Observable<Funciones[]> {
-  //   return this.http.get<Funciones[]>(`${this.apiURL}/pelicula/${peliculaId}`);
-  // }
+  getFuncionesByPeliculaId(peliculaId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiURL}/pelicula/${peliculaId}`);
+  }
 }
