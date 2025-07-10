@@ -271,6 +271,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         return;
       }
       
+      //a
       const formData: Funciones = {
         id_funcion: 0, // El backend lo generará
         id_pelicula: this.selectedPeliculaId!,
