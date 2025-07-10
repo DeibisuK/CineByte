@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FuncionesService {
- // apiURL = 'https://api-cinebyte.onrender.com/api/funciones';
-  apiURL = 'http://localhost:3000/api/funciones';
+  apiURL = 'https://api-cinebyte.onrender.com/api/funciones';
+  // apiURL = 'http://localhost:3000/api/funciones';
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class FuncionesService {
   getFuncionById(id: number): Observable<Funciones> {
     return this.http.get<Funciones>(`${this.apiURL}/${id}`);
   }
-
+  
   addFuncion(formFuncion: Funciones): Observable<any> {
     return this.http.post(this.apiURL, formFuncion);
   }
@@ -35,7 +35,6 @@ export class FuncionesService {
   getFuncionesConDetalles(): Observable<FuncionesList[]> {
     return this.http.get<FuncionesList[]>(`${this.apiURL}`);
   }
-
   getFuncionesByPeliculaId(peliculaId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiURL}/pelicula/${peliculaId}`);
   }

@@ -47,8 +47,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   sedeSeleccionada: any = null; // Cambiar a objeto completo en lugar de string
 
   // Configuración del filtrado de funciones
-  private readonly FILTRADO_ESTRICTO = true; // Solo salas asignadas únicamente a la sede
-  private readonly MOSTRAR_DEBUG_FILTRADO = true; // Mostrar información de debugging
+  private readonly FILTRADO_ESTRICTO = false; // Permitir salas compartidas entre sedes
 
   // Media carousel
   mediaItems: MediaItem[] = [];
@@ -106,8 +105,6 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       next: ({ basica, completa }) => {
         this.pelicula = basica;
         this.peliculaCompleta = completa;
-        
-        console.log('🎬 Película cargada:', { basica, completa });
 
         if (this.sedeSeleccionada) {
           this.loadFunciones(id);
@@ -171,26 +168,22 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
     console.log('🎬 Cargando funciones optimizadas para película:', peliculaId, 'sede:', this.sedeSeleccionada);
 
-    // OPTIMIZACIÓN: Usar getFuncionesByPeliculaId para obtener solo las funciones de esta película
+    // Usar getFuncionesByPeliculaId para obtener solo las funciones de esta película
     this.funcionesService.getFuncionesByPeliculaId(peliculaId).pipe(
       takeUntil(this.destroy$),
       switchMap((funcionesDePelicula: any[]) => {
-        console.log('✅ Funciones de la película obtenidas:', funcionesDePelicula.length);
-
         // Filtrar solo funciones activas
         const funcionesActivas = funcionesDePelicula.filter(f => f.estado === 'activa');
 
         if (funcionesActivas.length === 0) {
-          console.warn('No se encontraron funciones activas para esta película');
           this.funcionesPorIdioma = [];
           this.setupMediaCarousel();
           return [];
         }
 
-        // OPTIMIZACIÓN: Obtener salas únicas para evitar verificaciones duplicadas
+        // Obtener salas únicas para evitar verificaciones duplicadas
         const salasUnicas = [...new Set(funcionesActivas.map(f => f.id_sala))];
-        console.log('🔧 Verificando sedes para', salasUnicas.length, 'salas únicas');
-
+        
         // Verificar sedes de todas las salas únicas en paralelo
         const verificacionesDeSedes = salasUnicas.map(idSala =>
           this.sedeSalasService.getSedesBySala(idSala).pipe(
@@ -198,8 +191,16 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
           )
         );
 
-        return forkJoin(verificacionesDeSedes).pipe(
-          switchMap((resultadosSedesPorSala: any[][]) => {
+        // Agregar verificación de salas de la sede seleccionada para debugging
+        const salasDeSedeActual$ = this.sedeSalasService.getSalasBySede(this.sedeSeleccionada.id_sede).pipe(
+          takeUntil(this.destroy$)
+        );
+
+        return forkJoin([
+          forkJoin(verificacionesDeSedes),
+          salasDeSedeActual$
+        ]).pipe(
+          switchMap(([resultadosSedesPorSala, salasDeSedeActual]: [any[][], any[]]) => {
             // Crear mapa de sala -> sedes para lookup rápido
             const mapaSedesPorSala = new Map<number, any[]>();
             salasUnicas.forEach((idSala, index) => {
@@ -221,27 +222,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
                 perteneceASede = sedesDeLaSala.some((ss: any) => ss.id_sede === this.sedeSeleccionada.id_sede);
               }
 
-              if (this.MOSTRAR_DEBUG_FILTRADO) {
-                console.log(`🏛️ Sala ${funcion.id_sala}:`, {
-                  asignaciones: sedesDeLaSala.map((ss: any) => ss.id_sede),
-                  sedeSeleccionada: this.sedeSeleccionada.id_sede,
-                  estrategia: this.FILTRADO_ESTRICTO ? 'ESTRICTA' : 'FLEXIBLE',
-                  esSalaUnica: sedesDeLaSala.length === 1,
-                  perteneceASede
-                });
-              }
-
               return perteneceASede;
             });
 
-            console.log('=== ANÁLISIS OPTIMIZADO DE FILTRADO ===');
-            console.log(`📊 Funciones procesadas: ${funcionesDePelicula.length} total → ${funcionesActivas.length} activas → ${funcionesDeLaSede.length} en sede`);
-            console.log(`🎯 Estrategia: ${this.FILTRADO_ESTRICTO ? 'ESTRICTA' : 'FLEXIBLE'}`);
-            console.log(`⚡ Verificaciones de sede: ${salasUnicas.length} (optimizado)`);
-            console.log('=====================================');
-
             if (funcionesDeLaSede.length === 0) {
-              console.warn('❌ No se encontraron funciones para esta película en la sede seleccionada');
               this.funcionesPorIdioma = [];
               this.setupMediaCarouselWithFallback(funcionesActivas);
               return [];
@@ -263,10 +247,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
               idioma: idioma,
               horarios: funciones.map((f: any) => this.formatearHora(f.fecha_hora_inicio)),
               trailer: this.convertToEmbedUrl(funciones[0].trailer_url) || this.generarTrailerGenerico(),
-              precio: funciones[0].precio || 8.50 // Usar 'precio' en lugar de 'precio_funcion'
+              precio: funciones[0].precio || 8.50
             }));
-
-            console.log('🎉 Funciones por idioma optimizadas:', this.funcionesPorIdioma);
 
             if (this.funcionesPorIdioma.length > 0) {
               this.idiomaSeleccionado = this.funcionesPorIdioma[0].idioma;
@@ -280,10 +262,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: () => {
-        console.log('✅ Carga optimizada completada exitosamente');
+        // Carga completada exitosamente
       },
       error: (err: any) => {
-        console.error('❌ Error en carga optimizada de funciones:', err);
+        console.error('Error en carga de funciones:', err);
         this.funcionesPorIdioma = [];
         this.setupMediaCarousel();
       }
@@ -417,14 +399,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       this.updatePreviewFromCurrentIndex();
     }
 
-    console.log('🎬 Carrusel infinito configurado:', {
+    console.log('🎬 Carrusel configurado:', {
       originalItems: originalItems.length,
       totalItemsInCarousel: this.mediaItems.length,
-      startingAt: this.currentMediaIndex,
-      trailerUsed: trailerUrl,
-      hasImagesFromMovie: this.pelicula?.img_carrusel?.length || 0,
-      functionsInVenue: this.funcionesPorIdioma.length,
-      functionsInMovie: funcionesDePelicula?.length || 0
+      functionsInVenue: this.funcionesPorIdioma.length
     });
   }
 
