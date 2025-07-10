@@ -18,16 +18,16 @@
     </ul>
 
     <!-- Selector sede SOLO en escritorio -->
-    <div class="selector-sede">
-      <button class="btn-selector-sede">
+    <div class="selector-sede" [class.abierto]="menuSedesAbierto">
+      <button class="btn-selector-sede" (click)="abrirMenuSedes()">
         <span class="material-icons">location_on</span>
         <span>
           {{ sedeSeleccionada ? sedeSeleccionada.nombre : 'Seleccionar una sede' }}
         </span>
-        <span class="material-icons flecha">expand_more</span>
+        <span class="material-icons flecha" [class.abierto]="menuSedesAbierto">expand_more</span>
       </button>
 
-      <div class="menu-sedes">
+      <div class="menu-sedes" *ngIf="menuSedesAbierto">
         <div *ngFor="let ciudad of ciudadesConSedes">
           <div class="ciudad-titulo">{{ ciudad.nombre }}</div>
           <hr class="linea-ciudad" />

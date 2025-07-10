@@ -287,7 +287,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (response) => {
-            this.alerta.successRoute('Éxito', 'Función creada exitosamente!', 'funciones');
+            this.alerta.successRoute('Éxito', 'Función creada exitosamente!', 'funciones/list');
             this.limpiarFormulario();
           },
           error: (err) => {

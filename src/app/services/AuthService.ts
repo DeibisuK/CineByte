@@ -84,6 +84,10 @@ export class AuthService {
     return this.auth.currentUser;
   }
 
+  isLoggedIn(): boolean {
+    return this.auth.currentUser !== null;
+  }
+
   asignarAdmin(uid: string, token: string) {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/add-admin`, { uid }, { headers });

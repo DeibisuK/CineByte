@@ -6,7 +6,7 @@ import { EdadesComponent } from '../../../../../shared/components/edades/edades.
 
 @Component({
   selector: 'app-carousel-estrenos',
-  imports: [CommonModule,EdadesComponent],
+  imports: [CommonModule],
   templateUrl: './carousel-estrenos.component.html',
   styleUrl: './carousel-estrenos.component.css'
 })

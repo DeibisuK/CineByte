@@ -58,6 +58,12 @@ export class NavbarComponent {
       const temaGuardado = localStorage.getItem('tema');
       this.modoOscuro = temaGuardado !== 'claro';
       this.aplicarTema(this.modoOscuro);
+      
+      // Cargar sede guardada en localStorage
+      const sedeGuardada = localStorage.getItem('sedeSeleccionada');
+      if (sedeGuardada) {
+        this.sedeSeleccionada = JSON.parse(sedeGuardada);
+      }
     }
     this.cargarSedes();
     this.authService.role$.subscribe(() => {
@@ -119,7 +125,16 @@ export class NavbarComponent {
   seleccionarSede(sede: Sede) {
     this.sedeSeleccionada = sede;
     this.menuSedesAbierto = false;
-    // Aquí puedes guardar la sede seleccionada en localStorage o emitir un evento
+    
+    // Guardar la sede seleccionada en localStorage para otros componentes
+    if (this.esNavegador) {
+      localStorage.setItem('sedeSeleccionada', JSON.stringify(sede));
+      
+      // Emitir evento personalizado para que otros componentes puedan reaccionar
+      window.dispatchEvent(new CustomEvent('sedeSeleccionada', {
+        detail: sede
+      }));
+    }
   }
 
   cambiarTema(): void {

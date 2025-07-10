@@ -46,6 +46,6 @@ export class PeliculaService {
     return this.http.get<Pelicula>(`${this.apiURL}/completas/${id}`);
   }
   getFuncionesByPeliculaId(id: number): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/funciones/pelicula/${id}`);
+    return this.http.get(`https://api-cinebyte.onrender.com/api/funciones/pelicula/${id}`);
   }
 }

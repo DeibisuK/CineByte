@@ -35,4 +35,9 @@ export class FuncionesService {
   getFuncionesConDetalles(): Observable<FuncionesList[]> {
     return this.http.get<FuncionesList[]>(`${this.apiURL}`);
   }
+
+  // Método comentado porque el endpoint no existe en el backend
+  // getFuncionesByPeliculaId(peliculaId: number): Observable<Funciones[]> {
+  //   return this.http.get<Funciones[]>(`${this.apiURL}/pelicula/${peliculaId}`);
+  // }
 }
