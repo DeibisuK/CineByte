@@ -1,0 +1,623 @@
+/* Container principal - sin fondo */
+.container-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container flotante con bordes redondeados */
+.floating-container {
+  max-width: 1200px;
+  margin: 20px auto 0;
+  background-color: var(--footer-bg);
+  color: var(--text-color);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--dropdown-border);
+}
+
+/* Botón volver arriba del container */
+.btn-back {
+  background-color: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.btn-back:hover {
+  background-color: var(--hover-link);
+  transform: translateY(-2px);
+}
+
+/* Header de película */
+.movie-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.movie-title {
+  font-size: 2.2rem;
+  color: var(--text-color);
+  margin: 0 0 20px 0;
+  font-weight: bold;
+}
+
+/* Barra de progreso horizontal */
+.progress-bar-vertical {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  border: 3px solid var(--dropdown-border);
+  background-color: var(--dropdown-bg);
+  color: var(--text-color);
+}
+
+.progress-item.completed .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+.progress-item.active .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+/* Efecto glow amarillo estático para el paso actual */
+.progress-item.glow {
+  filter: drop-shadow(0 0 6px var(--yellow));
+  opacity: 0.85;
+}
+
+.progress-item span {
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-color);
+  white-space: nowrap;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* Líneas de conexión horizontales */
+.progress-line {
+  height: 2px;
+  width: 30px;
+  background-color: var(--dropdown-border);
+  margin: 0;
+  align-self: center;
+  margin-top: -25px;
+  z-index: 1;
+}
+
+.progress-line.completed {
+  background-color: var(--yellow);
+}
+
+/* Contenido principal en dos columnas */
+.payment-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+/* Columna izquierda */
+.left-column {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* Columna derecha */
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Container de resumen de compra */
+.purchase-summary {
+  background-color: var(--dropdown-bg);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--dropdown-border);
+}
+
+.movie-info-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+/* Portada de la película */
+.movie-poster {
+  flex-shrink: 0;
+}
+
+.poster-image {
+  width: 80px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid var(--dropdown-border);
+}
+
+/* Detalles de la película */
+.movie-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.movie-title-small {
+  font-size: 1.1rem;
+  color: var(--yellow);
+  margin: 0 0 8px 0;
+  font-weight: bold;
+}
+
+.movie-room,
+.movie-function {
+  margin: 4px 0;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.ticket-quantity {
+  margin: 8px 0 0 0;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.quantity {
+  color: var(--yellow);
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Container de precio */
+.price-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 120px;
+}
+
+/* Precio total simplificado para container de previsualización */
+.total-price-simple {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.total-price-simple .price-amount {
+  font-size: 1.4rem;
+  color: var(--yellow);
+  font-weight: bold;
+}
+
+/* Desglose de precios (mantener estilos existentes) */
+.price-breakdown {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 4px;
+}
+
+.price-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 140px;
+  font-size: 14px;
+}
+
+.price-line .price-label {
+  color: var(--text-color-muted);
+  margin-right: 10px;
+}
+
+.price-line .price-value {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.total-price {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 140px;
+  padding-top: 8px;
+  border-top: 1px solid var(--dropdown-border);
+  margin-top: 4px;
+}
+
+.price-label {
+  font-size: 14px;
+  color: var(--text-color);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.price-amount {
+  font-size: 1.3rem;
+  color: var(--yellow);
+  font-weight: bold;
+}
+
+/* Sección de métodos de pago */
+.payment-methods-section {
+  background-color: var(--dropdown-bg);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--dropdown-border);
+}
+
+.section-title {
+  color: var(--text-color);
+  font-size: 1.2rem;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+/* Loading state */
+.loading-payment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-color);
+  font-size: 14px;
+  padding: 20px;
+  text-align: center;
+  justify-content: center;
+}
+
+.loading-payment i {
+  color: var(--yellow);
+}
+
+/* Lista de métodos de pago */
+.payment-methods-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.payment-method-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background-color: var(--footer-bg);
+  border: 2px solid var(--dropdown-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.payment-method-card:hover {
+  border-color: var(--yellow);
+  transform: translateY(-2px);
+}
+
+.payment-method-card.selected {
+  border-color: var(--yellow);
+  background-color: rgba(255, 215, 0, 0.1);
+}
+
+.card-icon {
+  font-size: 1.8rem;
+  min-width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.card-type {
+  font-weight: bold;
+  color: var(--text-color);
+  font-size: 16px;
+}
+
+.card-number {
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.card-bank {
+  color: var(--text-color-muted);
+  font-size: 13px;
+}
+
+.card-actions {
+  color: var(--yellow);
+  font-size: 1.5rem;
+}
+
+/* Botón agregar método de pago */
+.add-payment-section {
+  margin-top: 15px;
+}
+
+.btn-add-payment {
+  width: 100%;
+  background-color: var(--dropdown-bg);
+  border: 2px dashed var(--dropdown-border);
+  color: var(--text-color);
+  padding: 15px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn-add-payment:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background-color: rgba(255, 215, 0, 0.05);
+}
+
+/* Sección de cupón */
+.coupon-section {
+  background-color: var(--dropdown-bg);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--dropdown-border);
+}
+
+.coupon-form {
+  margin-top: 15px;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.coupon-input {
+  flex: 1;
+  padding: 12px 15px;
+  background-color: var(--footer-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 8px;
+  color: var(--text-color);
+  font-size: 14px;
+}
+
+.coupon-input:focus {
+  outline: none;
+  border-color: var(--yellow);
+}
+
+.btn-validate-coupon {
+  background-color: var(--yellow);
+  color: #000;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.btn-validate-coupon:hover:not(:disabled) {
+  background-color: #e6c200;
+  transform: translateY(-2px);
+}
+
+.btn-validate-coupon:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Información del usuario */
+.user-info-section {
+  background-color: var(--dropdown-bg);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--dropdown-border);
+  height: fit-content;
+}
+
+.user-details {
+  margin-top: 15px;
+}
+
+.user-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.field-label {
+  font-size: 14px;
+  color: var(--text-color-muted);
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.field-value {
+  font-size: 16px;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+/* Resumen del pedido */
+.order-summary {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid var(--dropdown-border);
+}
+
+.summary-title {
+  color: var(--yellow);
+  font-size: 1.1rem;
+  margin: 0 0 15px 0;
+  font-weight: bold;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.summary-label {
+  color: var(--text-color-muted);
+}
+
+.summary-value {
+  color: var(--text-color);
+  font-weight: 500;
+}
+
+.total-item {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--dropdown-border);
+  font-size: 16px;
+}
+
+.total-item .summary-label {
+  color: var(--text-color);
+  font-weight: bold;
+}
+
+.total-amount {
+  color: var(--yellow) !important;
+  font-weight: bold !important;
+  font-size: 1.2rem !important;
+}
+
+/* Acciones de pago */
+.payment-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.btn-process-payment {
+  background-color: var(--yellow);
+  color: #000;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  justify-content: center;
+}
+
+.btn-process-payment:hover:not(:disabled) {
+  background-color: #e6c200;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-process-payment:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .floating-container {
+    margin: 10px;
+    padding: 20px;
+  }
+  
+  .payment-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .movie-info-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .poster-image {
+    width: 60px;
+    height: 90px;
+  }
+  
+  .price-container {
+    align-items: center;
+    margin-top: 15px;
+  }
+  
+  .coupon-input-group {
+    flex-direction: column;
+  }
+  
+  .progress-bar-vertical {
+    gap: 5px;
+  }
+  
+  .step-circle {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+  
+  .progress-line {
+    width: 20px;
+    margin-top: -20px;
+  }
+}

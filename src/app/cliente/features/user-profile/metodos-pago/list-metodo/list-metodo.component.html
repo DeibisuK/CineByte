@@ -25,8 +25,9 @@
         <div class="payment-card" *ngFor="let card of cards">
           <div class="card-content">
             <div class="card-header">
-              <i [class]="getCardIcon(card.tipo_tarjeta) + ' card-type-icon'" 
-                 [style.color]="getCardColor(card.tipo_tarjeta)"></i>
+              <i [class]="getCardIcon(card.tipo_tarjeta)" 
+                 [style.color]="getCardColor(card.tipo_tarjeta)"
+                 class="card-type-icon"></i>
               <span class="card-type">{{ card.tipo_tarjeta }}</span>
               <button class="card-delete-btn" (click)="deleteCard(card)" title="Eliminar tarjeta">
                 <i class="fas fa-trash"></i>

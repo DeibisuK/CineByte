@@ -1,25 +1,35 @@
 <div class="detalle-container">
-  <!-- Header con breadcrumb y botón volver -->
-  <div class="page-header">
-    <nav class="breadcrumb-nav">
-      <span routerLink="/inicio" class="breadcrumb-link">Inicio</span>
-      <span class="breadcrumb-sep">›</span>
-      <span class="breadcrumb-link" routerLink="/carrusel-general">Cartelera</span>
-      <span class="breadcrumb-sep">›</span>
-      <span class="breadcrumb-current">{{ pelicula?.titulo }}</span>
-    </nav>
-    <button class="btn-volver" routerLink="/carrusel-general">
-      <i class="fa-solid fa-arrow-left"></i> Volver
-    </button>
-  </div>
-
-  <!-- Mensaje de selección de sede -->
-  <div class="sede-alert" *ngIf="!sedeSeleccionada">
-    <div class="sede-alert-content">
-      <i class="fa-solid fa-map-marker-alt"></i>
-      <span>Por favor, selecciona una sede en el menú superior para ver las funciones disponibles</span>
+  <!-- Loading spinner -->
+  <div class="loading-container" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Cargando información de la película...</p>
     </div>
   </div>
+
+  <!-- Contenido principal (oculto durante carga) -->
+  <div [style.display]="isLoading ? 'none' : 'block'">
+    <!-- Header con breadcrumb y botón volver -->
+    <div class="page-header">
+      <nav class="breadcrumb-nav">
+        <span routerLink="/inicio" class="breadcrumb-link">Inicio</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-link" routerLink="/carrusel-general">Cartelera</span>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-current">{{ pelicula?.titulo }}</span>
+      </nav>
+      <button class="btn-volver" routerLink="/carrusel-general">
+        <i class="fa-solid fa-arrow-left"></i> Volver
+      </button>
+    </div>
+
+    <!-- Mensaje de selección de sede -->
+    <div class="sede-alert" *ngIf="!sedeSeleccionada">
+      <div class="sede-alert-content">
+        <i class="fa-solid fa-map-marker-alt"></i>
+        <span>Por favor, selecciona una sede en el menú superior para ver las funciones disponibles</span>
+      </div>
+    </div>
 
   <!-- Contenido principal -->
   <div class="detalle-main" *ngIf="pelicula as p">
@@ -148,26 +158,30 @@
               <button *ngFor="let horario of obtenerHorariosPorIdioma()" 
                       class="horario-btn"
                       [class.selected]="horario === horarioSeleccionado"
-                      (click)="horarioSeleccionado = horario">
-                {{ horario }}
+                      (click)="seleccionarHorario(horario)">
+                {{ obtenerHorarioConFin(horario) }}
               </button>
             </div>
-          </div>
-
-          <!-- Cantidad y precio -->
-          <div class="compra-details">
-            <div class="cantidad-section">
-              <label>Cantidad de boletos</label>
-              <div class="cantidad-control">
-                <button (click)="cambiarCantidad(-1)" [disabled]="cantidad <= 1" class="cantidad-btn">
-                  <i class="fa-solid fa-minus"></i>
-                </button>
-                <span class="cantidad-display">{{ cantidad }}</span>
-                <button (click)="cambiarCantidad(1)" class="cantidad-btn">
-                  <i class="fa-solid fa-plus"></i>
-                </button>
+          </div>            <!-- Cantidad y precio -->
+            <div class="compra-details">
+              <div class="cantidad-section">
+                <label>Cantidad de boletos</label>
+                <div class="cantidad-info">
+                  <small class="asientos-info">Disponibles: {{ maxAsientosDisponibles }} de {{ totalAsientos }}</small>
+                </div>
+                <div class="cantidad-control">
+                  <button (click)="cambiarCantidad(-1)" [disabled]="cantidad <= 1" class="cantidad-btn">
+                    <i class="fa-solid fa-minus"></i>
+                  </button>
+                  <span class="cantidad-display">{{ cantidad }}</span>
+                  <button (click)="cambiarCantidad(1)" [disabled]="!puedeAumentarCantidad" class="cantidad-btn">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </div>
+                <div class="validation-message" *ngIf="cantidad >= maxAsientosDisponibles && maxAsientosDisponibles > 0">
+                  <small class="max-tickets-warning">Máximo de boletos disponibles alcanzado</small>
+                </div>
               </div>
-            </div>
 
             <div class="precio-section" *ngIf="funcionesPorIdioma.length > 0">
               <div class="precio-item">
@@ -182,20 +196,29 @@
           </div>
 
           <!-- Botón de compra -->
-          <button class="btn-comprar" 
-                  (click)="irASiguiente()"
-                  [disabled]="!horarioSeleccionado || cantidad <= 0">
-            <i class="fa-solid fa-ticket"></i>
-            Comprar Boletos
-          </button>
+          <div class="compra-section">
+            <div class="mensaje-seleccion" *ngIf="!funcionSeleccionada">
+              <small class="error-message">Seleccione una función</small>
+            </div>
+            <button class="btn-comprar" 
+                    (click)="irASiguiente()"
+                    [disabled]="!funcionSeleccionada || cantidad <= 0"
+                    [class.disabled]="!funcionSeleccionada || cantidad <= 0">
+              <i class="fa-solid fa-ticket"></i>
+              <span *ngIf="funcionSeleccionada">Comprar Boletos</span>
+              <span *ngIf="!funcionSeleccionada">Seleccione una función</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Películas relacionadas -->
-<div class="peliculas-relacionadas">
-  <h2 class="section-title">PELÍCULAS EN CARTELERA</h2>
-  <app-carousel-estrenos></app-carousel-estrenos>
+  <!-- Películas relacionadas -->
+  <div class="peliculas-relacionadas">
+    <h2 class="section-title">PELÍCULAS EN CARTELERA</h2>
+    <app-carousel-estrenos></app-carousel-estrenos>
+  </div>
+
+  </div> <!-- Cierre del contenido principal -->
 </div>

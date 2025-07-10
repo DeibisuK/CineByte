@@ -365,7 +365,7 @@
 }
 
 .card-header .card-type-icon {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     margin-right: 0.5rem;
 }
 
@@ -522,6 +522,6 @@
     }
     
     .card-header .card-type-icon {
-        font-size: 1.5rem;
+        font-size: 1.8rem;
     }
 }

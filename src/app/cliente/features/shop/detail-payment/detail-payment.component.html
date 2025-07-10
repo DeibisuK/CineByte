@@ -1,0 +1,210 @@
+<div class="container-wrapper">
+  <div class="floating-container">
+    <!-- Botón volver arriba del container -->
+    <button class="btn-back" (click)="volverAtras()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+
+    <!-- Header con título de película -->
+    <div class="movie-header">
+      <h1 class="movie-title">{{ compraInfo.titulo }}</h1>
+      
+      <!-- Barra de progreso horizontal -->
+      <div class="progress-bar-vertical">
+        <div class="progress-item completed">
+          <div class="step-circle">1</div>
+          <span>Entradas</span>
+        </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-item completed">
+          <div class="step-circle">2</div>
+          <span>Asientos</span>
+        </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-item active glow">
+          <div class="step-circle">3</div>
+          <span>Pago</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-item">
+          <div class="step-circle">4</div>
+          <span>Fin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenido principal en dos columnas -->
+    <div class="payment-content">
+      
+      <!-- Columna izquierda: Información de compra y métodos de pago -->
+      <div class="left-column">
+        
+        <!-- Container de resumen de compra -->
+        <div class="purchase-summary">
+          <div class="movie-info-container">
+            <!-- Portada de la película -->
+            <div class="movie-poster">
+              <img [src]="compraInfo.portada" [alt]="compraInfo.titulo" class="poster-image">
+            </div>
+            
+            <!-- Información de la película -->
+            <div class="movie-details">
+              <h3 class="movie-title-small">{{ compraInfo.titulo }}</h3>
+              <p class="movie-room">{{ compraInfo.sala }}</p>
+              <p class="movie-function">{{ obtenerHorarioConFin() }}</p>
+              <p class="ticket-quantity">Cantidad de boletos: <span class="quantity">{{ compraInfo.cantidad }}</span></p>
+            </div>
+            
+            <!-- Precio total -->
+            <div class="price-container">
+              <div class="total-price-simple">
+                <span class="price-amount">${{ totalConIva.toLocaleString() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Métodos de pago -->
+        <div class="payment-methods-section">
+          <h3 class="section-title">Métodos de Pago</h3>
+          
+          <!-- Loading state -->
+          <div *ngIf="loadingPayments" class="loading-payment">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Cargando métodos de pago...</span>
+          </div>
+          
+          <!-- Lista de métodos de pago -->
+          <div *ngIf="!loadingPayments && metodosPago.length > 0" class="payment-methods-list">
+            <div 
+              *ngFor="let metodo of metodosPago" 
+              class="payment-method-card"
+              [class.selected]="selectedPaymentMethod?.id_metodo_pago === metodo.id_metodo_pago"
+              (click)="selectPaymentMethod(metodo)">
+              
+              <div class="card-icon">
+                <i [class]="getCardIcon(metodo.tipo_tarjeta)" [style.color]="getCardColor(metodo.tipo_tarjeta)"></i>
+              </div>
+              
+              <div class="card-info">
+                <span class="card-type">{{ metodo.tipo_tarjeta }}</span>
+                <span class="card-number">**** {{ metodo.numero_tarjeta.slice(-4) }}</span>
+                <span class="card-bank">{{ metodo.banco }}</span>
+              </div>
+              
+              <div class="card-actions">
+                <i class="fas fa-check-circle" *ngIf="selectedPaymentMethod?.id_metodo_pago === metodo.id_metodo_pago"></i>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Sin métodos de pago o botón agregar -->
+          <div class="add-payment-section">
+            <button 
+              class="btn btn-add-payment"
+              (click)="openAddPaymentModal()">
+              <i class="fas fa-plus"></i>
+              {{ metodosPago.length === 0 ? 'Agregar método de pago' : 'Agregar nuevo método' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Aplicar cupón -->
+        <div class="coupon-section">
+          <h3 class="section-title">Aplicar Cupón</h3>
+          <form [formGroup]="couponForm" class="coupon-form">
+            <div class="coupon-input-group">
+              <input 
+                type="text" 
+                formControlName="couponCode"
+                class="coupon-input"
+                placeholder="Ingresa tu código de cupón">
+              <button 
+                type="button"
+                class="btn btn-validate-coupon"
+                [disabled]="couponForm.invalid"
+                (click)="validateCoupon()">
+                Validar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Columna derecha: Datos del usuario -->
+      <div class="right-column">
+        <div class="user-info-section">
+          <h3 class="section-title">Datos del Comprador</h3>
+          
+          <div class="user-details">
+            <div class="user-field">
+              <label class="field-label">Nombre Completo:</label>
+              <span class="field-value">{{ userDisplayName || 'No disponible' }}</span>
+            </div>
+            
+            <div class="user-field">
+              <label class="field-label">Correo Electrónico:</label>
+              <span class="field-value">{{ userEmail || 'No disponible' }}</span>
+            </div>
+            
+            <!-- Información adicional del pedido -->
+            <div class="order-summary">
+              <h4 class="summary-title">Resumen del Pedido</h4>
+              <div class="summary-item">
+                <span class="summary-label">Película:</span>
+                <span class="summary-value">{{ compraInfo.titulo }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Función:</span>
+                <span class="summary-value">{{ obtenerHorarioConFin() }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Sala:</span>
+                <span class="summary-value">{{ compraInfo.sala }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Boletos:</span>
+                <span class="summary-value">{{ compraInfo.cantidad }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Precio por boleto:</span>
+                <span class="summary-value">${{ compraInfo.precio.toLocaleString() }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">Subtotal:</span>
+                <span class="summary-value">${{ subtotal.toLocaleString() }}</span>
+              </div>
+              <div class="summary-item">
+                <span class="summary-label">IVA (12%):</span>
+                <span class="summary-value">${{ iva.toLocaleString() }}</span>
+              </div>
+              <div class="summary-item total-item">
+                <span class="summary-label">Total a Pagar:</span>
+                <span class="summary-value total-amount">${{ totalConIva.toLocaleString() }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón de procesar pago -->
+    <div class="payment-actions">
+      <button 
+        class="btn btn-process-payment"
+        [disabled]="!selectedPaymentMethod || isLoading"
+        (click)="procesarPago()">
+        <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
+        <i *ngIf="!isLoading" class="fas fa-credit-card"></i>
+        {{ isLoading ? 'Procesando...' : 'Procesar Pago' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para agregar método de pago -->
+<app-crear-metodo
+  [isModalOpen]="showAddPaymentModal"
+  (modalClosed)="closeAddPaymentModal()"
+  (cardAdded)="onPaymentMethodAdded($event)">
+</app-crear-metodo>

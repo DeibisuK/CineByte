@@ -1,0 +1,479 @@
+/* Container principal - sin fondo */
+.container-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container flotante con bordes redondeados */
+.floating-container {
+  max-width: 700px;
+  margin: 20px auto 0;
+  background-color: var(--footer-bg);
+  color: var(--text-color);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--dropdown-border);
+}
+
+/* Botón volver arriba del container */
+.btn-back {
+  background-color: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+}
+
+.btn-back:hover {
+  background-color: var(--hover-link);
+  transform: translateY(-2px);
+}
+
+/* Header de película */
+.movie-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.movie-title {
+  font-size: 2.2rem;
+  color: var(--text-color);
+  margin: 0 0 20px 0;
+  font-weight: bold;
+}
+
+/* Estado de carga */
+.loading-seats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--text-color-muted);
+}
+
+.loading-seats i {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: var(--yellow);
+  animation: spin 1s linear infinite;
+}
+
+.loading-seats span {
+  font-size: 1.1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Barra de progreso horizontal */
+.progress-bar-vertical {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  border: 3px solid var(--dropdown-border);
+  background-color: var(--dropdown-bg);
+  color: var(--text-color);
+}
+
+.progress-item.completed .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+.progress-item.active .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+/* Efecto glow amarillo estático para el paso actual */
+.progress-item.glow {
+  filter: drop-shadow(0 0 6px var(--yellow));
+  opacity: 0.85;
+}
+
+.progress-item span {
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-color);
+  white-space: nowrap;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+/* Líneas de conexión horizontales */
+.progress-line {
+  height: 2px;
+  width: 30px;
+  background-color: var(--dropdown-border);
+  margin: 0;
+  align-self: center;
+  margin-top: -25px;
+  z-index: 1;
+}
+
+.progress-line.completed {
+  background-color: var(--yellow);
+}
+
+/* Información de función */
+.function-info {
+  text-align: center;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: var(--dropdown-bg);
+  border-radius: 10px;
+  border: 1px solid var(--dropdown-border);
+}
+
+.function-info p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.cantidad {
+  color: var(--yellow);
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+/* Información de asientos disponibles */
+.asientos-info {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--dropdown-border);
+}
+
+.disponibles-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+.disponibles-count i {
+  color: var(--yellow);
+  font-size: 16px;
+}
+
+.count {
+  color: var(--yellow);
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.count.warning {
+  color: #ff6b6b;
+}
+
+.limited-warning {
+  color: #ff6b6b;
+  font-size: 12px;
+  font-style: italic;
+  margin-left: 5px;
+}
+
+/* Título de sección */
+.section-title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--text-color);
+  margin: 25px 0 20px;
+}
+
+/* Leyenda */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-icon {
+  font-size: 18px;
+}
+
+.legend-icon.disponible {
+  color: var(--text-shadow);
+}
+
+.legend-icon.seleccionado {
+  color: #28a745;
+}
+
+.legend-icon.ocupado {
+  color: #dc3545;
+}
+
+/* Layout del cine */
+.cinema-layout {
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Container de asientos centrado horizontalmente con header amarillo */
+.seats-container {
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid var(--dropdown-border);
+  max-width: 700px;
+  width: 100%;
+}
+
+.seats-header {
+  background-color: var(--yellow);
+  color: #000;
+  padding: 15px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.seats-content {
+  background-color: var(--dropdown-bg);
+  padding: 20px;
+}
+
+/* Pantalla del cine */
+.screen-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.screen {
+  background-color: var(--bg-submenu);
+  border: 2px solid var(--dropdown-border);
+  padding: 10px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  color: var(--text-color);
+  font-size: 14px;
+  text-align: center;
+  width: calc(100% - 60px); /* Alineado con asientos extremos */
+  max-width: 300px;
+}
+
+/* Grid de asientos */
+.seats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.fila-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--yellow);
+  width: 25px;
+  text-align: center;
+}
+
+.asientos-fila {
+  display: flex;
+  gap: 8px;
+}
+
+/* Asientos - solo cambian de color, sin efecto hover */
+.asiento {
+  width: 35px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  font-size: 20px;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.asiento.disponible {
+  color: var(--text-color);
+}
+
+.asiento.ocupado {
+  color: #dc3545;
+  cursor: not-allowed;
+}
+
+.asiento.espacio {
+  visibility: hidden;
+  pointer-events: none;
+  width: 35px; /* Mantener el espacio pero invisible */
+  height: 35px;
+}
+
+.asiento.seleccionado {
+  color: #28a745;
+  transform: scale(1.2);
+}
+
+/* Mensaje de validación */
+.validation-message {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: 14px;
+  font-weight: bold;
+  background-color: rgba(231, 76, 60, 0.1);
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--error-color);
+  display: inline-block;
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.btn {
+  padding: 12px 30px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-simulate {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-simulate:not(:disabled):hover {
+  background-color: #219a52;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+.btn-buy {
+  background-color: var(--yellow);
+  color: #000;
+}
+
+.btn-buy:not(:disabled):hover {
+  background-color: #e6c200;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .floating-container {
+    margin: 10px;
+    padding: 20px;
+  }
+  
+  .movie-title {
+    font-size: 1.8rem;
+  }
+  
+  .cinema-layout {
+    margin-bottom: 20px;
+  }
+  
+  .seats-container {
+    max-width: 100%;
+  }
+  
+  .progress-bar-vertical {
+    flex-direction: row;
+    max-width: 100%;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .progress-line {
+    width: 30px;
+    height: 3px;
+  }
+  
+  .legend {
+    gap: 15px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    min-width: 200px;
+  }
+  
+  .screen {
+    width: calc(100% - 40px);
+  }
+}

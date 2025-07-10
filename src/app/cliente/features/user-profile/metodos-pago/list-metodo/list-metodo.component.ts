@@ -99,78 +99,52 @@ export class ListMetodoComponent implements OnInit {
 
   // Obtener icono del tipo de tarjeta
   getCardIcon(tipoTarjeta: string): string {
-    switch (tipoTarjeta) {
-      case 'Visa':
-        return 'fas fa-credit-card visa-card';
-      case 'Mastercard':
-        return 'fas fa-credit-card mastercard-card';
-      case 'American Express':
-        return 'fas fa-credit-card amex-card';
-      case 'Discover':
-        return 'fas fa-credit-card discover-card';
-      case 'Diners Club':
-        return 'fas fa-credit-card diners-card';
-      case 'JCB':
-        return 'fas fa-credit-card jcb-card';
-      case 'Tarjeta de Crédito':
-        return 'fas fa-credit-card credit-card';
-      case 'Tarjeta Virtual':
-        return 'fas fa-mobile-alt virtual-card';
-      case 'Tarjeta Corporativa':
-        return 'fas fa-building corporate-card';
-      case 'Tarjeta de Débito':
-        return 'fas fa-university debit-card';
-      case 'Tarjeta Prepago':
-        return 'fas fa-gift prepaid-card';
-      case 'Tarjeta Bancaria':
-        return 'fas fa-landmark bancaria-card';
-      case 'Tarjeta de Servicios':
-        return 'fas fa-tools servicios-card';
-      case 'Tarjeta de Comercio':
-        return 'fas fa-store comercio-card';
-      case 'Tarjeta de Pago':
-        return 'fas fa-money-bill-wave default-card';
-      default:
-        return 'fas fa-credit-card default-card';
-    }
+    const iconMap: { [key: string]: string } = {
+      'Visa': 'fab fa-cc-visa',
+      'Mastercard': 'fab fa-cc-mastercard', 
+      'American Express': 'fab fa-cc-amex',
+      'Discover': 'fab fa-cc-discover',
+      'Diners Club': 'fab fa-cc-diners-club',
+      'JCB': 'fab fa-cc-jcb',
+      'PayPal': 'fab fa-cc-paypal',
+      'Apple Pay': 'fab fa-cc-apple-pay',
+      'Stripe': 'fab fa-cc-stripe',
+      'Tarjeta de Crédito': 'fas fa-credit-card',
+      'Tarjeta Virtual': 'fas fa-mobile-alt',
+      'Tarjeta Corporativa': 'fas fa-building',
+      'Tarjeta de Débito': 'fas fa-university',
+      'Tarjeta Prepago': 'fas fa-gift',
+      'Tarjeta Bancaria': 'fas fa-landmark',
+      'Tarjeta de Servicios': 'fas fa-tools',
+      'Tarjeta de Comercio': 'fas fa-store',
+      'Tarjeta de Pago': 'fas fa-money-bill-wave'
+    };
+    return iconMap[tipoTarjeta] || 'fas fa-credit-card';
   }
 
   // Obtener color del tipo de tarjeta
   getCardColor(tipoTarjeta: string): string {
-    switch (tipoTarjeta) {
-      case 'Visa':
-        return '#1434CB';
-      case 'Mastercard':
-        return '#FF5F00';
-      case 'American Express':
-        return '#006FCF';
-      case 'Discover':
-        return '#FF6000';
-      case 'Diners Club':
-        return '#0079BE';
-      case 'JCB':
-        return '#006EBA';
-      case 'Tarjeta de Crédito':
-        return '#28a745';
-      case 'Tarjeta Virtual':
-        return '#17a2b8';
-      case 'Tarjeta Corporativa':
-        return '#6c757d';
-      case 'Tarjeta de Débito':
-        return '#fd7e14';
-      case 'Tarjeta Prepago':
-        return '#e83e8c';
-      case 'Tarjeta Bancaria':
-        return '#007bff';
-      case 'Tarjeta de Servicios':
-        return '#6f42c1';
-      case 'Tarjeta de Comercio':
-        return '#20c997';
-      case 'Tarjeta de Pago':
-        return '#666';
-      default:
-        return '#666';
-    }
+    const colorMap: { [key: string]: string } = {
+      'Visa': '#1a1f71',
+      'Mastercard': '#eb001b',
+      'American Express': '#006fcf',
+      'Discover': '#ff6000',
+      'Diners Club': '#0079be',
+      'JCB': '#005998',
+      'PayPal': '#003087',
+      'Apple Pay': '#000000',
+      'Stripe': '#635bff',
+      'Tarjeta de Crédito': '#28a745',
+      'Tarjeta Virtual': '#17a2b8',
+      'Tarjeta Corporativa': '#6c757d',
+      'Tarjeta de Débito': '#fd7e14',
+      'Tarjeta Prepago': '#e83e8c',
+      'Tarjeta Bancaria': '#007bff',
+      'Tarjeta de Servicios': '#6f42c1',
+      'Tarjeta de Comercio': '#20c997',
+      'Tarjeta de Pago': '#666'
+    };
+    return colorMap[tipoTarjeta] || '#666';
   }
 
   // Formatear fecha de expiración

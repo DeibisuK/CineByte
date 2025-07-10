@@ -1,0 +1,91 @@
+<!-- Modal overlay -->
+<div class="modal-overlay" *ngIf="isOpen" (click)="onClose()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header del modal -->
+    <div class="modal-header">
+      <h2 class="modal-title">Vista Simulada de Asientos</h2>
+      <button class="btn-close" (click)="onClose()">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+
+    <!-- Pestañas de asientos (solo si hay más de un asiento) -->
+    <div class="tabs-container" *ngIf="selectedSeats.length > 1">
+      <div class="tabs-header">
+        <button 
+          *ngFor="let seat of selectedSeats; let i = index"
+          class="tab-button"
+          [class.active]="activeTab === i"
+          (click)="selectTab(i)">
+          {{ getSeatLabel(seat) }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="modal-content">
+      <div class="content-grid">
+        <!-- Columna izquierda: Vista del asiento -->
+        <div class="seat-view-section">
+          <!-- Posición del asiento -->
+          <div class="seat-position">
+            <h3>Vista desde asiento {{ getSeatLabel(selectedSeats[activeTab]) }}</h3>
+            <p class="sala-info" *ngIf="salaName">{{ salaName }}</p>
+          </div>
+
+          <!-- Imagen/Vista del asiento con botón de ampliar -->
+          <div class="seat-image-container">
+            <img [src]="getSeatImage(activeTab)" 
+                 [alt]="'Vista desde asiento ' + getSeatLabel(selectedSeats[activeTab])"
+                 class="simulation-image">
+            
+            <!-- Botón de ampliar en la esquina superior derecha -->
+            <button class="expand-btn" (click)="toggleImageExpanded()" title="Ampliar imagen">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Columna derecha: Mapa de asientos -->
+        <div class="seat-map-section">
+          <h4>Ubicación en la sala</h4>
+          
+          <div class="seat-map">
+            <div class="seat-row" *ngFor="let fila of salaFilas; let rowIndex = index">
+              <span class="row-label">{{ fila }}</span>
+              <div class="seat-grid">
+                <div 
+                  *ngFor="let asiento of getAsientosPorFila(fila)"
+                  class="seat-map-item"
+                  [class.seat-current]="isSeatCurrentlyViewed(asiento.id)"
+                  [class.seat-espacio]="asiento.estado === 'espacio'"
+                  [title]="'Asiento ' + asiento.id">
+                  <i class="fas fa-couch" *ngIf="asiento.estado !== 'espacio'"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="legend">
+            <!-- Leyenda simplificada sin "vista actual" -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de imagen expandida -->
+  <div class="expanded-image-overlay" *ngIf="isImageExpanded" (click)="closeExpandedImage()">
+    <div class="expanded-image-container" (click)="$event.stopPropagation()">
+      <button class="close-expanded-btn" (click)="closeExpandedImage()">
+        <i class="fas fa-times"></i>
+      </button>
+      <img [src]="getSeatImage(activeTab)" 
+           [alt]="'Vista ampliada desde asiento ' + getSeatLabel(selectedSeats[activeTab])"
+           class="expanded-image">
+      <div class="expanded-image-caption">
+        Vista desde asiento {{ getSeatLabel(selectedSeats[activeTab]) }}
+      </div>
+    </div>
+  </div>
+</div>

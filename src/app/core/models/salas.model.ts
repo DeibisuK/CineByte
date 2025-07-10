@@ -19,4 +19,6 @@ export interface Asiento {
   columna: number;
   tipo: string;
   url_imagen: string | null;
+  ocupado: boolean;
+  fecha_creacion?: Date;
 }

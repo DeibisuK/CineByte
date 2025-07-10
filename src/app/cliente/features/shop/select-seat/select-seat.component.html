@@ -1,0 +1,149 @@
+<div class="container-wrapper">
+  <div class="floating-container">
+    <!-- Botón volver arriba del container -->
+    <button class="btn-back" (click)="volverAtras()">
+      <i class="fas fa-arrow-left"></i> Volver
+    </button>
+
+    <!-- Header con título de película -->
+    <div class="movie-header">
+      <h1 class="movie-title">{{ compraInfo.titulo }}</h1>
+      
+      <!-- Barra de progreso horizontal -->
+      <div class="progress-bar-vertical">
+        <div class="progress-item completed">
+          <div class="step-circle">1</div>
+          <span>Entradas</span>
+        </div>
+        <div class="progress-line completed"></div>
+        <div class="progress-item active glow">
+          <div class="step-circle">2</div>
+          <span>Asientos</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-item">
+          <div class="step-circle">3</div>
+          <span>Pago</span>
+        </div>
+        <div class="progress-line"></div>
+        <div class="progress-item">
+          <div class="step-circle">4</div>
+          <span>Fin</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Información de la función -->
+    <div class="function-info">
+      <p><strong>Función:</strong> {{ compraInfo.idioma }} | {{ compraInfo.horario }}</p>
+      <p><strong>Sala:</strong> {{ salaInfo?.nombre || 'Cargando...' }}</p>
+      <p><strong>Solicitados:</strong> <span class="cantidad">{{ compraInfo.cantidad }}</span> boleto{{ compraInfo.cantidad > 1 ? 's' : '' }}</p>
+      <div class="asientos-info" *ngIf="!loadingAsientos && maxAsientosDisponibles > 0">
+        <p class="disponibles-count">
+          <i class="fas fa-chair"></i>
+          <strong>Disponibles:</strong> 
+          <span class="count" [class.warning]="asientosDisponibles < compraInfo.cantidad">
+            {{ asientosDisponibles }}
+          </span>
+          <span *ngIf="asientosDisponibles < compraInfo.cantidad" class="limited-warning">
+            (máximo {{ getMaxAsientosPermitidos() }})
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Título de selección de asientos -->
+    <h2 class="section-title">Seleccionar asientos</h2>
+
+    <!-- Estado de carga -->
+    <div *ngIf="loadingAsientos" class="loading-seats">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>Cargando asientos...</span>
+    </div>
+
+    <!-- Leyenda de asientos -->
+    <div *ngIf="!loadingAsientos" class="legend">
+      <div class="legend-item">
+        <i class="fas fa-couch legend-icon disponible"></i>
+        <span>Disponible</span>
+      </div>
+      <div class="legend-item">
+        <i class="fas fa-couch legend-icon seleccionado"></i>
+        <span>Su Asiento</span>
+      </div>
+      <div class="legend-item">
+        <i class="fas fa-couch legend-icon ocupado"></i>
+        <span>Vendido</span>
+      </div>
+    </div>
+
+    <div *ngIf="!loadingAsientos" class="cinema-layout">
+      <!-- Container de asientos centrado horizontalmente -->
+      <div class="seats-container">
+        <div class="seats-header">
+          {{ salaInfo?.nombre || 'Sala Principal' }}
+        </div>
+        <div class="seats-content">
+          <!-- Pantalla del cine -->
+          <div class="screen-container">
+            <div class="screen">Pantalla</div>
+          </div>
+          
+          <!-- Grid de asientos -->
+          <div class="seats-grid">
+            <div class="fila" *ngFor="let fila of filas">
+              <span class="fila-label">{{ fila }}</span>
+              <div class="asientos-fila">
+                <div 
+                  *ngFor="let asiento of getAsientosPorFila(fila)"
+                  class="asiento"
+                  [class.disponible]="asiento.estado === 'disponible'"
+                  [class.ocupado]="asiento.estado === 'ocupado'"
+                  [class.seleccionado]="asiento.estado === 'seleccionado'"
+                  [class.espacio]="asiento.estado === 'espacio'"
+                  (click)="seleccionarAsiento(asiento)"
+                  [attr.title]="asiento.id + ' - ' + asiento.estado + (asiento.tipo ? ' (' + asiento.tipo + ')' : '')">
+                  <i class="fas fa-couch" *ngIf="asiento.estado !== 'espacio'"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje de validación -->
+    <div class="validation-message" *ngIf="mensajeValidacion">
+      <p class="error-message">{{ mensajeValidacion }}</p>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+      <button 
+        class="btn btn-simulate"
+        [disabled]="!puedeVerVista"
+        (click)="simularVista()">
+        SIMULAR
+      </button>
+      
+      <button 
+        class="btn btn-buy"
+        [disabled]="!puedeSeleccionar"
+        (click)="comprar()">
+        COMPRAR
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de simulación de vista -->
+<app-simulation-view
+  [isOpen]="showSimulationModal"
+  [selectedSeats]="selectedSeatsForModal"
+  [movieTitle]="compraInfo.titulo"
+  [showtime]="compraInfo.idioma + ' | ' + compraInfo.horario"
+  [salaName]="salaInfo?.nombre || ''"
+  [salaAsientos]="asientos"
+  [salaFilas]="filas"
+  (closeModal)="closeSimulationModal()">
+</app-simulation-view>

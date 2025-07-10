@@ -9,8 +9,9 @@ import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { AuthService } from '@core/services/auth/auth.service';
 import { FuncionesService } from '@features/movies/services/funciones.service';
-import { SedeSalasService } from '@features/venues';
+import { SedeSalasService, SalasService } from '@features/venues';
 import Swal from 'sweetalert2';
+
 
 interface MediaItem {
   type: 'video' | 'image';
@@ -42,12 +43,21 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   horarioSeleccionado: string = '';
   safeTrailerUrl?: SafeResourceUrl;
   funcionesPorIdioma: FuncionInfo[] = [];
+  funcionesCompletas: any[] = []; // Almacenar funciones completas para obtener id_sala
+
+  // Estado de carga
+  isLoading = true;
 
   // Estado de sede
   sedeSeleccionada: any = null; // Cambiar a objeto completo en lugar de string
 
   // Configuración del filtrado de funciones
   private readonly FILTRADO_ESTRICTO = false; // Permitir salas compartidas entre sedes
+
+  // Propiedades para validación de asientos
+  maxAsientosDisponibles: number = 0;
+  asientosOcupados: number = 0;
+  totalAsientos: number = 0;
 
   // Media carousel
   mediaItems: MediaItem[] = [];
@@ -61,6 +71,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     private movieService: PeliculaService,
     private funcionesService: FuncionesService,
     private sedeSalasService: SedeSalasService,
+    private salasService: SalasService,
     private router: Router,
     private authService: AuthService
   ) { }
@@ -92,6 +103,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   }
 
   private loadMovieData(id: number): void {
+    this.isLoading = true;
+    
     // Usar forkJoin para cargar película básica y completa en paralelo
     const peliculaBasica$ = this.movieService.getPeliculaById(id);
     const peliculaCompleta$ = this.movieService.getPeliculaByIdComplete(id);
@@ -111,6 +124,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         } else {
           // Si no hay sede, al menos configurar el carrusel con las imágenes
           this.setupMediaCarousel();
+          this.isLoading = false;
         }
       },
       error: (err) => {
@@ -128,10 +142,12 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
               this.loadFunciones(id);
             } else {
               this.setupMediaCarousel();
+              this.isLoading = false;
             }
           },
           error: (basicErr) => {
             console.error('Error loading basic movie data:', basicErr);
+            this.isLoading = false;
             
             let errorMessage = 'No se pudo cargar la información de la película';
             
@@ -163,6 +179,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       console.warn('No hay sede seleccionada');
       this.funcionesPorIdioma = [];
       this.setupMediaCarousel();
+      this.isLoading = false;
       return;
     }
 
@@ -178,6 +195,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         if (funcionesActivas.length === 0) {
           this.funcionesPorIdioma = [];
           this.setupMediaCarousel();
+          this.isLoading = false;
           return [];
         }
 
@@ -202,7 +220,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         ]).pipe(
           switchMap(([resultadosSedesPorSala, salasDeSedeActual]: [any[][], any[]]) => {
             // Crear mapa de sala -> sedes para lookup rápido
-            const mapaSedesPorSala = new Map<number, any[]>();
+            const mapaSedesPorSala = new Map<number, any>();
             salasUnicas.forEach((idSala, index) => {
               mapaSedesPorSala.set(idSala, resultadosSedesPorSala[index] || []);
             });
@@ -227,9 +245,13 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
             if (funcionesDeLaSede.length === 0) {
               this.funcionesPorIdioma = [];
+              this.funcionesCompletas = [];
               this.setupMediaCarouselWithFallback(funcionesActivas);
               return [];
             }
+
+            // Guardar funciones completas para uso posterior
+            this.funcionesCompletas = funcionesDeLaSede;
 
             // Agrupar por idioma las funciones de la sede
             const funcionesPorIdiomaMap = new Map<string, any[]>();
@@ -255,6 +277,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
               this.updateTrailerUrl(this.funcionesPorIdioma[0].trailer);
               this.setupMediaCarousel();
             }
+            
+            this.isLoading = false;
 
             return this.funcionesPorIdioma;
           })
@@ -268,6 +292,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         console.error('Error en carga de funciones:', err);
         this.funcionesPorIdioma = [];
         this.setupMediaCarousel();
+        this.isLoading = false;
       }
     });
   }
@@ -438,14 +463,104 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   // Métodos de la UI
   cambiarCantidad(delta: number): void {
-    if (this.cantidad + delta >= 1) {
-      this.cantidad += delta;
+    const nuevaCantidad = this.cantidad + delta;
+    
+    if (nuevaCantidad >= 1 && nuevaCantidad <= this.maxAsientosDisponibles) {
+      this.cantidad = nuevaCantidad;
     }
+  }
+
+  // Getter para verificar si se puede aumentar la cantidad
+  get puedeAumentarCantidad(): boolean {
+    return this.cantidad < this.maxAsientosDisponibles;
+  }
+
+  // Getter para verificar si la función está seleccionada
+  get funcionSeleccionada(): boolean {
+    return this.idiomaSeleccionado !== '' && this.horarioSeleccionado !== '';
+  }
+
+  // Método para obtener información de asientos disponibles
+  private actualizarAsientosDisponibles(): void {
+    if (!this.idiomaSeleccionado || !this.horarioSeleccionado) {
+      // Si no hay idioma u horario seleccionado, usar valores por defecto
+      this.totalAsientos = 50;
+      this.asientosOcupados = 0;
+      this.maxAsientosDisponibles = this.totalAsientos;
+      return;
+    }
+
+    // Obtener el ID de la sala para el idioma y horario seleccionados
+    const idSala = this.obtenerIdSalaPorIdiomaYHorario();
+    
+    if (!idSala) {
+      console.warn('No se pudo obtener ID de sala, usando valores por defecto');
+      this.totalAsientos = 50;
+      this.asientosOcupados = 0;
+      this.maxAsientosDisponibles = this.totalAsientos;
+      return;
+    }
+
+    // Consultar los asientos reales de la sala
+    this.salasService.getAsientosPorSala(idSala).subscribe({
+      next: (asientosDB: any[]) => {
+        // Calcular asientos disponibles reales
+        let disponibles = 0;
+        let total = 0;
+        
+        asientosDB.forEach((asiento: any) => {
+          // Solo contar asientos normales (no espacios)
+          if (asiento.tipo !== 'espacio') {
+            total++;
+            if (!asiento.ocupado) {
+              disponibles++;
+            }
+          }
+        });
+
+        this.totalAsientos = total;
+        this.asientosOcupados = total - disponibles;
+        this.maxAsientosDisponibles = disponibles;
+        
+        console.log(`Sala ${idSala}: ${disponibles} asientos disponibles de ${total} totales`);
+        
+        // Asegurar que hay al menos 1 asiento disponible para el selector
+        if (this.maxAsientosDisponibles <= 0) {
+          this.maxAsientosDisponibles = 1; // Para que la UI no se rompa
+        }
+        
+        // Ajustar la cantidad si excede el máximo disponible
+        if (this.cantidad > this.maxAsientosDisponibles) {
+          this.cantidad = Math.max(1, this.maxAsientosDisponibles);
+          console.log(`Cantidad ajustada a: ${this.cantidad}`);
+        }
+      },
+      error: (error: any) => {
+        console.error('Error obteniendo asientos de la sala:', error);
+        // Fallback a valores simulados
+        this.totalAsientos = 50;
+        this.asientosOcupados = 20;
+        this.maxAsientosDisponibles = 30;
+        
+        if (this.cantidad > this.maxAsientosDisponibles) {
+          this.cantidad = Math.max(1, this.maxAsientosDisponibles);
+        }
+      }
+    });
+  }
+
+  // Método para seleccionar horario y actualizar asientos disponibles
+  seleccionarHorario(horario: string): void {
+    this.horarioSeleccionado = horario;
+    this.actualizarAsientosDisponibles();
   }
 
   selectIdioma(idioma: string, trailerUrl: string): void {
     this.idiomaSeleccionado = idioma;
     this.horarioSeleccionado = ''; // Reset horario seleccionado
+
+    // Actualizar asientos disponibles cuando se selecciona un idioma
+    this.actualizarAsientosDisponibles();
 
     // Convertir URL a formato embed antes de usar
     const embedUrl = this.convertToEmbedUrl(trailerUrl);
@@ -492,13 +607,17 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Redirigir a la página de compra (por ahora '#')
-    this.router.navigate(['/compra'], {
+    // Redirigir a la página de selección de asientos
+    this.router.navigate(['/select-seat'], {
       queryParams: {
         pelicula: this.pelicula?.id_pelicula,
+        titulo: this.pelicula?.titulo,
         idioma: this.idiomaSeleccionado,
         horario: this.horarioSeleccionado,
-        cantidad: this.cantidad
+        cantidad: this.cantidad,
+        precio: this.obtenerPrecioPorIdioma(),
+        total: this.obtenerPrecioTotal(),
+        id_sala: this.obtenerIdSalaPorIdiomaYHorario()
       }
     });
   }
@@ -607,6 +726,38 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       (f) => f.idioma === this.idiomaSeleccionado
     );
     return funciones ? funciones.horarios : [];
+  }
+
+  obtenerHorarioConFin(horario: string): string {
+    if (!this.pelicula?.duracion_minutos) {
+      return horario;
+    }
+
+    try {
+      // Parsear la hora de inicio (formato HH:MM)
+      const [horaStr, minutoStr] = horario.split(':');
+      const horaInicio = parseInt(horaStr);
+      const minutoInicio = parseInt(minutoStr);
+      
+      // Calcular hora de fin
+      let minutosTotales = horaInicio * 60 + minutoInicio + this.pelicula.duracion_minutos;
+      let horaFin = Math.floor(minutosTotales / 60);
+      let minutoFin = minutosTotales % 60;
+      
+      // Manejar cambio de día (24h+)
+      if (horaFin >= 24) {
+        horaFin = horaFin - 24;
+      }
+      
+      // Formatear con ceros a la izquierda
+      const horaFinStr = horaFin.toString().padStart(2, '0');
+      const minutoFinStr = minutoFin.toString().padStart(2, '0');
+      
+      return `${horario} - ${horaFinStr}:${minutoFinStr}`;
+    } catch (error) {
+      console.error('Error calculando hora de fin:', error);
+      return horario;
+    }
   }
 
   obtenerPrecioPorIdioma(): number | string {
@@ -718,5 +869,22 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       'retirada': 'Retirada'
     };
     return estados[estado] || estado;
+  }
+
+  // Método para obtener id_sala basado en idioma y horario seleccionados
+  private obtenerIdSalaPorIdiomaYHorario(): number | null {
+    if (!this.idiomaSeleccionado || !this.horarioSeleccionado || !this.funcionesCompletas.length) {
+      return null;
+    }
+
+    const funcionEncontrada = this.funcionesCompletas.find(funcion => {
+      const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
+      const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
+      const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
+      
+      return idiomaCoincide && horarioCoincide;
+    });
+
+    return funcionEncontrada ? funcionEncontrada.id_sala : null;
   }
 }

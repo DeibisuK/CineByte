@@ -15,15 +15,20 @@ import { DetalleMetodoComponent } from './features/user-profile/metodos-pago/det
 import { CrearMetodoComponent } from './features/user-profile/metodos-pago/crear-metodo/crear-metodo.component';
 import { ContactanosComponent } from './features/contact/contactanos.component';
 import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.component';
+import { SelectSeatComponent } from './features/shop/select-seat/select-seat.component';
+import { DetailPaymentComponent } from './features/shop/detail-payment/detail-payment.component';
 
 
 export const clienteRoutes: Routes = [
   {path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {path: 'inicio', component:InicioComponent},
+  {path: 'peliculas', component: CatalogoComponent},
   {path: 'promociones', component:ListarPromocionesComponent},
   {path: 'carrusel', component:CarouselPromosComponent},
   {path: 'catalogo', component: CatalogoComponent},
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
+  {path: 'select-seat', component: SelectSeatComponent},
+  {path: 'detail-payment', component: DetailPaymentComponent},
   {path: 'promocion/:id/:titulo', component: DetallePromocionComponent},
   {path: 'buscar/:termino', component: BuscarComponent},
   {path: 'contactanos', component: ContactanosComponent},
