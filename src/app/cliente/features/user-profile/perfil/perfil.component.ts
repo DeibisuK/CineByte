@@ -80,7 +80,7 @@ export class PerfilComponent implements OnInit {
         } else {
           document.documentElement.style.setProperty(
             '--avatar-background',
-            'url("assets/images/default-avatar.png")'
+            'url("/images/auth/default-avatar.png")'
           );
         }
         unsubscribe();
@@ -117,13 +117,13 @@ export class PerfilComponent implements OnInit {
   getProviderIcon(providerId: string): string {
     switch (providerId) {
       case 'google.com':
-        return 'Autenticacion/google-color.svg';
+        return '/images/auth/google-color.svg';
       case 'facebook.com':
-        return 'Autenticacion/facebook-color.svg';
+        return '/images/auth/facebook-color.svg';
       case 'password':
-        return 'Autenticacion/email.svg';
+        return '/images/auth/email.svg';
       default:
-        return 'Autenticacion/user-authentication.svg';
+        return '/images/auth/user-authentication.svg';
     }
   }
   handleImageError(event: any) {
