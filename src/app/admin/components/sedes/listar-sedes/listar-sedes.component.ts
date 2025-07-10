@@ -1,11 +1,9 @@
-import { ChangeDetectorRef, Component, OnInit, SimpleChanges } from '@angular/core';
-import { SedeService, Sede } from '../../../../services/sede.service';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { SedeService, Sede } from '@features/venues';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { Router, RouterModule } from '@angular/router';
-import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
-import { Subscription } from 'rxjs';
-import { AlertaService } from '../../../../services/alerta.service';
+import { AlertaService } from '@core/services';
 
 
 @Component({

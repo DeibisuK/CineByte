@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { SalasService } from '../../../../services/salas.service';
-import { AlertaService } from '../../../../services/alerta.service';
+import { SalasService } from '@features/venues/services/salas.service';
+import { AlertaService } from '@core/services';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Sala } from '../../../models/salas.model';
+import { Sala } from '@core/models/salas.model';
 
 @Component({
   selector: 'app-edit-salas',

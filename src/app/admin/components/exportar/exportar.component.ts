@@ -1,7 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ExportarService } from '../../../services/export.service';
+import { ExportarService } from '@core/services/utils/export.service';
 import Swal from 'sweetalert2';
 
 

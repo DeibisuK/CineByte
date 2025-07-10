@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AnuncioService } from '../../../services/anuncio.service';
-import { Anuncio } from '../../models/anuncio.model';
+import { AnuncioService } from '@core/services';
+import { Anuncio } from '@core/models/anuncio.model';
 import { CommonModule } from '@angular/common';
 import { TruncatePipe } from '../../pipes/pipe';
-import { AlertaService } from '../../../services/alerta.service';
+import { AlertaService } from '@core/services';
 
 @Component({
   selector: 'app-anuncio',

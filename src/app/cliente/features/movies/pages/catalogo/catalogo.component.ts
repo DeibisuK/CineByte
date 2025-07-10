@@ -1,12 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
-import { Movie } from '../../../../../core/models/movie.model';
-import { MovieService } from '../../services/movie.service';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { CommonModule } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { RouterModule } from '@angular/router';
-import { Pelicula } from '../../../../../admin/models/pelicula.model';
-import { PeliculaService } from '../../../../../services/pelicula.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
 
 @Component({
   selector: 'app-catalogo',

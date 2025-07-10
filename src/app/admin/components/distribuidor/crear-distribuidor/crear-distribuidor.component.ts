@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { AlertaService } from '../../../../services/alerta.service';
-import { Distribuidor } from '../../../models/distribuidor.model';
-import { DistribuidorService } from '../../../../services/distribuidor.service';
+import { AlertaService } from '@core/services';
+import { Distribuidor } from '@core/models/distribuidor.model';
+import { DistribuidorService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
-import { Pais } from '../../../models/paises.model';
-import { PaisesService } from '../../../../services/paises.service';
+import { Pais } from '@core/models/paises.model';
+import { PaisesService } from '@features/catalog';
 
 @Component({
   selector: 'app-crear-distribuidor',

@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { CommonModule } from '@angular/common';
-import { Pelicula } from '../../../../../admin/models/pelicula.model';
-import { Funciones } from '../../../../../admin/models/funciones.model';
-import { PeliculaService } from '../../../../../services/pelicula.service';
-import { forkJoin, of, timer } from 'rxjs';
-import { catchError, map, timeout, race } from 'rxjs/operators';
+import { Pelicula } from '@core/models/pelicula.model';
+import { Funciones } from '@core/models/funciones.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-en-cartelera',

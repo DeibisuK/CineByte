@@ -3,16 +3,16 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Pelicula } from '../../../models/pelicula.model';
-import { Sede, SedeService } from '../../../../services/sede.service';
-import { Idiomas } from '../../../models/idiomas.model';
-import { FuncionesService } from '../../../../services/funciones.service';
-import { PeliculaService } from '../../../../services/pelicula.service';
-import { IdiomasService } from '../../../../services/idiomas.service';
-import { SedeSala } from '../../../models/sede_salas.model';
-import { SedeSalasService } from '../../../../services/sede-salas.service';
-import { Funciones } from '../../../models/funciones.model';
-import { AlertaService } from '../../../../services/alerta.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { Sede, SedeService } from '@features/venues';
+import { Idiomas } from '@core/models/idiomas.model';
+import { FuncionesService } from '@features/movies/services/funciones.service';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
+import { IdiomasService } from '@features/catalog';
+import { SedeSala } from '@core/models/sede_salas.model';
+import { SedeSalasService } from '@features/venues/services/sede-salas.service';
+import { Funciones } from '@core/models/funciones.model';
+import { AlertaService } from '@core/services';
 
 @Component({
   selector: 'app-editar-funciones',

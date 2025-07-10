@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { NavbarComponent } from '../../core/components/navbar/navbar.component';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../core/components/footer/footer.component';
 import { ScrollTopComponent } from '../../core/components/scroll-top/scroll-top.component';
 import { AnuncioComponent } from '../../core/components/anuncio/anuncio.component';
-import { Anuncio } from '../../admin/models/anuncio.model';
-import { AnuncioService } from '../../services/anuncio.service';
+import { Anuncio } from '@core/models';
+import { AnuncioService } from '@core/services';
+import { NavbarComponent } from '@core/components/navbar/navbar.component';
 
 @Component({
   selector: 'app-cli-layout',

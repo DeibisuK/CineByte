@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // <-- Importaciones clave
 import { RecuperarContrasenaComponent } from '../recuperar-contrasena/recuperar-contrasena.component';
-import { AuthService } from '../../services/AuthService';
+import { AuthService } from '@core/services';
 import { Route, Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
-import { AlertaService } from '../../services/alerta.service';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 
 @Component({

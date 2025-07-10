@@ -5,11 +5,11 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { PromocionService } from '../../../../services/promocion.service';
-import { Promocion } from '../../../models/promocion.model';
+import { PromocionService } from '@features/promotions/services/promocion.service';
+import { Promocion } from '@core/models/promocion.model';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ImgbbService } from '../../../../services/imgbb.service';
+import { ImgbbService } from '@core/services/utils/imgbb.service';
 import Swal from 'sweetalert2';
 
 @Component({

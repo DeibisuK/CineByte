@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
-import { ActoresService } from '../../../../services/actores.service';
-import { AlertaService } from '../../../../services/alerta.service';
-import { ActorCreateDTO } from '../../../models/actores.model';
-import { Pais } from '../../../models/paises.model';
-import { PaisesService } from '../../../../services/paises.service';
+import { ActoresService } from '@features/movies';
+import { AlertaService } from '@core/services';
+import { ActorCreateDTO } from '@core/models/actores.model';
+import { Pais } from '@core/models/paises.model';
+import { PaisesService } from '@features/catalog';
 
 @Component({
   selector: 'app-crear-actor',

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Idiomas } from '../../../models/idiomas.model';
-import { IdiomasService } from '../../../../services/idiomas.service';
-import { AlertaService } from '../../../../services/alerta.service';
+import { Idiomas } from '@core/models/idiomas.model';
+import { IdiomasService } from '@features/catalog';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 
 @Component({

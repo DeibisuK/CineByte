@@ -3,13 +3,13 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CarouselEstrenosComponent } from '../carousel-estrenos/carousel-estrenos.component';
-import { Pelicula } from '../../../../../admin/models/pelicula.model';
-import { PeliculaService } from '../../../../../services/pelicula.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
-import { AuthService } from '../../../../../services/AuthService';
-import { FuncionesService } from '../../../../../services/funciones.service';
-import { SedeSalasService } from '../../../../../services/sede-salas.service';
+import { AuthService } from '@core/services/auth/auth.service';
+import { FuncionesService } from '@features/movies/services/funciones.service';
+import { SedeSalasService } from '@features/venues';
 import Swal from 'sweetalert2';
 
 interface MediaItem {

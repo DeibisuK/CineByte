@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { Asiento, Sala } from '../../../models/salas.model';
-import { SalasService } from '../../../../services/salas.service';
+import { Asiento, Sala } from '@core/models/salas.model';
+import { SalasService } from '@features/venues/services/salas.service';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
 

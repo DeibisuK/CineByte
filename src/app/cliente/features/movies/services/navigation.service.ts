@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Movie } from '../../../../core/models/movie.model';
-import { Promotions } from '../../../../core/models/promotions.model';
-import { Pelicula } from '../../../../admin/models/pelicula.model';
+import { Promocion } from '@core/models/promocion.model';
+import { Pelicula } from '@core/models/pelicula.model';
 
 @Injectable({ providedIn: 'root' })
 export class MovieNavigationService {
@@ -15,11 +14,11 @@ export class MovieNavigationService {
       .replace(/[^a-z0-9\-]/g, '');
     this.router.navigate(['/pelicula', movie.id_pelicula, tituloUrl]);
   }
-    verDetallePromo(promo: Promotions) {
+    verDetallePromo(promo: Promocion) {
     const tituloUrl = promo.titulo
       .toLowerCase()
       .replace(/\s+/g, '-')
       .replace(/[^a-z0-9\-]/g, '');
-    this.router.navigate(['/promocion', promo.id, tituloUrl]);
+    this.router.navigate(['/promocion', promo.id_promo, tituloUrl]);
   }
 }

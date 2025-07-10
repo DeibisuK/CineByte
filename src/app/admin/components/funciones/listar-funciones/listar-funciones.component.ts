@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FuncionesList } from '../../../models/funciones.model';
-import { FuncionesService } from '../../../../services/funciones.service';
-import { AlertaService } from '../../../../services/alerta.service';
+import { FuncionesList } from '@core/models/funciones.model';
+import { FuncionesService } from '@features/movies/services/funciones.service';
+import { AlertaService } from '@core/services';
 
 @Component({
   selector: 'app-listar-funciones',

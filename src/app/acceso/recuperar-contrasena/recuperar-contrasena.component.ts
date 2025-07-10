@@ -1,6 +1,6 @@
 // recuperar-contrasena.component.ts
 import { Component, EventEmitter, Output } from '@angular/core';
-import { AuthService } from '../../services/AuthService';
+import { AuthService } from '@core/services/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 

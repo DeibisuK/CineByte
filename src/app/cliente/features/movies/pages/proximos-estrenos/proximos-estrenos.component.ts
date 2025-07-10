@@ -1,8 +1,8 @@
 import { Component, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
-import { Pelicula } from '../../../../../admin/models/pelicula.model';
-import { PeliculaService } from '../../../../../services/pelicula.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
 
 @Component({
   selector: 'app-proximos-estrenos',

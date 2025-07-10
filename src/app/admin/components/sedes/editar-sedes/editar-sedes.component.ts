@@ -2,7 +2,7 @@ import {
   Component, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SedeService } from '../../../../services/sede.service';
+import { SedeService } from '@features/venues';
 import {
   FormBuilder, FormGroup, Validators, ReactiveFormsModule
 } from '@angular/forms';

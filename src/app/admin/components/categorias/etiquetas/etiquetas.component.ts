@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Etiquetas } from '../../../models/etiquetas.model';
+import { Etiquetas } from '@core/models/etiquetas.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { EtiquetasService } from '../../../../services/etiquetas.service';
-import { AlertaService } from '../../../../services/alerta.service';
+import { EtiquetasService } from '@features/catalog';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 

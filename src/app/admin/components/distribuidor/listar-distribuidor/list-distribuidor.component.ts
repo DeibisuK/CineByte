@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActoresService } from '../../../../services/actores.service';
-import { PaisesService } from '../../../../services/paises.service';
+import { PaisesService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
-import { DistribuidorService } from '../../../../services/distribuidor.service';
-import { AlertComponent } from '../../../../shared/alert/alert.component';
-import { AlertaService } from '../../../../services/alerta.service';
+import { DistribuidorService } from '@features/catalog';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 
 @Component({

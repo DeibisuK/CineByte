@@ -1,8 +1,9 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { SedeSalasService } from '../../../../services/sede-salas.service';
-import { SedeSala, Sede, Sala, CreateSedeSalaRequest } from '../../../models/sede_salas.model';
+import { SedeSalasService } from '@features/venues/services/sede-salas.service';
+import { SedeSala, Sede, CreateSedeSalaRequest } from '@core/models/sede_salas.model';
+import { Sala } from '@core/models/salas.model';
 import Swal from 'sweetalert2';
 
 @Component({

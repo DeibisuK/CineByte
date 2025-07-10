@@ -2,8 +2,8 @@ import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from 
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
-import { Pelicula } from '../../../../../admin/models/pelicula.model';
-import { PeliculaService } from '../../../../../services/pelicula.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
 
 @Component({
   selector: 'app-eventos-especiales',

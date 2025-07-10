@@ -1,7 +1,7 @@
 import { Component, Inject, PLATFORM_ID } from '@angular/core';
-import { Promocion } from '../../../../../admin/models/promocion.model';
+import { Promocion } from '@core/models';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { PromocionService } from '../../../../../services/promocion.service';
+import { PromocionService } from '@features/promotions';
 import { Router } from '@angular/router';
 
 @Component({

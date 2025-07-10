@@ -1,15 +1,15 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, HostBinding, Inject, Input, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import { Movie } from '../../models/movie.model';
-import { MovieService } from '../../../cliente/features/movies/services/movie.service';
 import { TemaService } from '../../../cliente/features/movies/services/tema.service';
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../../../acceso/login/login.component';
-import { Sede, SedeService } from '../../../services/sede.service';
-import { AuthService } from '../../../services/AuthService';
+import { Sede, SedeService } from '@features/venues/services/sede.service';
+import { AuthService } from '@core/services';
 import { User } from 'firebase/auth';
 import Swal from 'sweetalert2';
+import { PeliculaService } from '@features/movies';
+import { Pelicula } from '@core/models';
 
 
 @Component({
@@ -44,7 +44,7 @@ export class NavbarComponent {
 
   constructor(
     private router: Router,
-    private movieService: MovieService,
+    private peliculaService: PeliculaService,
     private sedeService: SedeService, // <-- Asegúrate de inyectar el servicio
     @Inject(PLATFORM_ID) private plataforma: Object,
     private temaService: TemaService,
@@ -163,24 +163,25 @@ export class NavbarComponent {
   buscarPelicula(): void {
     const termino = this.busqueda.trim();
     if (termino.length > 0) {
-      const pelicula: Movie | undefined = this.movieService.searchMovie(termino);
-      if (pelicula) {
-        const tituloUrl = pelicula.titulo
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9\-]/g, '');
-        this.router.navigate(['/pelicula', pelicula.id, tituloUrl]);
-      } else {
-        const terminoUrl = termino
-          .toLowerCase()
-          .replace(/\s+/g, '-')
-          .replace(/[^a-z0-9\-]/g, '');
-        this.router.navigate(['/buscar', terminoUrl]);
-      }
-      this.busqueda = '';
-      if (this.menuAbierto) {
-        this.navegarCerrarMenu();
-      }
+      this.peliculaService.buscarPelicula(termino).subscribe(pelicula => {
+        if (pelicula) {
+          const tituloUrl = pelicula.titulo
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-]/g, '');
+          this.router.navigate(['/pelicula', pelicula.id_pelicula, tituloUrl]);
+        } else {
+          const terminoUrl = termino
+            .toLowerCase()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9\-]/g, '');
+          this.router.navigate(['/buscar', terminoUrl]);
+        }
+        this.busqueda = '';
+        if (this.menuAbierto) {
+          this.navegarCerrarMenu();
+        }
+      });
     }
   }
   cerrarMenu() {

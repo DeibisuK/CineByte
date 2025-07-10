@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import { Generos } from '../../../models/generos.model';
-import { GenerosService } from '../../../../services/generos.service';
+import { Generos } from '@core/models/generos.model';
+import { GenerosService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatIconModule } from '@angular/material/icon';
-import { AlertaService } from '../../../../services/alerta.service';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 
 @Component({

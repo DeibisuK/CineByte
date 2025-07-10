@@ -1,12 +1,5 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import {
-  NavigationCancel,
-  NavigationEnd,
-  NavigationError,
-  NavigationStart,
-  Router,
-  RouterOutlet,
-} from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterOutlet} from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { LoadingComponent } from '../../core/components/loading/loading.component';
 import { CommonModule } from '@angular/common';

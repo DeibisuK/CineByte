@@ -4,7 +4,7 @@ import {
   AfterViewInit,
   OnDestroy,
 } from '@angular/core';
-import { SedeService } from '../../../../services/sede.service';
+import { SedeService } from '@features/venues/services/sede.service';
 import {
   FormBuilder,
   FormGroup,

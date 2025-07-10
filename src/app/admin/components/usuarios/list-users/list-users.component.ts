@@ -6,7 +6,7 @@ import {
   PipeTransform,
   ViewChild,
 } from '@angular/core';
-import { AuthService } from '../../../../services/AuthService';
+import { AuthService } from '@core/services/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -14,8 +14,8 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { UserProfile } from '../../../models/users.model';
-import { AlertaService } from '../../../../services/alerta.service';
+import { UserProfile } from '@core/models/users.model';
+import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 import { getAuth } from 'firebase/auth';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
@@ -285,81 +285,81 @@ export class ListUsersComponent implements OnInit {
     return this.modalEdit.nativeElement.classList.remove('active');
   }
 
-abrirModalEdicion(user: UserProfile): void {
-  if (!this.modalEdit) {
-    console.error('Modal de edición no encontrado');
-    return;
-  }
-  
-  this.selectedUserUid = user.uid;
-  this.editForm.reset(); // Limpia el formulario primero
-  
-  this.editForm.patchValue({
-    username: user.displayName || '',
-    email: user.email || '',
-    passwordE: ''
-  });
+  abrirModalEdicion(user: UserProfile): void {
+    if (!this.modalEdit) {
+      console.error('Modal de edición no encontrado');
+      return;
+    }
 
-  // Forzar la detección de cambios (por si acaso)
-  setTimeout(() => {
-    this.openModal('editUserModal');
-  }, 0);
-}
+    this.selectedUserUid = user.uid;
+    this.editForm.reset(); // Limpia el formulario primero
+
+    this.editForm.patchValue({
+      username: user.displayName || '',
+      email: user.email || '',
+      passwordE: ''
+    });
+
+    // Forzar la detección de cambios (por si acaso)
+    setTimeout(() => {
+      this.openModal('editUserModal');
+    }, 0);
+  }
 
   async editarAdmin() {
-  try {
-    if (!this.selectedUserUid) {
-      this.alerta.error('Error', 'No se seleccionó ningún usuario');
-      return;
-    }
-
-    if (this.editForm.invalid) {
-      this.alerta.error('Error', 'Por favor complete todos los campos requeridos');
-      return;
-    }
-
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-
-    if (!currentUser) {
-      this.alerta.error('Error', 'No hay usuario autenticado');
-      return;
-    }
-
-    const token = await currentUser.getIdToken();
-    const { username, email, passwordE } = this.editForm.value;
-
-    this.loading = true;
-    
-    const updateData: any = { 
-      username, 
-      email 
-    };
-    
-    if (passwordE && passwordE.length >= 6) {
-      updateData.password = passwordE;
-    }
-
-    this.usuariosService.actualizarUsuario(
-      this.selectedUserUid,
-      updateData,
-      token
-    ).subscribe({
-      next: () => {
-        this.alerta.autoClose('Éxito', 'Usuario actualizado', 'success', 1500);
-        this.closeModal('editUserModal');
-        this.obtenerUsuarios();
-      },
-      error: (err) => {
-        this.loading = false;
-        const errorMsg = err.error?.message || 'Error al actualizar usuario';
-        this.alerta.error('Error', errorMsg);
+    try {
+      if (!this.selectedUserUid) {
+        this.alerta.error('Error', 'No se seleccionó ningún usuario');
+        return;
       }
-    });
-  } catch (error) {
-    this.loading = false;
-    this.alerta.error('Error', 'Error inesperado');
-    console.error(error);
+
+      if (this.editForm.invalid) {
+        this.alerta.error('Error', 'Por favor complete todos los campos requeridos');
+        return;
+      }
+
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        this.alerta.error('Error', 'No hay usuario autenticado');
+        return;
+      }
+
+      const token = await currentUser.getIdToken();
+      const { username, email, passwordE } = this.editForm.value;
+
+      this.loading = true;
+
+      const updateData: any = {
+        username,
+        email
+      };
+
+      if (passwordE && passwordE.length >= 6) {
+        updateData.password = passwordE;
+      }
+
+      this.usuariosService.actualizarUsuario(
+        this.selectedUserUid,
+        updateData,
+        token
+      ).subscribe({
+        next: () => {
+          this.alerta.autoClose('Éxito', 'Usuario actualizado', 'success', 1500);
+          this.closeModal('editUserModal');
+          this.obtenerUsuarios();
+        },
+        error: (err) => {
+          this.loading = false;
+          const errorMsg = err.error?.message || 'Error al actualizar usuario';
+          this.alerta.error('Error', errorMsg);
+        }
+      });
+    } catch (error) {
+      this.loading = false;
+      this.alerta.error('Error', 'Error inesperado');
+      console.error(error);
+    }
   }
-}
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Pelicula } from '../../../models/pelicula.model';
-import { PeliculaService } from '../../../../services/pelicula.service';
+import { Pelicula } from '@core/models/pelicula.model';
+import { PeliculaService } from '@features/movies/services/pelicula.service';
 import { RouterLink } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, debounceTime, distinctUntilChanged } from 'rxjs/operators';

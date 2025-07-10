@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Promocion } from '../../../models/promocion.model';
-import { PromocionService } from '../../../../services/promocion.service';
+import { Promocion } from '@core/models/promocion.model';
+import { PromocionService } from '@features/promotions/services/promocion.service';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';

@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActoresService } from '../../../../services/actores.service';
-import { PaisesService } from '../../../../services/paises.service';
+import { ActoresService } from '@features/movies';
+import { PaisesService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
-import { Actores } from '../../../models/actores.model';
-import { AlertaService } from '../../../../services/alerta.service';
+import { Actores } from '@core/models/actores.model';
+import { AlertaService } from '@core/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
