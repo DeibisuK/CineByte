@@ -1,5 +1,6 @@
 import { Component, HostListener, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { MovieNavigationService } from '../../services/navigation.service';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
 import { Pelicula } from '@core/models/pelicula.model';
 import { PeliculaService } from '@features/movies/services/pelicula.service';
@@ -19,6 +20,7 @@ export class ProximosEstrenosComponent {
 
  constructor(
     private peliculasService: PeliculaService,
+    private movieNav: MovieNavigationService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     this.isBrowser = isPlatformBrowser(this.platformId);
@@ -101,6 +103,10 @@ export class ProximosEstrenosComponent {
         this.visibleStart = 0;
       }
     }, 5000);
+  }
+
+  verDetalle(movie: Pelicula) {
+    this.movieNav.verDetalle(movie);
   }
 
   /**

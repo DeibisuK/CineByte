@@ -8,7 +8,9 @@
     <div class="movie-card" *ngFor="let movie of visibleMovies"
       (mouseenter)="hoveredIndex = movie.id_pelicula"
       (mouseleave)="hoveredIndex = -1"
-      [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1">
+      (click)="verDetalle(movie)"
+      [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1"
+      style="cursor: pointer;">
       <img [src]="movie.imagen" alt="{{ movie.titulo }}" />
       <div class="hover-overlay">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
