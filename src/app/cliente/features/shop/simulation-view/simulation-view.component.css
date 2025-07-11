@@ -1,3 +1,21 @@
+/* ===========================
+   REMOVER EFECTOS DE FOCUS/CLICK
+============================ */
+button, button:focus, button:active {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+button::-moz-focus-inner {
+  border: 0 !important;
+}
+
 /* Modal overlay */
 .modal-overlay {
   position: fixed;
@@ -53,10 +71,6 @@
   transition: all 0.3s ease;
 }
 
-.btn-close:hover {
-  background-color: var(--hover-link);
-  transform: scale(1.1);
-}
 
 /* Pestañas compactas */
 .tabs-container {
@@ -347,9 +361,6 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.close-expanded-btn:hover {
-  opacity: 0.7;
-}
 
 .expanded-image {
   max-width: 100%;
