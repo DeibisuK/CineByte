@@ -71,12 +71,14 @@
 
 .promo-info h3 {
   margin: 0;
+  text-align: justify;
   font-size: 1.5rem;
   font-weight: 800;
 }
 
 .promo-desc {
   margin: 0.7rem 0 0 0;
+  text-align: justify;
   font-size: 1.08rem;
   color: var(--text-color);
 }
