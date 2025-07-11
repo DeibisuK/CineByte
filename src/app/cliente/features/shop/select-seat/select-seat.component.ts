@@ -5,6 +5,8 @@ import { SimulationViewComponent } from '../simulation-view/simulation-view.comp
 import { PeliculaService } from '@features/movies/services/pelicula.service';
 import { SalasService, AsientosService } from '@features/venues';
 import { Asiento as AsientoDB, Sala, Pelicula } from '@core/models';
+import { VentasService, PagosService } from '@features/payments/services';
+import Swal from 'sweetalert2';
 
 interface AsientoLocal {
   id: string;
@@ -67,7 +69,9 @@ export class SelectSeatComponent implements OnInit {
     private router: Router,
     private peliculaService: PeliculaService,
     private salasService: SalasService,
-    private asientosService: AsientosService
+    private asientosService: AsientosService,
+    private ventasService: VentasService,
+    private pagosService: PagosService
   ) {}
 
   ngOnInit(): void {
@@ -299,7 +303,24 @@ export class SelectSeatComponent implements OnInit {
     }
   }
 
-  // Convertir asientos para el modal
+  // Cerrar modal de simulación
+  closeSimulationModal(): void {
+    this.showSimulationModal = false;
+  }
+
+  // Calcular subtotal de asientos seleccionados
+  private calcularSubtotal(): number {
+    return this.asientosSeleccionados.reduce((sum, asiento) => sum + asiento.precio, 0);
+  }
+
+  // Calcular total con IVA
+  private calcularTotal(): number {
+    const subtotal = this.calcularSubtotal();
+    const iva = subtotal * 0.19;
+    return subtotal + iva;
+  }
+
+  // Obtener resumen para el modal de simulación
   get selectedSeatsForModal() {
     return this.asientosSeleccionados.map(asiento => ({
       row: asiento.fila,
@@ -309,71 +330,103 @@ export class SelectSeatComponent implements OnInit {
     }));
   }
 
-  comprar(): void {
-    if (!this.puedeSeleccionar) return;
+  async comprar(): Promise<void> {
+    if (!this.puedeSeleccionar) {
+      await Swal.fire({
+        icon: 'warning',
+        title: 'Selección incompleta',
+        text: this.mensajeValidacion,
+        confirmButtonColor: '#007bff'
+      });
+      return;
+    }
 
-    // Obtener portada real de la película
-    this.peliculaService.getPeliculaById(this.compraInfo.pelicula).subscribe({
-      next: (pelicula) => {
-        // Usar la cantidad real de asientos seleccionados
-        const cantidadReal = this.asientosSeleccionados.length;
-        const totalReal = cantidadReal * this.compraInfo.precio;
-        
-        // Preparar datos para el componente de pago
-        const paymentData = {
-          pelicula: this.compraInfo.pelicula,
-          titulo: this.compraInfo.titulo,
-          idioma: this.compraInfo.idioma,
-          horario: this.compraInfo.horario,
-          cantidad: cantidadReal, // Usar cantidad real
-          precio: this.compraInfo.precio,
-          total: totalReal, // Calcular total real
-          asientosSeleccionados: this.asientosSeleccionados.map(a => a.id).join(','),
-          portada: pelicula?.imagen || 'https://picsum.photos/200/300?random=' + this.compraInfo.pelicula,
-          sala: this.salaInfo?.nombre || 'Sala Principal',
-          id_sala: this.compraInfo.id_sala
-        };
-
-        console.log('Payment data being sent:', paymentData);
-
-        // Navegar al componente de pago
-        this.router.navigate(['/detail-payment'], { 
-          queryParams: paymentData 
-        });
-      },
-      error: (error) => {
-        console.error('Error loading movie data:', error);
-        // En caso de error, usar imagen y nombre por defecto
-        const cantidadReal = this.asientosSeleccionados.length;
-        const totalReal = cantidadReal * this.compraInfo.precio;
-        
-        const paymentData = {
-          pelicula: this.compraInfo.pelicula,
-          titulo: this.compraInfo.titulo,
-          idioma: this.compraInfo.idioma,
-          horario: this.compraInfo.horario,
-          cantidad: cantidadReal, // Usar cantidad real
-          precio: this.compraInfo.precio,
-          total: totalReal, // Calcular total real
-          asientosSeleccionados: this.asientosSeleccionados.map(a => a.id).join(','),
-          portada: 'https://picsum.photos/200/300?random=' + this.compraInfo.pelicula,
-          sala: this.salaInfo?.nombre || 'Sala Principal',
-          id_sala: this.compraInfo.id_sala
-        };
-
-        this.router.navigate(['/detail-payment'], { 
-          queryParams: paymentData 
-        });
+    // Mostrar loader mientras se procesa la selección
+    Swal.fire({
+      title: 'Procesando selección...',
+      text: 'Preparando tu compra',
+      icon: 'info',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
     });
+
+    // Simular un pequeño delay para mostrar el loader
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    try {
+      // 1. Verificar disponibilidad de asientos antes de proceder
+      const numerosAsientos = this.asientosSeleccionados.map(a => a.id);
+      const disponibilidad = await this.ventasService.verificarDisponibilidadAsientos(
+        this.compraInfo.pelicula, // Usar id de película como función por ahora
+        numerosAsientos
+      ).toPromise();
+
+      if (!disponibilidad?.disponibles) {
+        // Cerrar el loader antes de mostrar el error
+        Swal.close();
+        
+        await Swal.fire({
+          icon: 'error',
+          title: 'Asientos no disponibles',
+          text: `Los siguientes asientos ya no están disponibles: ${disponibilidad?.asientos_ocupados.join(', ')}`,
+          confirmButtonColor: '#007bff'
+        });
+        
+        // Recargar asientos para mostrar estado actual
+        this.loadAsientos();
+        return;
+      }
+
+      // 2. Navegar directamente a detail-payment con los datos de la compra
+      const parametrosPago = {
+        pelicula: this.compraInfo.pelicula,
+        titulo: this.compraInfo.titulo,
+        idioma: this.compraInfo.idioma,
+        horario: this.compraInfo.horario,
+        cantidad: this.asientosSeleccionados.length,
+        precio: this.asientosSeleccionados[0]?.precio || this.compraInfo.precio,
+        total: this.calcularTotal(),
+        portada: this.pelicula?.imagen,
+        sala: this.salaInfo?.nombre,
+        asientosSeleccionados: numerosAsientos.join(','),
+        id_sala: this.compraInfo.id_sala
+      };
+
+      // Cerrar el loader antes de navegar
+      Swal.close();
+
+      await this.router.navigate(['/detail-payment'], { 
+        queryParams: parametrosPago 
+      });
+
+    } catch (error: any) {
+      console.error('Error al procesar compra:', error);
+      
+      // Cerrar el loader antes de mostrar el error
+      Swal.close();
+      
+      await Swal.fire({
+        icon: 'error',
+        title: 'Error en la compra',
+        text: error.message || 'Ocurrió un error al procesar la compra. Inténtalo nuevamente.',
+        confirmButtonColor: '#007bff'
+      });
+    }
   }
 
   volverAtras(): void {
-    // Volver al detalle de la película
+    // Guardar estado actual en sessionStorage antes de salir
+    this.saveDataToStorage();
+    
+    // Volver al detalle de la película o cartelera según el contexto
     if (this.compraInfo.pelicula && this.compraInfo.titulo) {
       this.router.navigate(['/pelicula', this.compraInfo.pelicula, this.compraInfo.titulo]);
     } else {
-      this.router.navigate(['/peliculas']);
+      this.router.navigate(['/cartelera']); // Usar cartelera en lugar de shop
     }
   }
 
@@ -450,10 +503,5 @@ export class SelectSeatComponent implements OnInit {
     
     // Abrir modal de simulación
     this.showSimulationModal = true;
-  }
-
-  // Cerrar modal de simulación
-  closeSimulationModal(): void {
-    this.showSimulationModal = false;
   }
 }

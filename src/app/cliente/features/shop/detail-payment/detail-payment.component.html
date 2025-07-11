@@ -198,6 +198,16 @@
         <i *ngIf="!isLoading" class="fas fa-credit-card"></i>
         {{ isLoading ? 'Procesando...' : 'Procesar Pago' }}
       </button>
+      
+      <!-- Botón para generar PDF (visible solo después de compra exitosa) -->
+      <button 
+        *ngIf="ventaId"
+        class="btn btn-pdf-download"
+        (click)="generarFacturaPDF()"
+        title="Descargar factura en PDF">
+        <i class="fas fa-file-pdf"></i>
+        Ver detalle (PDF)
+      </button>
     </div>
   </div>
 </div>

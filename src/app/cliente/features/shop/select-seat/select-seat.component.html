@@ -40,7 +40,7 @@
       <p><strong>Solicitados:</strong> <span class="cantidad">{{ compraInfo.cantidad }}</span> boleto{{ compraInfo.cantidad > 1 ? 's' : '' }}</p>
       <div class="asientos-info" *ngIf="!loadingAsientos && maxAsientosDisponibles > 0">
         <p class="disponibles-count">
-          <i class="fas fa-chair"></i>
+          <i class="fas fa-couch"></i>
           <strong>Disponibles:</strong> 
           <span class="count" [class.warning]="asientosDisponibles < compraInfo.cantidad">
             {{ asientosDisponibles }}

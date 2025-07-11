@@ -578,7 +578,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     }
   }
 
-  irASiguiente(): void {
+  async irASiguiente(): Promise<void> {
     // Verificar si el usuario está logueado
     if (!this.authService.getUsuarioActual()) {
       // Mostrar modal de login
@@ -607,6 +607,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Navegación directa sin loader (se moverá al select-seat)
+
     // Redirigir a la página de selección de asientos
     this.router.navigate(['/select-seat'], {
       queryParams: {
@@ -617,7 +619,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         cantidad: this.cantidad,
         precio: this.obtenerPrecioPorIdioma(),
         total: this.obtenerPrecioTotal(),
-        id_sala: this.obtenerIdSalaPorIdiomaYHorario()
+        id_sala: this.obtenerIdSalaPorIdiomaYHorario(),
+        funcion_id: this.obtenerIdFuncionPorIdiomaYHorario() // Agregar ID de función real
       }
     });
   }
@@ -761,6 +764,22 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   }
 
   obtenerPrecioPorIdioma(): number | string {
+    // Si hay idioma y horario seleccionados, buscar la función específica
+    if (this.idiomaSeleccionado && this.horarioSeleccionado && this.funcionesCompletas.length > 0) {
+      const funcionEspecifica = this.funcionesCompletas.find(funcion => {
+        const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
+        const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
+        const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
+        
+        return idiomaCoincide && horarioCoincide;
+      });
+
+      if (funcionEspecifica && funcionEspecifica.precio) {
+        return funcionEspecifica.precio;
+      }
+    }
+
+    // Fallback al método anterior
     const funcion = this.funcionesPorIdioma.find(f => f.idioma === this.idiomaSeleccionado);
     return funcion && funcion.precio ? funcion.precio : 'N/A';
   }
@@ -886,5 +905,22 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     });
 
     return funcionEncontrada ? funcionEncontrada.id_sala : null;
+  }
+
+  // Método para obtener id_funcion basado en idioma y horario seleccionados
+  private obtenerIdFuncionPorIdiomaYHorario(): number | null {
+    if (!this.idiomaSeleccionado || !this.horarioSeleccionado || !this.funcionesCompletas.length) {
+      return null;
+    }
+
+    const funcionEncontrada = this.funcionesCompletas.find(funcion => {
+      const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
+      const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
+      const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
+      
+      return idiomaCoincide && horarioCoincide;
+    });
+
+    return funcionEncontrada ? funcionEncontrada.id_funcion : null;
   }
 }

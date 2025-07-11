@@ -11,6 +11,7 @@ export * from './paises.model';
 export * from './pelicula.model';
 export * from './promocion.model';
 export * from './users.model';
+export * from './venta.model';
 
 // Salas related models (exported separately to avoid conflicts)
 export type { Sala, Espacio, Asiento } from './salas.model';
