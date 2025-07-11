@@ -38,8 +38,14 @@
     <button class="btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
   </div>
 
+  <!-- Loading state -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="loading-spinner"></div>
+    <p>Cargando películas...</p>
+  </div>
+
   <!-- Grid de películas -->
-  <div class="grid-cartelera"
+  <div class="grid-cartelera" *ngIf="!isLoading"
      [ngClass]="{'solo-uno': peliculasFiltradas.length === 1, 'solo-dos': peliculasFiltradas.length === 2, 'solo-tres': peliculasFiltradas.length === 3, 'menu-abierto': menuAbierto}">
     <div class="movie-card" *ngFor="let pelicula of peliculasFiltradas"
         (mouseenter)="hoveredIndex = pelicula.id_pelicula"

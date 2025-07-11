@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 export class ListarPromocionesComponent implements OnInit {
   promociones: Promocion[] = [];
   hoveredIndex: number = -1;
-  loading: boolean = true;
+  isLoading: boolean = true;
 
   constructor(
     private promocionService: PromocionService,
@@ -30,15 +30,15 @@ export class ListarPromocionesComponent implements OnInit {
   }
 
   cargarPromociones(): void {
-    this.loading = true;
+    this.isLoading = true;
     this.promocionService.getPromociones().subscribe({
       next: (data) => {
         this.promociones = data;
-        this.loading = false;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error al cargar promociones:', err);
-        this.loading = false;
+        this.isLoading = false;
         Swal.fire({
           icon: 'error',
           title: 'Error',

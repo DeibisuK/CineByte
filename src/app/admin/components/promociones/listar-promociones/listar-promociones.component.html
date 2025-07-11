@@ -18,8 +18,21 @@
     </div>
 
     <div class="contenedor-promociones">
-        <div class="promo-card" *ngFor="let promo of promociones"
-            [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
+        <!-- Estado de carga -->
+        <div *ngIf="isLoading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Cargando promociones...</p>
+        </div>
+
+        <!-- Mensaje cuando no hay promociones -->
+        <div *ngIf="!isLoading && promociones.length === 0" class="no-data-container">
+            <p class="no-data-text">No hay promociones disponibles</p>
+        </div>
+
+        <!-- Lista de promociones -->
+        <div *ngIf="!isLoading && promociones.length > 0" class="promociones-grid">
+            <div class="promo-card" *ngFor="let promo of promociones"
+                [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
 
             <img [src]="promo.imagen_url || 'assets/imagen-placeholder.jpg'" [alt]="promo.titulo" />
 

@@ -16,6 +16,7 @@ export class CatalogoComponent implements OnDestroy {
   peliculas: Pelicula[] = [];
   peliculasFiltradas: Pelicula[] = [];
   hoveredIndex: number = -1;
+  isLoading: boolean = true;
 
   menuActivo: 'formato' | 'genero' | 'idioma' = 'formato';
   menuAbierto = false;
@@ -35,6 +36,7 @@ export class CatalogoComponent implements OnDestroy {
   constructor(private moviesService: PeliculaService, private movieNav: MovieNavigationService) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.moviesService.getPeliculasCompletas().subscribe((peliculas: Pelicula[]) => {
       this.peliculas = peliculas;
       this.peliculasFiltradas = peliculas;
@@ -42,6 +44,8 @@ export class CatalogoComponent implements OnDestroy {
       this.filtros['formato'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.etiquetas)))];
       this.filtros['genero'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.generos)))];
       this.filtros['idioma'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.idiomas)))];
+      
+      this.isLoading = false;
     });
   }
 

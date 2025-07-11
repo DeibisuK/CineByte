@@ -1,7 +1,7 @@
-<!-- Pantalla de carga -->
-<app-loading *ngIf="isLoading" [fadeOut]="fadeOutLoading"></app-loading>
+<!-- Pantalla de carga inicial -->
+<app-loading *ngIf="isInitialLoading" [fadeOut]="fadeOutLoading"></app-loading>
 
-<div class="page-wrapper d-flex flex-column min-vh-100" [class.anuncio-visible]="mostrarAnuncio && anuncioActivo" [style.display]="isLoading ? 'none' : 'flex'">
+<div class="page-wrapper d-flex flex-column min-vh-100" [class.anuncio-visible]="mostrarAnuncio && anuncioActivo" [style.display]="isInitialLoading ? 'none' : 'flex'">
   <!-- Anuncio -->
   <app-anuncio *ngIf="mostrarAnuncio && anuncioActivo" [anuncio]="anuncioActivo" (cerrar)="onCerrarAnuncio()">
   </app-anuncio>
@@ -9,8 +9,14 @@
   <!-- Navbar -->
   <app-navbar [anuncioVisible]="!!(mostrarAnuncio && anuncioActivo)"></app-navbar>
 
+  <!-- Loading pequeño para navegación -->
+  <div *ngIf="isNavigationLoading" class="navigation-loading">
+    <div class="small-spinner"></div>
+    <span>Cargando...</span>
+  </div>
+
   <!-- Contenido principal -->
-  <main class="container flex-grow-1 py-4">
+  <main class="container flex-grow-1 py-4" [class.loading-blur]="isNavigationLoading">
     <router-outlet></router-outlet>
     <app-scroll-top></app-scroll-top>
   </main>

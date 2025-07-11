@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../core/components/footer/footer.component';
 import { ScrollTopComponent } from '../../core/components/scroll-top/scroll-top.component';
@@ -31,7 +31,8 @@ export class CliLayoutComponent implements OnInit {
   modoOscuro = false;
 
   // Variables para el loading
-  isLoading = true;
+  isInitialLoading = true;
+  isNavigationLoading = false;
   fadeOutLoading = false;
 
   constructor(
@@ -48,7 +49,17 @@ export class CliLayoutComponent implements OnInit {
 
   setupRouterEvents() {
     this.router.events.subscribe((event) => {
+      if (event instanceof NavigationStart) {
+        // Mostrar loading pequeño al iniciar navegación
+        this.isNavigationLoading = true;
+      }
+      
       if (event instanceof NavigationEnd) {
+        // Ocultar loading al completar navegación
+        setTimeout(() => {
+          this.isNavigationLoading = false;
+        }, 300);
+        
         // Desplazar al inicio de la página
         this.viewportScroller.scrollToPosition([0, 0]);
       }
@@ -62,7 +73,7 @@ export class CliLayoutComponent implements OnInit {
 
       // Después del fade out, ocultar completamente el loading
       setTimeout(() => {
-        this.isLoading = false;
+        this.isInitialLoading = false;
       }, 500); // Tiempo del fade out
     }, 1500); // Tiempo mínimo de loading
   }
