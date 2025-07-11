@@ -13,6 +13,7 @@
 
   <!-- Menú de navegación -->
   <ul class="sidebar-menu">
+    <!-- Dashboard - Vista general (siempre primero) -->
     <li>
       <a routerLink="/admin/dashboard" routerLinkActive="active-link" data-tooltip="Dashboard"
         [attr.aria-label]="'Ir a Dashboard' + (!sidebarClosed ? '' : ' - Dashboard')">
@@ -20,41 +21,35 @@
         <span *ngIf="!sidebarClosed">Dashboard</span>
       </a>
     </li>
-    <li>
-      <a routerLink="./peliculas/list" routerLinkActive="active-link" data-tooltip="Películas"
-        [attr.aria-label]="'Gestionar Películas' + (!sidebarClosed ? '' : ' - Películas')">
-        <i class="fa-solid fa-film"></i>
-        <span *ngIf="!sidebarClosed">Películas</span>
+
+    <!-- Cines - Infraestructura principal -->
+    <li class="dropdown-container">
+      <a (click)="toggleCinesMenu()" data-tooltip="Cines"
+        [attr.aria-label]="'Gestionar Cines' + (!sidebarClosed ? '' : ' - Cines')"
+        [class.dropdown-active]="cinesMenuOpen">
+        <div class="menu-item-content">
+          <i class="fa-solid fa-building"></i>
+          <span *ngIf="!sidebarClosed">Cines</span>
+        </div>
+        <i class="fa-solid fa-chevron-down dropdown-arrow" [class.rotated]="cinesMenuOpen" *ngIf="!sidebarClosed"></i>
       </a>
+      <ul class="cines-menu" [class.show]="cinesMenuOpen">
+        <li><a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
+          (click)="stopPropagation($event)"
+          [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
+          <i class="fa-solid fa-location-dot"></i>
+          <span *ngIf="!sidebarClosed">Sedes</span>
+        </a></li>
+        <li><a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
+          (click)="stopPropagation($event)"
+          [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
+          <i class="fa-solid fa-sitemap"></i>
+          <span *ngIf="!sidebarClosed">Asignar Salas</span>
+        </a></li>
+      </ul>
     </li>
-    <li>
-      <a routerLink="./actores/list" routerLinkActive="active-link" data-tooltip="Actores"
-        [attr.aria-label]="'Gestionar Actores' + (!sidebarClosed ? '' : ' - Actores')">
-        <i class="fa-solid fa-people-group"></i>
-        <span *ngIf="!sidebarClosed">Actores</span>
-      </a>
-    </li>
-    <li>
-      <a routerLink="./distribuidores/list" routerLinkActive="active-link" data-tooltip="Distribuidor"
-        [attr.aria-label]="'Gestionar Distribuidor' + (!sidebarClosed ? '' : ' - Distribuidor')">
-        <i class="fa-solid fa-photo-film"></i>
-        <span *ngIf="!sidebarClosed">Distribuidor</span>
-      </a>
-    </li>
-    <li>
-      <a routerLink="./categorias" routerLinkActive="active-link" data-tooltip="Categorías"
-        [attr.aria-label]="'Gestionar Categorías' + (!sidebarClosed ? '' : ' - Categorías')">
-        <i class="fa-solid fa-list"></i>
-        <span *ngIf="!sidebarClosed">Categorías</span>
-      </a>
-    </li>
-    <li>
-      <a routerLink="./promociones/list" routerLinkActive="active-link" data-tooltip="Promociones"
-        [attr.aria-label]="'Gestionar Promociones' + (!sidebarClosed ? '' : ' - Promociones')">
-        <i class="fa-solid fa-tags"></i>
-        <span *ngIf="!sidebarClosed">Promociones</span>
-      </a>
-    </li>
+
+    <!-- Salas - Gestión de espacios -->
     <li>
       <a routerLink="./salas/list" routerLinkActive="active-link" data-tooltip="Salas"
         [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')">
@@ -62,6 +57,44 @@
         <span *ngIf="!sidebarClosed">Salas</span>
       </a>
     </li>
+
+    <!-- Películas - Contenido principal -->
+    <li>
+      <a routerLink="./peliculas/list" routerLinkActive="active-link" data-tooltip="Películas"
+        [attr.aria-label]="'Gestionar Películas' + (!sidebarClosed ? '' : ' - Películas')">
+        <i class="fa-solid fa-film"></i>
+        <span *ngIf="!sidebarClosed">Películas</span>
+      </a>
+    </li>
+
+    <!-- Categorías - Clasificación de contenido -->
+    <li>
+      <a routerLink="./categorias" routerLinkActive="active-link" data-tooltip="Categorías"
+        [attr.aria-label]="'Gestionar Categorías' + (!sidebarClosed ? '' : ' - Categorías')">
+        <i class="fa-solid fa-list"></i>
+        <span *ngIf="!sidebarClosed">Categorías</span>
+      </a>
+    </li>
+
+    <!-- Actores - Personal de películas -->
+    <li>
+      <a routerLink="./actores/list" routerLinkActive="active-link" data-tooltip="Actores"
+        [attr.aria-label]="'Gestionar Actores' + (!sidebarClosed ? '' : ' - Actores')">
+        <i class="fa-solid fa-people-group"></i>
+        <span *ngIf="!sidebarClosed">Actores</span>
+      </a>
+    </li>
+
+    <!-- Distribuidores - Proveedores de contenido -->
+    <li>
+      <a routerLink="./distribuidores/list" routerLinkActive="active-link" data-tooltip="Distribuidores"
+        [attr.aria-label]="'Gestionar Distribuidores' + (!sidebarClosed ? '' : ' - Distribuidores')">
+        <i class="fa-solid fa-photo-film"></i>
+        <span *ngIf="!sidebarClosed">Distribuidores</span>
+      </a>
+    </li>
+
+    <!-- Funciones - Programación -->
     <li>
       <a routerLink="./funciones/list" routerLinkActive="active-link" data-tooltip="Funciones"
         [attr.aria-label]="'Gestionar Funciones' + (!sidebarClosed ? '' : ' - Funciones')">
@@ -69,33 +102,17 @@
         <span *ngIf="!sidebarClosed">Funciones</span>
       </a>
     </li>
+
+    <!-- Promociones - Marketing -->
     <li>
-
-      <a (click)="toggleCinesMenu()" data-tooltip="Cines"
-        [attr.aria-label]="'Gestionar Cines' + (!sidebarClosed ? '' : ' - Cines')">
-        <i class="fa-solid fa-film"></i>
-        <span *ngIf="!sidebarClosed">Cines</span>
-        <i class="fa-solid fa-chevron-down dropdown-arrow" [class.rotated]="cinesMenuOpen"></i>
-
+      <a routerLink="./promociones/list" routerLinkActive="active-link" data-tooltip="Promociones"
+        [attr.aria-label]="'Gestionar Promociones' + (!sidebarClosed ? '' : ' - Promociones')">
+        <i class="fa-solid fa-tags"></i>
+        <span *ngIf="!sidebarClosed">Promociones</span>
       </a>
-      <ul class="cines-menu" [class.show]="cinesMenuOpen">
-
-        <li><a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
-          (click)="stopPropagation($event)"
-          [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
-          <i class="fa-solid fa-location-dot"></i>
-          <span *ngIf="!sidebarClosed">Sedes</span>
-        </a></li>
-
-        <li><a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
-          (click)="stopPropagation($event)"
-          [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
-          <i class="fa-solid fa-sitemap"></i>
-          <span *ngIf="!sidebarClosed">Asignar Salas</span>
-        </a></li>
-
-      </ul>
     </li>
+
+    <!-- Usuarios - Gestión de usuarios -->
     <li>
       <a routerLink="./usuarios/list" routerLinkActive="active-link" data-tooltip="Usuarios"
         [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')">
@@ -103,6 +120,8 @@
         <span *ngIf="!sidebarClosed">Usuarios</span>
       </a>
     </li>
+
+    <!-- Anuncios - Comunicación -->
     <li>
       <a routerLink="./anuncios/add" routerLinkActive="active-link" data-tooltip="Anuncios"
         [attr.aria-label]="'Gestionar Anuncios' + (!sidebarClosed ? '' : ' - Anuncios')">
@@ -114,6 +133,14 @@
 
   <!-- Footer con switch de tema y logout -->
   <div class="sidebar-footer">
+    <!-- Botón Modo Usuario -->
+    <button class="user-mode-btn" (click)="cambiarAModoUsuario()"
+      [attr.aria-label]="'Cambiar a Modo Usuario' + (!sidebarClosed ? '' : ' - Modo Usuario')"
+      data-tooltip="Modo Usuario">
+      <i class="fa-solid fa-user"></i>
+      <span *ngIf="!sidebarClosed">Modo Usuario</span>
+    </button>
+
     <!-- Switch de tema -->
     <div class="switch-container">
       <!-- Switch completo solo si sidebar abierto -->

@@ -181,6 +181,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Cambiar a modo usuario
+  cambiarAModoUsuario() {
+    this.router.navigate(['/cliente/inicio']);
+  }
+
   getSidebarState(): boolean {
     return this.sidebarClosed;
   }

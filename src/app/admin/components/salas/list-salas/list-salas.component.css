@@ -15,7 +15,7 @@
 
 .header-content h1 {
     font-size: 2.25rem;
-  color: var(--text-color);
+    color: var(--text-color);
     margin-bottom: 10px;
 }
 
@@ -58,13 +58,13 @@
 /* Botón Exportar */
 .btn-export {
     color: var(--text-color);
-    border: 1px solid var(--btn-line-crud);
-    background-color: rgba(100, 149, 237, 0.1);
+    background: linear-gradient(135deg, #0878c3, #0849c3);
+    transition: background 0.2s, transform 0.2s;
 }
 
 .btn-export:hover {
-    background-color: rgba(100, 149, 237, 0.2);
-    border-color: cornflowerblue;
+  background: linear-gradient(135deg, #0849c3, #0878c3);
+  transform: scale(1.04);
 }
 
 /* Botón Limpiar */

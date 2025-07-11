@@ -48,6 +48,7 @@ body {
   --image-opacity: 0.35;
   --image-filter: grayscale(1);
   --footer-bg: #111;
+  --bg-cines: #0b0b0b;
   --footer-esp: #1D1D1D;
   --footer-text: #f0f0f0;
   --footer-link: #aaa;
@@ -75,6 +76,7 @@ body.light-mode {
   --image-opacity: 0.2;
   --image-filter: none;
   --footer-bg: #f0f0f0;
+  --bg-cines: #dedede;
   --footer-esp: #f0f0f0;
   --footer-text: #222;
   --footer-link: #3e3e3e;
