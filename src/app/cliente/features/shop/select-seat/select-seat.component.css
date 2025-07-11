@@ -407,26 +407,39 @@
   transform: none !important;
 }
 
+/*
 .btn-simulate {
-  background-color: var(--success-color);
+  background: linear-gradient(135deg, #0878c3, #0849c3);
+  transition: background 0.2s, transform 0.2s;
   color: white;
 }
 
 .btn-simulate:not(:disabled):hover {
-  background-color: #219a52;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+  background: linear-gradient(135deg, #0849c3, #0878c3);
+  transform: scale(1.04);
+}
+*/
+
+.btn-simulate {
+  background: linear-gradient(135deg, #0878c3, #0849c3);
+  transition: background 0.2s, transform 0.2s;
+  color: white;
+}
+
+.btn-simulate:not(:disabled):hover {
+  background: linear-gradient(135deg, #0849c3, #0878c3);
+  transform: scale(1.04);
 }
 
 .btn-buy {
-  background-color: var(--yellow);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  transition: background 0.2s, transform 0.2s;
   color: #000;
 }
 
 .btn-buy:not(:disabled):hover {
-  background-color: #e6c200;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
 }
 
 /* Responsive */

@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ExportarService } from '@core/services/utils/export.service';
@@ -21,6 +21,9 @@ interface ExportCategory {
   imports: [CommonModule, FormsModule]
 })
 export class ExportarComponent {
+  @Input() showModal: boolean = false;
+  @Output() closeModal = new EventEmitter<void>();
+
   searchQuery: string = '';
   activeMenu: string | null = null;
   
@@ -317,5 +320,9 @@ export class ExportarComponent {
     this.searchQuery = '';
     this.filteredCategories = [...this.allCategories];
     this.activeMenu = null;
+  }
+
+  onCloseModal(): void {
+    this.closeModal.emit();
   }
 }

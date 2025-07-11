@@ -15,24 +15,45 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--footer-line, #333);
+  margin-bottom: 1.5rem;
 }
 
-.header-content h1 {
-  margin: 0;
+.header-content {
+  margin-bottom: 0;
+}
+
+.dashboard-title {
   font-size: 2.25rem;
   font-weight: 700;
-  color: var(--text-color, #ffffff);
+  color: var(--text-color);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: 0.5px;
 }
 
 .dashboard-subtitle {
-  margin: 0.5rem 0 0 0;
   color: var(--footer-link, #999);
   font-size: 1rem;
-  font-weight: 400;
-  text-align: left;
+  margin: 0;
+}
+
+.btn-view-all {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 2px solid var(--yellow-primary, #ffd700);
+  color: var(--yellow-primary, #ffd700);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+}
+
+.btn-view-all:hover {
+  background: var(--yellow-primary, #ffd700);
+  color: #000;
 }
 
 /* ===========================
@@ -42,6 +63,7 @@
   display: flex;
   align-items: flex-end;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .filter-group {
@@ -76,7 +98,8 @@
 
 .btn-apply-filters {
   padding: 0.75rem 1.5rem;
-  background: var(--yellow-primary, #ffd700);
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  transition: background 0.2s, transform 0.2s;
   color: #000;
   border: none;
   border-radius: 8px;
@@ -85,14 +108,12 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.3s ease;
   font-size: 0.95rem;
 }
 
 .btn-apply-filters:hover {
-  background: var(--yellow-secondary, #ffed4e);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: scale(1.04);
 }
 
 /* ===========================
@@ -100,9 +121,13 @@
 ============================ */
 .metrics-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.2rem;
   margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 2rem;
 }
 
 .metric-card {
@@ -111,11 +136,6 @@
   padding: 1.5rem;
   border: 2px solid var(--footer-line, #333);
   transition: all 0.3s ease;
-}
-
-.metric-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
 }
 
 .metric-content {
@@ -181,8 +201,11 @@
 .charts-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
+  gap: 1.2rem;
   margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .chart-card {
@@ -357,6 +380,9 @@
 ============================ */
 .transactions-section {
   margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .transactions-card {
@@ -379,26 +405,6 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-color, #ffffff);
-}
-
-.btn-view-all {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 2px solid var(--yellow-primary, #ffd700);
-  color: var(--yellow-primary, #ffd700);
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.3s ease;
-  font-size: 0.85rem;
-}
-
-.btn-view-all:hover {
-  background: var(--yellow-primary, #ffd700);
-  color: #000;
 }
 
 .transactions-table {
@@ -497,6 +503,9 @@
 ============================ */
 .additional-info {
   margin-bottom: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .info-card {
@@ -551,6 +560,33 @@
 }
 
 /* ===========================
+   BOTÓN DE EXPORTAR
+============================ */
+.export-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #0878c3, #0849c3);
+  transition: background 0.2s, transform 0.2s;
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  background: linear-gradient(135deg, #0849c3, #0878c3);
+  transform: scale(1.04);
+}
+
+.export-btn i {
+  font-size: 1rem;
+}
+
+/* ===========================
    RESPONSIVE DESIGN
 ============================ */
 @media (max-width: 1200px) {
@@ -569,14 +605,26 @@
   }
   
   .dashboard-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+    margin-bottom: 1.5rem;
   }
   
   .filters-section {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
     width: 100%;
+  }
+  
+  .filter-group {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .btn-apply-filters,
+  .export-btn {
+    width: 100%;
+    max-width: 200px;
+    justify-content: center;
   }
   
   .metrics-grid {
@@ -600,8 +648,18 @@
 }
 
 @media (max-width: 480px) {
-  .header-content h1 {
+  .dashboard-title {
     font-size: 1.8rem;
+  }
+  
+  .filters-section {
+    gap: 0.75rem;
+  }
+  
+  .btn-apply-filters,
+  .export-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.9rem;
   }
   
   .metric-value {

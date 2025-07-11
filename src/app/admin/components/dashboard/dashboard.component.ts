@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ExportarComponent } from '../exportar/exportar.component';
 
 interface DashboardCard {
   title: string;
@@ -19,7 +20,7 @@ interface ChartData {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ExportarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -47,6 +48,9 @@ export class DashboardComponent implements OnInit {
 
   // Fecha actual para mostrar en el dashboard
   currentDateTime = new Date().toLocaleString('es-ES');
+
+  // Modal de exportar
+  showExportModal = false;
 
   // Datos del dashboard
   dashboardCards: DashboardCard[] = [
@@ -147,5 +151,14 @@ export class DashboardComponent implements OnInit {
       case 'failed': return 'Fallido';
       default: return status;
     }
+  }
+
+  // Métodos para el modal de exportar
+  openExportModal(): void {
+    this.showExportModal = true;
+  }
+
+  closeExportModal(): void {
+    this.showExportModal = false;
   }
 }

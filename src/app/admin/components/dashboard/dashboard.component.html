@@ -30,6 +30,11 @@
         <i class="fas fa-search"></i>
         Aplicar Filtros
       </button>
+
+      <button class="export-btn" (click)="openExportModal()">
+        <i class="fas fa-download"></i>
+        Exportar
+      </button>
     </div>
   </div>
 
@@ -163,4 +168,9 @@
       </div>
     </div>
   </div>
-</div>
+
+<!-- Modal de Exportar -->
+<app-exportar 
+  [showModal]="showExportModal"
+  (closeModal)="closeExportModal()">
+</app-exportar>
