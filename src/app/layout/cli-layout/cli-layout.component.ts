@@ -4,6 +4,7 @@ import { CommonModule, ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../core/components/footer/footer.component';
 import { ScrollTopComponent } from '../../core/components/scroll-top/scroll-top.component';
 import { AnuncioComponent } from '../../core/components/anuncio/anuncio.component';
+import { LoadingComponent } from '../../core/components/loading/loading.component';
 import { Anuncio } from '@core/models';
 import { AnuncioService } from '@core/services';
 import { NavbarComponent } from '@core/components/navbar/navbar.component';
@@ -14,6 +15,7 @@ import { NavbarComponent } from '@core/components/navbar/navbar.component';
     RouterOutlet,
     NavbarComponent,
     AnuncioComponent,
+    LoadingComponent,
     CommonModule,
     ScrollTopComponent,
     FooterComponent,
@@ -28,6 +30,10 @@ export class CliLayoutComponent implements OnInit {
   mostrarAnuncio = false;
   modoOscuro = false;
 
+  // Variables para el loading
+  isLoading = true;
+  fadeOutLoading = false;
+
   constructor(
     private router: Router,
     private viewportScroller: ViewportScroller,
@@ -36,12 +42,29 @@ export class CliLayoutComponent implements OnInit {
 
   ngOnInit() {
     this.cargarAnuncioActivo();
+    this.setupRouterEvents();
+    this.inicializarPagina();
+  }
+
+  setupRouterEvents() {
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
         // Desplazar al inicio de la página
         this.viewportScroller.scrollToPosition([0, 0]);
       }
     });
+  }
+
+  inicializarPagina() {
+    // Simular tiempo de carga de elementos críticos
+    setTimeout(() => {
+      this.fadeOutLoading = true;
+
+      // Después del fade out, ocultar completamente el loading
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 500); // Tiempo del fade out
+    }, 1500); // Tiempo mínimo de loading
   }
 
   cargarAnuncioActivo() {

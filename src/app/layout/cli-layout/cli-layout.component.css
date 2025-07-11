@@ -21,6 +21,26 @@
   margin-top: 0 !important;
 }
 
+/* Estilos para el loading */
+app-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  background: var(--bg-primary, #0a0a0a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animación suave para mostrar el contenido */
+.page-wrapper {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .page-wrapper.anuncio-visible {

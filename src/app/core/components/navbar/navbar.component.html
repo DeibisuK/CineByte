@@ -67,6 +67,11 @@
           Mi cuenta
         </button>
 
+        <button *ngIf="esUsuarioAdmin()" class="dropdown-item" (click)="irAModoAdmin()">
+          <i class="fa-solid fa-shield-halved"></i>
+          Modo admin
+        </button>
+
         <button class="dropdown-item" [routerLink]="['metodos-de-pago']">
           <i class="fa-solid fa-credit-card"></i>
           Métodos de Pago

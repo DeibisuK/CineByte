@@ -430,8 +430,6 @@
    SECCIÓN FUNCIONES
 ============================ */
 .funciones-section {
-  position: sticky;
-  top: 2rem;
   height: fit-content;
 }
 

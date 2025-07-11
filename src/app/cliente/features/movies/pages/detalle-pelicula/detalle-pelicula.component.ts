@@ -7,7 +7,7 @@ import { Pelicula } from '@core/models/pelicula.model';
 import { PeliculaService } from '@features/movies/services/pelicula.service';
 import { Subject, forkJoin } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
-import { AuthService } from '@core/services/auth/auth.service';
+import { AuthService, LoginModalService } from '@core/services';
 import { FuncionesService } from '@features/movies/services/funciones.service';
 import { SedeSalasService, SalasService } from '@features/venues';
 import Swal from 'sweetalert2';
@@ -73,7 +73,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     private sedeSalasService: SedeSalasService,
     private salasService: SalasService,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private loginModalService: LoginModalService
   ) { }
 
   ngOnInit() {
@@ -581,19 +582,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   async irASiguiente(): Promise<void> {
     // Verificar si el usuario está logueado
     if (!this.authService.getUsuarioActual()) {
-      // Mostrar modal de login
-      Swal.fire({
-        title: 'Iniciar Sesión',
-        text: 'Debes iniciar sesión para comprar boletos',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Iniciar Sesión',
-        cancelButtonText: 'Cancelar'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.router.navigate(['/login']);
-        }
-      });
+      // Abrir modal de login directamente
+      this.loginModalService.openModal();
       return;
     }
 

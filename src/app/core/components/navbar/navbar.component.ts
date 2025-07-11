@@ -5,7 +5,7 @@ import { TemaService } from '../../../cliente/features/movies/services/tema.serv
 import { FormsModule } from '@angular/forms';
 import { LoginComponent } from '../../../acceso/login/login.component';
 import { Sede, SedeService } from '@features/venues/services/sede.service';
-import { AuthService } from '@core/services';
+import { AuthService, LoginModalService } from '@core/services';
 import { User } from 'firebase/auth';
 import Swal from 'sweetalert2';
 import { PeliculaService } from '@features/movies';
@@ -48,7 +48,8 @@ export class NavbarComponent {
     private sedeService: SedeService, // <-- Asegúrate de inyectar el servicio
     @Inject(PLATFORM_ID) private plataforma: Object,
     private temaService: TemaService,
-    private authService: AuthService
+    private authService: AuthService,
+    private loginModalService: LoginModalService
   ) {
     this.esNavegador = isPlatformBrowser(this.plataforma);
   }
@@ -68,6 +69,11 @@ export class NavbarComponent {
     this.cargarSedes();
     this.authService.role$.subscribe(() => {
       this.usuario = this.authService.getUsuarioActual();
+    });
+
+    // Suscribirse al servicio del modal
+    this.loginModalService.showModal$.subscribe(show => {
+      this.showLoginModal = show;
     });
   }
 
@@ -204,14 +210,27 @@ export class NavbarComponent {
   showLoginModal = false; // Esta variable controla la visibilidad del componente de login
 
   openLoginModal() {
-    this.showLoginModal = true;
+    this.loginModalService.openModal();
   }
 
   closeLoginModal() {
-    this.showLoginModal = false;
+    this.loginModalService.closeModal();
   }
   verPerfil() {
     this.router.navigate(['/perfil']);
+  }
+
+  esUsuarioAdmin(): boolean {
+    if (!this.usuario) return false;
+    
+    // Verificar si el usuario tiene rol de admin
+    const role = this.authService.getRole();
+    return role === 'admin';
+  }
+
+  irAModoAdmin() {
+    this.menuAbierto = false;
+    this.router.navigate(['/admin']);
   }
 
   async cerrarSesion() {

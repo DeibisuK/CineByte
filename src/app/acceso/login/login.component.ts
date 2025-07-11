@@ -104,8 +104,6 @@ export class LoginComponent {
       await this.authService.loginEmail(email, password);
       await this.authService.refreshRole();
 
-      const role = this.authService.getRole();
-
       Swal.fire({
         icon: 'success',
         title: '¡Bienvenido!',
@@ -116,11 +114,9 @@ export class LoginComponent {
 
       this.cerrarLoginRegisterModal();
 
-      if (role === 'admin') {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/']);
-      }
+      // Siempre redirigir al inicio, sin importar el rol
+      // El usuario puede acceder al modo admin manualmente desde el navbar
+      this.router.navigate(['/']);
     } catch (err: any) {
       console.error(err);
       Swal.fire({
@@ -180,8 +176,6 @@ export class LoginComponent {
       await this.authService.loginGoogle();
       await this.authService.refreshRole();
 
-      const role = this.authService.getRole();
-
       Swal.fire({
         icon: 'success',
         title: 'Login con Google exitoso',
@@ -191,11 +185,8 @@ export class LoginComponent {
 
       this.cerrarLoginRegisterModal();
 
-      if (role === 'admin') {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/']);
-      }
+      // Siempre redirigir al inicio, sin importar el rol
+      this.router.navigate(['/']);
     } catch (err: any) {
       console.error(err);
       Swal.fire({
@@ -210,8 +201,6 @@ export class LoginComponent {
       await this.authService.loginFacebook();
       await this.authService.refreshRole();
 
-      const role = this.authService.getRole();
-
       Swal.fire({
         icon: 'success',
         title: 'Login con Facebook exitoso',
@@ -221,11 +210,8 @@ export class LoginComponent {
 
       this.cerrarLoginRegisterModal();
 
-      if (role === 'admin') {
-        this.router.navigate(['/admin']);
-      } else {
-        this.router.navigate(['/']);
-      }
+      // Siempre redirigir al inicio, sin importar el rol
+      this.router.navigate(['/']);
     } catch (err: any) {
       console.error(err);
       Swal.fire({
