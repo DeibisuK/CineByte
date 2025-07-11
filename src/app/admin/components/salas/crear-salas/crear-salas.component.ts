@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { SalasService } from '@features/venues/services/salas.service';
 import { Espacio, Sala } from '@core/models/salas.model';
 import { AlertaService } from '@core/services';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-crear-salas',
@@ -18,7 +18,7 @@ export class CrearSalasComponent {
   vistaPrevia: { letra: string, asientos: number[] }[] = [];
   asientosNoUtilizados: string[] = [];
 
-  constructor(private fb: FormBuilder, private salaService: SalasService,private alerta:AlertaService) {
+  constructor(private fb: FormBuilder, private salaService: SalasService,private alerta:AlertaService, private router: Router) {
     this.crearSalaForm = this.fb.group({
       nombre: ['', Validators.required],
       tipo_sala: [''],
@@ -41,11 +41,11 @@ export class CrearSalasComponent {
 
     for (let fila = 0; fila < filas; fila++) {
       const letra = String.fromCharCode(65 + fila);
-      const inicio = fila * this.asientosPorFila + 1;
-      const final = Math.min(inicio + this.asientosPorFila - 1, cantidad);
+      const asientosEnEstaFila = Math.min(this.asientosPorFila, cantidad - (fila * this.asientosPorFila));
       const asientos = [];
 
-      for (let i = inicio; i <= final; i++) {
+      // Cada fila comienza desde 1 hasta el máximo de asientos por fila (10) o los restantes
+      for (let i = 1; i <= asientosEnEstaFila; i++) {
         asientos.push(i);
       }
 
@@ -98,16 +98,16 @@ export class CrearSalasComponent {
         cantidad_asientos: valores.cantidad_asientos,
         espacios: espaciosFormateados
       };
+
+      console.log('Sala a crear:', sala);
       
       this.salaService.addSala(sala).subscribe({
-        next: (res) => {
-          alert('Sala creada correctamente 🎉');
-          console.log('Respuesta:', res);
-          this.limpiarFormulario();
+       next: () => {
+          this.alerta.success('Exito','Sala creada correctamente');
+          this.router.navigate(['/admin/salas/list']);
         },
-        error: (err) => {
-          console.error('Error al crear sala', err);
-          alert('❌ Error al crear sala: ' + (err.error?.mensaje || 'Error del servidor'));
+        error: () => {
+          this.alerta.error('Error','Hubo un error al crear la sala');
         }
       });
     } else {

@@ -60,7 +60,7 @@ export class EditSalasComponent implements OnInit {
       },
       error: err => {
         this.alerta.error('Error','No se pudo cargar la sala.');
-        this.router.navigate(['/admin/list-sala']);
+        this.router.navigate(['/admin/salas/list']);
       }
     });
   }
@@ -79,7 +79,7 @@ export class EditSalasComponent implements OnInit {
       this.salaService.updateSala(this.idSala, datos).subscribe({
         next: () => {
           this.alerta.success('Exito','Sala actualizada correctamente');
-          this.router.navigate(['/admin/list-sala']);
+          this.router.navigate(['/admin/salas/list']);
         },
         error: () => {
           this.alerta.error('Error','Hubo un error al actualizar la sala');
@@ -103,11 +103,11 @@ export class EditSalasComponent implements OnInit {
     const filas = Math.ceil(cantidad / this.asientosPorFila);
     for (let fila = 0; fila < filas; fila++) {
       const letra = String.fromCharCode(65 + fila);
-      const inicio = fila * this.asientosPorFila + 1;
-      const final = Math.min(inicio + this.asientosPorFila - 1, cantidad);
+      const asientosEnEstaFila = Math.min(this.asientosPorFila, cantidad - (fila * this.asientosPorFila));
       const asientos = [];
 
-      for (let i = inicio; i <= final; i++) {
+      // Cada fila comienza desde 1 hasta el máximo de asientos por fila (10) o los restantes
+      for (let i = 1; i <= asientosEnEstaFila; i++) {
         asientos.push(i);
       }
 
