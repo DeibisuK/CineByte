@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Auth } from '@angular/fire/auth';
@@ -12,7 +12,7 @@ import { MetodoPagoRequest } from '@core/models';
   templateUrl: './crear-metodo.component.html',
   styleUrl: './crear-metodo.component.css'
 })
-export class CrearMetodoComponent implements OnInit {
+export class CrearMetodoComponent implements OnInit, OnChanges, OnDestroy {
   @Input() isModalOpen: boolean = false;
   @Output() modalClosed = new EventEmitter<void>();
   @Output() cardAdded = new EventEmitter<any>();
@@ -47,6 +47,18 @@ export class CrearMetodoComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['isModalOpen']) {
+      if (this.isModalOpen) {
+        // Prevenir scroll del body cuando el modal se abre
+        document.body.style.overflow = 'hidden';
+      } else {
+        // Restaurar scroll del body cuando el modal se cierra
+        document.body.style.overflow = 'auto';
+      }
+    }
+  }
+
   private async loadUserData() {
     await new Promise<void>((resolve) => {
       const unsubscribe = this.auth.onAuthStateChanged(async (user) => {
@@ -62,6 +74,8 @@ export class CrearMetodoComponent implements OnInit {
     this.modalClosed.emit();
     this.cardForm.reset();
     this.cardType = '';
+    // Restaurar scroll del body al cerrar modal
+    document.body.style.overflow = 'auto';
   }
 
   async addCard() {
@@ -223,5 +237,10 @@ export class CrearMetodoComponent implements OnInit {
       default:
         return '#666';
     }
+  }
+
+  ngOnDestroy(): void {
+    // Asegurar que el scroll se restaure si el componente se destruye
+    document.body.style.overflow = 'auto';
   }
 }

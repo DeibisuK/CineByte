@@ -13,9 +13,15 @@
     
     <div>
       <label>Tipo de Promoción</label>
-      <select formControlName="tipo_promocion">
-        <option *ngFor="let tipo of tiposPromocion" [value]="tipo">{{tipo}}</option>
-      </select>
+      <div class="select-with-tooltip">
+        <select formControlName="tipo_promocion">
+          <option *ngFor="let tipo of tiposPromocion" [value]="tipo">{{tipo}}</option>
+        </select>
+        <div *ngIf="promocionForm.get('tipo_promocion')?.value === 'Multiplicador'" class="tooltip">
+          <i class="bi bi-info-circle"></i>
+          <span class="tooltip-text">Multiplicador: Si compras X boletos, pagas solo por 1</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -77,7 +83,13 @@
 
   <div *ngIf="promocionForm.get('tipo_promocion')?.value === 'Multiplicador'" class="form-grid">
     <div>
-      <label>Número de Boletos</label>
+      <label>
+        Número de Boletos
+        <div class="tooltip-inline">
+          <i class="fas fa-info-circle"></i>
+          <span class="tooltip-text">Define cuántos boletos debe comprar el cliente para obtener la promoción. Ejemplo: Si pones 3, el cliente compra 3 boletos pero paga solo 1</span>
+        </div>
+      </label>
       <input type="number" formControlName="nro_boletos" min="2">
       <div *ngIf="promocionForm.get('nro_boletos')?.invalid && (promocionForm.get('nro_boletos')?.dirty || promocionForm.get('nro_boletos')?.touched)" 
            class="error-message">

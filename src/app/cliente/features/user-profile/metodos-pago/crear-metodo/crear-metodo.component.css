@@ -11,6 +11,7 @@
   align-items: center;
   z-index: 1001;
   animation: fadeIn 0.3s ease-out;
+  overflow: hidden;
 }
 
 @keyframes fadeIn {

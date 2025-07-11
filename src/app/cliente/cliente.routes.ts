@@ -11,7 +11,6 @@ import { InicioComponent } from './features/home/inicio.component';
 import { ListarPromocionesComponent } from '@admin/components/promociones/listar-promociones/listar-promociones.component';
 import { PerfilComponent } from './features/user-profile/perfil/perfil.component';
 import { ListMetodoComponent } from './features/user-profile/metodos-pago/list-metodo/list-metodo.component';
-import { DetalleMetodoComponent } from './features/user-profile/metodos-pago/detalle-metodo/detalle-metodo.component';
 import { CrearMetodoComponent } from './features/user-profile/metodos-pago/crear-metodo/crear-metodo.component';
 import { ContactanosComponent } from './features/contact/contactanos.component';
 import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.component';
@@ -41,6 +40,5 @@ export const clienteRoutes: Routes = [
   {path: 'final', component: EndPaymentComponent},
   //Metodos de pago
   {path: 'metodos-de-pago', component: ListMetodoComponent},
-  {path: 'metodos-de-pago/:id', component: DetalleMetodoComponent},
   {path: 'metodos-de-pago/agregar', component: CrearMetodoComponent},
 ];
