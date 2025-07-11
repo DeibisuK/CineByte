@@ -17,6 +17,7 @@ import { ContactanosComponent } from './features/contact/contactanos.component';
 import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.component';
 import { SelectSeatComponent } from './features/shop/select-seat/select-seat.component';
 import { DetailPaymentComponent } from './features/shop/detail-payment/detail-payment.component';
+import { EndPaymentComponent } from './features/shop/end-payment/end-payment.component';
 
 
 export const clienteRoutes: Routes = [
@@ -37,6 +38,7 @@ export const clienteRoutes: Routes = [
   {path: 'terminos-y-condiciones', component: TerminosYCondicionesComponent},
   {path: 'acerca-de-nosotros', component: AcercaDeNosotrosComponent},
   {path: 'politica-de-privacidad', component: PoliticaDePrivacidadComponent},
+  {path: 'final', component: EndPaymentComponent},
   //Metodos de pago
   {path: 'metodos-de-pago', component: ListMetodoComponent},
   {path: 'metodos-de-pago/:id', component: DetalleMetodoComponent},

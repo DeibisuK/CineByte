@@ -1,0 +1,325 @@
+/* Container principal - sin fondo */
+.container-wrapper {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Container flotante con bordes redondeados - MÁS PEQUEÑO */
+.floating-container {
+  max-width: 800px;
+  margin: 20px auto 0;
+  background-color: var(--footer-bg);
+  color: var(--text-color);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--dropdown-border);
+}
+
+/* Header */
+.movie-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  color: var(--text-color);
+  margin: 0 0 20px 0;
+  font-weight: bold;
+}
+
+/* ===========================
+   BARRA DE PROGRESO
+============================ */
+.progress-bar-vertical {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+  gap: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.progress-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.step-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 8px;
+  border: 3px solid var(--dropdown-border);
+  background-color: var(--dropdown-bg);
+  color: var(--text-color);
+}
+
+.progress-item span {
+  font-size: 12px;
+  text-align: center;
+  color: var(--text-color);
+  white-space: nowrap;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.progress-line {
+  height: 2px;
+  width: 30px;
+  background-color: var(--dropdown-border);
+  margin: 0;
+  align-self: center;
+  margin-top: -25px;
+  z-index: 1;
+}
+
+/* Estados de progreso */
+.progress-item.completed .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+.progress-line.completed {
+  background-color: var(--yellow);
+}
+
+.progress-item.active .step-circle {
+  background-color: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+
+/* Efecto glow amarillo estático para el paso actual */
+.progress-item.glow {
+  filter: drop-shadow(0 0 6px var(--yellow));
+  opacity: 0.85;
+}
+
+/* ===========================
+   CONTENIDO DE ÉXITO
+============================ */
+.success-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+/* Icono de éxito */
+.success-icon {
+  font-size: 5rem;
+  color: var(--green-success);
+  animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Mensaje de éxito */
+.success-message {
+  text-align: center;
+  max-width: 600px;
+}
+
+.success-message h2 {
+  font-size: 1.8rem;
+  color: var(--text-color);
+  margin: 0 0 15px 0;
+  font-weight: 600;
+}
+
+.success-message p {
+  font-size: 1.1rem;
+  color: var(--footer-link);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Detalles de la compra */
+.purchase-details {
+  width: 100%;
+  max-width: 500px;
+}
+
+.detail-card {
+  background-color: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.detail-header {
+  background-color: var(--dropdown-border);
+  padding: 15px 20px;
+  border-bottom: 1px solid var(--btn-line-crud);
+}
+
+.detail-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.detail-content {
+  padding: 20px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--dropdown-border);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detail-label {
+  font-weight: 500;
+  color: var(--footer-link);
+  font-size: 0.95rem;
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--text-color);
+  font-size: 0.95rem;
+}
+
+.detail-value.price {
+  color: var(--yellow-primary);
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* Botones de acción */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  justify-content: center;
+}
+
+.btn-print {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  border: 1px solid #FFD700;
+}
+
+.btn-print:hover {
+  background: linear-gradient(135deg, #FFA500, #FFD700);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.btn-finish {
+  background-color: var(--btn-bg-crud);
+  border: 1px solid var(--btn-line-crud);
+  color: var(--text-color);
+}
+
+.btn-finish:hover {
+  background-color: var(--hover-link);
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .floating-container {
+    margin: 10px auto 0;
+    padding: 20px;
+    border-radius: 15px;
+  }
+  
+  .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .progress-bar-vertical {
+    padding: 0 10px;
+    gap: 0;
+  }
+  
+  .progress-line {
+    width: 40px;
+  }
+  
+  .step-circle {
+    width: 35px;
+    height: 35px;
+    font-size: 12px;
+  }
+  
+  .progress-item span {
+    font-size: 10px;
+  }
+  
+  .success-icon {
+    font-size: 4rem;
+  }
+  
+  .success-message h2 {
+    font-size: 1.5rem;
+  }
+  
+  .success-message p {
+    font-size: 1rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}
