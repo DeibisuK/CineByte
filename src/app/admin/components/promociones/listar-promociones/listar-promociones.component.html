@@ -18,7 +18,7 @@
     </div>
 
     <div class="contenedor-promociones">
-        <div class="promo-card" *ngFor="let promo of promociones" (click)="verDetalle(promo)"
+        <div class="promo-card" *ngFor="let promo of promociones"
             [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
 
             <img [src]="promo.imagen_url || 'assets/imagen-placeholder.jpg'" [alt]="promo.titulo" />

@@ -172,15 +172,43 @@ export class EditarPromocionComponent implements OnInit {
     };
 
     try {
-      // Si hay una nueva imagen, subirla
+      // Mostrar alerta de carga si hay imagen nueva que subir
       if (this.imagenSeleccionada) {
-        const url = await this.imgbbService.subirImagen(
-          this.imagenSeleccionada
-        );
+        Swal.fire({
+          title: 'Subiendo imagen...',
+          text: 'Por favor espere mientras se procesa la imagen',
+          icon: 'info',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
+        const url = await this.imgbbService.subirImagen(this.imagenSeleccionada);
         promocion.imagen_url = url;
+        
+        // Cerrar la alerta de carga
+        Swal.close();
       } else if (this.imagenEliminada) {
         promocion.imagen_url = '';
       }
+
+      // Mostrar alerta de guardando promoción
+      Swal.fire({
+        title: 'Actualizando promoción...',
+        text: 'Por favor espere',
+        icon: 'info',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
       this.promocionService.updatePromocion(promocion).subscribe({
         next: () => {

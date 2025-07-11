@@ -24,16 +24,15 @@
   box-shadow: 0 2px 8px 0 rgba(0,0,0,0.08);
   margin: 12px 0;
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: none;
   width: 100%;
   max-width: 1050px;
   flex: 0 0 100%;
   min-width: 0;
-  cursor: pointer; /* Esta es la línea que debes agregar */
 }
 
-.promo-card:hover {
-  transform: translateY(-4px) scale(1.01);
+.promo-card.clickeable {
+  cursor: pointer;
 }
 
 .promo-card img {

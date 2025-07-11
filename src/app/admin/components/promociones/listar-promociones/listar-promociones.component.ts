@@ -49,10 +49,6 @@ export class ListarPromocionesComponent implements OnInit {
     });
   }
 
-  verDetalle(promo: Promocion): void {
-    this.router.navigate(['/admin/promociones/detalle', promo.id_promo]);
-  }
-
   editarPromocion(promo: Promocion, event: Event) {
     event.stopPropagation();
     this.router.navigate(['/admin/promociones/editar', promo.id_promo]);

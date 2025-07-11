@@ -6,9 +6,10 @@
 
   <div class="promo-carousel">
     <div class="promo-card" *ngFor="let promo of visiblePromos"
+      [class.clickeable]="isClickeable(promo)"
       (mouseenter)="hoveredIndex = promo.id_promo"
       (mouseleave)="hoveredIndex = -1"
-      (click)="verDetalle(promo)"
+      (click)="handlePromoClick(promo)"
       [style.zIndex]="hoveredIndex === promo.id_promo ? 2 : 1">
       <img [src]="promo.imagen_url" [alt]="promo.titulo" />
       <div class="promo-etiquetas">

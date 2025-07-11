@@ -83,6 +83,17 @@ export class CarouselPromosComponent {
     }, 5000); // Cambia cada 5 segundos
   }
 
+  isClickeable(promo: Promocion): boolean {
+    return !!(promo.url_link && promo.url_link.trim() !== '');
+  }
+
+  handlePromoClick(promo: Promocion): void {
+    if (this.isClickeable(promo)) {
+      // Abrir en nueva pestaña
+      window.open(promo.url_link, '_blank');
+    }
+  }
+
   verDetalle(promo: Promocion) {
     this.router.navigate(['/promociones/detalle', promo.id_promo]);
   }

@@ -29,13 +29,9 @@
   border-radius: 14px;
   box-shadow: 0 0 10px rgba(0,0,0,0.13);
   overflow: hidden;
-  transition: transform 0.2s;
+  transition: none;
   width: 100%;
   max-width: 950px; /* Ancho máximo para las tarjetas */
-}
-
-.promo-card:hover {
-  transform: translateY(-4px) scale(1.01);
 }
 
 .promo-card img {

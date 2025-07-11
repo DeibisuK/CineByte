@@ -126,10 +126,41 @@ updateValidators(tipo: string) {
     const promocion: Promocion = this.promocionForm.value;
 
     try {
+      // Mostrar alerta de carga si hay imagen que subir
       if (this.imagenSeleccionada) {
+        Swal.fire({
+          title: 'Subiendo imagen...',
+          text: 'Por favor espere mientras se procesa la imagen',
+          icon: 'info',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          allowEnterKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+
         const url = await this.imgbbService.subirImagen(this.imagenSeleccionada);
         promocion.imagen_url = url;
+        
+        // Cerrar la alerta de carga
+        Swal.close();
       }
+
+      // Mostrar alerta de guardando promoción
+      Swal.fire({
+        title: 'Guardando promoción...',
+        text: 'Por favor espere',
+        icon: 'info',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        showConfirmButton: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
 
       this.promocionService.createPromocion(promocion).subscribe({
         next: () => {
@@ -139,7 +170,7 @@ updateValidators(tipo: string) {
             text: 'Promoción creada exitosamente',
             confirmButtonColor: '#3085d6',
           }).then(() => {
-            this.resetForm();
+            this.router.navigate(['/admin/promociones/list']);
           });
         },
         error: (err) => {
