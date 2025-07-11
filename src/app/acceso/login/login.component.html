@@ -1,4 +1,4 @@
-    <div class="modal-overlay" id="modalOverlay" *ngIf="showLoginRegisterModal">
+<div class="modal-overlay" id="modalOverlay" *ngIf="showLoginRegisterModal">
         <div class="modal-container" id="modalContainer" [ngClass]="{ 'is-register': isRegisterMode, 'is-login': !isRegisterMode }">
             <button class="close-btn" (click)="cerrarLoginRegisterModal()">x</button>
 
@@ -92,7 +92,7 @@
                             <div class="error-message" id="loginPasswordError" style="display: none;"></div>
                         </div>
 
-                        <a href="#" class="forgot-password" onclick="showForgotPassword()">¿Olvidaste tu contraseña?</a>
+                        <a class="forgot-password" (click)="abrirModalRecuperacion()">¿Olvidaste tu contraseña?</a>
 
                         <button type="submit" class="submit-btn">Iniciar Sesión</button>
                     </form>
@@ -126,4 +126,6 @@
             </div>
         </div>
     </div>
+
+    <app-recuperar-contrasena *ngIf="showRecoverPasswordModal" (cerrar)="cerrarRecuperarContrasena()"></app-recuperar-contrasena>
 

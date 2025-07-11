@@ -14,7 +14,8 @@ import Swal from 'sweetalert2';
   imports: [
     CommonModule,
     //RecuperarContrasenaComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RecuperarContrasenaComponent
   ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
@@ -220,6 +221,9 @@ export class LoginComponent {
         text: err.message || err
       });
     }
+  }
+  abrirModalRecuperacion(): void {
+    this.abrirRecuperarContrasena();
   }
 
 

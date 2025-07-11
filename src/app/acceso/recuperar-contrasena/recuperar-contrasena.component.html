@@ -1,16 +1,28 @@
-<div class="page-container">
-  <div class="container">
+<div class="modal-overlay">
+  <div class="modal-container">
     <button class="close-btn" (click)="cerrarModalRecuperacion()">×</button>
 
-    <div class="right-section">
-      <h1 class="h1-der">Recupera tu contraseña</h1>
-      <h4>Ingresa tu email para recuperar tu contraseña</h4>
-      <div class="input-container">
-        <img src="correo.png" class="icono" alt="icono correo" />
-        <input type="email" placeholder="Correo Electrónico" [(ngModel)]="email" />
+    <div class="left-section">
+      <div class="left-content">
+        <h1>¡Recupera tu acceso!</h1>
+        <p>Ingresa tu correo electrónico y te enviaremos las instrucciones para restablecer tu contraseña</p>
       </div>
+    </div>
 
-      <button class="registrar" (click)="enviarSolicitudRecuperacion()">Enviar</button>
+    <div class="right-section">
+      <h1>Recuperar Contraseña</h1>
+      <div class="form-container">
+        <div class="input-group">
+          <div class="input-container">
+            <svg class="input-icon" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+              <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+            </svg>
+            <input type="email" class="form-input" placeholder="Correo Electrónico" [(ngModel)]="email" />
+          </div>
+        </div>
+        <button class="submit-btn" (click)="enviarSolicitudRecuperacion()">Enviar Solicitud</button>
+      </div>
     </div>
   </div>
 </div>
