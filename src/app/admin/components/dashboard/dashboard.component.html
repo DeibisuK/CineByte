@@ -38,139 +38,151 @@
     </div>
   </div>
 
-  <!-- Cards de Métricas Principales -->
-  <div class="metrics-grid">
-    <div *ngFor="let card of dashboardCards" class="metric-card" [class]="'metric-' + card.color">
-      <div class="metric-content">
-        <div class="metric-info">
-          <h3 class="metric-title">{{ card.title }}</h3>
-          <p class="metric-value">{{ card.value }}</p>
-          <div class="metric-trend" *ngIf="card.trend">
-            <i [class]="card.trendIcon"></i>
-            <span>{{ card.trend }} vs mes anterior</span>
-          </div>
-        </div>
-        <div class="metric-icon">
-          <i [class]="card.icon"></i>
-        </div>
-      </div>
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Cargando datos del dashboard...</p>
     </div>
   </div>
 
-  <!-- Sección de Gráficos y Datos -->
-  <div class="charts-section">
-    <!-- Gráfico de Ventas Semanales -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>Ventas de la Semana</h3>
-        <span class="chart-period">{{ selectedMonth }}/{{ selectedYear }}</span>
-      </div>
-      <div class="chart-content">
-        <div class="bar-chart">
-          <div *ngFor="let data of weeklyData" class="bar-item">
-            <div class="bar-container">
-              <div class="bar" [style.height]="getBarHeight(data.value)" [style.background-color]="data.color">
-                <span class="bar-value">{{ data.value }}%</span>
-              </div>
+  <!-- Dashboard content -->
+  <div *ngIf="!isLoading" class="dashboard-content">
+    <!-- Cards de Métricas Principales -->
+    <div class="metrics-grid">
+      <div *ngFor="let card of dashboardCards" class="metric-card" [class]="'metric-' + card.color">
+        <div class="metric-content">
+          <div class="metric-info">
+            <h3 class="metric-title">{{ card.title }}</h3>
+            <p class="metric-value">{{ card.value }}</p>
+            <div class="metric-trend" *ngIf="card.trend">
+              <i [class]="card.trendIcon"></i>
+              <span>{{ card.trend }} vs mes anterior</span>
             </div>
-            <span class="bar-label">{{ data.label }}</span>
+          </div>
+          <div class="metric-icon">
+            <i [class]="card.icon"></i>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Top Películas -->
-    <div class="chart-card">
-      <div class="chart-header">
-        <h3>Películas Más Vendidas</h3>
-        <span class="chart-period">Este mes</span>
-      </div>
-      <div class="chart-content">
-        <div class="movies-list">
-          <div *ngFor="let movie of topMovies; let i = index" class="movie-item">
-            <div class="movie-rank">{{ i + 1 }}</div>
-            <div class="movie-info">
-              <h4 class="movie-title">{{ movie.title }}</h4>
-              <p class="movie-sales">{{ movie.sales }}</p>
-            </div>
-            <div class="movie-percentage">
-              <span>{{ movie.percentage }}%</span>
-              <div class="percentage-bar">
-                <div class="percentage-fill" [style.width]="movie.percentage + '%'"></div>
+    <!-- Sección de Gráficos y Datos -->
+    <div class="charts-section">
+      <!-- Gráfico de Ventas Semanales -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Ventas de la Semana</h3>
+          <span class="chart-period">{{ selectedMonth }}/{{ selectedYear }}</span>
+        </div>
+        <div class="chart-content">
+          <div class="bar-chart">
+            <div *ngFor="let data of weeklyData" class="bar-item">
+              <div class="bar-container">
+                <div class="bar" [style.height]="getBarHeight(data.value)" [style.background-color]="data.color">
+                  <span class="bar-value">{{ data.value }}%</span>
+                </div>
               </div>
+              <span class="bar-label">{{ data.label }}</span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Sección de Transacciones Recientes -->
-  <div class="transactions-section">
-    <div class="transactions-card">
-      <div class="transactions-header">
-        <h3>Transacciones Recientes</h3>
-        <button class="btn-view-all">
-          <i class="fas fa-external-link-alt"></i>
-          Ver Todas
-        </button>
-      </div>
-      <div class="transactions-content">
-        <div class="transactions-table">
-          <div class="table-header">
-            <div class="table-col">ID</div>
-            <div class="table-col">Película</div>
-            <div class="table-col">Monto</div>
-            <div class="table-col">Hora</div>
-            <div class="table-col">Estado</div>
-          </div>
-          <div class="table-body">
-            <div *ngFor="let transaction of recentTransactions" class="table-row">
-              <div class="table-col transaction-id">{{ transaction.id }}</div>
-              <div class="table-col transaction-movie">{{ transaction.movie }}</div>
-              <div class="table-col transaction-amount">{{ transaction.amount }}</div>
-              <div class="table-col transaction-time">{{ transaction.time }}</div>
-              <div class="table-col transaction-status">
-                <span class="status-badge" [class]="getStatusClass(transaction.status)">
-                  {{ getStatusText(transaction.status) }}
-                </span>
+      <!-- Top Películas -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <h3>Películas Más Vendidas</h3>
+          <span class="chart-period">Este mes</span>
+        </div>
+        <div class="chart-content">
+          <div class="movies-list">
+            <div *ngFor="let movie of topMovies; let i = index" class="movie-item">
+              <div class="movie-rank">{{ i + 1 }}</div>
+              <div class="movie-info">
+                <h4 class="movie-title">{{ movie.title }}</h4>
+                <p class="movie-sales">{{ movie.sales }}</p>
+              </div>
+              <div class="movie-percentage">
+                <span>{{ movie.percentage }}%</span>
+                <div class="percentage-bar">
+                  <div class="percentage-fill" [style.width]="movie.percentage + '%'"></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Información Adicional -->
-  <div class="additional-info">
-    <div class="info-card">
-      <div class="info-header">
-        <h3>Resumen del Sistema</h3>
-      </div>
-      <div class="info-content">
-        <div class="info-item">
-          <span class="info-label">Salas Activas:</span>
-          <span class="info-value">8</span>
+    <!-- Sección de Transacciones Recientes -->
+    <div class="transactions-section">
+      <div class="transactions-card">
+        <div class="transactions-header">
+          <h3>Transacciones Recientes</h3>
+          <button class="btn-view-all">
+            <i class="fas fa-external-link-alt"></i>
+            Ver Todas
+          </button>
         </div>
-        <div class="info-item">
-          <span class="info-label">Películas en Cartelera:</span>
-          <span class="info-value">12</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Usuarios Registrados:</span>
-          <span class="info-value">2,547</span>
-        </div>
-        <div class="info-item">
-          <span class="info-label">Última Actualización:</span>
-          <span class="info-value">{{ currentDateTime }}</span>
+        <div class="transactions-content">
+          <div class="transactions-table">
+            <div class="table-header">
+              <div class="table-col">ID</div>
+              <div class="table-col">Película</div>
+              <div class="table-col">Monto</div>
+              <div class="table-col">Hora</div>
+              <div class="table-col">Estado</div>
+            </div>
+            <div class="table-body">
+              <div *ngFor="let transaction of recentTransactions" class="table-row">
+                <div class="table-col transaction-id">{{ transaction.id }}</div>
+                <div class="table-col transaction-movie">{{ transaction.movie }}</div>
+                <div class="table-col transaction-amount">{{ transaction.amount }}</div>
+                <div class="table-col transaction-time">{{ transaction.time }}</div>
+                <div class="table-col transaction-status">
+                  <span class="status-badge" [class]="getStatusClass(transaction.status)">
+                    {{ getStatusText(transaction.status) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-<!-- Modal de Exportar -->
-<app-exportar 
-  [showModal]="showExportModal"
-  (closeModal)="closeExportModal()">
-</app-exportar>
+    <!-- Información Adicional -->
+    <div class="additional-info">
+      <div class="info-card">
+        <div class="info-header">
+          <h3>Resumen del Sistema</h3>
+        </div>
+        <div class="info-content">
+          <div class="info-item">
+            <span class="info-label">Salas Activas:</span>
+            <span class="info-value">8</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Películas en Cartelera:</span>
+            <span class="info-value">12</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Usuarios Registrados:</span>
+            <span class="info-value">2,547</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Última Actualización:</span>
+            <span class="info-value">{{ currentDateTime }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de Exportar -->
+    <app-exportar 
+      [showModal]="showExportModal"
+      (closeModal)="closeExportModal()">
+    </app-exportar>
+  </div>
+</div>

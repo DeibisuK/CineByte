@@ -588,6 +588,46 @@
 }
 
 /* ===========================
+   LOADING STATE
+============================ */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  flex-direction: column;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: var(--text-color, #ffffff);
+}
+
+.loading-spinner i {
+  font-size: 3rem;
+  color: var(--yellow-primary, #ffd700);
+  margin-bottom: 1rem;
+}
+
+.loading-spinner p {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* ===========================
+   DASHBOARD CONTENT
+============================ */
+.dashboard-content {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===========================
    RESPONSIVE DESIGN
 ============================ */
 @media (max-width: 1200px) {

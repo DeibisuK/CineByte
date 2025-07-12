@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { ExportarComponent } from '../exportar/exportar.component';
 
 interface DashboardCard {
@@ -20,7 +21,7 @@ interface ChartData {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule, ExportarComponent],
+  imports: [CommonModule, FormsModule, HttpClientModule, ExportarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -52,68 +53,21 @@ export class DashboardComponent implements OnInit {
   // Modal de exportar
   showExportModal = false;
 
-  // Datos del dashboard
-  dashboardCards: DashboardCard[] = [
-    {
-      title: 'Ventas Totales',
-      value: '$45,280',
-      icon: 'fas fa-dollar-sign',
-      trend: '+12%',
-      trendIcon: 'fas fa-arrow-up',
-      color: 'success'
-    },
-    {
-      title: 'Boletos Vendidos',
-      value: '1,247',
-      icon: 'fas fa-ticket-alt',
-      trend: '+8%',
-      trendIcon: 'fas fa-arrow-up',
-      color: 'primary'
-    },
-    {
-      title: 'Funciones Activas',
-      value: '24',
-      icon: 'fas fa-film',
-      trend: '-2%',
-      trendIcon: 'fas fa-arrow-down',
-      color: 'warning'
-    },
-    {
-      title: 'Ocupación Promedio',
-      value: '78%',
-      icon: 'fas fa-chart-pie',
-      trend: '+5%',
-      trendIcon: 'fas fa-arrow-up',
-      color: 'info'
-    }
-  ];
+  // Variables para datos reales
+  isLoading = true;
+  dashboardData: any = null;
 
-  // Datos para gráficos
-  weeklyData: ChartData[] = [
-    { label: 'Lun', value: 85, color: '#ffd700' },
-    { label: 'Mar', value: 92, color: '#ffd700' },
-    { label: 'Mié', value: 78, color: '#ffd700' },
-    { label: 'Jue', value: 95, color: '#ffd700' },
-    { label: 'Vie', value: 100, color: '#ffd700' },
-    { label: 'Sáb', value: 88, color: '#ffd700' },
-    { label: 'Dom', value: 82, color: '#ffd700' }
-  ];
+  // Datos del dashboard (se actualizarán con datos reales)
+  dashboardCards: DashboardCard[] = [];
 
-  topMovies = [
-    { title: 'Spider-Man: No Way Home', sales: '$8,542', percentage: 18.8 },
-    { title: 'The Batman', sales: '$7,321', percentage: 16.1 },
-    { title: 'Doctor Strange', sales: '$6,890', percentage: 15.2 },
-    { title: 'Sonic 2', sales: '$5,430', percentage: 12.0 },
-    { title: 'Morbius', sales: '$4,210', percentage: 9.3 }
-  ];
+  // Datos para gráficos (se actualizarán con datos reales)
+  weeklyData: ChartData[] = [];
 
-  recentTransactions = [
-    { id: '#12547', movie: 'Spider-Man: No Way Home', amount: '$45.50', time: '10:30 AM', status: 'completed' },
-    { id: '#12546', movie: 'The Batman', amount: '$38.00', time: '10:15 AM', status: 'completed' },
-    { id: '#12545', movie: 'Doctor Strange', amount: '$52.25', time: '10:05 AM', status: 'pending' },
-    { id: '#12544', movie: 'Sonic 2', amount: '$29.75', time: '09:45 AM', status: 'completed' },
-    { id: '#12543', movie: 'Morbius', amount: '$41.00', time: '09:30 AM', status: 'completed' }
-  ];
+  topMovies: any[] = [];
+
+  recentTransactions: any[] = [];
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
     this.loadDashboardData();
@@ -121,13 +75,127 @@ export class DashboardComponent implements OnInit {
 
   applyFilters() {
     console.log(`Aplicando filtros: ${this.selectedMonth}/${this.selectedYear}`);
-    // Aquí se implementará la lógica para filtrar los datos
     this.loadDashboardData();
   }
 
-  private loadDashboardData() {
-    // Simular carga de datos basada en los filtros
-    // En una implementación real, aquí se harían las llamadas a la API
+  private async loadDashboardData() {
+    try {
+      this.isLoading = true;
+      const url = `http://localhost:3000/api/dashboard/stats?mes=${this.selectedMonth}&ano=${this.selectedYear}`;
+      
+      console.log('🔄 Cargando datos del dashboard desde:', url);
+      
+      const response: any = await this.http.get(url).toPromise();
+      
+      console.log('📊 Respuesta completa del servidor:', response);
+      
+      // El servicio devuelve { success: true, data: {...} }
+      this.dashboardData = response.data || response;
+      
+      console.log('📊 Datos procesados:', this.dashboardData);
+      
+      // Actualizar cards con datos reales manteniendo colores originales
+      this.dashboardCards = [
+        {
+          title: 'Ventas Totales',
+          value: `$${(this.dashboardData.ingresosTotales || 0).toLocaleString()}`,
+          icon: 'fas fa-dollar-sign',
+          trend: '+0%',
+          trendIcon: 'fas fa-arrow-up',
+          color: 'success'  // Verde siempre
+        },
+        {
+          title: 'Boletos Vendidos',
+          value: (this.dashboardData.boletosVendidos || 0).toLocaleString(),
+          icon: 'fas fa-ticket-alt',
+          trend: '+0%',
+          trendIcon: 'fas fa-arrow-up',
+          color: 'primary'  // Azul siempre
+        },
+        {
+          title: 'Funciones Activas',
+          value: (this.dashboardData.funcionesActivas || 0).toString(),
+          icon: 'fas fa-film',
+          trend: '0%',
+          trendIcon: 'fas fa-arrow-up',
+          color: 'warning'  // Amarillo
+        },
+        {
+          title: 'Ocupación Promedio',
+          value: `${this.dashboardData.ocupacionPromedio || 0}%`,
+          icon: 'fas fa-chart-pie',
+          trend: '0%',
+          trendIcon: 'fas fa-arrow-up',
+          color: 'info'  // Celeste
+        }
+      ];
+
+      // Actualizar películas más populares
+      this.topMovies = this.dashboardData.peliculasPopulares || [];
+      console.log('🎬 Películas populares:', this.topMovies);
+
+      // Actualizar transacciones recientes  
+      this.recentTransactions = this.dashboardData.transaccionesRecientes || [];
+      console.log('💳 Transacciones recientes:', this.recentTransactions);
+
+      // Actualizar datos de gráfico semanal
+      this.weeklyData = this.dashboardData.ventasSemana?.map((venta: any, index: number) => ({
+        label: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'][index] || `Día ${index + 1}`,
+        value: venta.total_ventas || 0,
+        color: '#ffd700'
+      })) || [];
+      console.log('📈 Datos semanales:', this.weeklyData);
+
+    } catch (error) {
+      console.error('❌ Error cargando datos del dashboard:', error);
+      console.error('Detalles del error:', (error as any)?.error || (error as any)?.message || error);
+      // Mantener datos por defecto si hay error
+      this.loadDefaultData();
+    } finally {
+      this.isLoading = false;
+    }
+  }
+
+  private loadDefaultData() {
+    // Datos por defecto en caso de error
+    this.dashboardCards = [
+      {
+        title: 'Ventas Totales',
+        value: '$0',
+        icon: 'fas fa-dollar-sign',
+        trend: '+0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'success'
+      },
+      {
+        title: 'Boletos Vendidos',
+        value: '0',
+        icon: 'fas fa-ticket-alt',
+        trend: '+0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'primary'
+      },
+      {
+        title: 'Funciones Activas',
+        value: '0',
+        icon: 'fas fa-film',
+        trend: '0%',
+        trendIcon: 'fas fa-arrow-down',
+        color: 'warning'
+      },
+      {
+        title: 'Ocupación Promedio',
+        value: '0%',
+        icon: 'fas fa-chart-pie',
+        trend: '+0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'info'
+      }
+    ];
+
+    this.topMovies = [];
+    this.recentTransactions = [];
+    this.weeklyData = [];
   }
 
   getBarHeight(value: number): string {
