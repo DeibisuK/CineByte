@@ -19,7 +19,7 @@
 
         <!-- Form Content -->
         <div *ngIf="!isLoadingInitialData && !isLoadingPelicula" class="form-container">
-            <form [formGroup]="peliculaForm" (ngSubmit)="onSubmit()" class="form-grid">
+            <form id="peliculaForm" [formGroup]="peliculaForm" (ngSubmit)="onSubmit()" class="form-grid">
 
                 <div class="image-upload-section">
                     <label class="image-upload">
@@ -492,15 +492,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="submit-section">
-                    <button type="submit" class="submit-btn" [disabled]="isSubmitting || peliculaForm.invalid">
-                        <div *ngIf="isSubmitting" class="button-spinner"></div>
-                        <span *ngIf="isUploadingImage && isSubmitting">Subiendo imágenes...</span>
-                        <span *ngIf="!isUploadingImage && isSubmitting">Actualizando película...</span>
-                        <span *ngIf="!isSubmitting">Actualizar Película</span>
-                    </button>
-                </div>
             </form>
+            
+            <!-- Submit section fuera del grid -->
+            <div class="submit-section">
+                <button type="submit" form="peliculaForm" class="submit-btn" [disabled]="isSubmitting || peliculaForm.invalid">
+                    <div *ngIf="isSubmitting" class="button-spinner"></div>
+                    <span *ngIf="isUploadingImage && isSubmitting">Subiendo imágenes...</span>
+                    <span *ngIf="!isUploadingImage && isSubmitting">Actualizando película...</span>
+                    <span *ngIf="!isSubmitting">Actualizar Película</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

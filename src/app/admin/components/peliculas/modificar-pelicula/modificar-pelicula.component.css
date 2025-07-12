@@ -545,11 +545,14 @@
 }
 
 .submit-section {
-  grid-column: 1 / -1;
-  /* Hace que la sección ocupe ambas columnas del grid */
-  margin-top: 20px;
+  /* Ya no necesita grid-column porque está fuera del grid */
+  margin-top: 30px;
   margin-bottom: 40px;
   text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
 }
 
 .submit-btn {
