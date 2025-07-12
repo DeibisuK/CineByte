@@ -71,7 +71,7 @@ export class DetailPaymentComponent implements OnInit {
   
   // Variables para PDF
   ventaId: number | null = null;
-  private apiUrl = 'http://localhost:3000';
+  private apiUrl = 'https://api-cinebyte.onrender.com';
 
   constructor(
     private route: ActivatedRoute,

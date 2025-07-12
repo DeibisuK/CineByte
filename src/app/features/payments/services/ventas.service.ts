@@ -13,7 +13,8 @@ import {
   providedIn: 'root'
 })
 export class VentasService {
-  private readonly apiURL = 'http://localhost:3000/api/ventas';
+  //private readonly apiURL = 'http://localhost:3000/api/ventas';
+  private readonly apiURL = 'https://api-cinebyte.onrender.com/api/ventas';
 
   constructor(private http: HttpClient) { }
 

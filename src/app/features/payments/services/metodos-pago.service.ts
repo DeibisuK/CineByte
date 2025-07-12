@@ -7,7 +7,8 @@ import { MetodoPago, MetodoPagoRequest, MetodoPagoResponse } from '@core/models'
   providedIn: 'root'
 })
 export class MetodosPagoService {
-  apiURL = 'http://localhost:3000/api/metodos-pago';
+  //apiURL = 'http://localhost:3000/api/metodos-pago';
+  apiURL = 'https://api-cinebyte.onrender.com/api/metodos-pago';
 
   constructor(private http: HttpClient) { }
 
