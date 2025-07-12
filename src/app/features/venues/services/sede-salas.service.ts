@@ -8,12 +8,12 @@ import { Sala } from '@core/models';
   providedIn: 'root'
 })
 export class SedeSalasService {
-  //private apiUrl = 'https://api-cinebyte.onrender.com/api/sede-salas';
-  private apiUrl = 'http://localhost:3000/api/sede-salas';
-  //private sedesUrl = 'https://api-cinebyte.onrender.com/api/sedes';
-  private sedesUrl = 'http://localhost:3000/api/sedes';
-  //private salasUrl = 'https://api-cinebyte.onrender.com/api/salas';
-  private salasUrl = 'http://localhost:3000/api/salas';
+  private apiUrl = 'https://api-cinebyte.onrender.com/api/sede-salas';
+  //private apiUrl = 'http://localhost:3000/api/sede-salas';
+  private sedesUrl = 'https://api-cinebyte.onrender.com/api/sedes';
+  //private sedesUrl = 'http://localhost:3000/api/sedes';
+  private salasUrl = 'https://api-cinebyte.onrender.com/api/salas';
+  //private salasUrl = 'http://localhost:3000/api/salas';
 
   constructor(private http: HttpClient) { }
 
