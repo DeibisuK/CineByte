@@ -1,11 +1,18 @@
-<div class="estreno-carousel-container">
+<div *ngIf="loading" class="carousel-loading">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando carrusel...</p>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="estreno-carousel-container">
     <div class="estreno-card" *ngFor="let movie of visibleMovies">
     <div class="estreno-img-section">
     <img [src]="getImageUrl(movie)" [alt]="movie.titulo" />
     </div>
     <div class="estreno-info-section">
       <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
-      <h2 class="estreno-title">{{ movie.titulo }}</h2>
+      <h2 class="estreno-title">{{ movie.titulo.length > 32 ? (movie.titulo | slice:0:32) + '...' : movie.titulo }}</h2>
       <p class="estreno-desc">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
         </p>

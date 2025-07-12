@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MovieNavigationService } from '../../services/navigation.service';
 import { CommonModule } from '@angular/common';
 import { EdadesComponent } from '../../../../../shared/components/edades/edades.component';
@@ -12,11 +12,10 @@ import { PeliculaService } from '@features/movies/services/pelicula.service';
   templateUrl: './catalogo.component.html',
   styleUrl: './catalogo.component.css'
 })
-export class CatalogoComponent implements OnDestroy {
+export class CatalogoComponent implements OnInit, OnDestroy {
   peliculas: Pelicula[] = [];
   peliculasFiltradas: Pelicula[] = [];
   hoveredIndex: number = -1;
-  isLoading: boolean = true;
 
   menuActivo: 'formato' | 'genero' | 'idioma' = 'formato';
   menuAbierto = false;
@@ -33,19 +32,28 @@ export class CatalogoComponent implements OnDestroy {
     idioma: []
   };
 
-  constructor(private moviesService: PeliculaService, private movieNav: MovieNavigationService) {}
+  // Loading state
+  loading: boolean = true;
+
+  constructor(private peliculaService: PeliculaService, private movieNav: MovieNavigationService) {}
 
   ngOnInit(): void {
-    this.isLoading = true;
-    this.moviesService.getPeliculasCompletas().subscribe((peliculas: Pelicula[]) => {
-      this.peliculas = peliculas;
-      this.peliculasFiltradas = peliculas;
+    this.loading = true;
+    this.peliculaService.getPeliculasCompletas().subscribe({
+      next: (peliculas: Pelicula[]) => {
+        this.peliculas = peliculas;
+        this.peliculasFiltradas = peliculas;
 
-      this.filtros['formato'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.etiquetas)))];
-      this.filtros['genero'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.generos)))];
-      this.filtros['idioma'] = [...new Set(peliculas.flatMap(p => this.toStringArray(p.idiomas)))];
-      
-      this.isLoading = false;
+        this.filtros['formato'] = [...new Set(peliculas.flatMap((p: any) => this.toStringArray(p.etiquetas)))] as string[];
+        this.filtros['genero'] = [...new Set(peliculas.flatMap((p: any) => this.toStringArray(p.generos)))] as string[];
+        this.filtros['idioma'] = [...new Set(peliculas.flatMap((p: any) => this.toStringArray(p.idiomas)))] as string[];
+        
+        this.loading = false;
+      },
+      error: (error: any) => {
+        console.error('Error al cargar películas:', error);
+        this.loading = false;
+      }
     });
   }
 
@@ -133,12 +141,20 @@ export class CatalogoComponent implements OnDestroy {
   }
 
    /**
-   * Convierte un array de números o strings a un array de strings
-   * @param arr Array de números o strings
+   * Convierte un array de números o strings a un array de strings, 
+   * o extrae la propiedad 'nombre' si son objetos
+   * @param arr Array de números, strings u objetos
    * @returns Array de strings
    */
-  toStringArray(arr: number[] | string[]): string[] {
-    return arr.map(x => x.toString());
+  toStringArray(arr: any[]): string[] {
+    if (!arr || !Array.isArray(arr)) return [];
+    
+    return arr.map(item => {
+      if (typeof item === 'object' && item !== null && 'nombre' in item) {
+        return item.nombre.toString();
+      }
+      return item.toString();
+    });
   }
 
   ngOnDestroy(): void {

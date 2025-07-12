@@ -1,4 +1,11 @@
-<div class="grid-cartelera">
+<div *ngIf="loading" class="loading-container">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando películas en cartelera...</p>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="grid-cartelera">
   <div class="movie-card" *ngFor="let movie of peliculasCartelera" (mouseenter)="hoveredIndex = movie.id_pelicula"
     (mouseleave)="hoveredIndex = -1" (click)="verDetalle(movie)"
     [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1">
@@ -17,7 +24,7 @@
     </div>
     <div class="info">
       <h3>{{ movie.titulo }}</h3>
-      <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+      <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
     </div>
   </div>
 </div>

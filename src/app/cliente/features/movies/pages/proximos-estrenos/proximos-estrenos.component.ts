@@ -17,6 +17,7 @@ export class ProximosEstrenosComponent {
   visibleCount = 4;
   autoSlideInterval: any;
   isBrowser: boolean;
+  loading: boolean = true; // Agregar loading
 
  constructor(
     private peliculasService: PeliculaService,
@@ -27,14 +28,17 @@ export class ProximosEstrenosComponent {
   }
 
   ngOnInit(): void {
+    this.loading = true;
     this.peliculasService.getPeliculasCompletas().subscribe({
       next: (peliculas: Pelicula[]) => {
         // Filtrar solo las películas con estado "proximamente"
         this.upcomingMovies = peliculas.filter(pelicula => pelicula.estado === 'proximamente');
+        this.loading = false;
       },
       error: (err: any) => {
         console.error('Error fetching películas:', err);
         this.upcomingMovies = [];
+        this.loading = false;
       }
     });
     
@@ -110,11 +114,22 @@ export class ProximosEstrenosComponent {
   }
 
   /**
-   * Convierte un array de números o strings a un array de strings
-   * @param arr Array de números o strings
+   * Convierte un array de números, strings u objetos a un array de strings
+   * @param arr Array de números, strings u objetos con propiedad 'nombre'
    * @returns Array de strings
    */
-  toStringArray(arr: number[] | string[]): string[] {
-    return arr.map(x => x.toString());
+  toStringArray(arr: any[] | number[] | string[]): string[] {
+    if (!arr || !Array.isArray(arr)) {
+      return [];
+    }
+    
+    return arr.map(item => {
+      // Si es un objeto con propiedad 'nombre', usar esa propiedad
+      if (typeof item === 'object' && item !== null && 'nombre' in item) {
+        return item.nombre.toString();
+      }
+      // Si es primitivo, convertir a string directamente
+      return item.toString();
+    });
   }
 }

@@ -17,6 +17,7 @@ import { catchError, map, timeout } from 'rxjs/operators';
 export class EnCarteleraComponent {
   peliculasCartelera: Pelicula[] = [];
   hoveredIndex: number = -1;
+  loading: boolean = true; // Agregar loading
 
   constructor(
     private peliculasService: PeliculaService,
@@ -24,6 +25,7 @@ export class EnCarteleraComponent {
   ) { }
 
   ngOnInit(): void {
+    this.loading = true;
     this.peliculasService.getPeliculasCompletas().subscribe({
       next: (peliculas: Pelicula[]) => {
         // Verificar qué películas tienen funciones con manejo robusto de errores
@@ -31,6 +33,7 @@ export class EnCarteleraComponent {
       },
       error: (err) => {
         console.error('Error fetching películas:', err);
+        this.loading = false;
       }
     });
   }
@@ -92,11 +95,13 @@ export class EnCarteleraComponent {
         this.peliculasCartelera = resultados
           .filter(resultado => resultado.tieneFunciones)
           .map(resultado => resultado.pelicula);
+        this.loading = false; // Terminar loading
       },
       error: (err) => {
         console.warn('Error verificando funciones, mostrando todas las películas candidatas:', err);
         // En caso de error, mostrar todas las películas candidatas
         this.peliculasCartelera = peliculasCandidatas;
+        this.loading = false; // Terminar loading
       }
     });
   }
@@ -125,12 +130,23 @@ export class EnCarteleraComponent {
   }
 
   /**
-   * Convierte un array de números o strings a un array de strings
-   * @param arr Array de números o strings
+   * Convierte un array de números, strings u objetos a un array de strings
+   * @param arr Array de números, strings u objetos con propiedad 'nombre'
    * @returns Array de strings
    */
-  toStringArray(arr: number[] | string[]): string[] {
-    return arr.map(x => x.toString());
+  toStringArray(arr: any[] | number[] | string[]): string[] {
+    if (!arr || !Array.isArray(arr)) {
+      return [];
+    }
+    
+    return arr.map(item => {
+      // Si es un objeto con propiedad 'nombre', usar esa propiedad
+      if (typeof item === 'object' && item !== null && 'nombre' in item) {
+        return item.nombre.toString();
+      }
+      // Si es primitivo, convertir a string directamente
+      return item.toString();
+    });
   }
 
 }

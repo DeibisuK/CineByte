@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NavigationEnd, NavigationStart, Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { FooterComponent } from '../../core/components/footer/footer.component';
 import { ScrollTopComponent } from '../../core/components/scroll-top/scroll-top.component';
 import { AnuncioComponent } from '../../core/components/anuncio/anuncio.component';
-import { LoadingComponent } from '../../core/components/loading/loading.component';
 import { Anuncio } from '@core/models';
 import { AnuncioService } from '@core/services';
 import { NavbarComponent } from '@core/components/navbar/navbar.component';
@@ -15,7 +14,6 @@ import { NavbarComponent } from '@core/components/navbar/navbar.component';
     RouterOutlet,
     NavbarComponent,
     AnuncioComponent,
-    LoadingComponent,
     CommonModule,
     ScrollTopComponent,
     FooterComponent,
@@ -30,11 +28,6 @@ export class CliLayoutComponent implements OnInit {
   mostrarAnuncio = false;
   modoOscuro = false;
 
-  // Variables para el loading
-  isInitialLoading = true;
-  isNavigationLoading = false;
-  fadeOutLoading = false;
-
   constructor(
     private router: Router,
     private viewportScroller: ViewportScroller,
@@ -44,38 +37,15 @@ export class CliLayoutComponent implements OnInit {
   ngOnInit() {
     this.cargarAnuncioActivo();
     this.setupRouterEvents();
-    this.inicializarPagina();
   }
 
   setupRouterEvents() {
     this.router.events.subscribe((event) => {
-      if (event instanceof NavigationStart) {
-        // Mostrar loading pequeño al iniciar navegación
-        this.isNavigationLoading = true;
-      }
-      
       if (event instanceof NavigationEnd) {
-        // Ocultar loading al completar navegación
-        setTimeout(() => {
-          this.isNavigationLoading = false;
-        }, 300);
-        
         // Desplazar al inicio de la página
         this.viewportScroller.scrollToPosition([0, 0]);
       }
     });
-  }
-
-  inicializarPagina() {
-    // Simular tiempo de carga de elementos críticos
-    setTimeout(() => {
-      this.fadeOutLoading = true;
-
-      // Después del fade out, ocultar completamente el loading
-      setTimeout(() => {
-        this.isInitialLoading = false;
-      }, 500); // Tiempo del fade out
-    }, 1500); // Tiempo mínimo de loading
   }
 
   cargarAnuncioActivo() {

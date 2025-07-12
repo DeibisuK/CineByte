@@ -41,46 +41,6 @@ app-loading {
   transition: opacity 0.5s ease-in-out;
 }
 
-/* Loading pequeño para navegación */
-.navigation-loading {
-  position: fixed;
-  top: 80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--footer-bg, #1a1a1a);
-  color: var(--text-color, #fff);
-  padding: 0.75rem 1.5rem;
-  border-radius: 25px;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  z-index: 1000;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid var(--dropdown-border, #444);
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.small-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--dropdown-border, #444);
-  border-top: 2px solid var(--yellow, #FFD700);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.loading-blur {
-  filter: blur(1px);
-  opacity: 0.7;
-  transition: all 0.3s ease;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* Responsive */
 @media (max-width: 768px) {
   .page-wrapper.anuncio-visible {

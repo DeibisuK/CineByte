@@ -1,4 +1,11 @@
-<div class="peliculas-container">
+<div *ngIf="loading" class="loading-container">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando catálogo de películas...</p>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="peliculas-container">
   <!-- Botones de menú -->
   <div class="menu-botones">
     <button [class.activo]="menuActivo === 'formato'" (click)="cambiarMenu('formato')">Formatos</button>
@@ -38,14 +45,8 @@
     <button class="btn-aplicar" (click)="aplicarFiltros()">Aplicar</button>
   </div>
 
-  <!-- Loading state -->
-  <div class="loading-state" *ngIf="isLoading">
-    <div class="loading-spinner"></div>
-    <p>Cargando películas...</p>
-  </div>
-
   <!-- Grid de películas -->
-  <div class="grid-cartelera" *ngIf="!isLoading"
+  <div class="grid-cartelera"
      [ngClass]="{'solo-uno': peliculasFiltradas.length === 1, 'solo-dos': peliculasFiltradas.length === 2, 'solo-tres': peliculasFiltradas.length === 3, 'menu-abierto': menuAbierto}">
     <div class="movie-card" *ngFor="let pelicula of peliculasFiltradas"
         (mouseenter)="hoveredIndex = pelicula.id_pelicula"
@@ -64,7 +65,7 @@
       </div>
       <div class="info">
         <h3>{{ pelicula.titulo }}</h3>
-        <div class="generos">{{ pelicula.generos.join(' ▪ ') }}</div>
+        <div class="generos">{{ toStringArray(pelicula.generos).join(' ▪ ') }}</div>
       </div>
     </div>
   </div>

@@ -25,7 +25,6 @@ export const clienteRoutes: Routes = [
   {path: 'peliculas', component: CatalogoComponent},
   {path: 'promociones', component:ListarPromocionesComponent},
   {path: 'carrusel', component:CarouselPromosComponent},
-  {path: 'catalogo', component: CatalogoComponent},
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
   {path: 'select-seat', component: SelectSeatComponent},
   {path: 'detail-payment', component: DetailPaymentComponent},

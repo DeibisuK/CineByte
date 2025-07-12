@@ -1,4 +1,11 @@
-<div class="carousel-container" style="position:relative;">
+<div *ngIf="loading" class="loading-container">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Cargando eventos especiales...</p>
+  </div>
+</div>
+
+<div *ngIf="!loading" class="carousel-container" style="position:relative;">
   <div class="carrusel-controles">
     <button class="carrusel-flecha" (click)="prev()" [disabled]="visibleStart === 0">&lt;</button>
     <button class="carrusel-flecha" (click)="next()" [disabled]="visibleStart + visibleCount >= eventosEspeciales.length">&gt;</button>
@@ -23,7 +30,7 @@
       </div>
       <div class="info">
         <h3>{{ movie.titulo }}</h3>
-        <div class="generos">{{ movie.generos.join(' ▪ ') }}</div>
+        <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
       </div>
     </div>
   </div>

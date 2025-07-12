@@ -119,12 +119,19 @@ export class ListarPeliculaComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Convierte un array de números o strings a un array de strings
-   * @param arr Array de números o strings
+   * Convierte un array de números, strings u objetos a un array de strings
+   * @param arr Array de números, strings u objetos
    * @returns Array de strings
    */
-  toStringArray(arr: number[] | string[]): string[] {
-    return arr.map(x => x.toString());
+  toStringArray(arr: any[]): string[] {
+    if (!arr || !Array.isArray(arr)) return [];
+    
+    return arr.map(item => {
+      if (typeof item === 'object' && item !== null && 'nombre' in item) {
+        return item.nombre.toString();
+      }
+      return item.toString();
+    });
   }
 
   // Métodos de búsqueda

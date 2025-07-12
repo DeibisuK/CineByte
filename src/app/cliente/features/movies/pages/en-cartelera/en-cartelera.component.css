@@ -1,3 +1,41 @@
+/* Loading styles */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #FFD700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.loading-spinner p {
+  color: var(--text-color, #fff);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* Contenedor general */
 .cartelera-container {
   max-width: 1200px;
@@ -7,10 +45,10 @@
   overflow-x: hidden; /* evita scroll horizontal al mostrar menú */
 }
 
-/* GRID para las cards - Versión mejorada */
+/* GRID para las cards - Versión similar a eventos-especiales */
 .grid-cartelera {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Ajusté a 180px */
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   transition: filter 0.3s ease;
 }
@@ -33,9 +71,9 @@
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
-  min-height: 350px; /* Altura uniforme */
-  width: 100%; /* Asegura que ocupe todo el espacio disponible */
-  max-width: 100%; /* Previene desbordamiento */
+  min-height: 350px;
+  width: 100%;
+  max-width: 100%;
 }
 
 .movie-card:hover {
@@ -133,38 +171,28 @@
 }
 
 
-/* Ajustes específicos para resoluciones pequeñas */
-@media (max-width: 600px) {
+/* Ajustes responsivos similares a eventos-especiales */
+@media (max-width: 900px) {
   .grid-cartelera {
-    grid-template-columns: repeat(2, 1fr); /* Fuerza 2 columnas */
-  }
-  
-  .movie-card {
-    min-width: 0; /* Permite que se ajusten mejor */
+    grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (max-width: 450px) {
+@media (max-width: 600px) {
   .grid-cartelera {
-    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 
-@media (max-width: 360px) {
-  .grid-cartelera {
-    grid-template-columns: 1fr; /* 1 columna solo en móviles muy pequeños */
-  }
-}
-/* Para pantallas muy pequeñas (opcional) */
 @media (max-width: 350px) {
   .grid-cartelera {
-    gap: 0.8rem; /* Reduce el espacio entre cards */
+    gap: 0.8rem;
   }
   
   .movie-card {
-    min-height: 300px; /* Reduce un poco la altura */
+    min-height: 300px;
   }
   
   .movie-card img {
-    height: 200px; /* Ajusta la imagen */
+    height: 200px;
   }
 }

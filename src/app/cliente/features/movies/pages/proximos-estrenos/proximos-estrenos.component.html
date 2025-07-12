@@ -1,34 +1,43 @@
-<div class="carousel-container" style="position:relative;">
-  <div class="carrusel-controles">
-    <button class="carrusel-flecha" (click)="prev()" [disabled]="visibleStart === 0">&lt;</button>
-    <button class="carrusel-flecha" (click)="next()" [disabled]="visibleStart + visibleCount >= upcomingMovies.length">&gt;</button>
-  </div>
-
-  <div class="grid-carousel">
-    <div class="movie-card" *ngFor="let movie of visibleMovies" (click)="verDetalle(movie)" style="cursor: pointer;">
-      <img [src]="movie.imagen" alt="{{ movie.titulo }}" />
-      <div class="hover-overlay">
-        {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
-      </div>
-      <div class="etiquetas">
-        <span class="etiqueta" *ngFor="let et of toStringArray(movie.etiquetas)">{{ et }}</span>
-      </div>
-      <div class="edad-icono">
-        <app-edades [edad]="movie.clasificacion"></app-edades>
-      </div>
-      <div class="info">
-        <h3>{{ movie.titulo }}</h3>
-          <div class="fecha-estreno"> {{ movie.fecha_estreno | date:'dd/MM/yyyy' }} </div>
-      </div>
+<div class="proximos-estrenos-container">
+  <div class="loading-container" *ngIf="loading">
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Cargando próximos estrenos...</p>
     </div>
   </div>
 
-  <div class="carrusel-indicators">
-    <div
-      class="indicator"
-      *ngFor="let i of indicators; let idx = index"
-      [class.active]="visibleStart === idx"
-      (click)="goTo(idx)">
+  <div class="carousel-container" style="position:relative;" *ngIf="!loading">
+    <div class="carrusel-controles">
+      <button class="carrusel-flecha" (click)="prev()" [disabled]="visibleStart === 0">&lt;</button>
+      <button class="carrusel-flecha" (click)="next()" [disabled]="visibleStart + visibleCount >= upcomingMovies.length">&gt;</button>
+    </div>
+
+    <div class="grid-carousel">
+      <div class="movie-card" *ngFor="let movie of visibleMovies" (click)="verDetalle(movie)" style="cursor: pointer;">
+        <img [src]="movie.imagen" alt="{{ movie.titulo }}" />
+        <div class="hover-overlay">
+          {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
+        </div>
+        <div class="etiquetas">
+          <span class="etiqueta" *ngFor="let et of toStringArray(movie.etiquetas)">{{ et }}</span>
+        </div>
+        <div class="edad-icono">
+          <app-edades [edad]="movie.clasificacion"></app-edades>
+        </div>
+        <div class="info">
+          <h3>{{ movie.titulo }}</h3>
+            <div class="fecha-estreno"> {{ movie.fecha_estreno | date:'dd/MM/yyyy' }} </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="carrusel-indicators">
+      <div
+        class="indicator"
+        *ngFor="let i of indicators; let idx = index"
+        [class.active]="visibleStart === idx"
+        (click)="goTo(idx)">
+      </div>
     </div>
   </div>
 </div>

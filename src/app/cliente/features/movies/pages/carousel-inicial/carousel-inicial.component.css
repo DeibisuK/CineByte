@@ -1,3 +1,44 @@
+/* Loading styles for carousel */
+.carousel-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 420px; /* Misma altura que el carrusel */
+  width: 100%;
+  background: var(--footer-esp, var(--footer-bg));
+  border-radius: 14px;
+  margin: 2rem auto 3rem auto;
+  max-width: 1400px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #FFD700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-spinner p {
+  color: var(--text-color, #fff);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .estreno-carousel-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -8,7 +49,7 @@
   display: flex;
   flex-direction: row;
   width: 100%;
-  min-height: 420px;
+  height: 420px; /* Altura fija */
   background: var(--footer-esp, var(--footer-bg));
   color: var(--text-color);
   border-radius: 14px;
@@ -19,10 +60,12 @@
 
 .estreno-img-section {
   flex: 2 1 0;
+  height: 100%; /* Altura completa del contenedor */
   display: flex;
   align-items: center;
   justify-content: center;
   min-width: 0;
+  overflow: hidden; /* Evita desbordamiento */
 }
 
 .estreno-img-section img {
@@ -30,8 +73,6 @@
   height: 100%;
   object-fit: cover;
   aspect-ratio: 16/9;
-  min-height: 320px;
-  max-height: 420px;
   border-radius: 0;
 }
 
@@ -164,19 +205,23 @@
 @media (max-width: 900px) {
   .estreno-card {
     flex-direction: column;
-    min-height: unset;
+    height: auto; /* Permite que se ajuste al contenido en móvil */
     max-width: 100vw;
     width: 100vw;
     border-radius: 0;
   }
+  
+  .estreno-img-section {
+    height: auto; /* En móvil, la altura se ajusta al contenido */
+  }
+  
   .estreno-img-section img {
-    aspect-ratio: 16/9;
+    aspect-ratio: 16/9; /* Mantiene la proporción 16:9 */
     width: 100vw;
-    height: auto;
-    min-height: unset;
-    max-height: 50vw;
+    height: auto; /* La altura se calcula automáticamente por aspect-ratio */
     object-fit: cover;
   }
+  
   .estreno-info-section {
     width: 100vw;
     min-width: unset;
