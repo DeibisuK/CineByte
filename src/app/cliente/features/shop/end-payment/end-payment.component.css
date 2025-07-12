@@ -125,7 +125,7 @@
 /* Icono de éxito */
 .success-icon {
   font-size: 5rem;
-  color: var(--green-success);
+  color: var(--yellow);
   animation: successBounce 0.6s ease-out;
 }
 

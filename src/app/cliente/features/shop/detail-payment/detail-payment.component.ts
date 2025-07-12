@@ -416,36 +416,17 @@ export class DetailPaymentComponent implements OnInit {
         // Guardar ID de venta para PDF
         this.ventaId = resultado.venta.id || null;
         
-        // Mostrar éxito con opción de descargar PDF
-        const respuesta = await Swal.fire({
-          icon: 'success',
-          title: '¡Compra exitosa!',
-          html: `
-            <div style="text-align: left;">
-              <p><strong>ID de Venta:</strong> ${resultado.venta.id}</p>
-              <p><strong>Total Pagado:</strong> $${resultado.venta.total.toLocaleString()}</p>
-              <p><strong>Estado:</strong> ${resultado.pago.estado}</p>
-              <p>Tu compra ha sido procesada exitosamente. Recibirás un email de confirmación.</p>
-            </div>
-          `,
-          showCancelButton: true,
-          confirmButtonText: 'Ver detalle (PDF)',
-          cancelButtonText: 'Continuar',
-          confirmButtonColor: '#28a745',
-          cancelButtonColor: '#6c757d'
-        });
-
-        // Si elige descargar PDF
-        if (respuesta.isConfirmed) {
-          this.generarFacturaPDF();
-        }
-
-        // Navegar a la página de confirmación con los datos de la compra
-        this.router.navigate(['/payment-confirmation'], {
+        // Navegar directamente a end-payment con los datos de la compra
+        this.router.navigate(['/final'], {
           queryParams: {
             ventaId: resultado.venta.id,
             total: resultado.venta.total,
-            estado: resultado.pago.estado
+            estado: resultado.pago.estado,
+            titulo: this.compraInfo.titulo,
+            cantidad: this.compraInfo.cantidad,
+            horario: this.compraInfo.horario,
+            sala: this.compraInfo.sala,
+            asientos: JSON.stringify(this.compraInfo.asientosSeleccionados || [])
           }
         });
       }
