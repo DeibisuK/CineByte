@@ -196,4 +196,41 @@ export class VentasService {
       mensaje?: string;
     }>(`${this.apiURL}/validar-cupon`, body);
   }
+
+  /**
+   * ✅ NUEVO: Obtener asientos disponibles para una función específica
+   * @param idSala ID de la sala
+   * @param idFuncion ID de la función
+   * @returns Observable con los asientos disponibles
+   */
+  getAsientosDisponiblesPorFuncion(
+    idSala: number, 
+    idFuncion: number
+  ): Observable<{ success: boolean; data: any[] }> {
+    return this.http.get<{ success: boolean; data: any[] }>(
+      `${this.apiURL}/asientos-disponibles/${idSala}/${idFuncion}`
+    );
+  }
+
+  /**
+   * ✅ NUEVO: Obtener estadísticas de ocupación de una función
+   * @param idFuncion ID de la función
+   * @returns Observable con las estadísticas de ocupación
+   */
+  getOcupacionPorFuncion(
+    idFuncion: number
+  ): Observable<{ 
+    success: boolean; 
+    data: {
+      id_funcion: number;
+      sala: string;
+      id_sala: number;
+      total_asientos: number;
+      asientos_vendidos: number;
+      asientos_disponibles: number;
+      porcentaje_ocupacion: number;
+    }
+  }> {
+    return this.http.get<any>(`${this.apiURL}/ocupacion/${idFuncion}`);
+  }
 }

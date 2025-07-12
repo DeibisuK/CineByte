@@ -28,6 +28,7 @@ interface CompraInfo {
   precio: number;
   total: number;
   id_sala?: number;
+  funcion_id?: number; // ✅ Agregar funcion_id
 }
 
 @Component({
@@ -91,7 +92,8 @@ export class SelectSeatComponent implements OnInit {
           cantidad: +params['cantidad'] || 2,
           precio: +params['precio'] || 15000,
           total: +params['total'] || 30000,
-          id_sala: +params['id_sala'] || 1
+          id_sala: +params['id_sala'] || 1,
+          funcion_id: +params['funcion_id'] || undefined // ✅ Capturar funcion_id
         };
         
         console.log('CompraInfo actualizada:', this.compraInfo);
@@ -156,18 +158,40 @@ export class SelectSeatComponent implements OnInit {
   private loadAsientos(): void {
     if (!this.compraInfo.id_sala) return;
 
-    this.salasService.getAsientosPorSala(this.compraInfo.id_sala).subscribe({
-      next: (asientosDB: AsientoDB[]) => {
-        this.convertirAsientosParaVista(asientosDB);
-        this.loadingAsientos = false;
-      },
-      error: (error) => {
-        console.error('Error loading asientos:', error);
-        this.loadingAsientos = false;
-        // Fallback a generación de asientos (para desarrollo)
-        this.generarAsientosFallback();
-      }
-    });
+    // ✅ USAR NUEVO SISTEMA: Si tenemos funcion_id, obtener asientos específicos para esa función
+    if (this.compraInfo.funcion_id) {
+      console.log('Cargando asientos para función:', this.compraInfo.funcion_id);
+      this.ventasService.getAsientosDisponiblesPorFuncion(this.compraInfo.id_sala, this.compraInfo.funcion_id).subscribe({
+        next: (response) => {
+          if (response.success) {
+            this.convertirAsientosParaVista(response.data);
+          } else {
+            console.error('Error en respuesta del servidor:', response);
+            this.generarAsientosFallback();
+          }
+          this.loadingAsientos = false;
+        },
+        error: (error) => {
+          console.error('Error loading asientos por función:', error);
+          this.loadingAsientos = false;
+          this.generarAsientosFallback();
+        }
+      });
+    } else {
+      // ⚠️ FALLBACK: Sistema antiguo si no hay funcion_id
+      console.warn('No se proporcionó funcion_id, usando sistema legacy');
+      this.salasService.getAsientosPorSala(this.compraInfo.id_sala).subscribe({
+        next: (asientosDB: AsientoDB[]) => {
+          this.convertirAsientosParaVista(asientosDB);
+          this.loadingAsientos = false;
+        },
+        error: (error) => {
+          console.error('Error loading asientos:', error);
+          this.loadingAsientos = false;
+          this.generarAsientosFallback();
+        }
+      });
+    }
   }
 
   private convertirAsientosParaVista(asientosDB: AsientoDB[]): void {
@@ -359,11 +383,27 @@ export class SelectSeatComponent implements OnInit {
 
     try {
       // 1. Verificar disponibilidad de asientos antes de proceder
-      const numerosAsientos = this.asientosSeleccionados.map(a => a.id);
+      const asientosParaVerificar = this.asientosSeleccionados.map(a => ({
+        id_asiento: a.id_asiento || parseInt(a.id),
+        numero_asiento: a.id,
+        precio_asiento: a.precio
+      }));
+
+      console.log('🔍 Verificando asientos:', asientosParaVerificar);
+      console.log('🎭 Función ID:', this.compraInfo.funcion_id);
+
+      // ✅ USAR FUNCIÓN ESPECÍFICA: Verificar con funcion_id si está disponible
+      const funcionId = this.compraInfo.funcion_id || this.compraInfo.pelicula;
+      
+      // 🔧 CORREGIDO: Usar IDs de asientos en lugar de números
+      const idsAsientosParaVerificar = asientosParaVerificar.map(a => a.id_asiento.toString());
+      
       const disponibilidad = await this.ventasService.verificarDisponibilidadAsientos(
-        this.compraInfo.pelicula, // Usar id de película como función por ahora
-        numerosAsientos
+        funcionId,
+        idsAsientosParaVerificar
       ).toPromise();
+
+      console.log('📋 Resultado verificación:', disponibilidad);
 
       if (!disponibilidad?.disponibles) {
         // Cerrar el loader antes de mostrar el error
@@ -372,7 +412,7 @@ export class SelectSeatComponent implements OnInit {
         await Swal.fire({
           icon: 'error',
           title: 'Asientos no disponibles',
-          text: `Los siguientes asientos ya no están disponibles: ${disponibilidad?.asientos_ocupados.join(', ')}`,
+          text: `Los siguientes asientos ya no están disponibles: ${disponibilidad?.asientos_ocupados?.join(', ') || 'Algunos asientos seleccionados'}`,
           confirmButtonColor: '#007bff'
         });
         
@@ -382,6 +422,9 @@ export class SelectSeatComponent implements OnInit {
       }
 
       // 2. Navegar directamente a detail-payment con los datos de la compra
+      const numerosAsientos = asientosParaVerificar.map(a => a.numero_asiento);
+      const idsAsientos = asientosParaVerificar.map(a => a.id_asiento);
+      
       const parametrosPago = {
         pelicula: this.compraInfo.pelicula,
         titulo: this.compraInfo.titulo,
@@ -393,7 +436,9 @@ export class SelectSeatComponent implements OnInit {
         portada: this.pelicula?.imagen,
         sala: this.salaInfo?.nombre,
         asientosSeleccionados: numerosAsientos.join(','),
-        id_sala: this.compraInfo.id_sala
+        idsAsientosSeleccionados: idsAsientos.join(','), // ✅ Agregar IDs de asientos
+        id_sala: this.compraInfo.id_sala,
+        funcion_id: this.compraInfo.funcion_id // ✅ Incluir funcion_id
       };
 
       // Cerrar el loader antes de navegar

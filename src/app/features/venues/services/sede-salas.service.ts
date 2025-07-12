@@ -8,9 +8,12 @@ import { Sala } from '@core/models';
   providedIn: 'root'
 })
 export class SedeSalasService {
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/sede-salas';
-  private sedesUrl = 'https://api-cinebyte.onrender.com/api/sedes';
-  private salasUrl = 'https://api-cinebyte.onrender.com/api/salas';
+  //private apiUrl = 'https://api-cinebyte.onrender.com/api/sede-salas';
+  private apiUrl = 'http://localhost:3000/api/sede-salas';
+  //private sedesUrl = 'https://api-cinebyte.onrender.com/api/sedes';
+  private sedesUrl = 'http://localhost:3000/api/sedes';
+  //private salasUrl = 'https://api-cinebyte.onrender.com/api/salas';
+  private salasUrl = 'http://localhost:3000/api/salas';
 
   constructor(private http: HttpClient) { }
 
@@ -53,12 +56,17 @@ export class SedeSalasService {
   }
 
   // Disponibilidad
-  getSalasDisponibles(idSede: number): Observable<Sala[]> {
-    return this.http.get<Sala[]>(`${this.apiUrl}/disponibles/salas/${idSede}`);
+  getSalasDisponibles(): Observable<Sala[]> {
+    return this.http.get<Sala[]>(`${this.apiUrl}/disponibles/salas`);
   }
 
   getSedesDisponibles(idSala: number): Observable<Sede[]> {
     return this.http.get<Sede[]>(`${this.apiUrl}/disponibles/sedes/${idSala}`);
+  }
+
+  // Verificar si una sala ya está asignada a alguna sede
+  checkSalaAssigned(idSala: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/check-sala/${idSala}`);
   }
 
   // Obtener todas las sedes y salas

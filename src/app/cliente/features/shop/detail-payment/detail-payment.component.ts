@@ -71,7 +71,7 @@ export class DetailPaymentComponent implements OnInit {
   
   // Variables para PDF
   ventaId: number | null = null;
-  private apiUrl = 'http://localhost:3001';
+  private apiUrl = 'http://localhost:3000';
 
   constructor(
     private route: ActivatedRoute,
@@ -130,8 +130,6 @@ export class DetailPaymentComponent implements OnInit {
           id_sala: +params['id_sala'] || null,
           funcion_id: +params['funcion_id'] || null // Capturar ID de función real
         };
-        
-        console.log('Datos recibidos en detail-payment:', this.compraInfo);
         
         // NO mostrar confirmación inicial, ir directo a la página
         // this.mostrarConfirmacionInicial();
@@ -239,9 +237,7 @@ export class DetailPaymentComponent implements OnInit {
         if (user) {
           this.userDisplayName = user.displayName || 'Usuario';
           this.userEmail = user.email || '';
-          console.log('User data loaded:', { name: this.userDisplayName, email: this.userEmail });
-        } else {
-          console.log('No current user found');
+
         }
         unsubscribe();
         resolve();
@@ -269,7 +265,7 @@ export class DetailPaymentComponent implements OnInit {
           error: (error) => reject(error)
         });
       });
-      console.log('Payment methods loaded:', this.metodosPago.length);
+
     } catch (error) {
       console.error('Error loading payment methods:', error);
       this.metodosPago = [];
@@ -300,7 +296,7 @@ export class DetailPaymentComponent implements OnInit {
     if (this.couponForm.valid) {
       const couponCode = this.couponForm.get('couponCode')?.value;
       // TODO: Implementar lógica de validación de cupón
-      console.log('Validating coupon:', couponCode);
+
       this.alertaService.info('Información', 'Funcionalidad de cupón en desarrollo');
     }
   }
@@ -319,7 +315,7 @@ export class DetailPaymentComponent implements OnInit {
       funcion_id: this.compraInfo.funcion_id
     };
     
-    console.log('Volviendo a select-seat con datos:', selectSeatData);
+
     
     this.router.navigate(['/select-seat'], { 
       queryParams: selectSeatData 
@@ -361,6 +357,9 @@ export class DetailPaymentComponent implements OnInit {
 
     this.isLoading = true;
 
+    // Declarar variable de asientos fuera del try-catch para acceso en ambos bloques
+    let asientosParaVenta: any[] = [];
+
     try {
       // Mostrar confirmación antes de procesar
       const confirmacion = await Swal.fire({
@@ -388,12 +387,18 @@ export class DetailPaymentComponent implements OnInit {
         return;
       }
 
-      // Preparar datos de asientos para la venta
-      const asientosParaVenta = this.compraInfo.asientosSeleccionados.map((asiento, index) => ({
-        numero_asiento: asiento.replace(/\s+/g, ''), // Remover espacios del número de asiento
-        precio_asiento: this.compraInfo.precio,
-        id_asiento: this.obtenerIdAsiento(asiento) // Función para obtener ID del asiento
-      }));
+      // Preparar datos de asientos para la venta (ahora asíncrono)
+      const asientosParaVentaPromises = this.compraInfo.asientosSeleccionados.map(async (asiento, index) => {
+        const idAsientoReal = await this.obtenerIdAsiento(asiento);
+        return {
+          numero_asiento: asiento.replace(/\s+/g, ''), // Remover espacios del número de asiento
+          precio_asiento: this.compraInfo.precio,
+          id_asiento: idAsientoReal // ID real obtenido de la BD
+        };
+      });
+
+      // Esperar a que todas las consultas de asientos se resuelvan
+      asientosParaVenta = await Promise.all(asientosParaVentaPromises);
 
       // Crear datos de la venta según el modelo requerido
       const ventaData = {
@@ -404,14 +409,8 @@ export class DetailPaymentComponent implements OnInit {
         transaccion_id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       };
 
-      console.log('Enviando datos de venta:', ventaData);
-      console.log('Detalles de asientos:', asientosParaVenta);
-      console.log('Información completa de compra:', this.compraInfo);
-
       // Procesar la venta
       const resultado = await this.ventasService.procesarVenta(ventaData).toPromise();
-
-      console.log('Venta procesada exitosamente:', resultado);
 
       if (resultado) {
         // Guardar ID de venta para PDF
@@ -453,10 +452,6 @@ export class DetailPaymentComponent implements OnInit {
 
     } catch (error: any) {
       console.error('Error al procesar el pago:', error);
-      console.error('Detalles del error completo:', error);
-      console.error('Status:', error?.status);
-      console.error('Error body:', error?.error);
-      console.error('Message:', error?.message);
       
       let errorMessage = 'Ocurrió un error al procesar el pago. Por favor, intenta nuevamente.';
       
@@ -477,6 +472,8 @@ export class DetailPaymentComponent implements OnInit {
           errorMessage = 'Algunos asientos ya no están disponibles. Por favor, selecciona otros asientos.';
         } else if (error.message.includes('función no encontrada')) {
           errorMessage = 'La función seleccionada ya no está disponible.';
+        } else if (error.message.includes('no encontrado') || error.message.includes('Asiento') || error.message.includes('Sala')) {
+          errorMessage = 'Error al verificar asientos: ' + error.message + '. Por favor, selecciona otros asientos.';
         } else if (error.message.includes('pago')) {
           errorMessage = 'Error en el procesamiento del pago. Verifica tu método de pago.';
         }
@@ -570,40 +567,62 @@ export class DetailPaymentComponent implements OnInit {
   }
 
   /**
-   * Obtiene el ID del asiento basado en su número/código
-   * Esta función mapea los códigos de asiento a sus IDs correspondientes en la BD
+   * Obtiene el ID del asiento basado en su número/código consultando la API
+   * Esta función consulta la base de datos para obtener el ID real del asiento
    */
-  private obtenerIdAsiento(numeroAsiento: string): number {
+  private async obtenerIdAsiento(numeroAsiento: string): Promise<number> {
     // Limpiar el número de asiento (remover espacios)
     const asientoLimpio = numeroAsiento.replace(/\s+/g, '');
     
-    // Mapeo básico de asientos a IDs (basado en la tabla asientos que vimos)
-    // Fila A: IDs 8-17, Fila B: IDs 18-27
-    const filaLetra = asientoLimpio.charAt(0).toUpperCase();
-    const numeroColumna = parseInt(asientoLimpio.substring(1));
-    
-    let baseId = 0;
-    switch (filaLetra) {
-      case 'A':
-        baseId = 7; // A1 = 8, A2 = 9, etc.
-        break;
-      case 'B':
-        baseId = 17; // B1 = 18, B2 = 19, etc.
-        break;
-      case 'C':
-        baseId = 27; // C1 = 28, C2 = 29, etc.
-        break;
-      case 'D':
-        baseId = 37; // D1 = 38, D2 = 39, etc.
-        break;
-      default:
-        console.warn(`Fila ${filaLetra} no reconocida, usando ID por defecto`);
-        baseId = 7;
+    if (!this.compraInfo.id_sala) {
+      throw new Error('ID de sala no disponible para consultar asientos');
     }
-    
-    const idAsiento = baseId + numeroColumna;
-    console.log(`Asiento ${numeroAsiento} -> ${asientoLimpio} -> ID ${idAsiento}`);
-    return idAsiento;
+
+    try {
+      // Hacer consulta HTTP a la API para obtener asientos de la sala
+      const url = `${this.apiUrl}/api/salas/asientos/${this.compraInfo.id_sala}`;
+      
+      const asientosResponse = await this.http.get<any[]>(url).toPromise();
+      
+      if (!asientosResponse || asientosResponse.length === 0) {
+        throw new Error(`No se encontraron asientos para la sala ${this.compraInfo.id_sala}`);
+      }
+
+      // Buscar el asiento específico por su código/número
+      const asientoEncontrado = asientosResponse.find(asiento => {
+        // Extraer fila y columna del asiento buscado (ej: "A4" -> fila="A", columna=4)
+        const filaLetra = asientoLimpio.charAt(0).toUpperCase();
+        const numeroColumna = parseInt(asientoLimpio.substring(1));
+        
+        // Limpiar la fila de la BD (remover espacios al final)
+        const filaDB = asiento.fila?.trim().toUpperCase();
+        const columnaDB = asiento.columna;
+        
+        // Comparar fila y columna
+        const coincide = filaDB === filaLetra && columnaDB === numeroColumna;
+        
+        return coincide;
+      });
+
+      if (!asientoEncontrado) {
+        throw new Error(`Asiento ${asientoLimpio} no encontrado en la sala ${this.compraInfo.id_sala}`);
+      }
+
+      const idAsientoReal = asientoEncontrado.id_asiento;
+      
+      return idAsientoReal;
+
+    } catch (error: any) {      
+      if (error.status === 404) {
+        throw new Error(`Sala ${this.compraInfo.id_sala} no encontrada`);
+      } else if (error.status === 500) {
+        throw new Error('Error del servidor al consultar asientos');
+      } else if (error.message) {
+        throw error; // Re-lanzar errores específicos
+      } else {
+        throw new Error('Error desconocido al consultar asientos');
+      }
+    }
   }
 
   /**
@@ -630,8 +649,6 @@ export class DetailPaymentComponent implements OnInit {
           Swal.showLoading();
         }
       });
-
-      console.log('📄 Generando factura PDF para venta:', this.ventaId);
 
       // Llamar al endpoint de factura PDF
       const response = await this.http.get(
@@ -677,15 +694,11 @@ export class DetailPaymentComponent implements OnInit {
           confirmButtonText: 'Perfecto'
         });
 
-        console.log('✅ Factura PDF descargada exitosamente:', filename);
-
       } else {
         throw new Error('Respuesta vacía del servidor');
       }
 
     } catch (error: any) {
-      console.error('❌ Error generando factura PDF:', error);
-      
       let errorMessage = 'Error al generar la factura PDF. Intenta nuevamente.';
       
       if (error?.status === 404) {

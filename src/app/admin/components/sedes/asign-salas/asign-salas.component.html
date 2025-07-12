@@ -35,9 +35,9 @@
       </div>
 
       <div>
-        <label>Sala</label>
+        <label>Sala (Solo salas no asignadas)</label>
         <select formControlName="id_sala" (change)="onSalaChange()" [disabled]="!sedeSeleccionada">
-          <option value="">Seleccione una sala</option>
+          <option value="">Seleccione una sala disponible</option>
           <option *ngFor="let sala of salasDisponibles" [value]="sala.id_sala">
             {{ sala.nombre }} ({{ sala.tipo_sala }}) - {{ sala.cantidad_asientos }} personas
           </option>

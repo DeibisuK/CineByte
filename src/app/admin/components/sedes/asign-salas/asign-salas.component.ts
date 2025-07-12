@@ -44,6 +44,7 @@ export class AsignSalasComponent implements OnInit {
   ngOnInit(): void {
     this.cargarSedes();
     this.cargarSalas();
+    this.cargarTodasLasSalasDisponibles();
   }
 
   cargarSedes(): void {
@@ -85,8 +86,9 @@ export class AsignSalasComponent implements OnInit {
     const idSede = this.asignacionForm.get('id_sede')?.value;
     if (idSede) {
       this.sedeSeleccionada = idSede;
-      this.cargarSalasDisponibles(idSede);
       this.cargarAsignacionesActuales(idSede);
+      // Las salas disponibles no dependen de la sede, son globales
+      this.actualizarSalasDisponiblesParaFormulario();
     } else {
       this.sedeSeleccionada = null;
       this.salasDisponibles = [];
@@ -95,8 +97,8 @@ export class AsignSalasComponent implements OnInit {
     this.asignacionForm.get('id_sala')?.setValue('');
   }
 
-  cargarSalasDisponibles(idSede: number): void {
-    this.sedeSalasService.getSalasDisponibles(idSede).subscribe({
+  cargarTodasLasSalasDisponibles(): void {
+    this.sedeSalasService.getSalasDisponibles().subscribe({
       next: (salas) => {
         this.salasDisponibles = salas;
       },
@@ -104,6 +106,27 @@ export class AsignSalasComponent implements OnInit {
         console.error('Error al cargar salas disponibles:', error);
       }
     });
+  }
+
+  actualizarSalasDisponiblesParaFormulario(): void {
+    // Filtrar las salas que ya están en la lista de asignaciones seleccionadas
+    const salasEnAsignaciones = this.asignacionesSeleccionadas.map(a => a.id_sala).filter(id => id !== undefined);
+    
+    this.sedeSalasService.getSalasDisponibles().subscribe({
+      next: (todasLasSalasDisponibles) => {
+        this.salasDisponibles = todasLasSalasDisponibles.filter(
+          sala => sala.id_sala !== undefined && !salasEnAsignaciones.includes(sala.id_sala)
+        );
+      },
+      error: (error) => {
+        console.error('Error al actualizar salas disponibles:', error);
+      }
+    });
+  }
+
+  cargarSalasDisponibles(idSede: number): void {
+    // Método mantenido para compatibilidad pero ahora carga todas las salas disponibles
+    this.cargarTodasLasSalasDisponibles();
   }
 
   cargarAsignacionesActuales(idSede: number): void {
@@ -165,16 +188,15 @@ export class AsignSalasComponent implements OnInit {
         estado: 'Disponible'
       });
 
-      // Actualizar salas disponibles
-      this.cargarSalasDisponibles(this.sedeSeleccionada!);
+      // Actualizar salas disponibles (remover la sala que acabamos de asignar)
+      this.actualizarSalasDisponiblesParaFormulario();
     }
   }
 
   eliminarAsignacion(index: number): void {
     this.asignacionesSeleccionadas.splice(index, 1);
-    if (this.sedeSeleccionada) {
-      this.cargarSalasDisponibles(this.sedeSeleccionada);
-    }
+    // Actualizar salas disponibles (agregar la sala que acabamos de quitar)
+    this.actualizarSalasDisponiblesParaFormulario();
   }
 
   guardarAsignaciones(): void {
@@ -204,16 +226,29 @@ export class AsignSalasComponent implements OnInit {
         this.asignacionesSeleccionadas = [];
         this.asignacionForm.reset();
         this.sedeSeleccionada = null;
-        this.salasDisponibles = [];
         this.asignacionesActuales = [];
+        this.sedeSeleccionadaObj = null;
+        
+        // Recargar todas las salas disponibles
+        this.cargarTodasLasSalasDisponibles();
       },
       error: (error) => {
         this.loading = false;
         console.error('Error al guardar asignaciones:', error);
+        
+        let errorMessage = 'No se pudieron guardar las asignaciones';
+        
+        // Manejar errores específicos del nuevo modelo
+        if (error.error?.message) {
+          if (error.error.message.includes('ya está asignada')) {
+            errorMessage = error.error.message;
+          }
+        }
+        
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: error.error?.error || 'No se pudieron guardar las asignaciones',
+          text: errorMessage,
           confirmButtonColor: '#3085d6'
         });
       }
@@ -240,7 +275,8 @@ export class AsignSalasComponent implements OnInit {
               'success'
             );
             this.cargarAsignacionesActuales(asignacion.id_sede);
-            this.cargarSalasDisponibles(asignacion.id_sede);
+            // Recargar todas las salas disponibles ya que una sala se liberó
+            this.cargarTodasLasSalasDisponibles();
           },
           error: (error) => {
             console.error('Error al eliminar asignación:', error);
@@ -254,6 +290,13 @@ export class AsignSalasComponent implements OnInit {
       }
     });
   }
+
+  /**
+   * NUEVO MODELO: Las salas no pueden repetirse entre sedes
+   * - Una sala solo puede estar asignada a una sede específica
+   * - Las salas disponibles son globales (no dependen de la sede seleccionada)
+   * - Se valida en el backend que no se repitan asignaciones
+   */
 
   agruparSedesPorCiudad(): void {
     const ciudadesMap = new Map<string, any>();
