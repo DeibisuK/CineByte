@@ -7,7 +7,7 @@ import { Etiquetas } from '@core/models';
   providedIn: 'root'
 })
 export class EtiquetasService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/etiquetas';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/etiquetas';
   
   constructor(private http: HttpClient) { }
 

@@ -18,7 +18,7 @@ interface ExportResponse {
   providedIn: 'root'
 })
 export class ExportarService {
-  private apiURL = 'https://api-cinebyte.onrender.com/api';
+  private apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/';
   //private apiURL = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }

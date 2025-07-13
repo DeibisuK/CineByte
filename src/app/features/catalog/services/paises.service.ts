@@ -8,7 +8,7 @@ import { Pais } from '@core/models';
 })
 export class PaisesService {
 
-  apiURL = 'https://api-cinebyte.onrender.com/api/paises';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/paises';
   
   constructor(private http: HttpClient) { }
 

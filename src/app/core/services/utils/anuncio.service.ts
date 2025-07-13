@@ -8,7 +8,7 @@ import { Anuncio } from '@core/models';
   providedIn: 'root',
 })
 export class AnuncioService {
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/anuncios';
+  private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/anuncios';
 
   constructor(private http: HttpClient) { }
 

@@ -58,7 +58,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   estadosDisponibles = [
     { value: 'activa', label: 'Activa' },
     { value: 'suspendida', label: 'Suspendida' },
-    { value: 'cancelada', label: 'Cancelada' }
+    { value: 'finalizada', label: 'Finalizada' }
   ];
   
   // Fecha calculada

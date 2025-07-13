@@ -14,7 +14,7 @@ import {
 })
 export class VentasService {
   //private readonly apiURL = 'http://localhost:3000/api/ventas';
-  private readonly apiURL = 'https://api-cinebyte.onrender.com/api/ventas';
+  private readonly apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/ventas';
 
   constructor(private http: HttpClient) { }
 

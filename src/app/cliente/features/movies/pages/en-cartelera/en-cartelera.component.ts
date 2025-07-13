@@ -36,13 +36,16 @@ export class EnCarteleraComponent {
         this.loading = false;
       }
     });
+
+    setInterval(() => {
+      this.verificarYActualizarEstadoFunciones();
+    }, 60000);
   }
 
   private verificarPeliculasConFunciones(peliculas: Pelicula[]): void {
     // Filtrar primero por estado para reducir llamadas
     const peliculasCandidatas = peliculas.filter(pelicula =>
-      pelicula.estado === 'activo' || pelicula.estado === 'cartelera'
-    );
+      pelicula.estado === 'activo');
 
     if (peliculasCandidatas.length === 0) {
       this.peliculasCartelera = [];
@@ -59,7 +62,8 @@ export class EnCarteleraComponent {
         map(response => {
           // Verificar si la película tiene funciones activas
           const funcionesData = response || [];
-          const funcionesActivas = funcionesData.filter((funcion: Funciones) => funcion.estado === 'activa');
+          const funcionesVerificadas = this.verificarEstadoFuncionesPorFecha(funcionesData);
+          const funcionesActivas = funcionesVerificadas.filter((funcion: Funciones) => funcion.estado === 'activa');
           return {
             pelicula: pelicula,
             tieneFunciones: funcionesActivas.length > 0
@@ -105,28 +109,56 @@ export class EnCarteleraComponent {
       }
     });
   }
-
-  /**
-   * Método alternativo más simple que verifica funciones con mejor manejo de errores
-   */
-  private verificarFuncionesSimplificado(peliculas: Pelicula[]): void {
-    // Filtrar películas por estado primero
-    const peliculasCandidatas = peliculas.filter(pelicula =>
-      pelicula.estado === 'activo' || pelicula.estado === 'cartelera'
-    );
-
-    if (peliculasCandidatas.length === 0) {
-      this.peliculasCartelera = [];
-      return;
-    }
-
-    // Si hay problemas con la API de funciones, usar todas las películas candidatas
-    this.peliculasCartelera = peliculasCandidatas;
-    console.log(`Mostrando ${this.peliculasCartelera.length} películas (filtradas por estado)`);
-  }
-
   verDetalle(movie: Pelicula) {
     this.movieNav.verDetalle(movie);
+  }
+
+  /**
+   * Verifica y actualiza el estado de las funciones basado en fecha y hora actual
+  */
+  private verificarEstadoFuncionesPorFecha(funciones: Funciones[]): Funciones[] {
+    const ahora = new Date();
+
+    return funciones.map(funcion => {
+      // Crear objeto Date directamente con la fecha que ya contiene fecha y hora
+      const fechaHoraFuncion = new Date(funcion.fecha_hora_inicio);
+      console.log(`Verificando función ${funcion.id_funcion} con fecha/hora: ${fechaHoraFuncion}`);
+      // Si la fecha/hora de la función ya pasó, marcar como finalizada
+      if (fechaHoraFuncion <= ahora && funcion.estado === 'activa') {
+        // Actualizar en base de datos
+        this.actualizarEstadoFuncion(funcion.id_funcion, 'finalizada');
+        return { ...funcion, estado: 'finalizada' };
+      }
+
+      return funcion;
+    });
+  }
+
+  private verificarYActualizarEstadoFunciones(): void {
+    this.peliculasCartelera.forEach(pelicula => {
+      this.peliculasService.getFuncionesByPeliculaId(pelicula.id_pelicula).subscribe({
+        next: (funciones) => {
+          this.verificarEstadoFuncionesPorFecha(funciones);
+        },
+        error: (err) => {
+          console.warn(`Error al verificar funciones para película ${pelicula.id_pelicula}:`, err);
+        }
+      });
+    });
+  }
+
+  /**
+   * Actualiza el estado de una función en la base de datos
+   */
+  private actualizarEstadoFuncion(idFuncion: number, nuevoEstado: string): void {
+    this.peliculasService.actualizarEstadoFuncion(idFuncion, nuevoEstado).subscribe({
+      next: () => {
+        console.log(`Función ${idFuncion} actualizada a estado: ${nuevoEstado}`);
+      },
+      error: (err) => {
+        console.error(`Error al actualizar función ${idFuncion}:`, err);
+      }
+    });
   }
 
   /**
@@ -138,7 +170,7 @@ export class EnCarteleraComponent {
     if (!arr || !Array.isArray(arr)) {
       return [];
     }
-    
+
     return arr.map(item => {
       // Si es un objeto con propiedad 'nombre', usar esa propiedad
       if (typeof item === 'object' && item !== null && 'nombre' in item) {

@@ -7,7 +7,7 @@ import { ActorCreateDTO, Actores, ActorUpdateDTO } from '@core/models';
   providedIn: 'root',
 })
 export class ActoresService {
-  private apiURL = 'https://api-cinebyte.onrender.com/api/actores';
+  private apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/actores';
 
   constructor(private http: HttpClient) {}
 

@@ -8,10 +8,10 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class PeliculaService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/peliculas';
-  funcionesApiURL = 'https://api-cinebyte.onrender.com/api/funciones';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/peliculas';
+  //funcionesApiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/funciones';
   //apiURL = 'http://localhost:3000/api/peliculas';
-  //funcionesApiURL = 'http://localhost:3000/api/funciones';
+  funcionesApiURL = 'http://localhost:3000/api/funciones';
   constructor(private http: HttpClient) { }
 
   getPeliculas(): Observable<Pelicula[]> {
@@ -58,6 +58,9 @@ export class PeliculaService {
         peliculas.find((pelicula: Pelicula) => pelicula.titulo.toLowerCase().includes(termino.toLowerCase()))
       )
     );
+  }
+  actualizarEstadoFuncion(id: number, nuevoEstado: string): Observable<any> {
+    return this.http.put(`${this.funcionesApiURL}/${id}/estado`, { nuevoEstado: nuevoEstado });
   }
 }
 

@@ -8,11 +8,11 @@ import { Sala } from '@core/models';
   providedIn: 'root'
 })
 export class SedeSalasService {
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/sede-salas';
+  private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/sede-salas';
   //private apiUrl = 'http://localhost:3000/api/sede-salas';
-  private sedesUrl = 'https://api-cinebyte.onrender.com/api/sedes';
+  private sedesUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/sedes';
   //private sedesUrl = 'http://localhost:3000/api/sedes';
-  private salasUrl = 'https://api-cinebyte.onrender.com/api/salas';
+  private salasUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/salas';
   //private salasUrl = 'http://localhost:3000/api/salas';
 
   constructor(private http: HttpClient) { }

@@ -7,7 +7,7 @@ import { Distribuidor } from '@core/models';
   providedIn: 'root'
 })
 export class DistribuidorService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/distribuidor';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/distribuidor';
   constructor(private http: HttpClient) { }
 
   getDistribuidor(): Observable<Distribuidor[]> {

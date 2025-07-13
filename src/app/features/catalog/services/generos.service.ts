@@ -7,7 +7,7 @@ import { Generos } from '@core/models';
   providedIn: 'root'
 })
 export class GenerosService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/generos';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/generos';
 
   constructor(private http: HttpClient) { }
 

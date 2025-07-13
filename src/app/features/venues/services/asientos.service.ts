@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class AsientosService {
-  private apiURL = 'https://api-cinebyte.onrender.com/api/asientos';
+  private apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/asientos';
  // private apiURL = 'http://localhost:3000/api/asientos';
 
   constructor(private http: HttpClient) { }

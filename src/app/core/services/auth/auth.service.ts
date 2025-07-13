@@ -13,7 +13,7 @@ export class AuthService {
 
   user$: Observable<User | null>;
   //private apiUrl = 'http://localhost:3000/api/users'
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/users'
+  private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/users'
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class FuncionesService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/funciones';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/funciones';
   //apiURL = 'http://localhost:3000/api/funciones';
 
   constructor(private http: HttpClient) { }

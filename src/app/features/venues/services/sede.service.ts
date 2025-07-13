@@ -19,7 +19,7 @@ export interface Sede {
 })
 
 export class SedeService {
-  private apiUrl = 'https://api-cinebyte.onrender.com/api/sedes';
+  private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/sedes';
 
   constructor(private http: HttpClient) { }
 

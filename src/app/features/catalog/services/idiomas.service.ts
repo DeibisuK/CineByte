@@ -7,7 +7,7 @@ import { Idiomas } from '@core/models';
   providedIn: 'root'
 })
 export class IdiomasService {
-  apiURL = 'https://api-cinebyte.onrender.com/api/idiomas';
+  apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/idiomas';
 
   constructor(private http: HttpClient) { }
 
