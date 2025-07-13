@@ -81,7 +81,7 @@ export class DashboardComponent implements OnInit {
   private async loadDashboardData() {
     try {
       this.isLoading = true;
-      const url = `http://localhost:3000/api/dashboard/stats?mes=${this.selectedMonth}&ano=${this.selectedYear}`;
+      const url = `https://api-cinebyte.onrender.com/api/dashboard/stats?mes=${this.selectedMonth}&ano=${this.selectedYear}`;
       
       console.log('🔄 Cargando datos del dashboard desde:', url);
       
