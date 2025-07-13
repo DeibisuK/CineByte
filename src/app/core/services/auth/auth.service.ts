@@ -12,7 +12,7 @@ export class AuthService {
   role$ = this.roleSubject.asObservable();
 
   user$: Observable<User | null>;
-  private apiUrl = ' https://api-cinebyte.onrender.com/api/users'
+  private apiUrl = 'http://localhost:3000/api/users'
 
   constructor(private http: HttpClient, private auth: Auth) {
     this.auth = getAuth();
@@ -96,6 +96,17 @@ export class AuthService {
   removerAdmin(uid: string, token: string) {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     return this.http.post(`${this.apiUrl}/delete-admin/`, { uid }, { headers });
+  }
+
+  // Métodos para gestión de empleados
+  asignarEmpleado(uid: string, token: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/add-employee`, { uid }, { headers });
+  }
+
+  removerEmpleado(uid: string, token: string) {
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.post(`${this.apiUrl}/delete-employee`, { uid }, { headers });
   }
 
   obtenerUsuarios(): Observable<any> {

@@ -19,6 +19,8 @@ import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 import { getAuth } from 'firebase/auth';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { PermissionService } from '@core/services/permission/permission.service';
+import { Observable } from 'rxjs';
 
 @Pipe({ name: 'authProvider' })
 export class AuthProviderPipe implements PipeTransform {
@@ -57,11 +59,18 @@ export class ListUsersComponent implements OnInit {
   errorMsg = '';
   usuario: UserProfile[] = [];
   filtradosAD: UserProfile[] = [];
+  filtradosEM: UserProfile[] = []; // Nueva propiedad para empleados
   filtradosCL: UserProfile[] = [];
+
+  // Observables de permisos
+  canEditUsers$: Observable<boolean>;
+  canDeleteUsers$: Observable<boolean>;
+  canCreateAdmins$: Observable<boolean>;
 
   constructor(
     private usuariosService: AuthService,
-    private alerta: AlertaService
+    private alerta: AlertaService,
+    private permissionService: PermissionService
   ) {
     this.registerForm = new FormGroup({
       username: new FormControl('', [
@@ -80,6 +89,11 @@ export class ListUsersComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email]),
       passwordE: new FormControl(''), // Opcional
     });
+
+    // Inicializar observables de permisos
+    this.canEditUsers$ = this.permissionService.canEditUsers();
+    this.canDeleteUsers$ = this.permissionService.canDeleteUsers();
+    this.canCreateAdmins$ = this.permissionService.canCreateAdmins();
   }
 
   handleImageError(event: any) {
@@ -102,6 +116,7 @@ export class ListUsersComponent implements OnInit {
       .subscribe({
         next: (usuarios) => {
           this.usuario = usuarios;
+          this.cargarFiltros();
           this.loading = false;
         },
         error: (err) => {
@@ -159,13 +174,19 @@ export class ListUsersComponent implements OnInit {
   }
 
   obtenerUsuarios() {
+    this.loading = true;
+    this.errorMsg = '';
+    
     this.usuariosService.obtenerUsuarios().subscribe({
       next: (usuarios) => {
         this.usuario = usuarios;
         this.cargarFiltros();
+        this.loading = false;
       },
       error: (err) => {
-        this.alerta.error('Error al obtener usuarios:', err);
+        this.loading = false;
+        this.errorMsg = 'Error al cargar los usuarios. Por favor, intenta de nuevo.';
+        console.error('Error al obtener usuarios:', err);
       },
     });
   }
@@ -207,11 +228,9 @@ export class ListUsersComponent implements OnInit {
     user.getIdToken().then((token) => {
       this.usuariosService.asignarAdmin(uid, token).subscribe({
         next: () => {
-          this.alerta.autoClose(
+          this.alerta.success(
             'Administración',
-            'Usuario asignado como admin correctamente',
-            'success',
-            100
+            'Usuario asignado como admin correctamente'
           );
           this.obtenerUsuarios();
         },
@@ -256,13 +275,77 @@ export class ListUsersComponent implements OnInit {
     });
   }
 
+  // Nuevas funciones para el rol empleado
+  asignarEmpleadoUsuario(uid: string) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      alert('No hay usuario autenticado');
+      return;
+    }
+
+    user.getIdToken().then((token) => {
+      this.usuariosService.asignarEmpleado(uid, token).subscribe({
+        next: () => {
+          this.alerta.success(
+            'Empleados',
+            'Usuario asignado como empleado correctamente'
+          );
+          this.obtenerUsuarios();
+        },
+        error: (err) => {
+          this.alerta.error('Error asignando empleado:', err);
+        },
+      });
+    });
+  }
+
+  quitarEmpleadoUsuario(uid: string) {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (!user) {
+      this.alerta.error('Error', 'No hay usuario autenticado');
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción eliminará el rol empleado permanentemente',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        user.getIdToken().then((token) => {
+          this.usuariosService.removerEmpleado(uid, token).subscribe({
+            next: () => {
+              this.alerta.success('Exito', 'Rol empleado removido correctamente');
+              this.obtenerUsuarios();
+            },
+            error: (err) => {
+              console.error('Error removiendo empleado:', err);
+              this.alerta.error('Error', 'Error al remover rol empleado');
+            },
+          });
+        });
+      }
+    });
+  }
+
   cargarFiltros() {
     this.filtradosAD = this.usuario.filter(
       (a) => a.customClaims?.role === 'admin'
     );
+    this.filtradosEM = this.usuario.filter(
+      (a) => a.customClaims?.role === 'empleado'
+    );
     this.filtradosCL = this.usuario.filter((a) => {
       const claims = a.customClaims;
-      return !claims || Object.keys(claims).length === 0;
+      return !claims || Object.keys(claims).length === 0 || 
+             (claims.role !== 'admin' && claims.role !== 'empleado');
     });
   }
 

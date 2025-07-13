@@ -228,9 +228,28 @@ export class NavbarComponent {
     return role === 'admin';
   }
 
+  esUsuarioEmpleado(): boolean {
+    if (!this.usuario) return false;
+    
+    // Verificar si el usuario tiene rol de empleado
+    const role = this.authService.getRole();
+    return role === 'empleado';
+  }
+
+  tieneAccesoAdministrativo(): boolean {
+    return this.esUsuarioAdmin() || this.esUsuarioEmpleado();
+  }
+
   irAModoAdmin() {
     this.menuAbierto = false;
-    this.router.navigate(['/admin']);
+    
+    // Si es empleado, redirigir a películas/list (ruta por defecto)
+    if (this.esUsuarioEmpleado() && !this.esUsuarioAdmin()) {
+      this.router.navigate(['/admin/peliculas/list']);
+    } else {
+      // Si es admin, redirigir al admin general
+      this.router.navigate(['/admin']);
+    }
   }
 
   async cerrarSesion() {

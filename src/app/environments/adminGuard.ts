@@ -20,8 +20,8 @@ export class AdminGuard implements CanActivate {
                     filter(role => role !== null),
                     take(1),
                     map(role => {
-                        if (role === 'admin') {
-                            return true;
+                        if (role === 'admin' || role === 'empleado') {
+                            return true; // Permite acceso, EmployeeAccessGuard manejará las restricciones específicas
                         }
                         this.router.navigate(['/inicio']);
                         return false;

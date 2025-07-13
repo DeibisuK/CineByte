@@ -1,15 +1,17 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ExportarComponent } from './components/exportar/exportar.component';
+import { EmployeeAccessGuard } from '../core/guards/employee-access.guard';
 
 export const adminRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'dashboard',
+    redirectTo: 'peliculas/list', // Redirigir a películas por defecto para empleados
     pathMatch: 'full',
   },
   {
     path: 'dashboard',
+    canActivate: [EmployeeAccessGuard], // Proteger dashboard
     component: DashboardComponent,
   },
   {
@@ -74,6 +76,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'salas',
+    canActivate: [EmployeeAccessGuard], // Proteger salas
     children: [
       {
         path: '',
@@ -96,6 +99,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'sedes',
+    canActivate: [EmployeeAccessGuard], // Proteger sedes
     children: [
       {
         path: '',
@@ -106,6 +110,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'usuarios',
+    canActivate: [EmployeeAccessGuard], // Proteger usuarios
     children: [
       {
         path: '',

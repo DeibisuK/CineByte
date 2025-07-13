@@ -3,6 +3,8 @@ import { Component, EventEmitter, HostListener, OnDestroy, OnInit, Output } from
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth.service';
 import { AlertaService } from '@core/services';
+import { PermissionService } from '@core/services/permission/permission.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -19,10 +21,27 @@ export class NavbarComponent implements OnInit, OnDestroy {
   cinesMenuOpen = false; // Nueva propiedad para el menú de cines
   dropdownOpen = false; // Nueva propiedad para el menú desplegable
 
+  // Observables de permisos
+  canViewCinemas$: Observable<boolean>;
+  canViewRooms$: Observable<boolean>;
+  canViewUsers$: Observable<boolean>;
+  canViewDashboard$: Observable<boolean>;
+
   @Output() sidebarState = new EventEmitter<boolean>();
 
-  constructor(private router: Router, private authService: AuthService, private alerta: AlertaService) {
+  constructor(
+    private router: Router, 
+    private authService: AuthService, 
+    private alerta: AlertaService,
+    private permissionService: PermissionService
+  ) {
     this.mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    // Inicializar observables de permisos
+    this.canViewCinemas$ = this.permissionService.canViewCinemas();
+    this.canViewRooms$ = this.permissionService.canViewRooms();
+    this.canViewUsers$ = this.permissionService.canViewUsers();
+    this.canViewDashboard$ = this.permissionService.canViewDashboard();
   }
 
   ngOnInit() {

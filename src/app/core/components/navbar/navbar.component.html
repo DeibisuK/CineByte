@@ -72,6 +72,11 @@
           Modo admin
         </button>
 
+        <button *ngIf="esUsuarioEmpleado()" class="dropdown-item" (click)="irAModoAdmin()">
+          <i class="fa-solid fa-helmet-safety"></i>
+          Modo empleado
+        </button>
+
         <button class="dropdown-item" [routerLink]="['metodos-de-pago']">
           <i class="fa-solid fa-credit-card"></i>
           Métodos de Pago

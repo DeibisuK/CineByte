@@ -13,8 +13,8 @@
 
   <!-- Menú de navegación -->
   <ul class="sidebar-menu">
-    <!-- Dashboard - Vista general (siempre primero) -->
-    <li>
+    <!-- Dashboard - Vista general (SOLO ADMINS) -->
+    <li *ngIf="canViewDashboard$ | async">
       <a routerLink="/admin/dashboard" routerLinkActive="active-link" data-tooltip="Dashboard"
         [attr.aria-label]="'Ir a Dashboard' + (!sidebarClosed ? '' : ' - Dashboard')">
         <i class="fa-solid fa-chart-line"></i>
@@ -22,8 +22,8 @@
       </a>
     </li>
 
-    <!-- Cines - Infraestructura principal -->
-    <li class="dropdown-container">
+    <!-- Cines - Infraestructura principal (SOLO ADMINS) -->
+    <li class="dropdown-container" *ngIf="canViewCinemas$ | async">
       <a (click)="toggleCinesMenu()" data-tooltip="Cines"
         [attr.aria-label]="'Gestionar Cines' + (!sidebarClosed ? '' : ' - Cines')"
         [class.dropdown-active]="cinesMenuOpen">
@@ -49,8 +49,8 @@
       </ul>
     </li>
 
-    <!-- Salas - Gestión de espacios -->
-    <li>
+    <!-- Salas - Gestión de espacios (SOLO ADMINS) -->
+    <li *ngIf="canViewRooms$ | async">
       <a routerLink="./salas/list" routerLinkActive="active-link" data-tooltip="Salas"
         [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')">
         <i class="fa-solid fa-door-open"></i>
@@ -112,8 +112,8 @@
       </a>
     </li>
 
-    <!-- Usuarios - Gestión de usuarios -->
-    <li>
+    <!-- Usuarios - Gestión de usuarios (SOLO ADMINS) -->
+    <li *ngIf="canViewUsers$ | async">
       <a routerLink="./usuarios/list" routerLinkActive="active-link" data-tooltip="Usuarios"
         [attr.aria-label]="'Gestionar Usuarios' + (!sidebarClosed ? '' : ' - Usuarios')">
         <i class="fa-solid fa-users"></i>
