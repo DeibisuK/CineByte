@@ -36,7 +36,7 @@ export class EndPaymentComponent implements OnInit {
   ) { }
 
   currentUser: User | null = null;
-  apiUrl = ' https://api-cinebyte.onrender.com'; // Ajusta según tu configuración
+  apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app'; // Ajusta según tu configuración
 
   ngOnInit(): void {
     // Obtener usuario actual

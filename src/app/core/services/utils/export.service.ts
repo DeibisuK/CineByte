@@ -18,7 +18,7 @@ interface ExportResponse {
   providedIn: 'root'
 })
 export class ExportarService {
-  private apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/';
+  private apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api';
   //private apiURL = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) { }
@@ -242,43 +242,5 @@ export class ExportarService {
       background: '#FFFFFF',
       color: '#2D3748'
     });
-  }
-
-  /**
-   * Crea una notificación temporal en la pantalla
-   */
-  private createNotification(message: string, type: 'success' | 'error'): void {
-    const notification = document.createElement('div');
-    notification.className = `export-notification export-notification-${type}`;
-    notification.textContent = message;
-    
-    // Estilos
-    Object.assign(notification.style, {
-      position: 'fixed',
-      top: '20px',
-      right: '20px',
-      padding: '12px 20px',
-      borderRadius: '8px',
-      color: 'white',
-      fontWeight: 'bold',
-      zIndex: '10000',
-      maxWidth: '400px',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-      backgroundColor: type === 'success' ? '#4CAF50' : '#f44336',
-      animation: 'slideInRight 0.3s ease-out'
-    });
-
-    // Agregar al DOM
-    document.body.appendChild(notification);
-
-    // Remover después de 5 segundos
-    setTimeout(() => {
-      notification.style.animation = 'slideOutRight 0.3s ease-in';
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
-        }
-      }, 300);
-    }, 5000);
   }
 }
