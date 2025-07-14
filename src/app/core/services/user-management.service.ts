@@ -8,8 +8,8 @@ import { AuthService } from '@core/services/auth/auth.service';
   providedIn: 'root'
 })
 export class UserManagementService {
-  private apiUrl = 'http://localhost:3000/api/users';
-  // private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/users'; // Para producción
+  //private apiUrl = 'http://localhost:3000/api/users';
+  private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/users'; // Para producción
 
   constructor(
     private http: HttpClient,
