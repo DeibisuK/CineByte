@@ -233,7 +233,7 @@ export class NavbarComponent {
     
     // Verificar si el usuario tiene rol de empleado
     const role = this.authService.getRole();
-    return role === 'empleado';
+    return role === 'employee';
   }
 
   tieneAccesoAdministrativo(): boolean {
