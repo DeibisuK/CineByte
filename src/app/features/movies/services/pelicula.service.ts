@@ -9,9 +9,9 @@ import { map } from 'rxjs/operators';
 })
 export class PeliculaService {
   apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/peliculas';
-  //funcionesApiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/funciones';
+  funcionesApiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/funciones';
   //apiURL = 'http://localhost:3000/api/peliculas';
-  funcionesApiURL = 'http://localhost:3000/api/funciones';
+  //funcionesApiURL = 'http://localhost:3000/api/funciones';
   constructor(private http: HttpClient) { }
 
   getPeliculas(): Observable<Pelicula[]> {
