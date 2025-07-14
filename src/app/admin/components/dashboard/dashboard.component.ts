@@ -8,6 +8,7 @@ import { VentasService } from '@features/payments/services';
 import { forkJoin, map } from 'rxjs';
 import { AsientosService, SalasService, SedeSalasService } from '@features/venues';
 import { AuthService } from '@core/services';
+import { UserManagementService } from '@core/services/user-management.service';
 
 interface DashboardCard {
   title: string;
@@ -81,7 +82,8 @@ export class DashboardComponent implements OnInit {
 
   constructor(private http: HttpClient, private peliService: PeliculaService,
     private ventasService: VentasService, private asientosService: AsientosService,
-    private funcionesService: FuncionesService, private auth: AuthService, private salasService: SedeSalasService
+    private funcionesService: FuncionesService, private auth: AuthService, private salasService: SedeSalasService,
+    private userManagementService: UserManagementService
   ) { }
 
   ngOnInit(): void {
@@ -154,7 +156,7 @@ export class DashboardComponent implements OnInit {
         todosLosAsientos: this.asientosService.getAsientos(),
         ventasPorDia: this.ventasService.getVentasPorDia(startDate, endDate),
         transaccionesRecientes: this.ventasService.getHistorialVentas(user, 5, 0),
-        usuarios: this.auth.obtenerUsuarios(),
+        usuarios: this.userManagementService.obtenerUsuarios(),
         peliculasActivas: this.peliService.getPeliculas().pipe(
           map(peliculas => peliculas.filter(pelicula => pelicula.estado === 'activo'))
         ),

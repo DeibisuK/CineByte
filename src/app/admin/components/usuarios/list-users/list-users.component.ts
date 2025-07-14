@@ -2,11 +2,10 @@ import {
   Component,
   ElementRef,
   OnInit,
-  Pipe,
-  PipeTransform,
   ViewChild,
 } from '@angular/core';
 import { AuthService } from '@core/services/auth/auth.service';
+import { UserManagementService } from '@core/services/user-management.service';
 import { CommonModule } from '@angular/common';
 import {
   FormControl,
@@ -21,26 +20,6 @@ import { getAuth } from 'firebase/auth';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { PermissionService } from '@core/services/permission/permission.service';
 import { Observable } from 'rxjs';
-
-@Pipe({ name: 'authProvider' })
-export class AuthProviderPipe implements PipeTransform {
-  transform(user: UserProfile): string {
-    if (!user.providerData || user.providerData.length === 0) {
-      return 'Email'; // Asumimos que es email/password si no hay providerData
-    }
-
-    switch (user.providerData[0].providerId) {
-      case 'password':
-        return 'Email';
-      case 'google.com':
-        return 'Google';
-      case 'facebook.com':
-        return 'Facebook';
-      default:
-        return user.providerData[0].providerId;
-    }
-  }
-}
 
 @Component({
   selector: 'app-list-users',
@@ -62,13 +41,17 @@ export class ListUsersComponent implements OnInit {
   filtradosEM: UserProfile[] = []; // Nueva propiedad para empleados
   filtradosCL: UserProfile[] = [];
 
+  // Control para dropdowns mejorados
+  activeDropdown: string | null = null;
+
   // Observables de permisos
   canEditUsers$: Observable<boolean>;
   canDeleteUsers$: Observable<boolean>;
   canCreateAdmins$: Observable<boolean>;
 
   constructor(
-    private usuariosService: AuthService,
+    private authService: AuthService,
+    private userManagementService: UserManagementService,
     private alerta: AlertaService,
     private permissionService: PermissionService
   ) {
@@ -100,6 +83,20 @@ export class ListUsersComponent implements OnInit {
     event.target.style.display = 'none';
   }
 
+  // === MÉTODOS PARA DROPDOWN MEJORADO ===
+  
+  toggleDropdown(dropdownId: string) {
+    if (this.activeDropdown === dropdownId) {
+      this.activeDropdown = null;
+    } else {
+      this.activeDropdown = dropdownId;
+    }
+  }
+
+  closeDropdown() {
+    this.activeDropdown = null;
+  }
+
   ngOnInit(): void {
     this.obtenerUsuarios();
     this.searchControl.valueChanges
@@ -110,51 +107,42 @@ export class ListUsersComponent implements OnInit {
           this.loading = true;
           this.errorMsg = '';
           // Si texto está vacío, traer todos usuarios (puedes implementar en la API)
-          return this.usuariosService.buscarUsuarios(texto?.trim() || '');
+          return this.userManagementService.buscarUsuarios(texto?.trim() || '');
         })
       )
       .subscribe({
-        next: (usuarios) => {
+        next: (usuarios: UserProfile[]) => {
           this.usuario = usuarios;
           this.cargarFiltros();
           this.loading = false;
         },
-        error: (err) => {
+        error: (err: any) => {
           this.errorMsg = 'Error al buscar usuarios';
           this.loading = false;
           console.error(err);
         },
       });
-  }
 
-  getAuthProvider(user: UserProfile): string {
-    if (!user.providerData || user.providerData.length === 0) {
-      return 'Email'; // Valor por defecto
-    }
-
-    switch (user.providerData[0].providerId) {
-      case 'password':
-        return 'Email';
-      case 'google.com':
-        return 'Google';
-      case 'facebook.com':
-        return 'Facebook';
-      default:
-        return user.providerData[0].providerId;
-    }
+    // Listener para cerrar dropdowns al hacer clic fuera
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.dropdown-improved')) {
+        this.activeDropdown = null;
+      }
+    });
   }
 
   async crearAdmin() {
     try {
       const { email, password, username } = this.registerForm.value;
       // Paso 1: Obtener token del usuario actual (el admin que está haciendo esto)
-      const token = await this.usuariosService.getUsuarioActual()?.getIdToken();
+      const token = await this.userManagementService.getUsuarioActual()?.getIdToken();
 
       if (!token) {
         throw new Error('Token de autenticación no disponible');
       }
 
-      await this.usuariosService
+      await this.userManagementService
         .crearAdmin(email, password, username, token)
         .subscribe({
           next: () => {
@@ -177,13 +165,13 @@ export class ListUsersComponent implements OnInit {
     this.loading = true;
     this.errorMsg = '';
     
-    this.usuariosService.obtenerUsuarios().subscribe({
-      next: (usuarios) => {
+    this.userManagementService.obtenerUsuarios().subscribe({
+      next: (usuarios: UserProfile[]) => {
         this.usuario = usuarios;
         this.cargarFiltros();
         this.loading = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         this.loading = false;
         this.errorMsg = 'Error al cargar los usuarios. Por favor, intenta de nuevo.';
         console.error('Error al obtener usuarios:', err);
@@ -201,12 +189,12 @@ export class ListUsersComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.usuariosService.eliminarUsuario(uid).subscribe({
-          next: (res) => {
+        this.userManagementService.eliminarUsuario(uid).subscribe({
+          next: (res: any) => {
             Swal.fire('Eliminado', res.message, 'success');
             this.obtenerUsuarios();
           },
-          error: (err) => {
+          error: (err: any) => {
             const mensaje =
               err.error?.error || 'No se pudo eliminar el usuario.';
             Swal.fire('Error', mensaje, 'error');
@@ -226,7 +214,7 @@ export class ListUsersComponent implements OnInit {
     }
 
     user.getIdToken().then((token) => {
-      this.usuariosService.asignarAdmin(uid, token).subscribe({
+      this.userManagementService.asignarAdmin(uid, token).subscribe({
         next: () => {
           this.alerta.success(
             'Administración',
@@ -234,7 +222,7 @@ export class ListUsersComponent implements OnInit {
           );
           this.obtenerUsuarios();
         },
-        error: (err) => {
+        error: (err: any) => {
           this.alerta.error('Error asignando admin:', err);
         },
       });
@@ -260,12 +248,12 @@ export class ListUsersComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         user.getIdToken().then((token) => {
-          this.usuariosService.removerAdmin(uid, token).subscribe({
+          this.userManagementService.removerAdmin(uid, token).subscribe({
             next: () => {
               this.alerta.success('Exito', 'Rol admin removido correctamente');
               this.obtenerUsuarios();
             },
-            error: (err) => {
+            error: (err: any) => {
               console.error('Error removiendo admin:', err);
               this.alerta.error('Error', 'Error al remover rol admin');
             },
@@ -286,7 +274,7 @@ export class ListUsersComponent implements OnInit {
     }
 
     user.getIdToken().then((token) => {
-      this.usuariosService.asignarEmpleado(uid, token).subscribe({
+      this.userManagementService.asignarEmpleado(uid, token).subscribe({
         next: () => {
           this.alerta.success(
             'Empleados',
@@ -294,7 +282,7 @@ export class ListUsersComponent implements OnInit {
           );
           this.obtenerUsuarios();
         },
-        error: (err) => {
+        error: (err: any) => {
           this.alerta.error('Error asignando empleado:', err);
         },
       });
@@ -320,12 +308,12 @@ export class ListUsersComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         user.getIdToken().then((token) => {
-          this.usuariosService.removerEmpleado(uid, token).subscribe({
+          this.userManagementService.removerEmpleado(uid, token).subscribe({
             next: () => {
               this.alerta.success('Exito', 'Rol empleado removido correctamente');
               this.obtenerUsuarios();
             },
-            error: (err) => {
+            error: (err: any) => {
               console.error('Error removiendo empleado:', err);
               this.alerta.error('Error', 'Error al remover rol empleado');
             },
@@ -337,15 +325,21 @@ export class ListUsersComponent implements OnInit {
 
   cargarFiltros() {
     this.filtradosAD = this.usuario.filter(
-      (a) => a.customClaims?.role === 'admin'
+      (a) => a.customClaims?.role === 'admin' || a.customClaims?.isAdmin === true
     );
     this.filtradosEM = this.usuario.filter(
-      (a) => a.customClaims?.role === 'empleado'
+      (a) => a.customClaims?.role === 'employee' || 
+             a.customClaims?.role === 'empleado' || 
+             a.customClaims?.isEmployee === true
     );
     this.filtradosCL = this.usuario.filter((a) => {
       const claims = a.customClaims;
-      return !claims || Object.keys(claims).length === 0 || 
-             (claims.role !== 'admin' && claims.role !== 'empleado');
+      if (!claims || Object.keys(claims).length === 0) return true;
+      
+      const isAdmin = claims.role === 'admin' || claims.isAdmin === true;
+      const isEmployee = claims.role === 'employee' || claims.role === 'empleado' || claims.isEmployee === true;
+      
+      return !isAdmin && !isEmployee;
     });
   }
 
@@ -423,7 +417,7 @@ export class ListUsersComponent implements OnInit {
         updateData.password = passwordE;
       }
 
-      this.usuariosService.actualizarUsuario(
+      this.userManagementService.actualizarUsuario(
         this.selectedUserUid,
         updateData,
         token
@@ -433,7 +427,7 @@ export class ListUsersComponent implements OnInit {
           this.closeModal('editUserModal');
           this.obtenerUsuarios();
         },
-        error: (err) => {
+        error: (err: any) => {
           this.loading = false;
           const errorMsg = err.error?.message || 'Error al actualizar usuario';
           this.alerta.error('Error', errorMsg);
@@ -443,6 +437,141 @@ export class ListUsersComponent implements OnInit {
       this.loading = false;
       this.alerta.error('Error', 'Error inesperado');
       console.error(error);
+    }
+  }
+
+  // Nuevas funcionalidades
+
+  /**
+   * Revocar todos los tokens de un usuario (forzar re-login)
+   */
+  revocarTokensUsuario(uid: string, displayName?: string) {
+    const userName = displayName || 'usuario';
+    
+    Swal.fire({
+      title: '¿Revocar tokens?',
+      text: `Esto forzará a ${userName} a iniciar sesión nuevamente`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, revocar',
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userManagementService.revocarTokensUsuario(uid).subscribe({
+          next: (response: any) => {
+            this.alerta.success('Éxito', response.message || 'Tokens revocados correctamente');
+          },
+          error: (err: any) => {
+            const errorMsg = err.error?.error || 'Error al revocar tokens';
+            this.alerta.error('Error', errorMsg);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Cambiar estado del usuario (habilitar/deshabilitar)
+   */
+  cambiarEstadoUsuario(uid: string, disabled: boolean, displayName?: string) {
+    const userName = displayName || 'usuario';
+    const accion = disabled ? 'deshabilitar' : 'habilitar';
+    
+    Swal.fire({
+      title: `¿${accion.charAt(0).toUpperCase() + accion.slice(1)} usuario?`,
+      text: `Esto ${accion}á la cuenta de ${userName}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: `Sí, ${accion}`,
+      cancelButtonText: 'Cancelar',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.userManagementService.cambiarEstadoUsuario(uid, disabled).subscribe({
+          next: (response: any) => {
+            this.alerta.success('Éxito', response.message || `Usuario ${disabled ? 'deshabilitado' : 'habilitado'} correctamente`);
+            this.obtenerUsuarios(); // Recargar la lista
+          },
+          error: (err: any) => {
+            const errorMsg = err.error?.error || `Error al ${accion} usuario`;
+            this.alerta.error('Error', errorMsg);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * Ver detalles completos de un usuario
+   */
+  verDetallesUsuario(uid: string) {
+    this.userManagementService.obtenerDetalleUsuario(uid).subscribe({
+      next: (usuario: UserProfile) => {
+        // Formatear la información para mostrar
+        const info = `
+          <div style="text-align: left;">
+            <p><strong>UID:</strong> ${usuario.uid}</p>
+            <p><strong>Email:</strong> ${usuario.email || 'No disponible'}</p>
+            <p><strong>Nombre:</strong> ${usuario.displayName || 'No disponible'}</p>
+            <p><strong>Email verificado:</strong> ${usuario.emailVerified ? 'Sí' : 'No'}</p>
+            <p><strong>Estado:</strong> ${usuario.disabled ? 'Deshabilitado' : 'Activo'}</p>
+            <p><strong>Rol:</strong> ${usuario.customClaims?.role || 'user'}</p>
+            <p><strong>Admin:</strong> ${usuario.customClaims?.isAdmin ? 'Sí' : 'No'}</p>
+            <p><strong>Empleado:</strong> ${usuario.customClaims?.isEmployee ? 'Sí' : 'No'}</p>
+            <p><strong>Creado:</strong> ${usuario.creationTime ? new Date(usuario.creationTime).toLocaleString() : 'No disponible'}</p>
+            <p><strong>Último acceso:</strong> ${usuario.lastSignInTime ? new Date(usuario.lastSignInTime).toLocaleString() : 'Nunca'}</p>
+          </div>
+        `;
+
+        Swal.fire({
+          title: 'Detalles del Usuario',
+          html: info,
+          icon: 'info',
+          width: '600px',
+          confirmButtonText: 'Cerrar'
+        });
+      },
+      error: (err: any) => {
+        const errorMsg = err.error?.error || 'Error al obtener detalles del usuario';
+        this.alerta.error('Error', errorMsg);
+      }
+    });
+  }
+
+  /**
+   * Verificar si un usuario está deshabilitado
+   */
+  estaDeshabilitado(usuario: UserProfile): boolean {
+    return usuario.disabled === true;
+  }
+
+  /**
+   * Obtener el texto del estado del usuario
+   */
+  obtenerEstadoUsuario(usuario: UserProfile): string {
+    if (usuario.disabled === true) {
+      return 'Deshabilitado';
+    }
+    return 'Activo';
+  }
+
+  /**
+   * Obtener la clase CSS para el estado del usuario
+   */
+  obtenerClaseEstado(usuario: UserProfile): string {
+    if (usuario.disabled === true) {
+      return 'badge-danger';
+    }
+    return 'badge-success';
+  }
+
+  /**
+   * Refrescar automáticamente el rol del usuario actual después de cambios
+   */
+  private async refrescarRolActual() {
+    try {
+      await this.authService.refreshRole();
+    } catch (error) {
+      console.error('Error al refrescar rol:', error);
     }
   }
 }

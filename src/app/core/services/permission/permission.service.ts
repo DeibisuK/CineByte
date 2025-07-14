@@ -31,7 +31,7 @@ export class PermissionService {
     return this.authService.role$.pipe(
       map(role => {
         const isAdmin = role === 'admin';
-        const isEmployee = role === 'empleado';
+        const isEmployee = role === 'employee' || role === 'empleado'; // Compatibilidad con el valor anterior
         
         return {
           // Solo para admins

@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './admin/admin-layout/admin-layout.component';
 import { CliLayoutComponent } from './layout/cli-layout/cli-layout.component';
-import { AdminGuard } from './environments/adminGuard';
+import { AdminGuard, EmployeeGuard } from './core/guards/auth.guards';
 import { EmployeeAccessGuard } from './core/guards/employee-access.guard';
 
 export const routes: Routes = [
@@ -18,7 +18,7 @@ export const routes: Routes = [
   {
     path: 'admin',
     component: AdminLayoutComponent,
-    canActivate: [AdminGuard],   // <-- Solo AdminGuard aquí
+    canActivate: [EmployeeGuard, EmployeeAccessGuard],   // Permite admin y empleados, pero con restricciones
     children: [
       {
         path: '',

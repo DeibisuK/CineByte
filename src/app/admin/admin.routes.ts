@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ExportarComponent } from './components/exportar/exportar.component';
+import { AdminGuard } from '../core/guards/auth.guards';
 import { EmployeeAccessGuard } from '../core/guards/employee-access.guard';
 
 export const adminRoutes: Routes = [
@@ -11,7 +12,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'dashboard',
-    canActivate: [EmployeeAccessGuard], // Proteger dashboard
+    canActivate: [AdminGuard], // Solo administradores pueden ver el dashboard
     component: DashboardComponent,
   },
   {
@@ -76,7 +77,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'salas',
-    canActivate: [EmployeeAccessGuard], // Proteger salas
+    canActivate: [AdminGuard], // Solo administradores pueden gestionar salas
     children: [
       {
         path: '',
@@ -99,7 +100,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'sedes',
-    canActivate: [EmployeeAccessGuard], // Proteger sedes
+    canActivate: [AdminGuard], // Solo administradores pueden gestionar sedes
     children: [
       {
         path: '',
@@ -110,7 +111,7 @@ export const adminRoutes: Routes = [
   },
   {
     path: 'usuarios',
-    canActivate: [EmployeeAccessGuard], // Proteger usuarios
+    canActivate: [AdminGuard], // Solo administradores pueden gestionar usuarios
     children: [
       {
         path: '',
