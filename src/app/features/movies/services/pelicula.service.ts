@@ -62,5 +62,13 @@ export class PeliculaService {
   actualizarEstadoFuncion(id: number, nuevoEstado: string): Observable<any> {
     return this.http.put(`${this.funcionesApiURL}/${id}/estado`, { nuevoEstado: nuevoEstado });
   }
+
+  getAnioFromPeliculas(): Observable<number[]> {
+    return this.http.get<number[]>(`${this.apiURL}/anios`);
+  }
+
+  getPeliculasMasVendidas(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiURL}/mas-vendidas`);
+  }
 }
 

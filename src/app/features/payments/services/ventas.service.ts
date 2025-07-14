@@ -13,8 +13,8 @@ import {
   providedIn: 'root'
 })
 export class VentasService {
-  //private readonly apiURL = 'http://localhost:3000/api/ventas';
-  private readonly apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/ventas';
+  private readonly apiURL = 'http://localhost:3000/api/ventas';
+  //private readonly apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/ventas';
 
   constructor(private http: HttpClient) { }
 
@@ -234,4 +234,18 @@ export class VentasService {
   }> {
     return this.http.get<any>(`${this.apiURL}/ocupacion/${idFuncion}`);
   }
+
+  //ventas por mes
+  getVentasPorMesYAnio( month: number, year: number): Observable<any> {
+    return this.http.get<any>(`${this.apiURL}/ventas-por-mes/${month}/${year}`);
+  }
+
+  getAllBoletosVendidos(month: number, year: number): Observable<any> {
+    return this.http.get<any>(`${this.apiURL}/boletos-vendidos/${month}/${year}`);
+  }
+
+  getVentasPorDia(startDate: string, endDate: string): Observable<any> {
+    return this.http.get<any>(`${this.apiURL}/ventas-por-dia/${startDate}/${endDate}`);
+  }
+
 }

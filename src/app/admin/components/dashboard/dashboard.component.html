@@ -11,8 +11,8 @@
       <div class="filter-group">
         <label for="month-select">Mes:</label>
         <select id="month-select" [(ngModel)]="selectedMonth" class="filter-select">
-          <option *ngFor="let month of months" [value]="month.value">
-            {{ month.label }}
+          <option *ngFor="let month of Meses" [value]="month.numero">
+            {{ month.mes }}
           </option>
         </select>
       </div>
@@ -20,7 +20,7 @@
       <div class="filter-group">
         <label for="year-select">Año:</label>
         <select id="year-select" [(ngModel)]="selectedYear" class="filter-select">
-          <option *ngFor="let year of years" [value]="year">
+          <option *ngFor="let year of anos" [value]="year">
             {{ year }}
           </option>
         </select>
@@ -80,7 +80,7 @@
             <div *ngFor="let data of weeklyData" class="bar-item">
               <div class="bar-container">
                 <div class="bar" [style.height]="getBarHeight(data.value)" [style.background-color]="data.color">
-                  <span class="bar-value">{{ data.value }}%</span>
+                  <span class="bar-value">{{ getPercentage(data.value) }}</span>
                 </div>
               </div>
               <span class="bar-label">{{ data.label }}</span>
@@ -161,18 +161,18 @@
         <div class="info-content">
           <div class="info-item">
             <span class="info-label">Salas Activas:</span>
-            <span class="info-value">8</span>
+            <span class="info-value">{{totalSalasActivas}}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Películas en Cartelera:</span>
-            <span class="info-value">12</span>
+            <span class="info-value">{{totalCartelera}}</span>
           </div>
           <div class="info-item">
             <span class="info-label">Usuarios Registrados:</span>
-            <span class="info-value">2,547</span>
+            <span class="info-value">{{userTotal}}</span>
           </div>
           <div class="info-item">
-            <span class="info-label">Última Actualización:</span>
+            <span class="info-label">Último Ingreso:</span>
             <span class="info-value">{{ currentDateTime }}</span>
           </div>
         </div>

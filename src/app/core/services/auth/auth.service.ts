@@ -167,6 +167,11 @@ export class AuthService {
   
     return this.http.put(`${this.apiUrl}/${uid}`, data, { headers });
   }
+
+   async getCurrentUID(): Promise<string | null> {
+    const user = await this.auth.currentUser;
+    return user ? user.uid : null;
+  }
 }
 
 (window as any).getIdToken = () => {

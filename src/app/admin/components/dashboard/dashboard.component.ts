@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, NgStyle } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { ExportarComponent } from '../exportar/exportar.component';
+import { FuncionesService, PeliculaService } from '@features/movies';
+import { VentasService } from '@features/payments/services';
+import { forkJoin, map } from 'rxjs';
+import { AsientosService, SalasService, SedeSalasService } from '@features/venues';
+import { AuthService } from '@core/services';
 
 interface DashboardCard {
   title: string;
@@ -19,243 +24,275 @@ interface ChartData {
   color: string;
 }
 
+interface DashboardData {
+  ingresosTotales: number;
+  boletosVendidos: number;
+  estadisticasGenerales: {
+    total_funciones: number;
+    capacidad_total: number;
+  };
+}
+
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule, HttpClientModule, ExportarComponent],
+  imports: [CommonModule, FormsModule, ExportarComponent],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
-  // Filtros
-  selectedMonth = new Date().getMonth() + 1;
-  selectedYear = new Date().getFullYear();
-  
-  months = [
-    { value: 1, label: 'Enero' },
-    { value: 2, label: 'Febrero' },
-    { value: 3, label: 'Marzo' },
-    { value: 4, label: 'Abril' },
-    { value: 5, label: 'Mayo' },
-    { value: 6, label: 'Junio' },
-    { value: 7, label: 'Julio' },
-    { value: 8, label: 'Agosto' },
-    { value: 9, label: 'Septiembre' },
-    { value: 10, label: 'Octubre' },
-    { value: 11, label: 'Noviembre' },
-    { value: 12, label: 'Diciembre' }
+
+  Meses: { mes: string; numero: number }[] = [
+    { mes: 'Enero', numero: 1 },
+    { mes: 'Febrero', numero: 2 },
+    { mes: 'Marzo', numero: 3 },
+    { mes: 'Abril', numero: 4 },
+    { mes: 'Mayo', numero: 5 },
+    { mes: 'Junio', numero: 6 },
+    { mes: 'Julio', numero: 7 },
+    { mes: 'Agosto', numero: 8 },
+    { mes: 'Septiembre', numero: 9 },
+    { mes: 'Octubre', numero: 10 },
+    { mes: 'Noviembre', numero: 11 },
+    { mes: 'Diciembre', numero: 12 }
   ];
-
-  years = [2022, 2023, 2024, 2025, 2026];
-
-  // Fecha actual para mostrar en el dashboard
-  currentDateTime = new Date().toLocaleString('es-ES');
-
-  // Modal de exportar
-  showExportModal = false;
-
-  // Variables para datos reales
-  isLoading = true;
-  dashboardData: any = null;
-
-  // Datos del dashboard (se actualizarán con datos reales)
+  anos: number[] = [];
+  selectedYear: number = 0;
+  selectedMonth: number = 0;
+  showExportModal: boolean = false;
+  currentDateTime: string = new Date().toLocaleString();
+  isLoading: boolean = true;
   dashboardCards: DashboardCard[] = [];
-
-  // Datos para gráficos (se actualizarán con datos reales)
+  dashboardData: DashboardData = {
+    ingresosTotales: 0,
+    boletosVendidos: 0,
+    estadisticasGenerales: {
+      total_funciones: 0,
+      capacidad_total: 0
+    }
+  };
   weeklyData: ChartData[] = [];
+  topMovies: { title: string, sales: number, percentage: number }[] = [];
+  recentTransactions: { id: number, amount: number, movie: string, status: string, time: string }[] = [];
 
-  topMovies: any[] = [];
+  userTotal: number = 0;
+  totalCartelera: number = 0;
+  totalSalasActivas: number = 0;
+  totalFuncionesActivas: number = 0;
 
-  recentTransactions: any[] = [];
+  constructor(private http: HttpClient, private peliService: PeliculaService,
+    private ventasService: VentasService, private asientosService: AsientosService,
+    private funcionesService: FuncionesService, private auth: AuthService, private salasService: SedeSalasService
+  ) { }
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.loadDashboardData();
+  ngOnInit(): void {
+    this.loadingAll();
+    this.loadTopMovies(); // Agregar esta línea
   }
 
-  applyFilters() {
-    console.log(`Aplicando filtros: ${this.selectedMonth}/${this.selectedYear}`);
-    this.loadDashboardData();
-  }
-
-  private async loadDashboardData() {
-    try {
-      this.isLoading = true;
-      const url = `https://api-cinebyte.onrender.com/api/dashboard/stats?mes=${this.selectedMonth}&ano=${this.selectedYear}`;
-      
-      console.log('🔄 Cargando datos del dashboard desde:', url);
-      
-      const response: any = await this.http.get(url).toPromise();
-      
-      console.log('📊 Respuesta completa del servidor:', response);
-      
-      // El servicio devuelve { success: true, data: {...} }
-      this.dashboardData = response.data || response;
-      
-      // Agregar campo ingresosTotales mapeado desde ventasDelPeriodo
-      if (this.dashboardData.ventasDelPeriodo !== undefined) {
-        this.dashboardData.ingresosTotales = this.dashboardData.ventasDelPeriodo;
-      }
-      
-      console.log('📊 Datos procesados:', this.dashboardData);
-      
-      // Actualizar cards con datos reales manteniendo colores originales
-      this.dashboardCards = [
-        {
-          title: 'Ingresos Totales',
-          value: `$${(this.dashboardData.ingresosTotales || 0).toLocaleString()}`,
-          icon: 'fas fa-dollar-sign',
-          trend: '+0%',
-          trendIcon: 'fas fa-arrow-up',
-          color: 'success'  // Verde siempre
-        },
-        {
-          title: 'Boletos Vendidos',
-          value: (this.dashboardData.boletosVendidos || 0).toLocaleString(),
-          icon: 'fas fa-ticket-alt',
-          trend: '+0%',
-          trendIcon: 'fas fa-arrow-up',
-          color: 'primary'  // Azul siempre
-        },
-        {
-          title: 'Funciones Activas',
-          value: (this.dashboardData.estadisticasGenerales?.total_funciones || 0).toString(),
-          icon: 'fas fa-film',
-          trend: '0%',
-          trendIcon: 'fas fa-arrow-up',
-          color: 'warning'  // Amarillo
-        },
-        {
-          title: 'Ocupación Promedio',
-          value: `${Math.round((this.dashboardData.boletosVendidos || 0) / (this.dashboardData.estadisticasGenerales?.capacidad_total || 1) * 100)}%`,
-          icon: 'fas fa-chart-pie',
-          trend: '0%',
-          trendIcon: 'fas fa-arrow-up',
-          color: 'info'  // Celeste
+  getAnos(): Promise<void> {
+    return new Promise((resolve) => {
+      this.peliService.getAnioFromPeliculas().subscribe(
+        (data: number[]) => {
+          this.anos = data.sort((a, b) => a - b);
+          resolve();
         }
-      ];
+      );
+    });
+  }
 
-      // Actualizar películas más populares
-      this.topMovies = (this.dashboardData.peliculasPopulares || []).map((pelicula: any) => ({
-        title: pelicula.titulo,
-        sales: `$${(pelicula.ingresos_generados || 0).toLocaleString()}`,
-        percentage: Math.round((pelicula.boletos_vendidos || 0) / Math.max(this.dashboardData.boletosVendidos, 1) * 100)
-      }));
-      console.log('🎬 Películas populares:', this.topMovies);
-
-      // Actualizar transacciones recientes  
-      this.recentTransactions = (this.dashboardData.funcionesRecientes || []).map((funcion: any) => ({
-        id: `#${funcion.id_funcion}`,
-        movie: funcion.pelicula,
-        amount: `$${(funcion.boletos_vendidos * 15 || 0).toLocaleString()}`, // Estimado
-        time: new Date(funcion.fecha_hora_inicio).toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'}),
-        status: funcion.ventas_realizadas > 0 ? 'completed' : 'pending'
-      }));
-      console.log('💳 Transacciones recientes:', this.recentTransactions);
-
-      // Actualizar datos de gráfico semanal - usar ventas por mes para los últimos 7 días
-      const ventasRecientes = (this.dashboardData.ventasPorMes || []).slice(-7);
-      this.weeklyData = ventasRecientes.map((venta: any, index: number) => ({
-        label: venta.nombre_mes?.substring(0, 3) || `Mes ${index + 1}`,
-        value: venta.total_ventas || 0,
-        color: '#ffd700'
-      }));
-      
-      // Si no hay datos suficientes, crear datos de ejemplo
-      if (this.weeklyData.length < 7) {
-        this.weeklyData = [
-          { label: 'Lun', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Mar', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Mié', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Jue', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Vie', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Sáb', value: Math.floor(Math.random() * 20), color: '#ffd700' },
-          { label: 'Dom', value: Math.floor(Math.random() * 20), color: '#ffd700' }
-        ];
+  loadingCards(): void {
+    this.dashboardCards = [
+      {
+        title: 'Ingresos Totales',
+        value: `$${(this.dashboardData.ingresosTotales || 0).toLocaleString()}`,
+        icon: 'fas fa-dollar-sign',
+        trend: '+0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'success'  // Verde siempre
+      },
+      {
+        title: 'Boletos Vendidos',
+        value: (this.dashboardData.boletosVendidos || 0).toLocaleString(),
+        icon: 'fas fa-ticket-alt',
+        trend: '+0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'primary'  // Azul siempre
+      },
+      {
+        title: 'Funciones Activas',
+        value: (this.dashboardData.estadisticasGenerales?.total_funciones || 0).toString(),
+        icon: 'fas fa-film',
+        trend: '0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'warning'  // Amarillo
+      },
+      {
+        title: 'Ocupación Promedio',
+        value: `${Math.round((this.dashboardData.boletosVendidos || 0) / (this.dashboardData.estadisticasGenerales?.capacidad_total || 1) * 100)}%`,
+        icon: 'fas fa-chart-pie',
+        trend: '0%',
+        trendIcon: 'fas fa-arrow-up',
+        color: 'info'  // Celeste
       }
-      console.log('📈 Datos semanales:', this.weeklyData);
+    ];
+  }
+
+  getDashboardData(): Promise<void> {
+    const today = new Date();
+    const endDate = today.toISOString().slice(0, 10); // 'YYYY-MM-DD'
+    const startDate = new Date(today.setDate(today.getDate() - 6)).toISOString().slice(0, 10)
+
+    return new Promise(async (resolve, reject) => {
+      const user = await this.auth.getCurrentUID();
+      if (!user) throw new Error('Usuario no autenticado');
+
+      // Ejecutar ambas llamadas en paralelo y esperar a que ambas terminen
+      forkJoin({
+        ventas: this.ventasService.getVentasPorMesYAnio(this.selectedMonth, this.selectedYear),
+        boletos: this.ventasService.getAllBoletosVendidos(this.selectedMonth, this.selectedYear),
+        funcionesActivas: this.funcionesService.getFunciones(),
+        todosLosAsientos: this.asientosService.getAsientos(),
+        ventasPorDia: this.ventasService.getVentasPorDia(startDate, endDate),
+        transaccionesRecientes: this.ventasService.getHistorialVentas(user, 5, 0),
+        usuarios: this.auth.obtenerUsuarios(),
+        peliculasActivas: this.peliService.getPeliculas().pipe(
+          map(peliculas => peliculas.filter(pelicula => pelicula.estado === 'activo'))
+        ),
+        salas: this.salasService.getSedesSalas().pipe(
+          map(sedesSalas => sedesSalas.filter(sedeSala => sedeSala.estado === 'Disponible'))
+        )
+
+      }).subscribe({
+        next: (results) => {
+          this.dashboardData.ingresosTotales = results.ventas?.ventas?.obtener_ingresos_por_mes_y_anio;
+          this.dashboardData.boletosVendidos = results.boletos?.boletosVendidos?.obtener_total_boletos_vendidos;
+          this.dashboardData.estadisticasGenerales.total_funciones = results.funcionesActivas.filter(funcion => funcion.estado === 'activa').length;
+          this.dashboardData.estadisticasGenerales.capacidad_total = results.todosLosAsientos.total
+
+          const ventasRecientes = (results.ventasPorDia || []).slice(-7);
+          this.weeklyData = ventasRecientes.map((venta: any, index: number) => ({
+            label: venta.fecha ? this.getDayName(venta.fecha) : `Día ${index + 1}`,
+            value: venta.total_ventas || 0,
+            color: '#ffd700'
+          }));
+
+          // Procesar transacciones recientes
+          this.recentTransactions = (results.transaccionesRecientes || []).map((venta: any) => ({
+            id: venta.id_venta,
+            movie: venta.pelicula_titulo || 'Película desconocida',
+            amount: venta.total || 0,
+            time: new Date(venta.fecha_funcion).toLocaleTimeString('es-ES', {
+              hour: '2-digit',
+              minute: '2-digit'
+            }),
+            status: venta.estado // 1 para confirmada, 0 para pendiente
+          }));
+
+          // Actualizar estadísticas adicionales
+          this.userTotal = results.usuarios.length;
+          this.totalCartelera = results.peliculasActivas.length;
+          this.totalSalasActivas = results.salas.length;
+          this.totalFuncionesActivas = results.funcionesActivas.length;
+          resolve();
+        },
+        error: (error) => {
+          console.error('Error al obtener datos del dashboard:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  loadTopMovies(): void {
+    // Aquí necesitarías llamar a un servicio que te dé las ventas por película
+    this.peliService.getPeliculasMasVendidas().subscribe({
+      next: (ventas) => {
+        // Procesar los datos para calcular porcentajes
+        const totalVentas = ventas.reduce((sum, venta) => sum + venta.total_vendidos, 0);
+
+        this.topMovies = ventas.slice(0, 5).map(venta => ({
+          title: venta.titulo_pelicula,
+          sales: venta.total_vendidos,
+          percentage: Math.round((venta.total_vendidos / totalVentas) * 100)
+        }));
+      },
+      error: (error) => {
+        console.error('Error al cargar películas más vendidas:', error);
+      }
+    });
+  }
+
+  async loadingAll(): Promise<void> {
+    try {
+      // 1. Primero obtener años y establecer valores por defecto
+      await this.getAnos();
+      this.selectedYear = this.anos[0];
+
+      this.Meses.forEach(mes => {
+        if (mes.numero === new Date().getMonth() + 1) {
+          this.selectedMonth = mes.numero;
+        }
+      });
+
+      // 2. Después obtener datos del dashboard con los valores correctos
+      await this.getDashboardData();
+
+      // 3. Finalmente actualizar UI
+      this.isLoading = false;
+      this.loadingCards();
 
     } catch (error) {
-      console.error('❌ Error cargando datos del dashboard:', error);
-      console.error('Detalles del error:', (error as any)?.error || (error as any)?.message || error);
-      // Mantener datos por defecto si hay error
-      this.loadDefaultData();
-    } finally {
+      console.error('Error en loadingAll:', error);
       this.isLoading = false;
     }
   }
 
-  private loadDefaultData() {
-    // Datos por defecto en caso de error
-    this.dashboardCards = [
-      {
-        title: 'Ventas Totales',
-        value: '$0',
-        icon: 'fas fa-dollar-sign',
-        trend: '+0%',
-        trendIcon: 'fas fa-arrow-up',
-        color: 'success'
-      },
-      {
-        title: 'Boletos Vendidos',
-        value: '0',
-        icon: 'fas fa-ticket-alt',
-        trend: '+0%',
-        trendIcon: 'fas fa-arrow-up',
-        color: 'primary'
-      },
-      {
-        title: 'Funciones Activas',
-        value: '0',
-        icon: 'fas fa-film',
-        trend: '0%',
-        trendIcon: 'fas fa-arrow-down',
-        color: 'warning'
-      },
-      {
-        title: 'Ocupación Promedio',
-        value: '0%',
-        icon: 'fas fa-chart-pie',
-        trend: '+0%',
-        trendIcon: 'fas fa-arrow-up',
-        color: 'info'
-      }
-    ];
-
-    this.topMovies = [];
-    this.recentTransactions = [];
-    this.weeklyData = [];
+  applyFilters(): void {
+    this.getDashboardData().then(() => {
+      this.loadingCards();
+    });
   }
 
-  getBarHeight(value: number): string {
-    const maxValue = Math.max(...this.weeklyData.map(d => d.value));
-    return `${(value / maxValue) * 100}%`;
-  }
-
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'completed': return 'status-completed';
-      case 'pending': return 'status-pending';
-      case 'failed': return 'status-failed';
-      default: return '';
-    }
-  }
-
-  getStatusText(status: string): string {
-    switch (status) {
-      case 'completed': return 'Completado';
-      case 'pending': return 'Pendiente';
-      case 'failed': return 'Fallido';
-      default: return status;
-    }
-  }
-
-  // Métodos para el modal de exportar
   openExportModal(): void {
     this.showExportModal = true;
   }
 
   closeExportModal(): void {
     this.showExportModal = false;
+  }
+
+  getBarHeight(data: number): string {
+    const totalValue = this.weeklyData.reduce((sum, d) => sum + d.value, 0);
+    return `${(data / totalValue) * 100}px`;
+  }
+
+  getPercentage(data: number): string {
+    const totalValue = this.weeklyData.reduce((sum, d) => sum + d.value, 0);
+    const percentage = totalValue > 0 ? (data / totalValue) * 100 : 0;
+    return `${Math.round(percentage)}%`;
+  }
+
+  getDayName(fechaISO: string): string {
+    const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+    const fecha = new Date(fechaISO);
+    return diasSemana[fecha.getDay()];
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'confirmada': return 'status-completed';
+      case 'pendiente': return 'status-pending';
+      case 'fallida': return 'status-failed';
+      default: return '';
+    }
+  }
+
+  getStatusText(status: string): string {
+    switch (status) {
+      case 'confirmada': return 'Confirmada';
+      case 'pendiente': return 'Pendiente';
+      case 'fallida': return 'Fallida';
+      default: return status;
+    }
   }
 }
