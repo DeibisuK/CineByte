@@ -17,6 +17,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { TemaService } from '../../../../cliente/features/movies/services/tema.service';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 // Configuración de iconos de Leaflet
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -43,7 +44,8 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private sedeService: SedeService,
     private temaService: TemaService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private router:Router
   ) {
     this.sedeForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(3)]],
@@ -158,6 +160,7 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
           confirmButtonText: 'OK'
         }).then(() => {
           this.resetForm();
+          this.router.navigate(['/admin/sedes/list']);
         });
       },
       error: (err) => {
