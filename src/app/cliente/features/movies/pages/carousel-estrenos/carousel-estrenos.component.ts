@@ -112,7 +112,18 @@ peliculasCartelera: Pelicula[] = [];
    * @param arr Array de números o strings
    * @returns Array de strings
    */
-  toStringArray(arr: number[] | string[]): string[] {
-    return arr.map(x => x.toString());
+  toStringArray(arr: any[] | number[] | string[]): string[] {
+    if (!arr || !Array.isArray(arr)) {
+      return [];
+    }
+    
+    return arr.map(item => {
+      // Si es un objeto con propiedad 'nombre', usar esa propiedad
+      if (typeof item === 'object' && item !== null && 'nombre' in item) {
+        return item.nombre.toString();
+      }
+      // Si es primitivo, convertir a string directamente
+      return item.toString();
+    });
   }
 }
