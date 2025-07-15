@@ -205,26 +205,100 @@
 @media (max-width: 900px) {
   .estreno-card {
     flex-direction: column;
-    height: auto; /* Permite que se ajuste al contenido en móvil */
+    height: auto;
     max-width: 100vw;
     width: 100vw;
     border-radius: 0;
   }
-  
   .estreno-img-section {
-    height: auto; /* En móvil, la altura se ajusta al contenido */
+    height: auto;
   }
-  
   .estreno-img-section img {
-    aspect-ratio: 16/9; /* Mantiene la proporción 16:9 */
+    aspect-ratio: 16/9;
     width: 100vw;
-    height: auto; /* La altura se calcula automáticamente por aspect-ratio */
+    height: auto;
     object-fit: cover;
   }
-  
   .estreno-info-section {
     width: 100vw;
     min-width: unset;
     padding: 1.2rem 1rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .estreno-card {
+    flex-direction: column;
+    height: auto;
+    max-width: 100vw;
+    width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+    margin: 0;
+  }
+  .estreno-img-section {
+    order: 1;
+    width: 100vw;
+    height: auto;
+    min-width: 0;
+    padding: 0;
+    border-radius: 0;
+    justify-content: flex-start;
+  }
+  .estreno-img-section img {
+    width: 100vw;
+    height: auto;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    border-radius: 0;
+    display: block;
+    margin: 0 auto;
+  }
+  .estreno-info-section {
+    order: 2;
+    width: 100vw;
+    min-width: unset;
+    padding: 1rem 0.7rem 1.5rem 0.7rem;
+    border-radius: 0;
+    box-shadow: none;
+    gap: 0.8rem;
+  }
+  .estreno-title {
+    font-size: 1.3rem;
+    margin-bottom: 0.3rem;
+  }
+  .estreno-desc {
+    font-size: 0.98rem;
+    margin-bottom: 1rem;
+  }
+  .estreno-btn {
+    font-size: 1rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+  }
+  .generos {
+    font-size: 0.7rem;
+    margin-top: 8px;
+  }
+  .carrusel-controles {
+    right: 10px;
+    bottom: 10px;
+    gap: 4px;
+  }
+  .carrusel-flecha {
+    width: 24px;
+    height: 24px;
+    font-size: 1rem;
+    border-radius: 6px;
+  }
+  .carrusel-indicators {
+    gap: 4px;
+    margin-top: 10px;
+  }
+  .indicator {
+    width: 18px;
+    height: 4px;
+    border-radius: 2px;
+    font-size: 0.8rem;
   }
 }

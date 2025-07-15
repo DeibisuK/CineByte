@@ -95,15 +95,18 @@
               <span class="fila-label">{{ fila }}</span>
               <div class="asientos-fila">
                 <div 
-                  *ngFor="let asiento of getAsientosPorFila(fila)"
+                  *ngFor="let asiento of getAsientosPorFila(fila); let colIdx = index"
                   class="asiento"
                   [class.disponible]="asiento.estado === 'disponible'"
                   [class.ocupado]="asiento.estado === 'ocupado'"
                   [class.seleccionado]="asiento.estado === 'seleccionado'"
                   [class.espacio]="asiento.estado === 'espacio'"
                   (click)="seleccionarAsiento(asiento)"
-                  [attr.title]="asiento.id + ' - ' + asiento.estado + (asiento.tipo ? ' (' + asiento.tipo + ')' : '')">
-                  <i class="fas fa-couch" *ngIf="asiento.estado !== 'espacio'"></i>
+                  [attr.title]="asiento.id + ' - ' + asiento.estado + (asiento.tipo ? ' (' + asiento.tipo + ')' : '')"
+                  style="position: relative;">
+                  <i class="fas fa-couch" *ngIf="asiento.estado !== 'espacio'" style="position: relative; font-size: 20px;">
+                    <span class="asiento-numero">{{ colIdx + 1 }}</span>
+                  </i>
                 </div>
               </div>
             </div>

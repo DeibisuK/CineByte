@@ -365,6 +365,23 @@
   transform: scale(1.2);
 }
 
+.asiento-numero {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 6px;
+  margin: auto;
+  font-size: 0.5rem;
+  color: var(--dropdown-bg);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
 /* Mensaje de validación */
 .validation-message {
   text-align: center;
@@ -406,19 +423,6 @@
   cursor: not-allowed;
   transform: none !important;
 }
-
-/*
-.btn-simulate {
-  background: linear-gradient(135deg, #0878c3, #0849c3);
-  transition: background 0.2s, transform 0.2s;
-  color: white;
-}
-
-.btn-simulate:not(:disabled):hover {
-  background: linear-gradient(135deg, #0849c3, #0878c3);
-  transform: scale(1.04);
-}
-*/
 
 .btn-simulate {
   background: linear-gradient(135deg, #0878c3, #0849c3);
