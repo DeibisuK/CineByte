@@ -6,7 +6,7 @@ import { SedeService } from '@features/venues';
 import {
   FormBuilder, FormGroup, Validators, ReactiveFormsModule
 } from '@angular/forms';
-import 'leaflet/dist/leaflet.css';
+//import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -76,6 +76,11 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
           ...data,
           estado: estadoValido
         });
+        
+        // Actualizar mapa si ya está inicializado
+        if (this.map && this.marker) {
+          this.updateMapPosition(data.latitud || -0.22985, data.longitud || -78.52495);
+        }
       },
       error: (err) => {
         this.showErrorAlert('Error al cargar sede');
@@ -91,33 +96,45 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     setTimeout(() => {
-      const lat = this.sedeForm?.value.latitud || -0.22985;
-      const lng = this.sedeForm?.value.longitud || -78.52495;
-      
-      this.map = L.map('map').setView([lat, lng], 13);
-      this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
+      this.initializeMap();
+    }, 100);
+  }
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors',
-      }).addTo(this.map);
+  private initializeMap(): void {
+    const lat = this.sedeForm?.value.latitud || -0.22985;
+    const lng = this.sedeForm?.value.longitud || -78.52495;
+    
+    this.map = L.map('map').setView([lat, lng], 13);
+    this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map);
 
-      this.marker.on('dragend', () => {
-        const { lat, lng } = this.marker.getLatLng();
-        this.sedeForm.patchValue({
-          latitud: lat,
-          longitud: lng,
-        });
-        this.cdr.detectChanges();
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(this.map);
+
+    this.marker.on('dragend', () => {
+      const { lat, lng } = this.marker.getLatLng();
+      this.sedeForm.patchValue({
+        latitud: lat,
+        longitud: lng,
       });
-
-      this.map.on('click', (e: L.LeafletMouseEvent) => {
-        const { lat, lng } = e.latlng;
-        this.marker.setLatLng(e.latlng);
-        this.sedeForm.patchValue({ latitud: lat, longitud: lng });
-        this.getDireccionDesdeCoordenadas(lat, lng);
-        this.cdr.detectChanges();
-      });
+      this.cdr.detectChanges();
     });
+
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+      this.marker.setLatLng(e.latlng);
+      this.sedeForm.patchValue({ latitud: lat, longitud: lng });
+      this.getDireccionDesdeCoordenadas(lat, lng);
+      this.cdr.detectChanges();
+    });
+  }
+
+  private updateMapPosition(lat: number, lng: number): void {
+    if (this.map && this.marker) {
+      const newLatLng = L.latLng(lat, lng);
+      this.map.setView(newLatLng, 13);
+      this.marker.setLatLng(newLatLng);
+    }
   }
 
   onSubmit(): void {
@@ -180,7 +197,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Getters para los mensajes de error en el template
   get nombre() { return this.sedeForm.get('nombre')!; }
-  get id_ciudad() { return this.sedeForm.get('id_ciudad')!; }
+  get ciudad() { return this.sedeForm.get('ciudad')!; }
   get direccion() { return this.sedeForm.get('direccion')!; }
   get telefono() { return this.sedeForm.get('telefono')!; }
   get email() { return this.sedeForm.get('email')!; }

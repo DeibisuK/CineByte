@@ -11,7 +11,7 @@ import {
   Validators,
   ReactiveFormsModule,
 } from '@angular/forms';
-import 'leaflet/dist/leaflet.css';
+//import 'leaflet/dist/leaflet.css';
 import * as L from 'leaflet';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -130,8 +130,10 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // Inicial
-    this.sedeForm.patchValue({ latitud: coords[0], longitud: coords[1] });
-    this.getDireccionDesdeCoordenadas(coords[0], coords[1]);
+    setTimeout(() => {
+      this.sedeForm.patchValue({ latitud: coords[0], longitud: coords[1] });
+      this.getDireccionDesdeCoordenadas(coords[0], coords[1]);
+    });
   }
 
   onSubmit(): void {
@@ -204,9 +206,11 @@ export class CrearSedesComponent implements OnInit, AfterViewInit, OnDestroy {
           const direccion = data.display_name;
           const ciudad = data.address.city || data.address.town || data.address.village || data.address.county;
 
-          this.sedeForm.patchValue({
-            direccion: direccion,
-            ciudad: ciudad || '',
+          setTimeout(() => {
+            this.sedeForm.patchValue({
+              direccion: direccion,
+              ciudad: ciudad || '',
+            });
           });
         }
       })
