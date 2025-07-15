@@ -198,7 +198,6 @@ export class DashboardComponent implements OnInit {
           resolve();
         },
         error: (error) => {
-          console.error('Error al obtener datos del dashboard:', error);
           reject(error);
         }
       });
@@ -219,7 +218,7 @@ export class DashboardComponent implements OnInit {
         }));
       },
       error: (error) => {
-        console.error('Error al cargar películas más vendidas:', error);
+        // Error al cargar películas más vendidas
       }
     });
   }
@@ -244,7 +243,6 @@ export class DashboardComponent implements OnInit {
       this.loadingCards();
 
     } catch (error) {
-      console.error('Error en loadingAll:', error);
       this.isLoading = false;
     }
   }

@@ -27,6 +27,4 @@ export class CategoriasComponent {
     }
     this.pestanaActiva = tabIndex;
   }
-
-
 }

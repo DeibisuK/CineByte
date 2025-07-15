@@ -21,7 +21,6 @@ import { AlertaService } from '@core/services';
   styleUrl: './editar-funciones.component.css'
 })
 export class EditarFuncionesComponent implements OnInit, OnDestroy {
-  private readonly DROPDOWN_DELAY = 200;
   private destroy$ = new Subject<void>();
   
   funcionesForm: FormGroup;
@@ -142,8 +141,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
         // Si ya tenemos una función cargada, actualizar el campo de búsqueda de película
         this.updatePeliculaSearchField();
       },
-      error: (error) => {
-        console.error('Error loading initial data:', error);
+      error: () => {
         this.alerta.error('Error', 'Error al cargar los datos iniciales.');
         this.isLoadingInitialData = false;
       }
@@ -160,8 +158,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
           this.populateForm(funcion);
           this.isLoadingFunction = false;
         },
-        error: (error) => {
-          console.error('Error loading funcion:', error);
+        error: () => {
           this.alerta.error('Error', 'No se pudo cargar la función a editar.');
           this.router.navigate(['/admin/funciones/list']);
         }
@@ -175,7 +172,6 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
     if (pelicula) {
       this.selectPelicula(pelicula);
     } else {
-      console.warn('Película no encontrada para id:', funcion.id_pelicula);
       // Si no se encuentra la película, al menos establecer el ID
       this.selectedPeliculaId = funcion.id_pelicula;
       this.funcionesForm.patchValue({
@@ -195,17 +191,17 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
               this.selectSede(sede);
               
               // Después de cargar las salas, seleccionar la sala actual
-              setTimeout(() => {
+              this.loadSalasBySede(sedeId).then(() => {
                 const salaActual = this.salas.find(s => s.id_sala === funcion.id_sala);
                 if (salaActual) {
                   this.selectSala(salaActual);
                 }
-              }, 500);
+              });
             }
           }
         },
-        error: (error: any) => {
-          console.error('Error loading sede for sala:', error);
+        error: () => {
+          // Error al cargar sede para la sala
         }
       });
 
@@ -237,13 +233,9 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   }
 
   private formatDateTimeLocal(date: Date): string {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
+    // Ajustar a zona horaria local
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+    return localDate.toISOString().slice(0, 16);
   }
 
   // Event handlers para películas
@@ -275,9 +267,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   }
 
   hidePeliculasDropdown(): void {
-    setTimeout(() => {
-      this.showPeliculasDropdown = false;
-    }, this.DROPDOWN_DELAY);
+    this.showPeliculasDropdown = false;
   }
 
   // Event handlers para sedes
@@ -311,37 +301,38 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   }
 
   hideSedesDropdown(): void {
-    setTimeout(() => {
-      this.showSedesDropdown = false;
-    }, this.DROPDOWN_DELAY);
+    this.showSedesDropdown = false;
   }
 
   // Event handlers para salas
-  loadSalasBySede(sedeId: number): void {
+  loadSalasBySede(sedeId: number): Promise<void> {
     this.isLoadingSalas = true;
-    this.sedesSalasService.getSalasBySede(sedeId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (salas) => {
-          this.salas = this.filteredSalas = salas;
-          this.isLoadingSalas = false;
-          
-          // Si estamos editando, seleccionar la sala actual
-          if (this.funcionOriginal) {
-            const salaActual = salas.find(s => s.id_sala === this.funcionOriginal!.id_sala);
-            if (salaActual) {
-              this.funcionesForm.patchValue({
-                sala_search: salaActual.nombre
-              });
+    return new Promise((resolve, reject) => {
+      this.sedesSalasService.getSalasBySede(sedeId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (salas) => {
+            this.salas = this.filteredSalas = salas;
+            this.isLoadingSalas = false;
+            
+            // Si estamos editando, seleccionar la sala actual
+            if (this.funcionOriginal) {
+              const salaActual = salas.find(s => s.id_sala === this.funcionOriginal!.id_sala);
+              if (salaActual) {
+                this.funcionesForm.patchValue({
+                  sala_search: salaActual.nombre
+                });
+              }
             }
+            resolve();
+          },
+          error: () => {
+            this.alerta.error('Error', 'Error al cargar las salas.');
+            this.isLoadingSalas = false;
+            reject();
           }
-        },
-        error: (error) => {
-          console.error('Error loading salas:', error);
-          this.alerta.error('Error', 'Error al cargar las salas.');
-          this.isLoadingSalas = false;
-        }
-      });
+        });
+    });
   }
 
   filterSalas(event: Event): void {
@@ -379,9 +370,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   }
 
   hideSalasDropdown(): void {
-    setTimeout(() => {
-      this.showSalasDropdown = false;
-    }, this.DROPDOWN_DELAY);
+    this.showSalasDropdown = false;
   }
 
   onSubmit(): void {
@@ -414,9 +403,8 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
           next: (response) => {
             this.alerta.successRoute('Éxito', 'Función actualizada exitosamente!', 'funciones/list');
           },
-          error: (err) => {
-            console.error('Error updating function:', err);
-            const mensaje = err.error?.message || 'Error al actualizar la función.';
+          error: () => {
+            const mensaje = 'Error al actualizar la función.';
             this.alerta.error('Error', mensaje);
             this.isSubmitting = false;
           }
@@ -472,8 +460,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
           
           this.isLoadingIdiomas = false;
         },
-        error: (error) => {
-          console.error('Error loading idiomas for pelicula:', error);
+        error: () => {
           this.alerta.error('Error', 'Error al cargar los idiomas de la película.');
           this.isLoadingIdiomas = false;
         }

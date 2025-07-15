@@ -95,20 +95,16 @@ export class IdiomasComponent {
     }
 
     const obj = this.formIdioma.value as Idiomas;
-    try {
-      this.idiomaService.addIdiomas(obj).subscribe({
-        next: () => {
-          this.alerta.success("Idioma creado", "El idioma se guardó correctamente");
-          this.formIdioma.reset();
-          this.cargarIdiomas();
-        },
-        error: () => {
-          this.alerta.error("Error", "Error al guardar el idioma");
-        }
-      });
-    } catch (error) {
-      this.alerta.error("Error", "Error al guardar el idioma");
-    }
+    this.idiomaService.addIdiomas(obj).subscribe({
+      next: () => {
+        this.alerta.success("Idioma creado", "El idioma se guardó correctamente");
+        this.formIdioma.reset();
+        this.cargarIdiomas();
+      },
+      error: () => {
+        this.alerta.error("Error", "Error al guardar el idioma");
+      }
+    });
   }
 
   deleteIdioma(id: number, nombre: string): void {

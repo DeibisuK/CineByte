@@ -46,9 +46,8 @@ export class CrearDistribuidorComponent implements OnInit {
         this.paises = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
         this.filteredPaises = [...this.paises];
       },
-      error: (err) => {
+      error: () => {
         this.alerta.error('Error', 'No se pudieron cargar los países');
-        console.error(err);
       }
     });
   }
@@ -57,20 +56,18 @@ export class CrearDistribuidorComponent implements OnInit {
       this.alerta.error("Formulario Inválido", "Rellene todos los campos");
       return;
     }
-    try {
-      const distri: Distribuidor = this.distribuidorform.value as Distribuidor
-      this.service.addDisitribuidor(distri).subscribe({
-        next: () => {
-          this.alerta.success("Distribuidor creado", "El distribuidor se guardó correctamente");
-          this.cerrarModal();
-        },
-        error: () => {
-          this.alerta.error("Error", "Error al guardar el distribuidor");
-        }
-      });
-    } catch (error) {
-      this.alerta.error("Error", "Error al guardar el distribuidor");
-    }
+
+    const distri: Distribuidor = this.distribuidorform.value as Distribuidor;
+    this.service.addDisitribuidor(distri).subscribe({
+      next: () => {
+        this.alerta.success("Distribuidor creado", "El distribuidor se guardó correctamente");
+        this.distribuidorform.reset();
+        this.cerrarModal();
+      },
+      error: () => {
+        this.alerta.error("Error", "Error al guardar el distribuidor");
+      }
+    });
   }
   cerrarModal() {
     this.cerrar.emit();
@@ -98,16 +95,7 @@ export class CrearDistribuidorComponent implements OnInit {
   }
 
   hidePaisesDropdown(): void {
-    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.showPaisesDropdown = false;
     this.filteredPaises = [...this.paises];
-  }
-
-  getPaisOrigen(): Pais[] {
-    this.paisService.getPais().subscribe({
-      next: (data) => {
-        this.paises = data;
-      }
-    });
-    return this.paises;
   }
 }

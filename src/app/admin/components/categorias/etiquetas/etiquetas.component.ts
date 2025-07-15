@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Etiquetas } from '@core/models/etiquetas.model';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EtiquetasService } from '@features/catalog';
@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './etiquetas.component.html',
   styleUrl: './etiquetas.component.css'
 })
-export class EtiquetasComponent {
+export class EtiquetasComponent implements OnInit {
   etiquetas: Etiquetas[] = [];
   etiquetasFiltrados: Etiquetas[] = [];
   filtroEtiquetas: string = '';
@@ -58,10 +58,10 @@ export class EtiquetasComponent {
     this.etiquetaService.updateEtiquetas(etiqueta)
       .subscribe({
         next: () => {
-          this.alerta.success('', 'Género actualizado correctamente');
+          this.alerta.success('', 'Etiqueta actualizada correctamente');
         },
         error: () => {
-          this.alerta.error('', 'Error al actualizar el género');
+          this.alerta.error('', 'Error al actualizar la etiqueta');
         }
       });
   }
@@ -69,52 +69,49 @@ export class EtiquetasComponent {
     this.etiquetaService.getEtiquetas().subscribe({
       next: (data) => {
         this.etiquetas = data;
-        this.aplicarFiltro(); // Inicializa la lista filtrada
+        this.aplicarFiltro();
+      },
+      error: () => {
+        this.alerta.error('Error', 'No se pudieron cargar las etiquetas');
       }
     });
 
   }
-  aplicarFiltro() {
+  aplicarFiltro(): void {
     const termino = this.filtroEtiquetas.toLowerCase().trim();
-
-    this.etiquetasFiltrados = this.etiquetas.filter(g =>
-      g.nombre.toLowerCase().includes(termino)
-    );
-    this.etiquetasFiltrados = this.etiquetasFiltrados.sort((a, b) => a.id_etiqueta - b.id_etiqueta);
+    this.etiquetasFiltrados = this.etiquetas
+      .filter(g => g.nombre.toLowerCase().includes(termino))
+      .sort((a, b) => a.id_etiqueta - b.id_etiqueta);
+    this.total = this.etiquetasFiltrados.length;
   }
 
   totalEtiqueta(): number {
-    return this.total = this.etiquetasFiltrados.length;
+    return this.etiquetasFiltrados.length;
   }
-
 
   addEtiqueta(): void {
     if (!this.formEtiquetas.valid) {
-      this.alerta.error("Formulario Inválido", "Ingrese un nombre");
+      this.alerta.error('Formulario Inválido', 'Ingrese un nombre');
       return;
     }
 
     const obj = this.formEtiquetas.value as Etiquetas;
-    try {
-      this.etiquetaService.addEtiquetas(obj).subscribe({
-        next: () => {
-          this.alerta.success("Etiqueta creada", "La etiqueta se guardó correctamente");
-          this.formEtiquetas.reset();
-          this.cargarEtiqueta();
-        },
-        error: () => {
-          this.alerta.error("Error", "Error al guardar la etiqueta");
-        }
-      });
-    } catch (error) {
-      this.alerta.error("Error", "Error al guardar la etiqueta");
-    }
+    this.etiquetaService.addEtiquetas(obj).subscribe({
+      next: () => {
+        this.alerta.success('Etiqueta creada', 'La etiqueta se guardó correctamente');
+        this.formEtiquetas.reset();
+        this.cargarEtiqueta();
+      },
+      error: () => {
+        this.alerta.error('Error', 'Error al guardar la etiqueta');
+      }
+    });
   }
 
   deleteEtiqueta(id: number, nombre: string): void {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: 'Esta acción eliminará la etiqueta ' + nombre + ' permanentemente',
+      text: `Esta acción eliminará la etiqueta ${nombre} permanentemente`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
@@ -122,13 +119,12 @@ export class EtiquetasComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.etiquetaService.deleteEtiquetas(id).subscribe({
-          next: (res) => {
-            Swal.fire('Eliminado', res.mensaje, 'success');
+          next: () => {
+            Swal.fire('Eliminado', 'La etiqueta ha sido eliminada correctamente', 'success');
             this.cargarEtiqueta();
           },
-          error: (err) => {
-            const mensaje = err.error?.error || 'No se pudo eliminar la etiqueta.';
-            Swal.fire('Error', mensaje, 'error');
+          error: () => {
+            Swal.fire('Error', 'No se pudo eliminar la etiqueta.', 'error');
           }
         });
       }

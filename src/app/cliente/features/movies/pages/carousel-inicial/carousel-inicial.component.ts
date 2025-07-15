@@ -154,7 +154,7 @@ export class CarouselInicialComponent {
   getImageUrl(movie: Pelicula): string {
     // Verificar si movie existe
     if (!movie) {
-      console.log('❌ Movie no existe');
+      console.log('Película no existe');
       return '/assets/placeholder-image.png';
     }
 

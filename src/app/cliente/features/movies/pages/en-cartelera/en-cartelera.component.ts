@@ -31,8 +31,7 @@ export class EnCarteleraComponent {
         // Verificar qué películas tienen funciones con manejo robusto de errores
         this.verificarPeliculasConFunciones(peliculas);
       },
-      error: (err) => {
-        console.error('Error fetching películas:', err);
+      error: () => {
         this.loading = false;
       }
     });
@@ -69,8 +68,7 @@ export class EnCarteleraComponent {
             tieneFunciones: funcionesActivas.length > 0
           };
         }),
-        catchError(err => {
-          console.warn(`Error al verificar funciones para película ${pelicula.id_pelicula}:`, err);
+        catchError(() => {
           // En caso de cualquier error, asumir que no tiene funciones para ser conservadores
           return of({
             pelicula: pelicula,
@@ -83,8 +81,7 @@ export class EnCarteleraComponent {
     // Ejecutar todas las consultas en paralelo con timeout global
     const funcionesCheck = forkJoin(funcionesObservables).pipe(
       timeout(timeoutDuration + 2000), // Un poco más de tiempo para el forkJoin
-      catchError(err => {
-        console.warn('Timeout o error en verificación de funciones, mostrando todas las películas candidatas:', err.message);
+      catchError(() => {
         // En caso de timeout, retornar todas las películas candidatas como si tuvieran funciones
         return of(peliculasCandidatas.map(pelicula => ({
           pelicula: pelicula,
@@ -101,8 +98,7 @@ export class EnCarteleraComponent {
           .map(resultado => resultado.pelicula);
         this.loading = false; // Terminar loading
       },
-      error: (err) => {
-        console.warn('Error verificando funciones, mostrando todas las películas candidatas:', err);
+      error: () => {
         // En caso de error, mostrar todas las películas candidatas
         this.peliculasCartelera = peliculasCandidatas;
         this.loading = false; // Terminar loading
@@ -122,7 +118,6 @@ export class EnCarteleraComponent {
     return funciones.map(funcion => {
       // Crear objeto Date directamente con la fecha que ya contiene fecha y hora
       const fechaHoraFuncion = new Date(funcion.fecha_hora_inicio);
-      console.log(`Verificando función ${funcion.id_funcion} con fecha/hora: ${fechaHoraFuncion}`);
       // Si la fecha/hora de la función ya pasó, marcar como finalizada
       if (fechaHoraFuncion <= ahora && funcion.estado === 'activa') {
         // Actualizar en base de datos
@@ -140,8 +135,7 @@ export class EnCarteleraComponent {
         next: (funciones) => {
           this.verificarEstadoFuncionesPorFecha(funciones);
         },
-        error: (err) => {
-          console.warn(`Error al verificar funciones para película ${pelicula.id_pelicula}:`, err);
+        error: () => {
         }
       });
     });
@@ -151,14 +145,7 @@ export class EnCarteleraComponent {
    * Actualiza el estado de una función en la base de datos
    */
   private actualizarEstadoFuncion(idFuncion: number, nuevoEstado: string): void {
-    this.peliculasService.actualizarEstadoFuncion(idFuncion, nuevoEstado).subscribe({
-      next: () => {
-        console.log(`Función ${idFuncion} actualizada a estado: ${nuevoEstado}`);
-      },
-      error: (err) => {
-        console.error(`Error al actualizar función ${idFuncion}:`, err);
-      }
-    });
+    this.peliculasService.actualizarEstadoFuncion(idFuncion, nuevoEstado).subscribe();
   }
 
   /**

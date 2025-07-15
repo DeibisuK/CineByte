@@ -254,14 +254,12 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
           next: () => {
             this.alerta.successRoute("Película creada", "La película se guardó correctamente", "peliculas/list");
           },
-          error: (error) => {
-            console.error('Error al guardar película:', error);
+          error: () => {
             this.alerta.error("Error", "Error al guardar la película");
           }
         });
 
     } catch (error) {
-      console.error('Error en onSubmit:', error);
       Swal.close(); // Cerrar SweetAlert en caso de error
       this.alerta.error("Error", "Error al guardar la película");
     }
@@ -355,7 +353,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (this.showIdiomasDropdown) {
       this.filteredIdiomas = [...this.idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
-    this.updateDropdownClass('idiomas');
   }
 
   toggleGenerosDropdown(): void {
@@ -363,7 +360,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (this.showGenerosDropdown) {
       this.filteredGeneros = [...this.generos].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
-    this.updateDropdownClass('generos');
   }
 
   toggleActoresDropdown(): void {
@@ -371,7 +367,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (this.showActoresDropdown) {
       this.filteredActores = [...this.actores].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
-    this.updateDropdownClass('actores');
   }
 
   toggleEtiquetasDropdown(): void {
@@ -379,7 +374,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (this.showEtiquetasDropdown) {
       this.filteredEtiquetas = [...this.etiquetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
-    this.updateDropdownClass('etiquetas');
   }
 
   toggleDistribuidoresDropdown(): void {
@@ -387,56 +381,31 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
     if (this.showDistribuidoresDropdown) {
       this.filteredDistribuidores = [...this.distribuidor].sort((a, b) => a.nombre.localeCompare(b.nombre));
     }
-    this.updateDropdownClass('distribuidores');
   }
 
-  // Método para actualizar clases CSS dinámicamente
-  private updateDropdownClass(type: string): void {
-    const dropdownElement = document.querySelector(`.dropdown-container.${type}`);
-    if (dropdownElement) {
-      if (this.getDropdownState(type)) {
-        dropdownElement.classList.add('active');
-      } else {
-        dropdownElement.classList.remove('active');
-      }
-    }
-  }
-
-  // Método auxiliar para obtener estado de dropdown
-  private getDropdownState(type: string): boolean {
-    switch (type) {
-      case 'idiomas': return this.showIdiomasDropdown;
-      case 'generos': return this.showGenerosDropdown;
-      case 'actores': return this.showActoresDropdown;
-      case 'etiquetas': return this.showEtiquetasDropdown;
-      case 'distribuidores': return this.showDistribuidoresDropdown;
-      default: return false;
-    }
-  }
-
-  // Métodos para ocultar dropdown
+  // Métodos para ocultar dropdown - Refactorizados para eliminar setTimeout
   hideIdiomasDropdown(): void {
-    setTimeout(() => this.showIdiomasDropdown = false, 200);
+    this.showIdiomasDropdown = false;
     this.filteredIdiomas = [...this.idiomas].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideGenerosDropdown(): void {
-    setTimeout(() => this.showGenerosDropdown = false, 200);
+    this.showGenerosDropdown = false;
     this.filteredGeneros = [...this.generos].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideActoresDropdown(): void {
-    setTimeout(() => this.showActoresDropdown = false, 200);
+    this.showActoresDropdown = false;
     this.filteredActores = [...this.actores].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideEtiquetasDropdown(): void {
-    setTimeout(() => this.showEtiquetasDropdown = false, 200);
+    this.showEtiquetasDropdown = false;
     this.filteredEtiquetas = [...this.etiquetas].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
   hideDistribuidoresDropdown(): void {
-    setTimeout(() => this.showDistribuidoresDropdown = false, 200);
+    this.showDistribuidoresDropdown = false;
     this.filteredDistribuidores = [...this.distribuidor].sort((a, b) => a.nombre.localeCompare(b.nombre));
   }
 
@@ -446,7 +415,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   }
 
   hideClasificacionDropdown(): void {
-    setTimeout(() => this.showClasificacionDropdown = false, 200);
+    this.showClasificacionDropdown = false;
   }
 
   selectClasificacion(clasificacion: string): void {
@@ -461,7 +430,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
   }
 
   hideEstadoDropdown(): void {
-    setTimeout(() => this.showEstadoDropdown = false, 200);
+    this.showEstadoDropdown = false;
   }
 
   selectEstado(estado: { value: string, label: string }): void {
@@ -495,8 +464,7 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
         this.filteredActores = [...this.actores];
         this.filteredIdiomas = [...this.idiomas];
       },
-      error: (error) => {
-        console.error('Error al cargar datos:', error);
+      error: () => {
         this.alerta.error('Error', 'No se pudieron cargar los datos necesarios');
       }
     });
@@ -557,8 +525,6 @@ export class CrearPeliculaComponent implements OnInit, OnDestroy {
 
   // Navegación del carrusel
   navigateCarousel(direction: number): void {
-    const totalSlides = this.getTotalSlides();
-
     if (direction === -1 && this.canNavigateLeft()) {
       this.currentSlideIndex--;
     } else if (direction === 1 && this.canNavigateRight()) {

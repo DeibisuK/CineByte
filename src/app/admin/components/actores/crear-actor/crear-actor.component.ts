@@ -51,9 +51,8 @@ export class CrearActorComponent implements OnInit {
         this.paises = data.sort((a, b) => a.nombre.localeCompare(b.nombre));
         this.filteredPaises = [...this.paises];
       },
-      error: (err) => {
+      error: () => {
         this.alerta.error('Error', 'No se pudieron cargar los países');
-        console.error(err);
       }
     });
   }
@@ -65,12 +64,20 @@ export class CrearActorComponent implements OnInit {
     }
 
     this.cargando = true;
-    
-    // Convertir la fecha a formato ISO string
+
+    const localDateString: string = this.actorForm.value.fecha_nacimiento; // 'YYYY-MM-DDTHH:mm'
+      let fechaUTC: Date | null = null;
+      if (localDateString) {
+        const [date, time] = localDateString.split('T');
+        const [year, month, day] = date.split('-').map(Number);
+        const [hour, minute] = time.split(':').map(Number);
+        fechaUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
+      }
+
     const formValue = this.actorForm.value;
     const actorData: ActorCreateDTO = {
       ...formValue,
-      fecha_nacimiento: new Date(formValue.fecha_nacimiento).toISOString()
+      fecha_nacimiento: fechaUTC!
     };
 
     this.service.addActor(actorData).subscribe({
@@ -78,12 +85,11 @@ export class CrearActorComponent implements OnInit {
         this.alerta.success('Éxito', 'Actor creado correctamente');
         this.actorForm.reset();
         this.cerrarModal();
-        this.actorCreado.emit(); // Notificar que se creó un nuevo actor
+        this.actorCreado.emit();
       },
-      error: (err) => {
+      error: () => {
         this.cargando = false;
         this.alerta.error('Error', 'No se pudo crear el actor');
-        console.error(err);
       },
       complete: () => {
         this.cargando = false;
@@ -117,7 +123,7 @@ export class CrearActorComponent implements OnInit {
   }
 
   hidePaisesDropdown(): void {
-    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.showPaisesDropdown = false;
     this.filteredPaises = [...this.paises];
   }
 }

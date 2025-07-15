@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit, ViewEncapsulation, inject, ViewChild, ElementRef } from '@angular/core';
-import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms'; // <-- Importaciones clave
+import { Component, EventEmitter, Input, Output, ViewEncapsulation, inject } from '@angular/core';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RecuperarContrasenaComponent } from '../recuperar-contrasena/recuperar-contrasena.component';
 import { AuthService } from '@core/services';
-import { Route, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { updateProfile } from 'firebase/auth';
-import { AlertaService } from '@core/services';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -13,7 +12,6 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [
     CommonModule,
-    //RecuperarContrasenaComponent,
     ReactiveFormsModule,
     RecuperarContrasenaComponent
   ],
@@ -38,9 +36,7 @@ export class LoginComponent {
 
   readonly authService = inject(AuthService);
 
-
-
-  constructor(private router: Router, private alerta: AlertaService) {
+  constructor(private router: Router) {
     this.loginForm = new FormGroup({
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required, Validators.minLength(6)])
@@ -119,7 +115,6 @@ export class LoginComponent {
       // El usuario puede acceder al modo admin manualmente desde el navbar
       this.router.navigate(['/']);
     } catch (err: any) {
-      console.error(err);
       Swal.fire({
         icon: 'error',
         title: 'Error al iniciar sesión',
@@ -138,10 +133,6 @@ export class LoginComponent {
         });
         return;
       }
-      this.registerForm.markAllAsTouched();
-      return;
-    }
-    if (!this.registerForm.valid) {
       this.registerForm.markAllAsTouched();
       return;
     }
@@ -164,7 +155,6 @@ export class LoginComponent {
 
       this.cerrarLoginRegisterModal();
     } catch (err: any) {
-      console.error(err);
       Swal.fire({
         icon: 'error',
         title: 'Error al registrarse',
@@ -189,7 +179,6 @@ export class LoginComponent {
       // Siempre redirigir al inicio, sin importar el rol
       this.router.navigate(['/']);
     } catch (err: any) {
-      console.error(err);
       Swal.fire({
         icon: 'error',
         title: 'Error con Google',
@@ -214,7 +203,6 @@ export class LoginComponent {
       // Siempre redirigir al inicio, sin importar el rol
       this.router.navigate(['/']);
     } catch (err: any) {
-      console.error(err);
       Swal.fire({
         icon: 'error',
         title: 'Error con Facebook',

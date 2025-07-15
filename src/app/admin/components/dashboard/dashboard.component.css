@@ -216,6 +216,13 @@
   border: 2px solid var(--footer-line, #333);
 }
 
+.chart-card.bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
 .chart-header {
   display: flex;
   justify-content: space-between;

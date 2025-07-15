@@ -60,7 +60,9 @@ export class ListDistribuidorComponent implements OnInit {
         this.distribuidores = data;
         this.distribuidoresFiltrados = [...data];
       },
-      error: (err) => console.error('Error cargando distribuidores:', err)
+      error: () => {
+        this.alerta.error('Error', 'No se pudieron cargar los distribuidores');
+      }
     });
   }
 
@@ -72,7 +74,9 @@ export class ListDistribuidorComponent implements OnInit {
         this.filteredPaises = [...this.paises];
         this.filteredPaisesEdit = [...this.paises];
       },
-      error: (err) => console.error('Error cargando países:', err)
+      error: () => {
+        this.alerta.error('Error', 'No se pudieron cargar los países');
+      }
     });
   }
 
@@ -91,13 +95,16 @@ export class ListDistribuidorComponent implements OnInit {
 
       this.distribuidorService.addDisitribuidor(distribuidorData).subscribe({
         next: () => {
+          this.alerta.success('Éxito', 'Distribuidor creado correctamente');
           this.cargarDistribuidores();
           this.formDistribuidor.reset();
           // Resetear dropdown
           this.paisSearchTerm = '';
           this.filteredPaises = [...this.paises];
         },
-        error: (err) => console.error('Error agregando distribuidor:', err)
+        error: () => {
+          this.alerta.error('Error', 'No se pudo crear el distribuidor');
+        }
       });
     }
   }
@@ -130,7 +137,7 @@ export class ListDistribuidorComponent implements OnInit {
 
   guardarEdicion(): void {
     if (!this.distribuidorEditando || this.distribuidorEditando <= 0) {
-      console.error('ID de distribuidor inválido');
+      this.alerta.error('Error', 'ID de distribuidor inválido');
       return;
     }
 
@@ -142,14 +149,16 @@ export class ListDistribuidorComponent implements OnInit {
       id_pais_origen: Number(this.paisOrigenTemporal) || 0 // Conversión explícita a número
     };
 
-    this.distribuidorService.updateDistribuidor(Number(this.distribuidorEditando), datosActualizados).subscribe({
+    console.log('Datos a actualizar:', datosActualizados);
+
+    this.distribuidorService.updateDistribuidor(this.distribuidorEditando, datosActualizados).subscribe({
       next: () => {
-        this.alerta.success('Actualizadp', 'Distribuidor actualizado con exito');
+        this.alerta.success('Actualizado', 'Distribuidor actualizado con éxito');
         this.cancelarEdicion();
         this.cargarDistribuidores();
       },
-      error: (err) => {
-        this.alerta.error('ERROR', err.error);
+      error: () => {
+        this.alerta.error('Error', 'No se pudo actualizar el distribuidor');
       }
     });
   }
@@ -174,9 +183,12 @@ export class ListDistribuidorComponent implements OnInit {
       if (result.isConfirmed) {
         this.distribuidorService.deleteDisitribuidor(id).subscribe({
           next: () => { 
-            this.cargarDistribuidores() 
+            this.alerta.success('Eliminado', 'Distribuidor eliminado correctamente');
+            this.cargarDistribuidores();
           },
-          error: (err) => console.error('Error eliminando distribuidor:', err)
+          error: () => {
+            this.alerta.error('Error', 'No se pudo eliminar el distribuidor');
+          }
         });
       }
     });
@@ -209,7 +221,7 @@ export class ListDistribuidorComponent implements OnInit {
   }
 
   hidePaisesDropdown(): void {
-    setTimeout(() => this.showPaisesDropdown = false, 200);
+    this.showPaisesDropdown = false;
     this.filteredPaises = [...this.paises];
   }
 
@@ -235,7 +247,7 @@ export class ListDistribuidorComponent implements OnInit {
   }
 
   hidePaisesEditDropdown(): void {
-    setTimeout(() => this.showPaisesEditDropdown = false, 200);
+    this.showPaisesEditDropdown = false;
     this.filteredPaisesEdit = [...this.paises];
   }
 }

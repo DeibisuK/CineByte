@@ -51,13 +51,13 @@
       <div class="form-grid" style="grid-template-columns: 1fr 1fr;">
         <!-- Fecha inicio -->
         <div class="form-group">
-          <label for="fecha_inicio" class="form-label">Fecha de Inicio</label>
+          <label for="fecha_inicio" class="form-label">Fecha y Hora de Inicio</label>
           <input type="datetime-local" class="form-date" id="fecha_inicio" formControlName="fecha_inicio">
         </div>
 
         <!-- Fecha fin -->
         <div class="form-group">
-          <label for="fecha_fin" class="form-label">Fecha de Finalización</label>
+          <label for="fecha_fin" class="form-label">Fecha y Hora de Finalización</label>
           <input type="datetime-local" class="form-date" id="fecha_fin" formControlName="fecha_fin">
         </div>
       </div>
@@ -90,8 +90,8 @@
           <tr>
             <th>Mensaje</th>
             <th>Estado</th>
-            <th>Inicio</th>
-            <th>Fin</th>
+            <th>Fecha y Hora de Inicio</th>
+            <th>Fecha y Hora de Fin</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -104,8 +104,8 @@
                 {{ anuncio.estado }}
               </span>
             </td>
-            <td data-label="Inicio">{{ anuncio.fecha_inicio | date:'short' }}</td>
-            <td data-label="Fin">{{ anuncio.fecha_fin | date:'short' }}</td>
+            <td data-label="Inicio">{{formatDateTimeDisplay(anuncio.fecha_inicio) }}</td>
+            <td data-label="Fin">{{ formatDateTimeDisplay(anuncio.fecha_fin) }}</td>
             <td data-label="Acciones">
               <div class="acciones-cell">
                 <button class="action-btn" 

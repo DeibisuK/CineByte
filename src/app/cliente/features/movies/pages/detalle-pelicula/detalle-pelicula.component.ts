@@ -148,17 +148,13 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
           this.isLoading = false;
         }
       },
-      error: (err) => {
-        console.error('Error loading movie data:', err);
-        
+      error: () => {
         // Si falla la película completa, intentar solo la básica
         this.movieService.getPeliculaById(id).pipe(
           takeUntil(this.destroy$)
         ).subscribe({
           next: (pelicula) => {
             this.pelicula = pelicula;
-            console.warn('⚠️ Solo se cargó película básica, datos extendidos no disponibles');
-            
             if (this.sedeSeleccionada) {
               this.loadFunciones(id);
             } else {
@@ -167,11 +163,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
             }
           },
           error: (basicErr) => {
-            console.error('Error loading basic movie data:', basicErr);
             this.isLoading = false;
-            
             let errorMessage = 'No se pudo cargar la información de la película';
-            
             if (basicErr.status === 404) {
               errorMessage = 'La película no existe o no se encuentra disponible';
             } else if (basicErr.status === 500) {
@@ -179,7 +172,6 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
             } else if (basicErr.status === 0) {
               errorMessage = 'Error de conexión. Verifica tu conexión a internet';
             }
-            
             Swal.fire({
               icon: 'error',
               title: 'Película no encontrada',
@@ -197,7 +189,6 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   private loadFunciones(peliculaId: number): void {
     // Verificar que hay sede seleccionada
     if (!this.sedeSeleccionada?.id_sede) {
-      console.warn('No hay sede seleccionada');
       this.funcionesPorIdioma = [];
       this.setupMediaCarousel();
       this.isLoading = false;
@@ -270,8 +261,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         
         this.isLoading = false;
       },
-      error: (err: any) => {
-        console.error('Error en carga de funciones:', err);
+      error: () => {
         this.funcionesPorIdioma = [];
         this.funcionesCompletas = [];
         this.setupMediaCarousel();
@@ -428,8 +418,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       } else {
         this.sedeSeleccionada = null;
       }
-    } catch (error) {
-      console.error('Error parsing sede from localStorage:', error);
+    } catch {
       this.sedeSeleccionada = null;
     }
   }
@@ -474,7 +463,6 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     const idFuncion = this.obtenerIdFuncionPorIdiomaYHorario();
     
     if (!idSala || !idFuncion) {
-      console.warn('⚠️ No se pudo obtener ID de sala o función para la función seleccionada');
       return;
     }
 
@@ -485,7 +473,6 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
           // Calcular asientos disponibles desde la respuesta
           let disponibles = 0;
           let total = 0;
-          
           response.data.forEach((asiento: any) => {
             // Solo contar asientos normales (no espacios)
             if (asiento.tipo !== 'espacio') {
@@ -496,11 +483,9 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
               }
             }
           });
-
           this.totalAsientos = total;
           this.asientosOcupados = total - disponibles;
           this.maxAsientosDisponibles = disponibles;
-          
           // Ajustar la cantidad seleccionada si excede el máximo disponible
           if (this.maxAsientosDisponibles > 0 && this.cantidad > this.maxAsientosDisponibles) {
             this.cantidad = Math.min(this.cantidad, this.maxAsientosDisponibles);
@@ -509,12 +494,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
             this.cantidad = 1;
           }
         } else {
-          console.error('❌ Respuesta inválida del servidor:', response);
           this.aplicarFallbackAsientos();
         }
       },
-      error: (error: any) => {
-        console.error('❌ Error obteniendo asientos disponibles para la función:', error);
+      error: () => {
         this.aplicarFallbackAsientos();
       }
     });
@@ -728,24 +711,19 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       const [horaStr, minutoStr] = horario.split(':');
       const horaInicio = parseInt(horaStr);
       const minutoInicio = parseInt(minutoStr);
-      
       // Calcular hora de fin
       let minutosTotales = horaInicio * 60 + minutoInicio + this.pelicula.duracion_minutos;
       let horaFin = Math.floor(minutosTotales / 60);
       let minutoFin = minutosTotales % 60;
-      
       // Manejar cambio de día (24h+)
       if (horaFin >= 24) {
         horaFin = horaFin - 24;
       }
-      
       // Formatear con ceros a la izquierda
       const horaFinStr = horaFin.toString().padStart(2, '0');
       const minutoFinStr = minutoFin.toString().padStart(2, '0');
-      
       return `${horario} - ${horaFinStr}:${minutoFinStr}`;
-    } catch (error) {
-      console.error('Error calculando hora de fin:', error);
+    } catch {
       return horario;
     }
   }

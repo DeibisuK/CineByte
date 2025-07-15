@@ -262,7 +262,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.funcionesForm.valid && this.areIdsSelected() && this.fechaHoraFin) {
       this.isSubmitting = true;
-      
+
       // Validación adicional del precio
       const precioValue = this.funcionesForm.value.precio;
       if (!precioValue || isNaN(Number(precioValue)) || Number(precioValue) <= 0) {
@@ -270,20 +270,38 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         this.isSubmitting = false;
         return;
       }
-      
-      //a
+
+      // Convertir fecha_hora_inicio (string local) a Date UTC
+      const localDateString: string = this.funcionesForm.value.fecha_hora_inicio; // 'YYYY-MM-DDTHH:mm'
+      let fechaUTC: Date | null = null;
+      if (localDateString) {
+        const [date, time] = localDateString.split('T');
+        const [year, month, day] = date.split('-').map(Number);
+        const [hour, minute] = time.split(':').map(Number);
+        fechaUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
+      }
+
+      // Calcular fecha_hora_fin en UTC (sumando duración a la fecha UTC)
+      let fechaFinUTC: Date | null = null;
+      if (fechaUTC && this.selectedPeliculaId) {
+        const peliculaSeleccionada = this.peliculas.find(p => p.id_pelicula === this.selectedPeliculaId);
+        if (peliculaSeleccionada?.duracion_minutos) {
+          fechaFinUTC = new Date(fechaUTC.getTime() + peliculaSeleccionada.duracion_minutos * 60000);
+        }
+      }
+
       const formData: Funciones = {
         id_funcion: 0, // El backend lo generará
         id_pelicula: this.selectedPeliculaId!,
         id_sala: this.selectedSalaId!,
-        fecha_hora_inicio: new Date(this.funcionesForm.value.fecha_hora_inicio),
-        fecha_hora_fin: this.fechaHoraFin,
+        fecha_hora_inicio: fechaUTC!,
+        fecha_hora_fin: fechaFinUTC || this.fechaHoraFin!,
         precio_funcion: Number(precioValue),
         id_idioma: Number(this.funcionesForm.value.id_idioma),
         trailer_url: this.funcionesForm.value.trailer_url.trim(),
         estado: this.funcionesForm.value.estado
       };
-      
+
       this.funcionesService.addFuncion(formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({

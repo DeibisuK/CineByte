@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { ActoresService } from '@features/movies';
 import { PaisesService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
-import { Actores } from '@core/models/actores.model';
+import { ActorCreateDTO, Actores } from '@core/models/actores.model';
 import { AlertaService } from '@core/services';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -16,7 +16,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class ListarActoresComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   formActor: FormGroup;
   actores: Actores[] = [];
   actoresFiltrados: Actores[] = [];
@@ -27,7 +27,7 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
   apellidosTemporal: string = '';
   fechaNacimientoTemporal: string = '';
   nacionalidadTemporal: number | null = null;
-  
+
   // Estados de carga
   isLoadingActores = true;
   isLoadingPaises = true;
@@ -75,18 +75,19 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.actorService.getActor()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
+
         next: (data) => {
           this.actores = data.map(actor => ({
             ...actor,
             nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
-            fecha_nacimiento: new Date(actor.fecha_nacimiento)
+            fecha_nacimiento: actor.fecha_nacimiento // Mantener la fecha original
           }));
+
           this.actoresFiltrados = [...this.actores];
           this.isLoadingActores = false;
         },
-        error: (err) => {
+        error: () => {
           this.alerta.error('Error', 'No se pudieron cargar los actores');
-          console.error(err);
           this.isLoadingActores = false;
         }
       });
@@ -106,10 +107,10 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
             this.isLoadingPaises = false;
             resolve();
           },
-          error: (err) => {
+          error: () => {
             this.alerta.error('Error', 'No se pudieron cargar los países');
             this.isLoadingPaises = false;
-            reject(err);
+            reject();
           }
         });
     });
@@ -122,8 +123,20 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
   addActor(): void {
     if (this.formActor.valid) {
       this.isSubmitting = true;
-      const actorData = this.formActor.value;
-      actorData.fecha_nacimiento = new Date(actorData.fecha_nacimiento).toISOString();
+
+
+      const localDateString: string = this.formActor.value.fecha_nacimiento; // 'YYYY-MM-DDTHH:mm'
+      let fechaUTC: Date | null = null;
+      if (localDateString) {
+        const [year, month, day] = localDateString.split('-').map(Number);
+        fechaUTC = new Date(Date.UTC(year, month - 1, day));
+      }
+
+      const formValue = this.formActor.value;
+      const actorData: ActorCreateDTO = {
+        ...formValue,
+        fecha_nacimiento: fechaUTC!
+      };
 
       this.actorService.addActor(actorData)
         .pipe(takeUntil(this.destroy$))
@@ -134,9 +147,8 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
             this.resetForm();
             this.isSubmitting = false;
           },
-          error: (err) => {
+          error: () => {
             this.alerta.error('Error', 'No se pudo agregar el actor');
-            console.error(err);
             this.isSubmitting = false;
           }
         });
@@ -150,10 +162,10 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
       this.actoresFiltrados = [...this.actores];
       return;
     }
-    
+
     const filtro = this.filtroActores.toLowerCase();
-    this.actoresFiltrados = this.actores.filter(actor => 
-      actor.nombre.toLowerCase().includes(filtro) || 
+    this.actoresFiltrados = this.actores.filter(actor =>
+      actor.nombre.toLowerCase().includes(filtro) ||
       actor.apellidos.toLowerCase().includes(filtro)
     );
   }
@@ -162,25 +174,45 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.actorEditando = actor.id_actor;
     this.nombreTemporal = actor.nombre;
     this.apellidosTemporal = actor.apellidos;
-    this.fechaNacimientoTemporal = this.formatDateForInput(new Date(actor.fecha_nacimiento));
+    this.fechaNacimientoTemporal = this.formatDateForInput(actor.fecha_nacimiento);
     this.nacionalidadTemporal = actor.id_nacionalidad;
-    
+
     // Inicializar dropdown de edición
     const paisSeleccionado = this.paises.find(p => p.id_pais === actor.id_nacionalidad);
     this.paisEditSearchTerm = paisSeleccionado ? paisSeleccionado.nombre : '';
     this.filteredPaisesEdit = [...this.paises];
   }
 
-  private formatDateForInput(date: Date): string {
-    if (!date || isNaN(date.getTime())) {
-      console.warn('Invalid date provided to formatDateForInput');
+  formatDateForInput(dateInput: Date | string): string {
+    if (!dateInput) {
       return '';
     }
     
+    let date: Date;
+    if (typeof dateInput === 'string') {
+      // Si es string ISO, verificar si contiene hora
+      if (dateInput.includes('T')) {
+        // Contiene hora, extraer fecha y hora
+        const dateTimeOnly = dateInput.split('.')[0]; // Remover milisegundos si existen
+        return dateTimeOnly;
+      } else {
+        // Solo fecha, agregar hora por defecto
+        return dateInput + 'T00:00';
+      }
+    } else {
+      date = dateInput;
+    }
+
+    if (isNaN(date.getTime())) {
+      return '';
+    }
+
     const year = date.getFullYear();
     const month = ('0' + (date.getMonth() + 1)).slice(-2);
     const day = ('0' + date.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
+    const hours = ('0' + date.getHours()).slice(-2);
+    const minutes = ('0' + date.getMinutes()).slice(-2);
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   }
 
   guardarEdicion(): void {
@@ -211,9 +243,8 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
           this.cancelarEdicion();
           this.isUpdating = false;
         },
-        error: (err) => {
+        error: () => {
           this.alerta.error('Error', 'No se pudo actualizar el actor');
-          console.error(err);
           this.isUpdating = false;
         }
       });
@@ -229,11 +260,11 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
 
   deleteActor(id: number, nombre: string): void {
     if (this.isDeleting) return; // Prevenir múltiples eliminaciones
-    
+
     this.alerta.confirmacion(
-      '¿Estás seguro?', 
-      `Esta acción eliminará al actor ${nombre} permanentemente`, 
-      'Sí, eliminar', 
+      '¿Estás seguro?',
+      `Esta acción eliminará al actor ${nombre} permanentemente`,
+      'Sí, eliminar',
       'Cancelar'
     ).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
@@ -246,9 +277,8 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
               this.cargarActores();
               this.isDeleting = false;
             },
-            error: (err) => {
+            error: () => {
               this.alerta.error('Error', 'No se pudo eliminar el actor');
-              console.error(err);
               this.isDeleting = false;
             }
           });
@@ -293,11 +323,11 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
       fecha_nacimiento: '',
       id_nacionalidad: null
     });
-    
+
     // Marcar el formulario como pristine y untouched
     this.formActor.markAsPristine();
     this.formActor.markAsUntouched();
-    
+
     // Resetear dropdown
     this.paisSearchTerm = '';
     this.filteredPaises = [...this.paises];

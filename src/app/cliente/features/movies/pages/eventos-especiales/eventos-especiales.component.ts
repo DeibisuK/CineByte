@@ -32,18 +32,12 @@ export class EventosEspecialesComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.peliculasService.getPeliculasCompletas().subscribe({
       next: (peliculas: Pelicula[]) => {
-        console.log('🎭 Películas recibidas para eventos:', peliculas.length);
-        
         // Filtrar películas que tengan etiquetas "Eventos" o "Especiales"
         this.eventosEspeciales = peliculas.filter(pelicula => {
           // Verificar si las etiquetas contienen "Eventos" o "Especiales"
           if (!pelicula.etiquetas) return false;
-          
-          console.log('🏷️ Etiquetas de', pelicula.titulo, ':', pelicula.etiquetas);
-          
           // Manejar tanto arrays de objetos como arrays simples
           let hasEventoEtiqueta = false;
-          
           if (Array.isArray(pelicula.etiquetas)) {
             hasEventoEtiqueta = pelicula.etiquetas.some((etiqueta: any) => {
               if (typeof etiqueta === 'object' && etiqueta !== null && 'nombre' in etiqueta) {
@@ -55,12 +49,8 @@ export class EventosEspecialesComponent implements OnInit, OnDestroy {
               }
             });
           }
-          
-          console.log('✅ Tiene etiqueta de evento:', hasEventoEtiqueta);
           return hasEventoEtiqueta;
         });
-        
-        console.log('🎭 Eventos especiales encontrados:', this.eventosEspeciales.length);
         this.loading = false;
       },
       error: (err: any) => {

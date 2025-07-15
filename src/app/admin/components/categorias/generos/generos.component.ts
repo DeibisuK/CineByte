@@ -61,7 +61,6 @@ export class GenerosComponent {
 
   // Actualizar en el backend
   updateGenero(genero: Generos) {
-    console.log(genero.id_genero, '   ', genero.nombre);
     this.generoService.updateGenero(genero)
       .subscribe({
         next: () => {
@@ -102,20 +101,16 @@ export class GenerosComponent {
     }
 
     const obj = this.formGenero.value as Generos;
-    try {
-      this.generoService.addGenero(obj).subscribe({
-        next: () => {
-          this.alerta.success("Género creado", "El género se guardó correctamente");
-          this.formGenero.reset();
-          this.cargarGeneros();
-        },
-        error: () => {
-          this.alerta.error("Error", "Error al guardar el género");
-        }
-      });
-    } catch (error) {
-      this.alerta.error("Error", "Error al guardar el género");
-    }
+    this.generoService.addGenero(obj).subscribe({
+      next: () => {
+        this.alerta.success("Género creado", "El género se guardó correctamente");
+        this.formGenero.reset();
+        this.cargarGeneros();
+      },
+      error: () => {
+        this.alerta.error("Error", "Error al guardar el género");
+      }
+    });
   }
 
   deleteGenero(id: number, nombre: string): void {
