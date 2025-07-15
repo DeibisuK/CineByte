@@ -103,13 +103,14 @@ export class SimulationViewComponent implements OnInit {
   // Obtener imagen para el asiento
   getSeatImage(seatIndex: number): string {
     const seat = this.selectedSeats[seatIndex];
-    
-    // Si hay una imagen específica del asiento en la BD, usarla
+    // Buscar el asiento real en salaAsientos
+    const asientoReal = this.salaAsientos.find(a => a.fila === seat.row && a.numero === seat.number);
+    if (asientoReal && asientoReal.url_imagen && asientoReal.url_imagen.trim() !== '') {
+      return asientoReal.url_imagen;
+    }
     if (seat.image && seat.image.trim() !== '') {
       return seat.image;
     }
-    
-    // Fallback a imagen generada
     return `https://picsum.photos/400/250?random=${seat.row}${seat.number}`;
   }
 
