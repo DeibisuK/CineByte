@@ -83,6 +83,8 @@ export class EditarPromocionComponent implements OnInit {
           ),
           fecha_fin: this.formatDateForInput(promocion.fecha_fin as string),
         });
+        // Deshabilitar el campo tipo_promocion para que no se pueda modificar
+        this.promocionForm.get('tipo_promocion')?.disable();
         this.updateValidators(promocion.tipo_promocion);
       },
       error: (err) => {
@@ -169,6 +171,8 @@ export class EditarPromocionComponent implements OnInit {
     const promocion: Promocion = {
       ...this.promocionForm.value,
       id_promo: this.promocionId,
+      // Incluir el tipo_promocion aunque esté deshabilitado
+      tipo_promocion: this.promocionForm.get('tipo_promocion')?.value,
     };
 
     try {

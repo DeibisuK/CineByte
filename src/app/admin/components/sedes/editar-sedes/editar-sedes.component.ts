@@ -157,7 +157,7 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
           icon: 'success',
           confirmButtonText: 'OK'
         }).then(() => {
-          this.router.navigate(['/admin/sedes']);
+          this.router.navigate(['/admin/sedes/list']);
         });
       },
       error: (err) => {

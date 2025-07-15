@@ -125,7 +125,7 @@ export class ContactanosComponent implements OnInit {
       }
     });
 
-    this.http.post('https://api-cinebyte.onrender.com/api/contacto', formData)
+    this.http.post('https://api-cinebyte-akvqp.ondigitalocean.app/api/contacto', formData)
       .subscribe({
         next: () => {
           Swal.fire({
