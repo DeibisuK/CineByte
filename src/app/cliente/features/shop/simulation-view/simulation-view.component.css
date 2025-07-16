@@ -1,3 +1,21 @@
+/* Spinner de carga para la imagen */
+.image-loading-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-spinner {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--yellow, #ffc800);
+  z-index: 2;
+}
 /* ===========================
    REMOVER EFECTOS DE FOCUS/CLICK
 ============================ */

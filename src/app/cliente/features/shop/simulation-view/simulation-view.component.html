@@ -35,10 +35,17 @@
 
           <!-- Imagen/Vista del asiento con botón de ampliar -->
           <div class="seat-image-container">
-            <img [src]="getSeatImage(activeTab)" 
-                 [alt]="'Vista desde asiento ' + getSeatLabel(selectedSeats[activeTab])"
-                 class="simulation-image">
-            
+            <div class="image-loading-wrapper">
+              <img [src]="getSeatImage(activeTab)"
+                   [alt]="'Vista desde asiento ' + getSeatLabel(selectedSeats[activeTab])"
+                   class="simulation-image"
+                   (load)="onImageLoad()"
+                   (error)="onImageError()"
+                   [style.display]="isImageLoading ? 'none' : 'block'">
+              <div *ngIf="isImageLoading" class="image-spinner">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+              </div>
+            </div>
             <!-- Botón de ampliar en la esquina superior derecha -->
             <button class="expand-btn" (click)="toggleImageExpanded()" title="Ampliar imagen">
               <i class="fas fa-expand"></i>

@@ -63,21 +63,7 @@ export class EndPaymentComponent implements OnInit {
             console.error('Error parsing asientos:', e);
           }
         }
-
-        // Mostrar sweet alert de éxito
-        this.mostrarExito();
       }
-    });
-  }
-
-  async mostrarExito(): Promise<void> {
-    await Swal.fire({
-      icon: 'success',
-      title: '¡Compra exitosa!',
-      text: 'Tu compra ha sido procesada exitosamente. Recibirás un email de confirmación.',
-      confirmButtonText: 'Continuar',
-      confirmButtonColor: '#28a745',
-      allowOutsideClick: false
     });
   }
 

@@ -32,6 +32,7 @@ interface SalaInfo {
   styleUrl: './simulation-view.component.css'
 })
 export class SimulationViewComponent implements OnInit {
+  isImageLoading: boolean = true;
   @Input() selectedSeats: SeatInfo[] = [];
   @Input() movieTitle: string = '';
   @Input() showtime: string = '';
@@ -53,6 +54,7 @@ export class SimulationViewComponent implements OnInit {
 
   selectTab(index: number) {
     this.activeTab = index;
+    this.isImageLoading = true;
   }
 
   onClose() {
@@ -112,6 +114,14 @@ export class SimulationViewComponent implements OnInit {
       return seat.image;
     }
     return `https://picsum.photos/400/250?random=${seat.row}${seat.number}`;
+  }
+
+  onImageLoad() {
+    this.isImageLoading = false;
+  }
+
+  onImageError() {
+    this.isImageLoading = false;
   }
 
   // Métodos para el mapa de asientos
