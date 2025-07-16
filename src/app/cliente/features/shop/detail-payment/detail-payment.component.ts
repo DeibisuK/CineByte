@@ -414,7 +414,6 @@ export class DetailPaymentComponent implements OnInit {
       if (resultado) {
         // Guardar ID de venta para PDF
         this.ventaId = resultado.venta.id || null;
-        
         // Navegar directamente a end-payment con los datos de la compra
         this.router.navigate(['/final'], {
           queryParams: {
@@ -428,6 +427,7 @@ export class DetailPaymentComponent implements OnInit {
             asientos: JSON.stringify(this.compraInfo.asientosSeleccionados || [])
           }
         });
+        // Se eliminó la SweetAlert de 'Compra procesada!' para evitar redundancia
       }
 
     } catch (error: any) {
