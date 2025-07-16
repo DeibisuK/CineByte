@@ -17,12 +17,13 @@ import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.com
 import { SelectSeatComponent } from './features/shop/select-seat/select-seat.component';
 import { DetailPaymentComponent } from './features/shop/detail-payment/detail-payment.component';
 import { EndPaymentComponent } from './features/shop/end-payment/end-payment.component';
+import { ProximosEstrenosComponent } from './features/movies/pages/proximos-estrenos/proximos-estrenos.component';
+import { EnCarteleraComponent } from './features/movies/pages/en-cartelera/en-cartelera.component';
 
 
 export const clienteRoutes: Routes = [
   {path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {path: 'inicio', component:InicioComponent},
-  {path: 'peliculas', component: CatalogoComponent},
   {path: 'promociones', component:ListarPromocionesComponent},
   {path: 'carrusel', component:CarouselPromosComponent},
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
@@ -37,6 +38,10 @@ export const clienteRoutes: Routes = [
   {path: 'acerca-de-nosotros', component: AcercaDeNosotrosComponent},
   {path: 'politica-de-privacidad', component: PoliticaDePrivacidadComponent},
   {path: 'final', component: EndPaymentComponent},
+  //Cartelera
+  {path: 'peliculas', component: CatalogoComponent},
+  {path: 'proximos-estrenos', component: ProximosEstrenosComponent},
+  {path: 'en-cartelera', component: EnCarteleraComponent},
   //Metodos de pago
   {path: 'metodos-de-pago', component: ListMetodoComponent},
   {path: 'metodos-de-pago/agregar', component: CrearMetodoComponent},
