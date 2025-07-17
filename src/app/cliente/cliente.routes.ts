@@ -17,24 +17,18 @@ import { CatalogoComponent } from './features/movies/pages/catalogo/catalogo.com
 import { SelectSeatComponent } from './features/shop/select-seat/select-seat.component';
 import { DetailPaymentComponent } from './features/shop/detail-payment/detail-payment.component';
 import { EndPaymentComponent } from './features/shop/end-payment/end-payment.component';
-<<<<<<< Updated upstream
 import { ProximosEstrenosComponent } from './features/movies/pages/proximos-estrenos/proximos-estrenos.component';
 import { EnCarteleraComponent } from './features/movies/pages/en-cartelera/en-cartelera.component';
-=======
 import { PromocionesPageComponent } from './features/promociones/promociones-page.component';
->>>>>>> Stashed changes
 
 
 export const clienteRoutes: Routes = [
   {path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {path: 'inicio', component:InicioComponent},
-<<<<<<< Updated upstream
   {path: 'promociones', component:ListarPromocionesComponent},
-=======
   {path: 'peliculas', component: CatalogoComponent},
   {path: 'promociones', component:PromocionesPageComponent},
   {path: 'todas-las-promociones', component:ListarPromocionesComponent},
->>>>>>> Stashed changes
   {path: 'carrusel', component:CarouselPromosComponent},
   {path: 'pelicula/:id/:titulo', component: DetallePeliculaComponent},
   {path: 'select-seat', component: SelectSeatComponent},
