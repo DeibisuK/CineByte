@@ -25,7 +25,6 @@ import { PromocionesPageComponent } from './features/promociones/promociones-pag
 export const clienteRoutes: Routes = [
   {path: '', redirectTo: 'inicio', pathMatch: 'full' },
   {path: 'inicio', component:InicioComponent},
-  {path: 'promociones', component:ListarPromocionesComponent},
   {path: 'peliculas', component: CatalogoComponent},
   {path: 'promociones', component:PromocionesPageComponent},
   {path: 'todas-las-promociones', component:ListarPromocionesComponent},
