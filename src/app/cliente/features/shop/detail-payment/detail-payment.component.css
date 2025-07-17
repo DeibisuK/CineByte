@@ -281,6 +281,141 @@
   font-weight: bold;
 }
 
+/* === SECCIÓN DE PROMOCIONES Y CUPONES === */
+.promociones-section {
+  background: var(--card-background);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid var(--dropdown-border);
+}
+
+.coupon-form {
+  margin-bottom: 20px;
+}
+
+.coupon-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.coupon-input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 1px solid var(--dropdown-border);
+  border-radius: 8px;
+  background: var(--background-color);
+  color: var(--text-color);
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.coupon-input:focus {
+  outline: none;
+  border-color: var(--yellow);
+  box-shadow: 0 0 0 2px rgba(247, 203, 90, 0.2);
+}
+
+.coupon-input.error {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+.btn-apply-coupon {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--yellow), #ff8c00);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.btn-apply-coupon:hover:not(:disabled) {
+  background: linear-gradient(135deg, #ffd700, #ff7700);
+  transform: translateY(-1px);
+}
+
+.btn-apply-coupon:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.coupon-error {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.coupon-success {
+  color: #28a745;
+  font-size: 14px;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(40, 167, 69, 0.1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+}
+
+.auto-promotions {
+  border-top: 1px solid var(--dropdown-border);
+  padding-top: 15px;
+}
+
+.promotions-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 10px;
+}
+
+.promotion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(247, 203, 90, 0.1);
+  border: 1px solid rgba(247, 203, 90, 0.3);
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.promotion-info {
+  flex: 1;
+}
+
+.promotion-title {
+  font-weight: 600;
+  color: var(--text-color);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.promotion-desc {
+  font-size: 12px;
+  color: var(--footer-link);
+  display: block;
+}
+
+.promotion-badge {
+  background: var(--yellow);
+  color: #000;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 12px;
+}
+
 /* Sección de métodos de pago */
 .payment-methods-section {
   background-color: var(--dropdown-bg);

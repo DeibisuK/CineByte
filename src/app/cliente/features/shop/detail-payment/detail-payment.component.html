@@ -64,6 +64,49 @@
           </div>
         </div>
 
+        <!-- Sección de cupones y promociones -->
+        <div class="promociones-section">
+          <h3 class="section-title">Cupones y Promociones</h3>
+          
+          <!-- Formulario de cupón -->
+          <form [formGroup]="couponForm" class="coupon-form">
+            <div class="coupon-input-group">
+              <input 
+                type="text" 
+                formControlName="codigo" 
+                placeholder="Ingresa tu código de cupón"
+                class="coupon-input"
+                [class.error]="couponForm.get('codigo')?.invalid && couponForm.get('codigo')?.touched">
+              <button 
+                type="button" 
+                class="btn-apply-coupon" 
+                (click)="aplicarCupon()"
+                [disabled]="!couponForm.get('codigo')?.value || validandoCupon">
+                <i *ngIf="validandoCupon" class="fas fa-spinner fa-spin"></i>
+                <span *ngIf="!validandoCupon">Aplicar</span>
+                <span *ngIf="validandoCupon">Validando...</span>
+              </button>
+            </div>
+            <div *ngIf="couponError" class="coupon-error">{{ couponError }}</div>
+            <div *ngIf="cuponAplicado" class="coupon-success">
+              <i class="fas fa-check-circle"></i>
+              Cupón "{{ cuponAplicado.codigo_cupon }}" aplicado: {{ cuponAplicado.porcentaje_descuento }}% de descuento
+            </div>
+          </form>
+
+          <!-- Promociones automáticas aplicables -->
+          <div class="auto-promotions" *ngIf="promocionesAutomaticas.length > 0">
+            <h4 class="promotions-title">Promociones Disponibles</h4>
+            <div class="promotion-item" *ngFor="let promo of promocionesAutomaticas">
+              <div class="promotion-info">
+                <span class="promotion-title">{{ promo.titulo }}</span>
+                <span class="promotion-desc">{{ promo.descripcion }}</span>
+              </div>
+              <div class="promotion-badge">{{ promo.porcentaje_descuento }}% OFF</div>
+            </div>
+          </div>
+        </div>
+
         <!-- Métodos de pago -->
         <div class="payment-methods-section">
           <h3 class="section-title">Métodos de Pago</h3>
@@ -107,27 +150,6 @@
               {{ metodosPago.length === 0 ? 'Agregar método de pago' : 'Agregar nuevo método' }}
             </button>
           </div>
-        </div>
-
-        <!-- Aplicar cupón -->
-        <div class="coupon-section">
-          <h3 class="section-title">Aplicar Cupón</h3>
-          <form [formGroup]="couponForm" class="coupon-form">
-            <div class="coupon-input-group">
-              <input 
-                type="text" 
-                formControlName="couponCode"
-                class="coupon-input"
-                placeholder="Ingresa tu código de cupón">
-              <button 
-                type="button"
-                class="btn btn-validate-coupon"
-                [disabled]="couponForm.invalid"
-                (click)="validateCoupon()">
-                Validar
-              </button>
-            </div>
-          </form>
         </div>
       </div>
 
@@ -178,9 +200,14 @@
                 <span class="summary-label">IVA (12%):</span>
                 <span class="summary-value">${{ iva.toLocaleString() }}</span>
               </div>
+              <!-- Descuentos aplicados -->
+              <div class="summary-item" *ngIf="descuentoAplicado > 0" style="color: #4caf50;">
+                <span class="summary-label">Descuento Aplicado:</span>
+                <span class="summary-value">-${{ descuentoAplicado.toLocaleString() }}</span>
+              </div>
               <div class="summary-item total-item">
                 <span class="summary-label">Total a Pagar:</span>
-                <span class="summary-value total-amount">${{ totalConIva.toLocaleString() }}</span>
+                <span class="summary-value total-amount">${{ totalConDescuento.toLocaleString() }}</span>
               </div>
             </div>
           </div>
@@ -196,7 +223,10 @@
         (click)="procesarPago()">
         <i *ngIf="isLoading" class="fas fa-spinner fa-spin"></i>
         <i *ngIf="!isLoading" class="fas fa-credit-card"></i>
-        {{ isLoading ? 'Procesando...' : 'Procesar Pago' }}
+        <span *ngIf="!isLoading">
+          {{ descuentoAplicado > 0 ? 'Procesar Pago - $' + totalConDescuento.toLocaleString() : 'Procesar Pago - $' + totalConIva.toLocaleString() }}
+        </span>
+        <span *ngIf="isLoading">Procesando...</span>
       </button>
       
       <!-- Botón para generar PDF (visible solo después de compra exitosa) -->

@@ -13,8 +13,8 @@ import {
   providedIn: 'root'
 })
 export class VentasService {
-  //private readonly apiURL = 'http://localhost:3000/api/ventas';
-  private readonly apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/ventas';
+  private readonly apiURL = 'http://localhost:3000/api/ventas';
+  //private readonly apiURL = 'https://api-cinebyte-akvqp.ondigitalocean.app/api/ventas';
 
   constructor(private http: HttpClient) { }
 
@@ -185,7 +185,7 @@ export class VentasService {
     valido: boolean;
     descuento_porcentaje?: number;
     descuento_monto?: number;
-    total_con_descuento?: number;
+    total_final?: number; // Renombrado de total_con_descuento
     mensaje?: string;
   }> {
     const body = { codigo_cupon, firebase_uid, total_venta };
@@ -193,7 +193,7 @@ export class VentasService {
       valido: boolean;
       descuento_porcentaje?: number;
       descuento_monto?: number;
-      total_con_descuento?: number;
+      total_final?: number; // Renombrado de total_con_descuento
       mensaje?: string;
     }>(`${this.apiURL}/validar-cupon`, body);
   }
@@ -246,6 +246,36 @@ export class VentasService {
 
   getVentasPorDia(startDate: string, endDate: string): Observable<any> {
     return this.http.get<any>(`${this.apiURL}/ventas-por-dia/${startDate}/${endDate}`);
+  }
+
+  /**
+   * ✅ NUEVO: Aplicar promociones automáticas según el día y usuario
+   * @param firebase_uid UID del usuario
+   * @param total_venta Total de la venta antes de descuentos
+   * @param dia_compra Día de la compra (opcional, usa el día actual)
+   * @returns Observable con las promociones aplicables
+   */
+  aplicarPromocionesAutomaticas(
+    firebase_uid: string,
+    total_venta: number,
+    dia_compra?: string
+  ): Observable<{
+    success: boolean;
+    promociones_aplicables: any[];
+    mejor_promocion: any;
+    descuento: number;
+    total_original: number;
+    total_final: number; // Renombrado de total_con_descuento
+  }> {
+    const body = { firebase_uid, total_venta, dia_compra };
+    return this.http.post<{
+      success: boolean;
+      promociones_aplicables: any[];
+      mejor_promocion: any;
+      descuento: number;
+      total_original: number;
+      total_final: number; // Renombrado de total_con_descuento
+    }>(`${this.apiURL}/promociones-automaticas`, body);
   }
 
 }

@@ -1,0 +1,81 @@
+<div class="promociones-showcase" *ngIf="!isLoading && promocionesActivas.length > 0">
+  <div class="section-header">
+    <h2 class="section-title">
+      <i class="fas fa-fire"></i>
+      Promociones Especiales
+    </h2>
+    <p class="section-subtitle">¡No te pierdas estas increíbles ofertas!</p>
+  </div>
+
+  <div class="promociones-grid">
+    <div 
+      *ngFor="let promocion of promocionesActivas; trackBy: trackByPromocionId" 
+      class="promocion-card"
+      [class.descuento]="promocion.tipo_promocion === 'Descuento'"
+      [class.publicitaria]="promocion.tipo_promocion === 'Publicitaria'">
+      
+      <!-- Imagen de la promoción -->
+      <div class="promocion-image" *ngIf="promocion.imagen_url">
+        <img [src]="promocion.imagen_url" [alt]="promocion.titulo" loading="lazy">
+        <div class="promocion-badge" [style.background-color]="getPromocionColor(promocion.tipo_promocion)">
+          <i [class]="getPromocionIcon(promocion.tipo_promocion)"></i>
+        </div>
+      </div>
+
+      <!-- Contenido de la promoción -->
+      <div class="promocion-content">
+        <h3 class="promocion-title">{{ promocion.titulo }}</h3>
+        <p class="promocion-description">{{ promocion.descripcion }}</p>
+        
+        <!-- Información específica por tipo -->
+        <div class="promocion-info">
+          <div *ngIf="promocion.tipo_promocion === 'Descuento'" class="descuento-info">
+            <span class="descuento-badge">{{ promocion.porcentaje_descuento }}% OFF</span>
+            <span class="dia-valido" *ngIf="promocion.dia_valido && promocion.dia_valido !== 'Todos'">
+              Válido {{ promocion.dia_valido }}s
+            </span>
+          </div>
+          
+          <div *ngIf="promocion.tipo_promocion === 'Cupon'" class="cupon-info">
+            <span class="cupon-code">Código: {{ promocion.codigo_cupon }}</span>
+            <span class="descuento-badge">{{ promocion.porcentaje_descuento }}% OFF</span>
+          </div>
+        </div>
+
+        <!-- Botón de acción -->
+        <div class="promocion-actions">
+          <button 
+            class="btn-promocion" 
+            *ngIf="promocion.url_link; else defaultAction"
+            (click)="abrirEnlace(promocion.url_link!)">
+            <i class="fas fa-external-link-alt"></i>
+            Ver Más
+          </button>
+          
+          <ng-template #defaultAction>
+            <button class="btn-promocion" routerLink="/peliculas">
+              <i class="fas fa-ticket-alt"></i>
+              ¡Aprovecha Ahora!
+            </button>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ver todas las promociones -->
+  <div class="ver-todas" *ngIf="promocionesActivas.length > 0">
+    <button class="btn-ver-todas" routerLink="/todas-las-promociones">
+      Ver todas las promociones
+      <i class="fas fa-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- Loading state -->
+<div class="promociones-loading" *ngIf="isLoading">
+  <div class="loading-spinner">
+    <i class="fas fa-spinner fa-spin"></i>
+    <span>Cargando promociones...</span>
+  </div>
+</div>

@@ -3,7 +3,7 @@ export interface Promocion {
   imagen_url?: string;
   titulo: string;
   descripcion: string;
-  tipo_promocion: 'Descuento' | 'Multiplicador' | 'Cupon';
+  tipo_promocion: 'Descuento' | 'Multiplicador' | 'Cupon' | 'Publicitaria';
   fecha_inicio: Date | string;
   fecha_fin: Date | string;
   url_link?: string;

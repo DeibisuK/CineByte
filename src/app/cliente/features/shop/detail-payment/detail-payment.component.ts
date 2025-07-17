@@ -11,6 +11,8 @@ import { AuthService, AlertaService } from '@core/services';
 import { MetodoPago, Pelicula } from '@core/models';
 import { VentasService } from '@features/payments/services/ventas.service';
 import { PagosService } from '@features/payments/services/pagos.service';
+import { PromocionService } from '@features/promotions/services/promocion.service';
+import { Promocion } from '@core/models/promocion.model';
 import Swal from 'sweetalert2';
 
 interface CompraInfo {
@@ -60,6 +62,13 @@ export class DetailPaymentComponent implements OnInit {
   // Película completa para obtener duración
   peliculaCompleta: Pelicula | null = null;
   
+  // Variables de promociones
+  cuponAplicado: Promocion | null = null;
+  promocionesAutomaticas: Promocion[] = [];
+  descuentoAplicado: number = 0;
+  validandoCupon: boolean = false;
+  couponError: string = '';
+  
   // Métodos de pago
   metodosPago: MetodoPago[] = [];
   selectedPaymentMethod: MetodoPago | null = null;
@@ -83,10 +92,11 @@ export class DetailPaymentComponent implements OnInit {
     private alertaService: AlertaService,
     private ventasService: VentasService,
     private pagosService: PagosService,
+    private promocionService: PromocionService,
     private http: HttpClient
   ) {
     this.couponForm = this.fb.group({
-      couponCode: ['', [Validators.required, Validators.minLength(3)]]
+      codigo: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
 
@@ -99,6 +109,9 @@ export class DetailPaymentComponent implements OnInit {
     
     // Cargar métodos de pago SIEMPRE (incluso al recargar)
     this.loadPaymentMethods();
+    
+    // Cargar promociones automáticas
+    this.cargarPromocionesAutomaticas();
     
     // Obtener parámetros de la URL (pueden sobrescribir los datos del storage)
     this.route.queryParams.subscribe(params => {
@@ -228,6 +241,10 @@ export class DetailPaymentComponent implements OnInit {
   get totalConIva(): number {
     return this.subtotal + this.iva;
   }
+  
+  get totalConDescuento(): number {
+    return Math.round((this.totalConIva - this.descuentoAplicado) * 100) / 100;
+  }
 
   private async loadUserData(): Promise<void> {
     await new Promise<void>((resolve) => {
@@ -291,13 +308,147 @@ export class DetailPaymentComponent implements OnInit {
     this.alertaService.success('Éxito', 'Método de pago agregado exitosamente');
   }
 
-  validateCoupon(): void {
-    if (this.couponForm.valid) {
-      const couponCode = this.couponForm.get('couponCode')?.value;
-      // TODO: Implementar lógica de validación de cupón
-
-      this.alertaService.info('Información', 'Funcionalidad de cupón en desarrollo');
+  aplicarCupon(): void {
+    const codigo = this.couponForm.get('codigo')?.value?.trim();
+    if (!codigo) {
+      this.couponError = 'Ingresa un código de cupón válido';
+      return;
     }
+
+    this.validandoCupon = true;
+    this.couponError = '';
+
+    // Usar el nuevo servicio de ventas para validar cupón
+    const firebase_uid = this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
+    
+    this.ventasService.validarCupon(codigo, firebase_uid, this.totalConIva).subscribe({
+      next: (resultado) => {
+        if (resultado.valido && resultado.descuento_monto) {
+          // Crear objeto promocion para mantener compatibilidad
+          this.cuponAplicado = {
+            id_promo: 0, // Temporal
+            titulo: `Cupón ${codigo}`,
+            descripcion: resultado.mensaje || '',
+            tipo_promocion: 'Cupon',
+            fecha_inicio: new Date(),
+            fecha_fin: new Date(),
+            estado: 'Activo',
+            codigo_cupon: codigo,
+            porcentaje_descuento: resultado.descuento_porcentaje
+          } as Promocion;
+          
+          this.descuentoAplicado = Math.round((resultado.descuento_monto || 0) * 100) / 100;
+          
+          Swal.fire({
+            icon: 'success',
+            title: '¡Cupón aplicado!',
+            text: resultado.mensaje,
+            timer: 2000,
+            showConfirmButton: false
+          });
+        } else {
+          this.couponError = resultado.mensaje || 'Cupón inválido, expirado o inactivo';
+        }
+        this.validandoCupon = false;
+      },
+      error: (error) => {
+        console.error('Error validando cupón:', error);
+        this.couponError = 'Error al validar el cupón. Intenta nuevamente.';
+        this.validandoCupon = false;
+      }
+    });
+  }
+
+  private calcularDescuento(promocion: Promocion): void {
+    if (promocion.tipo_promocion === 'Cupon' && promocion.porcentaje_descuento) {
+      // Aplicar descuento sobre el subtotal (antes del IVA) con redondeo a 2 decimales
+      this.descuentoAplicado = Math.round((this.subtotal * promocion.porcentaje_descuento) / 100 * 100) / 100;
+    }
+  }
+
+  private cargarPromocionesAutomaticas(): void {
+    // Usar el nuevo servicio para obtener promociones automáticas aplicables
+    const firebase_uid = this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
+    
+    this.ventasService.aplicarPromocionesAutomaticas(firebase_uid, this.totalConIva).subscribe({
+      next: (resultado) => {
+        if (resultado.success && resultado.promociones_aplicables.length > 0) {
+          this.promocionesAutomaticas = resultado.promociones_aplicables;
+          
+          // Aplicar automáticamente el mejor descuento si no hay cupón aplicado
+          if (resultado.mejor_promocion && !this.cuponAplicado) {
+            this.descuentoAplicado = Math.round((resultado.descuento || 0) * 100) / 100;
+            
+            // Mostrar notificación de descuento automático aplicado
+            if (resultado.descuento > 0) {
+              const promocion = resultado.mejor_promocion;
+              const mensaje = promocion.tipo_promocion === 'Descuento' 
+                ? `¡Descuento automático aplicado! ${promocion.porcentaje_descuento}% OFF por ser ${promocion.dia_valido}`
+                : `¡Promoción aplicada! ${promocion.titulo}`;
+                
+              setTimeout(() => {
+                Swal.fire({
+                  icon: 'success',
+                  title: '¡Promoción Aplicada!',
+                  text: mensaje,
+                  timer: 3000,
+                  showConfirmButton: false,
+                  toast: true,
+                  position: 'top-end'
+                });
+              }, 1000);
+            }
+          }
+        }
+      },
+      error: (error) => {
+        console.error('Error cargando promociones automáticas:', error);
+        // Fallback al método anterior si el nuevo endpoint falla
+        this.cargarPromocionesAutomaticasFallback();
+      }
+    });
+  }
+
+  private cargarPromocionesAutomaticasFallback(): void {
+    // Método de respaldo usando el servicio de promociones directamente
+    this.promocionService.getActivePromociones().subscribe({
+      next: (promociones) => {
+        // Filtrar promociones automáticas aplicables
+        this.promocionesAutomaticas = promociones.filter(promo => {
+          if (promo.tipo_promocion === 'Descuento' && promo.dia_valido) {
+            const hoy = new Date();
+            const diaHoy = hoy.toLocaleDateString('es-ES', { weekday: 'long' });
+            const diasSemana: { [key: string]: string } = {
+              'monday': 'Lunes',
+              'tuesday': 'Martes', 
+              'wednesday': 'Miercoles',
+              'thursday': 'Jueves',
+              'friday': 'Viernes',
+              'saturday': 'Sabado',
+              'sunday': 'Domingo'
+            };
+            const diaHoyNormalizado = diasSemana[diaHoy.toLowerCase()] || diaHoy;
+            return promo.dia_valido === 'Todos' || promo.dia_valido === diaHoyNormalizado;
+          }
+          return false;
+        });
+        
+        // Aplicar automáticamente el mejor descuento disponible
+        if (this.promocionesAutomaticas.length > 0 && !this.cuponAplicado) {
+          const mejorPromocion = this.promocionesAutomaticas.reduce((max, promo) => 
+            (promo.porcentaje_descuento || 0) > (max.porcentaje_descuento || 0) ? promo : max
+          );
+          this.calcularDescuento(mejorPromocion);
+        }
+      },
+      error: (error) => {
+        console.error('Error cargando promociones automáticas (fallback):', error);
+      }
+    });
+  }
+
+  validateCoupon(): void {
+    this.aplicarCupon();
   }
 
   volverAtras(): void {
@@ -370,7 +521,13 @@ export class DetailPaymentComponent implements OnInit {
             <p><strong>Función:</strong> ${this.compraInfo.horario}</p>
             <p><strong>Sala:</strong> ${this.compraInfo.sala}</p>
             <p><strong>Asientos:</strong> ${this.compraInfo.asientosSeleccionados.join(', ')}</p>
-            <p><strong>Total:</strong> $${this.totalConIva.toLocaleString()}</p>
+            ${this.descuentoAplicado > 0 ? `
+              <p><strong>Subtotal:</strong> $${this.totalConIva.toLocaleString()}</p>
+              <p style="color: #4caf50;"><strong>Descuento:</strong> -$${this.descuentoAplicado.toLocaleString()}</p>
+              <p><strong>Total:</strong> $${this.totalConDescuento.toLocaleString()}</p>
+            ` : `
+              <p><strong>Total:</strong> $${this.totalConIva.toLocaleString()}</p>
+            `}
             <p><strong>Método de pago:</strong> ${this.selectedPaymentMethod.tipo_tarjeta} ****${this.selectedPaymentMethod.numero_tarjeta.slice(-4)}</p>
           </div>
         `,
@@ -405,7 +562,12 @@ export class DetailPaymentComponent implements OnInit {
         funcion_id: this.compraInfo.funcion_id || 8, // Usar ID de función real o fallback
         asientos: asientosParaVenta,
         metodo_pago_id: this.selectedPaymentMethod.id_metodo_pago,
-        transaccion_id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+        transaccion_id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        // Incluir información de promociones
+        promocion_aplicada: this.cuponAplicado?.id_promo || null,
+        descuento_aplicado: this.descuentoAplicado,
+        // El backend ya maneja el total final, no necesitamos total_con_descuento
+        codigo_cupon: this.cuponAplicado?.codigo_cupon || null
       };
 
       // Procesar la venta
@@ -418,13 +580,16 @@ export class DetailPaymentComponent implements OnInit {
         this.router.navigate(['/final'], {
           queryParams: {
             ventaId: resultado.venta.id,
-            total: resultado.venta.total,
+            total: this.descuentoAplicado > 0 ? this.totalConDescuento : resultado.venta.total,
+            totalOriginal: resultado.venta.total,
+            descuento: this.descuentoAplicado,
             estado: resultado.pago.estado,
             titulo: this.compraInfo.titulo,
             cantidad: this.compraInfo.cantidad,
             horario: this.compraInfo.horario,
             sala: this.compraInfo.sala,
-            asientos: JSON.stringify(this.compraInfo.asientosSeleccionados || [])
+            asientos: JSON.stringify(this.compraInfo.asientosSeleccionados || []),
+            cuponAplicado: this.cuponAplicado?.codigo_cupon || null
           }
         });
         // Se eliminó la SweetAlert de 'Compra procesada!' para evitar redundancia
