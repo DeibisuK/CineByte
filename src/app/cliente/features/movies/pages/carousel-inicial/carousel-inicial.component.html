@@ -6,21 +6,23 @@
 </div>
 
 <div *ngIf="!loading" class="estreno-carousel-container">
-    <div class="estreno-card" *ngFor="let movie of visibleMovies">
+  <div class="estreno-card" *ngFor="let movie of visibleMovies">
     <div class="estreno-img-section">
-    <img [src]="getImageUrl(movie)" [alt]="movie.titulo" />
+      <img [src]="getImageUrl(movie)" [alt]="movie.titulo" />
     </div>
     <div class="estreno-info-section">
       <div class="generos">{{ toStringArray(movie.generos).join(' ▪ ') }}</div>
-      <h2 class="estreno-title">{{ movie.titulo.length > 32 ? (movie.titulo | slice:0:32) + '...' : movie.titulo }}</h2>
+      <h2 class="estreno-title">
+        {{ movie.titulo.length > 32 ? (movie.titulo | slice:0:32) + '...' : movie.titulo }}
+      </h2>
       <p class="estreno-desc">
         {{ movie.descripcion.length > 150 ? (movie.descripcion | slice:0:150) + '...' : movie.descripcion }}
-        </p>
+      </p>
       <button class="estreno-btn"
-      (mouseenter)="hoveredIndex = movie.id_pelicula"
-    (mouseleave)="hoveredIndex = -1"
-    [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1"
-    (click)="verDetalle(movie)">Ver más</button>
+        (mouseenter)="hoveredIndex = movie.id_pelicula"
+        (mouseleave)="hoveredIndex = -1"
+        [style.zIndex]="hoveredIndex === movie.id_pelicula ? 2 : 1"
+        (click)="verDetalle(movie)">Ver más</button>
     </div>
     <div class="carrusel-controles">
       <button class="carrusel-flecha" (click)="prev()">&lt;</button>
@@ -28,8 +30,7 @@
     </div>
   </div>
   <div class="carrusel-indicators">
-    <div
-      class="indicator"
+    <div class="indicator"
       *ngFor="let i of indicators; let idx = index"
       [class.active]="visibleStart === idx"
       (click)="goTo(idx)">

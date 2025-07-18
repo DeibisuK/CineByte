@@ -218,7 +218,9 @@ body.light-mode .usuario.active-link .material-icons {
 
 /* Solo mostrar en móvil */
 .selector-sede-movil {
-  display: none;
+    width: 100%;
+    position: relative;
+    z-index: 100;
 }
 
 @media (max-width: 1156px) {
@@ -399,18 +401,34 @@ input:checked+.slider:before {
 }
 
 .selector-sede-movil .btn-selector-sede {
-  width: 100%;
-  min-width: unset;
-  font-size: 0.98rem;
-  padding: 0.4rem 0.7rem;
+    width: 100%;
+    min-width: unset;
+    font-size: 0.98rem;
+    padding: 0.4rem 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .selector-sede-movil .menu-sedes {
-  min-width: 90vw;
-  left: 0;
-  top: 110%;
-  max-height: 50vh;
-  font-size: 0.98rem;
+    position: absolute;
+    left: 0;
+    top: 110%;
+    min-width: 90vw;
+    max-width: 98vw;
+    max-height: 50vh;
+    font-size: 0.98rem;
+    background: var(--footer-bg);
+    border: 1px solid var(--dropdown-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    padding: 1rem 0.7rem;
+    z-index: 9999;
+    overflow-y: auto;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
 }
 
 /* Responsive desde 1156px */
