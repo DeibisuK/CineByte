@@ -494,3 +494,60 @@
     width: calc(100% - 40px);
   }
 }
+
+@media (max-width: 600px) {
+  .floating-container {
+    padding: 8px;
+    border-radius: 12px;
+  }
+  .seats-container {
+    border-radius: 10px;
+    max-width: 100%;
+    margin: 0 4px;
+  }
+  .seats-header {
+    padding: 10px 6px;
+    font-size: 1rem;
+  }
+  .seats-content {
+    padding: 12px 4px;
+  }
+  .seats-grid {
+    gap: 8px; /* Más espacio entre filas */
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .fila {
+    gap: 8px;
+  }
+  .fila-label {
+    width: 28px;           /* Más ancho para la letra */
+    font-size: 14px;       /* Más grande y legible */
+    font-weight: bold;
+    color: var(--yellow);  /* Color visible */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .asientos-fila {
+    gap: 10px;
+  }
+  .asiento.espacio {
+    width: 0 !important;
+    height: 20px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .asiento {
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+  }
+  .asiento-numero {
+    font-size: 0.45rem;
+    bottom: 2px;
+  }
+}

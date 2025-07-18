@@ -744,45 +744,78 @@
 @media (max-width: 768px) {
   .floating-container {
     margin: 10px;
-    padding: 20px;
+    padding: 12px;
+    border-radius: 14px;
   }
-  
   .payment-content {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
   }
-  
+  .left-column,
+  .right-column {
+    width: 100%;
+    gap: 18px;
+  }
+  .purchase-summary,
+  .promociones-section,
+  .payment-methods-section,
+  .user-info-section {
+    margin-bottom: 18px;
+    padding: 14px;
+    border-radius: 10px;
+  }
   .movie-info-container {
     flex-direction: column;
+    align-items: center;
+    gap: 10px;
     text-align: center;
   }
-  
   .poster-image {
     width: 60px;
     height: 90px;
+    margin-bottom: 8px;
   }
-  
   .price-container {
     align-items: center;
-    margin-top: 15px;
+    margin-top: 10px;
   }
-  
   .coupon-input-group {
     flex-direction: column;
+    gap: 8px;
   }
-  
-  .progress-bar-vertical {
-    gap: 5px;
+  .payment-methods-list {
+    gap: 8px;
   }
-  
-  .step-circle {
-    width: 25px;
-    height: 25px;
-    font-size: 12px;
+  .payment-method-card {
+    padding: 10px;
+    font-size: 13px;
   }
-  
-  .progress-line {
-    width: 20px;
-    margin-top: -20px;
+  .add-payment-section {
+    margin-top: 10px;
+  }
+  .btn-add-payment {
+    padding: 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
+  .user-details {
+    margin-top: 10px;
+  }
+  .order-summary {
+    margin-top: 15px;
+    padding-top: 12px;
+  }
+  .payment-actions {
+    gap: 10px;
+    margin-top: 18px;
+    flex-direction: column;
+  }
+  .btn-process-payment,
+  .btn-pdf-download {
+    min-width: 140px;
+    padding: 10px 18px;
+    font-size: 14px;
+    border-radius: 8px;
   }
 }

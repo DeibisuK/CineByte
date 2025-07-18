@@ -196,8 +196,15 @@ button::-moz-focus-inner {
   }
   
   .content-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+  .seat-view-section {
+    order: 1;
+  }
+  .seat-map-section {
+    order: 2;
   }
 }
 
