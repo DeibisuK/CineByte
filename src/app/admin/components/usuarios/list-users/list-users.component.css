@@ -102,14 +102,14 @@
     display: none;
     position: absolute;
     background: var(--bg-color);
-    min-width: 180px;
+    min-width: 150px;
     box-shadow: 0 12px 28px rgba(0,0,0,0.25);
     border: 1px solid var(--dropdown-border);
     border-radius: 8px;
     z-index: 1000;
     top: 100%;
     right: 0;
-    margin-top: 8px;
+    margin-top: 12px;
     overflow: hidden;
     animation: dropdownFadeIn 0.2s ease-out;
 }
@@ -139,11 +139,13 @@
 }
 
 .actions-row {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    justify-items: center;
+    width: 100%;
 }
+
 
 .dropdown-toggle {
     background: var(--yellow);
@@ -156,67 +158,79 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 500;
-    min-width: 100px;
+    min-width: 160px;
     justify-content: center;
 }
 
-.dropdown-toggle:hover {
-    background: var(--dropdown-hover);
-    border-color: var(--yellow);
-    transform: translateY(-1px);
-}
-
-.dropdown-toggle.warning {
-    border-color: #f59e0b;
-    color: #f59e0b;
-}
-
-.dropdown-toggle.warning:hover {
-    background: rgba(245, 158, 11, 0.1);
-    border-color: #f59e0b;
-}
-
-/* Mejorar botones de acción */
 .btn-action {
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    border: 1px solid transparent;
-    min-width: 100px;
+    min-width: 300px;
+    width: 100%;
     justify-content: center;
     text-align: center;
     white-space: nowrap;
+    min-width: 150px;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    background: #23272f;
+    border-color: 1px solid #565a61;
+    color: #e5e7eb;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .btn-action:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: #11295d3f;
+    border: 1px solid #5e626b;
 }
 
-.dropdown-item {
-    display: block;
-    width: 100%;
-    padding: 10px 15px;
-    text-align: left;
-    border: none;
-    background: transparent;
-    color: var(--text-color);
-    text-decoration: none;
-    transition: background 0.2s ease;
-    font-size: 0.85em;
-    border-bottom: 1px solid var(--dropdown-border);
+.btn-action.edit:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
 }
 
-.dropdown-item:last-child {
-    border-bottom: none;
+.btn-action.promote {
+    background: #dcfce7;
+    color: #22c55e;
+    border: 1px solid #e9d5ff;
+}
+
+.btn-action.demote:hover {
+    background: #fecaca;
+    color: #991b1b;
+}
+.btn-action.promote-employee {
+    background: #dbeafe;
+    color: #2563eb;
+}
+.btn-action.promote-employee:hover {
+    background: #bfdbfe;
+    color: #1e40af;
+}
+.btn-action.demote-employee {
+    background: #f3f4f6;
+    color: #64748b;
+}
+.btn-action.demote-employee:hover {
+    background: #e5e7eb;
+    color: #334155;
+}
+.btn-action.delete {
+    background: #fee2e2;
+    color: #ef4444;
+}
+.btn-action.delete:hover {
+    background: #fecaca;
+    color: #991b1b;
+}
+.btn-action.revoke {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+.btn-action.revoke:hover {
+    background: #ddd6fe;
+    color: #5b21b6;
 }
 
 .dropdown-item:hover {
@@ -257,6 +271,14 @@
     background: rgba(245, 158, 11, 0.1);
 }
 
+.dropdown-item.revoke {
+    color: #b33a25;
+}
+
+.dropdown-item.revoke:hover {
+    background: rgba(245, 46, 11, 0.1);
+}
+
 .dropdown-item.success {
     color: #10b981;
 }
@@ -267,14 +289,13 @@
 
 /* Mejorar botones de acción */
 .btn-action.info {
-    background: rgba(59, 130, 246, 0.1);
-    color: #3b82f6;
-    border-color: rgba(59, 130, 246, 0.3);
+    background: var(--footer-esp);
+    color: var(--text-color);
+    border-color: var(--text-link);
 }
 
 .btn-action.info:hover {
-    background: rgba(59, 130, 246, 0.2);
-    border-color: #3b82f6;
+    background: var(--hover-link);
 }
 
 .btn-action.warning {
@@ -421,9 +442,9 @@
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, transparent, var(--yellow), transparent);
+    background: var(--yellow);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
 }
 
 .user-card:hover::before {
@@ -445,7 +466,6 @@
     object-fit: cover;
     border: 2px solid var(--yellow);
     box-sizing: border-box;
-    /* Esto evita el marco duplicado */
 }
 
 .default-avatar {
@@ -506,14 +526,12 @@
     background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.15));
     color: var(--yellow);
     border-color: rgba(255, 215, 0, 0.4);
-    box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
 }
 
 .role-employee {
-    background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.15));
-    color: #10b981;
-    border-color: rgba(34, 197, 94, 0.4);
-    box-shadow: 0 2px 8px rgba(34, 197, 94, 0.2);
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(255, 99, 132, 0.10));
+    color: #fca5a5;
+    border-color: rgba(239, 68, 68, 0.25);
 }
 
 .user-actions {
@@ -521,7 +539,6 @@
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
-    /* Centra los botones */
 }
 
 .btn-action {
@@ -579,6 +596,7 @@
 
 .btn-action.delete {
     background: rgba(239, 68, 68, 0.1);
+    min-width: 150px;
     color: #ef4444;
     border-color: rgba(239, 68, 68, 0.2);
 }

@@ -94,182 +94,184 @@
             <p class="loading-text">Cargando usuarios...</p>
         </div>
 
-        <!-- Mensaje cuando no hay usuarios (búsqueda) -->
-        <div *ngIf="!loading && usuario.length === 0 && searchControl.value" class="no-data-container">
-            <svg class="no-data-icon" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-            <h3 class="no-data-title">No se encontraron usuarios</h3>
-            <p class="no-data-text">Intenta con otros términos de búsqueda</p>
-        </div>
-
-        <!-- Mensaje cuando no hay usuarios en general -->
-        <div *ngIf="!loading && usuario.length === 0 && !searchControl.value" class="no-data-container">
-            <svg class="no-data-icon" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                    d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 7H17c-.8 0-1.54.37-2.01.99L14 9l-1-1.01A2.01 2.01 0 0 0 11.99 7H10.46c-.8 0-1.54.37-2.01.99L7.5 9.5 6 8.5 4.5 12H7v10h2v-4h2v4h2v-6h2.5l.5 2v4h2z" />
-            </svg>
-            <h3 class="no-data-title">No hay usuarios registrados</h3>
-            <p class="no-data-text">Aún no hay usuarios en el sistema</p>
-        </div>
-
-        <!-- Mensaje de error -->
-        <div *ngIf="!loading && errorMsg" class="error-container">
-            <svg class="error-icon" viewBox="0 0 24 24">
-                <path fill="currentColor"
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-            <h3 class="error-title">Error al cargar usuarios</h3>
-            <p class="error-text">{{ errorMsg }}</p>
-            <button class="btn-retry" (click)="obtenerUsuarios()">Intentar de nuevo</button>
-        </div>
-
-        <div *ngFor="let user of usuario" class="user-card">
-            <div class="user-avatar-container">
-                <img class="user-avatar" [src]="user.photoURL || '/images/auth/default-avatar.jpg'"
-                    [alt]="user.displayName" (error)="handleImageError($event)">
-                <div *ngIf="!user.photoURL" class="default-avatar" referrerpolicy="no-referrer">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="currentColor"
-                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-                    </svg>
-                </div>
+        <ng-container *ngIf="!loading">
+            <!-- Mensaje cuando no hay usuarios (búsqueda) -->
+            <div *ngIf="usuario.length === 0 && searchControl.value" class="no-data-container">
+                <svg class="no-data-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                <h3 class="no-data-title">No se encontraron usuarios</h3>
+                <p class="no-data-text">Intenta con otros términos de búsqueda</p>
             </div>
 
-            <div class="user-info">
-                <h3>{{user.displayName || 'Usuario sin nombre'}}</h3>
-                <p class="user-email">{{user.email}}</p>
-
-                <!-- Estado del usuario -->
-                <div class="user-status">
-                    <span [class]="'status-badge ' + obtenerClaseEstado(user)">
-                        {{obtenerEstadoUsuario(user)}}
-                    </span>
-                </div>
-
-                <!-- Información de rol mejorada -->
-                <div class="user-role"
-                    [class.role-admin]="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin"
-                    [class.role-employee]="user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee">
-                    <span *ngIf="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin">🛡️
-                        Administrador</span>
-                    <span
-                        *ngIf="(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee) && !(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)">👨‍💼
-                        Empleado</span>
-                    <span
-                        *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin) && !(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee)">👤
-                        Usuario</span>
-                </div>
+            <!-- Mensaje cuando no hay usuarios en general -->
+            <div *ngIf="usuario.length === 0 && !searchControl.value" class="no-data-container">
+                <svg class="no-data-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 7H17c-.8 0-1.54.37-2.01.99L14 9l-1-1.01A2.01 2.01 0 0 0 11.99 7H10.46c-.8 0-1.54.37-2.01.99L7.5 9.5 6 8.5 4.5 12H7v10h2v-4h2v4h2v-6h2.5l.5 2v4h2z" />
+                </svg>
+                <h3 class="no-data-title">No hay usuarios registrados</h3>
+                <p class="no-data-text">Aún no hay usuarios en el sistema</p>
             </div>
 
-            <div class="user-actions">
+            <!-- Mensaje de error -->
+            <div *ngIf="errorMsg" class="error-container">
+                <svg class="error-icon" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                </svg>
+                <h3 class="error-title">Error al cargar usuarios</h3>
+                <p class="error-text">{{ errorMsg }}</p>
+                <button class="btn-retry" (click)="obtenerUsuarios()">Intentar de nuevo</button>
+            </div>
+
+            <div *ngFor="let user of usuario" class="user-card">
+                <div class="user-avatar-container">
+                    <img class="user-avatar" [src]="user.photoURL || '/images/auth/default-avatar.jpg'"
+                        [alt]="user.displayName" (error)="handleImageError($event)">
+                    <div *ngIf="!user.photoURL" class="default-avatar" referrerpolicy="no-referrer">
+                        <svg viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="user-info">
+                    <h3>{{user.displayName || 'Usuario sin nombre'}}</h3>
+                    <p class="user-email">{{user.email}}</p>
+
+                    <!-- Estado del usuario -->
+                    <div class="user-status">
+                        <span [class]="'status-badge ' + obtenerClaseEstado(user)">
+                            {{obtenerEstadoUsuario(user)}}
+                        </span>
+                    </div>
+
+                    <!-- Información de rol mejorada -->
+                    <div class="user-role"
+                        [class.role-admin]="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin"
+                        [class.role-employee]="user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee">
+                        <span *ngIf="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin"><i class="fa-solid fa-shield-halved"></i>
+                            Administrador</span>
+                        <span
+                            *ngIf="(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee) && !(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)"><i class="fa-solid fa-user-tie"></i>
+                            Empleado</span>
+                        <span
+                            *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin) && !(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee)"><i class="fa-solid fa-user"></i>
+                            Usuario</span>
+                    </div>
+                </div>
+
+                <div class="user-actions">
                     <!-- Fila de dropdowns -->
-                <div class="actions-row" *ngIf="canEditUsers$ | async">
-                    <!-- Dropdown de acciones de rol -->
-                    <div class="dropdown-improved" [class.active]="activeDropdown === 'roles-' + user.uid">
-                        <button class="btn-action dropdown-toggle" (click)="toggleDropdown('roles-' + user.uid)"
-                            title="Gestionar roles">
-                            <svg viewBox="0 0 24 24">
-                                <path fill="currentColor"
-                                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-                            </svg>
-                            Roles
-                        </button>
-                        <div class="dropdown-content">
-                            <!-- Hacer Admin -->
-                            <button *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)"
-                                (click)="asignarAdminUsuario(user.uid); closeDropdown()" class="dropdown-item promote">
-                                🛡️ Hacer Admin
+                    <div class="actions-row" *ngIf="canEditUsers$ | async">
+                        <!-- Dropdown de acciones de rol -->
+                        <div class="dropdown-improved" [class.active]="activeDropdown === 'roles-' + user.uid">
+                            <button class="btn-action dropdown-toggle" (click)="toggleDropdown('roles-' + user.uid)"
+                                title="Gestionar roles">
+                                <svg viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                                </svg>
+                                Roles
                             </button>
+                            <div class="dropdown-content">
+                                <!-- Hacer Admin -->
+                                <button *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)"
+                                    (click)="asignarAdminUsuario(user.uid); closeDropdown()" class="dropdown-item promote">
+                                    <i class="fa-solid fa-shield-halved"></i> Hacer Admin
+                                </button>
 
-                            <!-- Hacer Empleado -->
-                            <button
-                                *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin) && !(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee)"
-                                (click)="asignarEmpleadoUsuario(user.uid); closeDropdown()"
-                                class="dropdown-item promote-employee">
-                                👨‍💼 Hacer Empleado
-                            </button>
+                                <!-- Hacer Empleado -->
+                                <button
+                                    *ngIf="!(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin) && !(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee)"
+                                    (click)="asignarEmpleadoUsuario(user.uid); closeDropdown()"
+                                    class="dropdown-item promote-employee">
+                                    <i class="fa-solid fa-user-tie"></i> Hacer Empleado
+                                </button>
 
-                            <!-- Quitar Admin -->
-                            <button *ngIf="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin"
-                                (click)="quitarAdminUsuario(user.uid); closeDropdown()" class="dropdown-item demote">
-                                ❌ Quitar Admin
-                            </button>
+                                <!-- Quitar Admin -->
+                                <button *ngIf="user.customClaims?.role === 'admin' || user.customClaims?.isAdmin"
+                                    (click)="quitarAdminUsuario(user.uid); closeDropdown()" class="dropdown-item demote">
+                                    <i class="fa-solid fa-ban"></i> Quitar Admin
+                                </button>
 
-                            <!-- Quitar Empleado -->
-                            <button
-                                *ngIf="(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee) && !(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)"
-                                (click)="quitarEmpleadoUsuario(user.uid); closeDropdown()"
-                                class="dropdown-item demote-employee">
-                                ❌ Quitar Empleado
+                                <!-- Quitar Empleado -->
+                                <button
+                                    *ngIf="(user.customClaims?.role === 'employee' || user.customClaims?.role === 'empleado' || user.customClaims?.isEmployee) && !(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin)"
+                                    (click)="quitarEmpleadoUsuario(user.uid); closeDropdown()"
+                                    class="dropdown-item demote-employee">
+                                    <i class="fa-solid fa-ban"></i> Quitar Empleado
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown de acciones avanzadas -->
+                        <div class="dropdown-improved" [class.active]="activeDropdown === 'advanced-' + user.uid">
+                            <button class="btn-action dropdown-toggle warning"
+                                (click)="toggleDropdown('advanced-' + user.uid)" title="Acciones avanzadas">
+                                <svg viewBox="0 0 24 24">
+                                    <path fill="currentColor"
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                                </svg>
+                                Avanzado
                             </button>
+                            <div class="dropdown-content">
+                                <!-- Revocar Tokens -->
+                                <button (click)="revocarTokensUsuario(user.uid, user.displayName); closeDropdown()"
+                                    class="dropdown-item revoke">
+                                    <i class="fa-solid fa-repeat"></i> Revocar Tokens
+                                </button>
+
+                                <!-- Cambiar Estado -->
+                                <button *ngIf="!estaDeshabilitado(user)"
+                                    (click)="cambiarEstadoUsuario(user.uid, true, user.displayName); closeDropdown()"
+                                    class="dropdown-item warning">
+                                    <i class="fa-solid fa-ban"></i> Deshabilitar
+                                </button>
+
+                                <button *ngIf="estaDeshabilitado(user)"
+                                    (click)="cambiarEstadoUsuario(user.uid, false, user.displayName); closeDropdown()"
+                                    class="dropdown-item success">
+                                    <i class="fa-solid fa-circle-check"></i> Habilitar
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Dropdown de acciones avanzadas -->
-                    <div class="dropdown-improved" [class.active]="activeDropdown === 'advanced-' + user.uid">
-                        <button class="btn-action dropdown-toggle warning"
-                            (click)="toggleDropdown('advanced-' + user.uid)" title="Acciones avanzadas">
+                    <div class="actions-row">
+                        <button (click)="verDetallesUsuario(user.uid)" class="btn-action info"
+                            title="Ver detalles completos">
                             <svg viewBox="0 0 24 24">
                                 <path fill="currentColor"
-                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
                             </svg>
-                            Avanzado
+                            Detalles
                         </button>
-                        <div class="dropdown-content">
-                            <!-- Revocar Tokens -->
-                            <button (click)="revocarTokensUsuario(user.uid, user.displayName); closeDropdown()"
-                                class="dropdown-item warning">
-                                🔄 Revocar Tokens
-                            </button>
 
-                            <!-- Cambiar Estado -->
-                            <button *ngIf="!estaDeshabilitado(user)"
-                                (click)="cambiarEstadoUsuario(user.uid, true, user.displayName); closeDropdown()"
-                                class="dropdown-item warning">
-                                🚫 Deshabilitar
-                            </button>
-
-                            <button *ngIf="estaDeshabilitado(user)"
-                                (click)="cambiarEstadoUsuario(user.uid, false, user.displayName); closeDropdown()"
-                                class="dropdown-item success">
-                                ✅ Habilitar
-                            </button>
-                        </div>
+                        <!-- Botón Editar (para admins y empleados) -->
+                        <button
+                            *ngIf="(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin || user.customClaims?.role === 'employee' || user.customClaims?.isEmployee) && (canEditUsers$ | async)"
+                            (click)="abrirModalEdicion(user)" class="btn-action edit" title="Editar usuario">
+                            <svg viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                            </svg>
+                            Editar
+                        </button>
                     </div>
-                </div>
-                <div class="actions-row">
-                    <button (click)="verDetallesUsuario(user.uid)" class="btn-action info"
-                        title="Ver detalles completos">
+                    <!-- Botón Eliminar -->
+                    <button *ngIf="canDeleteUsers$ | async" (click)="elimianrUsuario(user.uid)" class="btn-action delete"
+                        title="Eliminar usuario permanentemente">
                         <svg viewBox="0 0 24 24">
                             <path fill="currentColor"
-                                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z" />
+                                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
                         </svg>
-                        Detalles
-                    </button>
-
-                    <!-- Botón Editar (para admins y empleados) -->
-                    <button
-                        *ngIf="(user.customClaims?.role === 'admin' || user.customClaims?.isAdmin || user.customClaims?.role === 'employee' || user.customClaims?.isEmployee) && (canEditUsers$ | async)"
-                        (click)="abrirModalEdicion(user)" class="btn-action edit" title="Editar usuario">
-                        <svg viewBox="0 0 24 24">
-                            <path fill="currentColor"
-                                d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                        </svg>
-                        Editar
+                        Eliminar
                     </button>
                 </div>
-                <!-- Botón Eliminar -->
-                <button *ngIf="canDeleteUsers$ | async" (click)="elimianrUsuario(user.uid)" class="btn-action delete"
-                    title="Eliminar usuario permanentemente">
-                    <svg viewBox="0 0 24 24">
-                        <path fill="currentColor"
-                            d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                    </svg>
-                    Eliminar
-                </button>
             </div>
-        </div>
+        </ng-container>
     </div>
 </div>

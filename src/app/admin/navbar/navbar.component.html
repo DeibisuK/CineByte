@@ -7,7 +7,7 @@
         <i class="fa-solid" [class.fa-bars]="sidebarClosed" [class.fa-xmark]="!sidebarClosed"></i>
       </button>
       <img *ngIf="!sidebarClosed" src="/images/branding/Imagotipo blanco.svg" alt="Logo de la empresa"
-        [class.logo-invertido]="!modoOscuro"/>
+        [class.logo-invertido]="!modoOscuro" />
     </a>
   </div>
 
@@ -35,28 +35,31 @@
       </a>
       <ul class="cines-menu" [class.show]="cinesMenuOpen">
         <li><a routerLink="./sedes/list" routerLinkActive="active-link" data-tooltip="Sedes"
-          (click)="stopPropagation($event)"
-          [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
-          <i class="fa-solid fa-location-dot"></i>
-          <span *ngIf="!sidebarClosed">Sedes</span>
-        </a></li>
+            (click)="stopPropagation($event)"
+            [attr.aria-label]="'Gestionar Sedes' + (!sidebarClosed ? '' : ' - Sedes')">
+            <i class="fa-solid fa-location-dot"></i>
+            <span *ngIf="!sidebarClosed">Sedes</span>
+          </a></li>
+
+        <li *ngIf="canViewRooms$ | async">
+          <a routerLink="./salas/list" routerLinkActive="active-link" data-tooltip="Salas"
+            [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')">
+            <i class="fa-solid fa-door-open"></i>
+            <span *ngIf="!sidebarClosed">Salas</span>
+          </a>
+        </li>
+
         <li><a routerLink="./sedes/asignar" routerLinkActive="active-link" data-tooltip="Asignar Salas"
-          (click)="stopPropagation($event)"
-          [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
-          <i class="fa-solid fa-sitemap"></i>
-          <span *ngIf="!sidebarClosed">Asignar Salas</span>
-        </a></li>
+            (click)="stopPropagation($event)"
+            [attr.aria-label]="'Asignar Salas' + (!sidebarClosed ? '' : ' - Asignar Salas')">
+            <i class="fa-solid fa-sitemap"></i>
+            <span *ngIf="!sidebarClosed">Asignar Salas</span>
+          </a></li>
       </ul>
     </li>
 
     <!-- Salas - Gestión de espacios (SOLO ADMINS) -->
-    <li *ngIf="canViewRooms$ | async">
-      <a routerLink="./salas/list" routerLinkActive="active-link" data-tooltip="Salas"
-        [attr.aria-label]="'Gestionar Salas' + (!sidebarClosed ? '' : ' - Salas')">
-        <i class="fa-solid fa-door-open"></i>
-        <span *ngIf="!sidebarClosed">Salas</span>
-      </a>
-    </li>
+
 
     <!-- Películas - Contenido principal -->
     <li>

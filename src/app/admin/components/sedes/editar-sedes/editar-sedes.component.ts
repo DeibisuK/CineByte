@@ -46,7 +46,6 @@ export class EditarSedesComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit(): void {
     this.temaSubscription = this.temaService.modoOscuro$.subscribe(
       (modoOscuro) => {
-        // Puedes usar esto para configurar el tema de SweetAlert2 si lo deseas
       }
     );
     

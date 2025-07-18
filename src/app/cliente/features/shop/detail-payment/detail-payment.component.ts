@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Auth, User } from '@angular/fire/auth';
 import { HttpClient } from '@angular/common/http';
 import { CrearMetodoComponent } from '../../user-profile/metodos-pago/crear-metodo/crear-metodo.component';
@@ -35,10 +40,9 @@ interface CompraInfo {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CrearMetodoComponent],
   templateUrl: './detail-payment.component.html',
-  styleUrl: './detail-payment.component.css'
+  styleUrl: './detail-payment.component.css',
 })
 export class DetailPaymentComponent implements OnInit {
-  
   compraInfo: CompraInfo = {
     pelicula: 0,
     titulo: 'Título de Película',
@@ -48,36 +52,36 @@ export class DetailPaymentComponent implements OnInit {
     precio: 15000,
     total: 30000,
     portada: 'https://picsum.photos/200/300',
-    sala: 'Sala VIP'
+    sala: 'Sala VIP',
   };
 
   // Formulario de cupón
   couponForm: FormGroup;
-  
+
   // Usuario actual
   currentUser: User | null = null;
   userDisplayName: string = '';
   userEmail: string = '';
-  
+
   // Película completa para obtener duración
   peliculaCompleta: Pelicula | null = null;
-  
+
   // Variables de promociones
   cuponAplicado: Promocion | null = null;
   promocionesAutomaticas: Promocion[] = [];
   descuentoAplicado: number = 0;
   validandoCupon: boolean = false;
   couponError: string = '';
-  
+
   // Métodos de pago
   metodosPago: MetodoPago[] = [];
   selectedPaymentMethod: MetodoPago | null = null;
   showAddPaymentModal = false;
-  
+
   // Estados
   isLoading = false;
   loadingPayments = false;
-  
+
   // Variables para PDF
   ventaId: number | null = null;
   private apiUrl = 'https://api-cinebyte-akvqp.ondigitalocean.app'; // Ajusta según tu configuración
@@ -96,28 +100,28 @@ export class DetailPaymentComponent implements OnInit {
     private http: HttpClient
   ) {
     this.couponForm = this.fb.group({
-      codigo: ['', [Validators.required, Validators.minLength(3)]]
+      codigo: ['', [Validators.required, Validators.minLength(3)]],
     });
   }
 
   ngOnInit(): void {
     // Intentar cargar datos desde sessionStorage primero
     this.loadDataFromStorage();
-    
+
     // Cargar datos del usuario SIEMPRE (incluso al recargar)
     this.loadUserData();
-    
+
     // Cargar métodos de pago SIEMPRE (incluso al recargar)
     this.loadPaymentMethods();
-    
+
     // Cargar promociones automáticas
     this.cargarPromocionesAutomaticas();
-    
+
     // Obtener parámetros de la URL (pueden sobrescribir los datos del storage)
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['titulo']) {
         let asientosSeleccionados: any[] = [];
-        
+
         // Manejar asientos seleccionados de forma segura
         if (params['asientosSeleccionados']) {
           if (typeof params['asientosSeleccionados'] === 'string') {
@@ -127,7 +131,7 @@ export class DetailPaymentComponent implements OnInit {
             asientosSeleccionados = params['asientosSeleccionados'];
           }
         }
-        
+
         this.compraInfo = {
           pelicula: +params['pelicula'] || 1,
           titulo: params['titulo'] || 'Título de Película',
@@ -140,15 +144,15 @@ export class DetailPaymentComponent implements OnInit {
           sala: params['sala'] || 'Sala Principal',
           asientosSeleccionados: asientosSeleccionados,
           id_sala: +params['id_sala'] || null,
-          funcion_id: +params['funcion_id'] || null // Capturar ID de función real
+          funcion_id: +params['funcion_id'] || null, // Capturar ID de función real
         };
-        
+
         // NO mostrar confirmación inicial, ir directo a la página
         // this.mostrarConfirmacionInicial();
-        
+
         // Guardar en sessionStorage
         this.saveDataToStorage();
-        
+
         // Cargar portada real de la película
         this.loadMoviePoster();
       } else if (this.compraInfo.pelicula) {
@@ -171,7 +175,10 @@ export class DetailPaymentComponent implements OnInit {
 
   private saveDataToStorage(): void {
     try {
-      sessionStorage.setItem('detail-payment-data', JSON.stringify(this.compraInfo));
+      sessionStorage.setItem(
+        'detail-payment-data',
+        JSON.stringify(this.compraInfo)
+      );
     } catch (error) {
       console.error('Error saving data to storage:', error);
     }
@@ -191,7 +198,7 @@ export class DetailPaymentComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error loading movie poster:', error);
-        }
+        },
       });
     }
   }
@@ -207,21 +214,22 @@ export class DetailPaymentComponent implements OnInit {
       const [horaStr, minutoStr] = this.compraInfo.horario.split(':');
       const horaInicio = parseInt(horaStr);
       const minutoInicio = parseInt(minutoStr);
-      
+
       // Calcular hora de fin
-      let minutosTotales = horaInicio * 60 + minutoInicio + this.peliculaCompleta.duracion_minutos;
+      let minutosTotales =
+        horaInicio * 60 + minutoInicio + this.peliculaCompleta.duracion_minutos;
       let horaFin = Math.floor(minutosTotales / 60);
       let minutoFin = minutosTotales % 60;
-      
+
       // Manejar cambio de día (24h+)
       if (horaFin >= 24) {
         horaFin = horaFin - 24;
       }
-      
+
       // Formatear con ceros a la izquierda
       const horaFinStr = horaFin.toString().padStart(2, '0');
       const minutoFinStr = minutoFin.toString().padStart(2, '0');
-      
+
       return `${this.compraInfo.idioma} | ${this.compraInfo.horario} - ${horaFinStr}:${minutoFinStr}`;
     } catch (error) {
       console.error('Error calculando hora de fin:', error);
@@ -241,7 +249,7 @@ export class DetailPaymentComponent implements OnInit {
   get totalConIva(): number {
     return this.subtotal + this.iva;
   }
-  
+
   get totalConDescuento(): number {
     return Math.round((this.totalConIva - this.descuentoAplicado) * 100) / 100;
   }
@@ -253,7 +261,6 @@ export class DetailPaymentComponent implements OnInit {
         if (user) {
           this.userDisplayName = user.displayName || 'Usuario';
           this.userEmail = user.email || '';
-
         }
         unsubscribe();
         resolve();
@@ -276,12 +283,13 @@ export class DetailPaymentComponent implements OnInit {
     try {
       // Usar la forma async/await con el observable
       this.metodosPago = await new Promise((resolve, reject) => {
-        this.metodosPagoService.getMetodosPagoByUser(this.currentUser!.uid).subscribe({
-          next: (metodos) => resolve(metodos),
-          error: (error) => reject(error)
-        });
+        this.metodosPagoService
+          .getMetodosPagoByUser(this.currentUser!.uid)
+          .subscribe({
+            next: (metodos) => resolve(metodos),
+            error: (error) => reject(error),
+          });
       });
-
     } catch (error) {
       console.error('Error loading payment methods:', error);
       this.metodosPago = [];
@@ -319,94 +327,113 @@ export class DetailPaymentComponent implements OnInit {
     this.couponError = '';
 
     // Usar el nuevo servicio de ventas para validar cupón
-    const firebase_uid = this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
-    
-    this.ventasService.validarCupon(codigo, firebase_uid, this.totalConIva).subscribe({
-      next: (resultado) => {
-        if (resultado.valido && resultado.descuento_monto) {
-          // Crear objeto promocion para mantener compatibilidad
-          this.cuponAplicado = {
-            id_promo: 0, // Temporal
-            titulo: `Cupón ${codigo}`,
-            descripcion: resultado.mensaje || '',
-            tipo_promocion: 'Cupon',
-            fecha_inicio: new Date(),
-            fecha_fin: new Date(),
-            estado: 'Activo',
-            codigo_cupon: codigo,
-            porcentaje_descuento: resultado.descuento_porcentaje
-          } as Promocion;
-          
-          this.descuentoAplicado = Math.round((resultado.descuento_monto || 0) * 100) / 100;
-          
-          Swal.fire({
-            icon: 'success',
-            title: '¡Cupón aplicado!',
-            text: resultado.mensaje,
-            timer: 2000,
-            showConfirmButton: false
-          });
-        } else {
-          this.couponError = resultado.mensaje || 'Cupón inválido, expirado o inactivo';
-        }
-        this.validandoCupon = false;
-      },
-      error: (error) => {
-        console.error('Error validando cupón:', error);
-        this.couponError = 'Error al validar el cupón. Intenta nuevamente.';
-        this.validandoCupon = false;
-      }
-    });
+    const firebase_uid =
+      this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
+
+    this.ventasService
+      .validarCupon(codigo, firebase_uid, this.totalConIva)
+      .subscribe({
+        next: (resultado) => {
+          if (resultado.valido && resultado.descuento_monto) {
+            // Crear objeto promocion para mantener compatibilidad
+            this.cuponAplicado = {
+              id_promo: 0, // Temporal
+              titulo: `Cupón ${codigo}`,
+              descripcion: resultado.mensaje || '',
+              tipo_promocion: 'Cupon',
+              fecha_inicio: new Date(),
+              fecha_fin: new Date(),
+              estado: 'Activo',
+              codigo_cupon: codigo,
+              porcentaje_descuento: resultado.descuento_porcentaje,
+            } as Promocion;
+
+            this.descuentoAplicado =
+              Math.round((resultado.descuento_monto || 0) * 100) / 100;
+
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cupón aplicado!',
+              text: resultado.mensaje,
+              timer: 2000,
+              showConfirmButton: false,
+            });
+          } else {
+            this.couponError =
+              resultado.mensaje || 'Cupón inválido, expirado o inactivo';
+          }
+          this.validandoCupon = false;
+        },
+        error: (error) => {
+          console.error('Error validando cupón:', error);
+          this.couponError = 'Error al validar el cupón. Intenta nuevamente.';
+          this.validandoCupon = false;
+        },
+      });
   }
 
   private calcularDescuento(promocion: Promocion): void {
-    if (promocion.tipo_promocion === 'Cupon' && promocion.porcentaje_descuento) {
+    if (
+      promocion.tipo_promocion === 'Cupon' &&
+      promocion.porcentaje_descuento
+    ) {
       // Aplicar descuento sobre el subtotal (antes del IVA) con redondeo a 2 decimales
-      this.descuentoAplicado = Math.round((this.subtotal * promocion.porcentaje_descuento) / 100 * 100) / 100;
+      this.descuentoAplicado =
+        Math.round(
+          ((this.subtotal * promocion.porcentaje_descuento) / 100) * 100
+        ) / 100;
     }
   }
 
   private cargarPromocionesAutomaticas(): void {
     // Usar el nuevo servicio para obtener promociones automáticas aplicables
-    const firebase_uid = this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
-    
-    this.ventasService.aplicarPromocionesAutomaticas(firebase_uid, this.totalConIva).subscribe({
-      next: (resultado) => {
-        if (resultado.success && resultado.promociones_aplicables.length > 0) {
-          this.promocionesAutomaticas = resultado.promociones_aplicables;
-          
-          // Aplicar automáticamente el mejor descuento si no hay cupón aplicado
-          if (resultado.mejor_promocion && !this.cuponAplicado) {
-            this.descuentoAplicado = Math.round((resultado.descuento || 0) * 100) / 100;
-            
-            // Mostrar notificación de descuento automático aplicado
-            if (resultado.descuento > 0) {
-              const promocion = resultado.mejor_promocion;
-              const mensaje = promocion.tipo_promocion === 'Descuento' 
-                ? `¡Descuento automático aplicado! ${promocion.porcentaje_descuento}% OFF por ser ${promocion.dia_valido}`
-                : `¡Promoción aplicada! ${promocion.titulo}`;
-                
-              setTimeout(() => {
-                Swal.fire({
-                  icon: 'success',
-                  title: '¡Promoción Aplicada!',
-                  text: mensaje,
-                  timer: 3000,
-                  showConfirmButton: false,
-                  toast: true,
-                  position: 'top-end'
-                });
-              }, 1000);
+    const firebase_uid =
+      this.currentUser?.uid || 'KJUWesPreyXJHJArs7PyAkisDVg2';
+
+    this.ventasService
+      .aplicarPromocionesAutomaticas(firebase_uid, this.totalConIva)
+      .subscribe({
+        next: (resultado) => {
+          if (
+            resultado.success &&
+            resultado.promociones_aplicables.length > 0
+          ) {
+            this.promocionesAutomaticas = resultado.promociones_aplicables;
+
+            // Aplicar automáticamente el mejor descuento si no hay cupón aplicado
+            if (resultado.mejor_promocion && !this.cuponAplicado) {
+              this.descuentoAplicado =
+                Math.round((resultado.descuento || 0) * 100) / 100;
+
+              // Mostrar notificación de descuento automático aplicado
+              if (resultado.descuento > 0) {
+                const promocion = resultado.mejor_promocion;
+                const mensaje =
+                  promocion.tipo_promocion === 'Descuento'
+                    ? `¡Descuento automático aplicado! ${promocion.porcentaje_descuento}% OFF por ser ${promocion.dia_valido}`
+                    : `¡Promoción aplicada! ${promocion.titulo}`;
+
+                setTimeout(() => {
+                  Swal.fire({
+                    icon: 'success',
+                    title: '¡Promoción Aplicada!',
+                    text: mensaje,
+                    timer: 3000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end',
+                  });
+                }, 1000);
+              }
             }
           }
-        }
-      },
-      error: (error) => {
-        console.error('Error cargando promociones automáticas:', error);
-        // Fallback al método anterior si el nuevo endpoint falla
-        this.cargarPromocionesAutomaticasFallback();
-      }
-    });
+        },
+        error: (error) => {
+          console.error('Error cargando promociones automáticas:', error);
+          // Fallback al método anterior si el nuevo endpoint falla
+          this.cargarPromocionesAutomaticasFallback();
+        },
+      });
   }
 
   private cargarPromocionesAutomaticasFallback(): void {
@@ -414,36 +441,47 @@ export class DetailPaymentComponent implements OnInit {
     this.promocionService.getActivePromociones().subscribe({
       next: (promociones) => {
         // Filtrar promociones automáticas aplicables
-        this.promocionesAutomaticas = promociones.filter(promo => {
+        this.promocionesAutomaticas = promociones.filter((promo) => {
           if (promo.tipo_promocion === 'Descuento' && promo.dia_valido) {
             const hoy = new Date();
             const diaHoy = hoy.toLocaleDateString('es-ES', { weekday: 'long' });
             const diasSemana: { [key: string]: string } = {
-              'monday': 'Lunes',
-              'tuesday': 'Martes', 
-              'wednesday': 'Miercoles',
-              'thursday': 'Jueves',
-              'friday': 'Viernes',
-              'saturday': 'Sabado',
-              'sunday': 'Domingo'
+              monday: 'Lunes',
+              tuesday: 'Martes',
+              wednesday: 'Miercoles',
+              thursday: 'Jueves',
+              friday: 'Viernes',
+              saturday: 'Sabado',
+              sunday: 'Domingo',
             };
-            const diaHoyNormalizado = diasSemana[diaHoy.toLowerCase()] || diaHoy;
-            return promo.dia_valido === 'Todos' || promo.dia_valido === diaHoyNormalizado;
+            const diaHoyNormalizado =
+              diasSemana[diaHoy.toLowerCase()] || diaHoy;
+            return (
+              promo.dia_valido === 'Todos' ||
+              promo.dia_valido === diaHoyNormalizado
+            );
           }
           return false;
         });
-        
+
         // Aplicar automáticamente el mejor descuento disponible
         if (this.promocionesAutomaticas.length > 0 && !this.cuponAplicado) {
-          const mejorPromocion = this.promocionesAutomaticas.reduce((max, promo) => 
-            (promo.porcentaje_descuento || 0) > (max.porcentaje_descuento || 0) ? promo : max
+          const mejorPromocion = this.promocionesAutomaticas.reduce(
+            (max, promo) =>
+              (promo.porcentaje_descuento || 0) >
+              (max.porcentaje_descuento || 0)
+                ? promo
+                : max
           );
           this.calcularDescuento(mejorPromocion);
         }
       },
       error: (error) => {
-        console.error('Error cargando promociones automáticas (fallback):', error);
-      }
+        console.error(
+          'Error cargando promociones automáticas (fallback):',
+          error
+        );
+      },
     });
   }
 
@@ -462,13 +500,11 @@ export class DetailPaymentComponent implements OnInit {
       precio: this.compraInfo.precio,
       total: this.compraInfo.total,
       id_sala: this.compraInfo.id_sala,
-      funcion_id: this.compraInfo.funcion_id
+      funcion_id: this.compraInfo.funcion_id,
     };
-    
 
-    
-    this.router.navigate(['/select-seat'], { 
-      queryParams: selectSeatData 
+    this.router.navigate(['/select-seat'], {
+      queryParams: selectSeatData,
     });
   }
 
@@ -478,29 +514,33 @@ export class DetailPaymentComponent implements OnInit {
         icon: 'error',
         title: 'Error',
         text: 'Por favor selecciona un método de pago',
-        showConfirmButton: true
+        showConfirmButton: true,
       });
       return;
     }
 
     // Validar que haya datos de compra
-    if (!this.compraInfo.asientosSeleccionados || this.compraInfo.asientosSeleccionados.length === 0) {
+    if (
+      !this.compraInfo.asientosSeleccionados ||
+      this.compraInfo.asientosSeleccionados.length === 0
+    ) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'No hay asientos seleccionados para procesar',
-        showConfirmButton: true
+        showConfirmButton: true,
       });
       return;
     }
 
     // Validar que el usuario esté autenticado (temporal: permitir usuario de prueba)
-    if (!this.currentUser?.uid && !true) { // Cambié la condición para permitir continuar sin usuario
+    if (!this.currentUser?.uid && !true) {
+      // Cambié la condición para permitir continuar sin usuario
       Swal.fire({
         icon: 'error',
         title: 'Error de autenticación',
         text: 'Debes iniciar sesión para realizar la compra',
-        showConfirmButton: true
+        showConfirmButton: true,
       });
       return;
     }
@@ -520,22 +560,30 @@ export class DetailPaymentComponent implements OnInit {
             <p><strong>Película:</strong> ${this.compraInfo.titulo}</p>
             <p><strong>Función:</strong> ${this.compraInfo.horario}</p>
             <p><strong>Sala:</strong> ${this.compraInfo.sala}</p>
-            <p><strong>Asientos:</strong> ${this.compraInfo.asientosSeleccionados.join(', ')}</p>
-            ${this.descuentoAplicado > 0 ? `
+            <p><strong>Asientos:</strong> ${this.compraInfo.asientosSeleccionados.join(
+              ', '
+            )}</p>
+            ${
+              this.descuentoAplicado > 0
+                ? `
               <p><strong>Subtotal:</strong> $${this.totalConIva.toLocaleString()}</p>
               <p style="color: #4caf50;"><strong>Descuento:</strong> -$${this.descuentoAplicado.toLocaleString()}</p>
               <p><strong>Total:</strong> $${this.totalConDescuento.toLocaleString()}</p>
-            ` : `
+            `
+                : `
               <p><strong>Total:</strong> $${this.totalConIva.toLocaleString()}</p>
-            `}
-            <p><strong>Método de pago:</strong> ${this.selectedPaymentMethod.tipo_tarjeta} ****${this.selectedPaymentMethod.numero_tarjeta.slice(-4)}</p>
+            `
+            }
+            <p><strong>Método de pago:</strong> ${
+              this.selectedPaymentMethod.tipo_tarjeta
+            } ****${this.selectedPaymentMethod.numero_tarjeta.slice(-4)}</p>
           </div>
         `,
         showCancelButton: true,
         confirmButtonText: 'Sí, procesar compra',
         cancelButtonText: 'Cancelar',
         confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33'
+        cancelButtonColor: '#d33',
       });
 
       if (!confirmacion.isConfirmed) {
@@ -543,15 +591,26 @@ export class DetailPaymentComponent implements OnInit {
         return;
       }
 
-      // Preparar datos de asientos para la venta (ahora asíncrono)
-      const asientosParaVentaPromises = this.compraInfo.asientosSeleccionados.map(async (asiento, index) => {
-        const idAsientoReal = await this.obtenerIdAsiento(asiento);
-        return {
-          numero_asiento: asiento.replace(/\s+/g, ''), // Remover espacios del número de asiento
-          precio_asiento: this.compraInfo.precio,
-          id_asiento: idAsientoReal // ID real obtenido de la BD
-        };
+      Swal.fire({
+        title: 'Procesando compra...',
+        text: 'Por favor espera mientras procesamos tu pago',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
       });
+
+      // Preparar datos de asientos para la venta (ahora asíncrono)
+      const asientosParaVentaPromises =
+        this.compraInfo.asientosSeleccionados.map(async (asiento, index) => {
+          const idAsientoReal = await this.obtenerIdAsiento(asiento);
+          return {
+            numero_asiento: asiento.replace(/\s+/g, ''), // Remover espacios del número de asiento
+            precio_asiento: this.compraInfo.precio,
+            id_asiento: idAsientoReal, // ID real obtenido de la BD
+          };
+        });
 
       // Esperar a que todas las consultas de asientos se resuelvan
       asientosParaVenta = await Promise.all(asientosParaVentaPromises);
@@ -562,16 +621,23 @@ export class DetailPaymentComponent implements OnInit {
         funcion_id: this.compraInfo.funcion_id || 8, // Usar ID de función real o fallback
         asientos: asientosParaVenta,
         metodo_pago_id: this.selectedPaymentMethod.id_metodo_pago,
-        transaccion_id: `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        transaccion_id: `txn_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
         // Incluir información de promociones
         promocion_aplicada: this.cuponAplicado?.id_promo || null,
         descuento_aplicado: this.descuentoAplicado,
         // El backend ya maneja el total final, no necesitamos total_con_descuento
-        codigo_cupon: this.cuponAplicado?.codigo_cupon || null
+        codigo_cupon: this.cuponAplicado?.codigo_cupon || null,
       };
 
       // Procesar la venta
-      const resultado = await this.ventasService.procesarVenta(ventaData).toPromise();
+      const resultado = await this.ventasService
+        .procesarVenta(ventaData)
+        .toPromise();
+
+      // Cerrar el loader de SweetAlert
+      Swal.close();
 
       if (resultado) {
         // Guardar ID de venta para PDF
@@ -580,7 +646,10 @@ export class DetailPaymentComponent implements OnInit {
         this.router.navigate(['/final'], {
           queryParams: {
             ventaId: resultado.venta.id,
-            total: this.descuentoAplicado > 0 ? this.totalConDescuento : resultado.venta.total,
+            total:
+              this.descuentoAplicado > 0
+                ? this.totalConDescuento
+                : resultado.venta.total,
             totalOriginal: resultado.venta.total,
             descuento: this.descuentoAplicado,
             estado: resultado.pago.estado,
@@ -588,53 +657,77 @@ export class DetailPaymentComponent implements OnInit {
             cantidad: this.compraInfo.cantidad,
             horario: this.compraInfo.horario,
             sala: this.compraInfo.sala,
-            asientos: JSON.stringify(this.compraInfo.asientosSeleccionados || []),
-            cuponAplicado: this.cuponAplicado?.codigo_cupon || null
-          }
+            asientos: JSON.stringify(
+              this.compraInfo.asientosSeleccionados || []
+            ),
+            cuponAplicado: this.cuponAplicado?.codigo_cupon || null,
+          },
         });
         // Se eliminó la SweetAlert de 'Compra procesada!' para evitar redundancia
       }
-
     } catch (error: any) {
+      // Cerrar el loader si ocurre error
+      Swal.close();
       console.error('Error al procesar el pago:', error);
-      
-      let errorMessage = 'Ocurrió un error al procesar el pago. Por favor, intenta nuevamente.';
-      
+
+      let errorMessage =
+        'Ocurrió un error al procesar el pago. Por favor, intenta nuevamente.';
+
       // Manejo más específico de errores
       if (error?.error?.message) {
         const serverMessage = error.error.message;
-        if (serverMessage.includes('asiento') && serverMessage.includes('ocupado')) {
-          errorMessage = 'Algunos asientos ya no están disponibles. Por favor, selecciona otros asientos.';
+        if (
+          serverMessage.includes('asiento') &&
+          serverMessage.includes('ocupado')
+        ) {
+          errorMessage =
+            'Algunos asientos ya no están disponibles. Por favor, selecciona otros asientos.';
         } else if (serverMessage.includes('foreign key constraint')) {
-          errorMessage = 'Error de datos: Verifica que la función y asientos sean válidos.';
+          errorMessage =
+            'Error de datos: Verifica que la función y asientos sean válidos.';
         } else if (serverMessage.includes('does not exist')) {
-          errorMessage = 'Error de configuración: Algunos datos no existen en el sistema.';
+          errorMessage =
+            'Error de configuración: Algunos datos no existen en el sistema.';
         } else {
           errorMessage = `Error del servidor: ${serverMessage}`;
         }
       } else if (error?.message) {
         if (error.message.includes('asientos no disponibles')) {
-          errorMessage = 'Algunos asientos ya no están disponibles. Por favor, selecciona otros asientos.';
+          errorMessage =
+            'Algunos asientos ya no están disponibles. Por favor, selecciona otros asientos.';
         } else if (error.message.includes('función no encontrada')) {
           errorMessage = 'La función seleccionada ya no está disponible.';
-        } else if (error.message.includes('no encontrado') || error.message.includes('Asiento') || error.message.includes('Sala')) {
-          errorMessage = 'Error al verificar asientos: ' + error.message + '. Por favor, selecciona otros asientos.';
+        } else if (
+          error.message.includes('no encontrado') ||
+          error.message.includes('Asiento') ||
+          error.message.includes('Sala')
+        ) {
+          errorMessage =
+            'Error al verificar asientos: ' +
+            error.message +
+            '. Por favor, selecciona otros asientos.';
         } else if (error.message.includes('pago')) {
-          errorMessage = 'Error en el procesamiento del pago. Verifica tu método de pago.';
+          errorMessage =
+            'Error en el procesamiento del pago. Verifica tu método de pago.';
         }
       } else if (error?.status) {
         switch (error.status) {
           case 400:
-            errorMessage = 'Datos de compra inválidos. Verifica la información enviada.';
+            errorMessage =
+              'Datos de compra inválidos. Verifica la información enviada.';
             break;
           case 404:
-            errorMessage = 'Recurso no encontrado. La función o asientos pueden no existir.';
+            errorMessage =
+              'Recurso no encontrado. La función o asientos pueden no existir.';
             break;
           case 500:
-            errorMessage = 'Error interno del servidor. Intenta nuevamente en unos momentos.';
+            errorMessage =
+              'Error interno del servidor. Intenta nuevamente en unos momentos.';
             break;
           default:
-            errorMessage = `Error HTTP ${error.status}: ${error.statusText || 'Error desconocido'}`;
+            errorMessage = `Error HTTP ${error.status}: ${
+              error.statusText || 'Error desconocido'
+            }`;
         }
       }
 
@@ -643,7 +736,7 @@ export class DetailPaymentComponent implements OnInit {
         title: 'Error en el pago',
         text: errorMessage,
         confirmButtonText: 'Entendido',
-        confirmButtonColor: '#d33'
+        confirmButtonColor: '#d33',
       });
     } finally {
       this.isLoading = false;
@@ -652,30 +745,30 @@ export class DetailPaymentComponent implements OnInit {
 
   getCardIcon(tipo: string): string {
     const iconMap: { [key: string]: string } = {
-      'Visa': 'fab fa-cc-visa',
-      'Mastercard': 'fab fa-cc-mastercard', 
+      Visa: 'fab fa-cc-visa',
+      Mastercard: 'fab fa-cc-mastercard',
       'American Express': 'fab fa-cc-amex',
-      'Discover': 'fab fa-cc-discover',
+      Discover: 'fab fa-cc-discover',
       'Diners Club': 'fab fa-cc-diners-club',
-      'JCB': 'fab fa-cc-jcb',
-      'PayPal': 'fab fa-cc-paypal',
+      JCB: 'fab fa-cc-jcb',
+      PayPal: 'fab fa-cc-paypal',
       'Apple Pay': 'fab fa-cc-apple-pay',
-      'Stripe': 'fab fa-cc-stripe'
+      Stripe: 'fab fa-cc-stripe',
     };
     return iconMap[tipo] || 'fas fa-credit-card';
   }
 
   getCardColor(tipo: string): string {
     const colorMap: { [key: string]: string } = {
-      'Visa': '#1a1f71',
-      'Mastercard': '#eb001b',
+      Visa: '#1a1f71',
+      Mastercard: '#eb001b',
       'American Express': '#006fcf',
-      'Discover': '#ff6000',
+      Discover: '#ff6000',
       'Diners Club': '#0079be',
-      'JCB': '#005998',
-      'PayPal': '#003087',
+      JCB: '#005998',
+      PayPal: '#003087',
       'Apple Pay': '#000000',
-      'Stripe': '#635bff'
+      Stripe: '#635bff',
     };
     return colorMap[tipo] || 'var(--yellow)';
   }
@@ -699,7 +792,9 @@ export class DetailPaymentComponent implements OnInit {
           <p><strong>Película:</strong> ${this.compraInfo.titulo}</p>
           <p><strong>Sala:</strong> ${this.compraInfo.sala}</p>
           <p><strong>Horario:</strong> ${this.compraInfo.horario}</p>
-          <p><strong>Asientos:</strong> ${this.compraInfo.asientosSeleccionados?.join(', ')}</p>
+          <p><strong>Asientos:</strong> ${this.compraInfo.asientosSeleccionados?.join(
+            ', '
+          )}</p>
           <p><strong>Total:</strong> $${this.totalConIva.toLocaleString()}</p>
           <hr>
           <p><small>Ahora selecciona tu método de pago para completar la compra.</small></p>
@@ -707,7 +802,7 @@ export class DetailPaymentComponent implements OnInit {
       `,
       confirmButtonText: 'Continuar',
       confirmButtonColor: '#28a745',
-      allowOutsideClick: false
+      allowOutsideClick: false,
     });
   }
 
@@ -718,7 +813,7 @@ export class DetailPaymentComponent implements OnInit {
   private async obtenerIdAsiento(numeroAsiento: string): Promise<number> {
     // Limpiar el número de asiento (remover espacios)
     const asientoLimpio = numeroAsiento.replace(/\s+/g, '');
-    
+
     if (!this.compraInfo.id_sala) {
       throw new Error('ID de sala no disponible para consultar asientos');
     }
@@ -726,38 +821,41 @@ export class DetailPaymentComponent implements OnInit {
     try {
       // Hacer consulta HTTP a la API para obtener asientos de la sala
       const url = `${this.apiUrl}/api/salas/asientos/${this.compraInfo.id_sala}`;
-      
+
       const asientosResponse = await this.http.get<any[]>(url).toPromise();
-      
+
       if (!asientosResponse || asientosResponse.length === 0) {
-        throw new Error(`No se encontraron asientos para la sala ${this.compraInfo.id_sala}`);
+        throw new Error(
+          `No se encontraron asientos para la sala ${this.compraInfo.id_sala}`
+        );
       }
 
       // Buscar el asiento específico por su código/número
-      const asientoEncontrado = asientosResponse.find(asiento => {
+      const asientoEncontrado = asientosResponse.find((asiento) => {
         // Extraer fila y columna del asiento buscado (ej: "A4" -> fila="A", columna=4)
         const filaLetra = asientoLimpio.charAt(0).toUpperCase();
         const numeroColumna = parseInt(asientoLimpio.substring(1));
-        
+
         // Limpiar la fila de la BD (remover espacios al final)
         const filaDB = asiento.fila?.trim().toUpperCase();
         const columnaDB = asiento.columna;
-        
+
         // Comparar fila y columna
         const coincide = filaDB === filaLetra && columnaDB === numeroColumna;
-        
+
         return coincide;
       });
 
       if (!asientoEncontrado) {
-        throw new Error(`Asiento ${asientoLimpio} no encontrado en la sala ${this.compraInfo.id_sala}`);
+        throw new Error(
+          `Asiento ${asientoLimpio} no encontrado en la sala ${this.compraInfo.id_sala}`
+        );
       }
 
       const idAsientoReal = asientoEncontrado.id_asiento;
-      
-      return idAsientoReal;
 
-    } catch (error: any) {      
+      return idAsientoReal;
+    } catch (error: any) {
       if (error.status === 404) {
         throw new Error(`Sala ${this.compraInfo.id_sala} no encontrada`);
       } else if (error.status === 500) {
@@ -779,7 +877,7 @@ export class DetailPaymentComponent implements OnInit {
         icon: 'error',
         title: 'Error',
         text: 'No se puede generar la factura. Datos de venta faltantes.',
-        confirmButtonText: 'Entendido'
+        confirmButtonText: 'Entendido',
       });
       return;
     }
@@ -792,25 +890,31 @@ export class DetailPaymentComponent implements OnInit {
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
 
       // Llamar al endpoint de factura PDF
-      const response = await this.http.get(
-        `${this.apiUrl}/api/export/factura/${this.ventaId}/${this.currentUser.uid}`,
-        { 
-          responseType: 'blob',
-          observe: 'response'
-        }
-      ).toPromise();
+      const response = await this.http
+        .get(
+          `${this.apiUrl}/api/export/factura/${this.ventaId}/${this.currentUser.uid}`,
+          {
+            responseType: 'blob',
+            observe: 'response',
+          }
+        )
+        .toPromise();
 
       if (response && response.body) {
         // Obtener el nombre del archivo de la respuesta
         const contentDisposition = response.headers.get('content-disposition');
-        let filename = `Factura_${this.ventaId}_${new Date().toISOString().split('T')[0]}.pdf`;
-        
+        let filename = `Factura_${this.ventaId}_${
+          new Date().toISOString().split('T')[0]
+        }.pdf`;
+
         if (contentDisposition) {
-          const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(contentDisposition);
+          const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(
+            contentDisposition
+          );
           if (matches != null && matches[1]) {
             filename = matches[1].replace(/['"]/g, '');
           }
@@ -819,14 +923,14 @@ export class DetailPaymentComponent implements OnInit {
         // Crear blob y descargar
         const blob = new Blob([response.body], { type: 'application/pdf' });
         const url = window.URL.createObjectURL(blob);
-        
+
         // Crear enlace de descarga
         const link = document.createElement('a');
         link.href = url;
         link.download = filename;
         document.body.appendChild(link);
         link.click();
-        
+
         // Limpiar
         window.URL.revokeObjectURL(url);
         document.body.removeChild(link);
@@ -836,16 +940,14 @@ export class DetailPaymentComponent implements OnInit {
           icon: 'success',
           title: '¡Factura generada!',
           text: 'Tu factura PDF ha sido descargada exitosamente.',
-          confirmButtonText: 'Perfecto'
+          confirmButtonText: 'Perfecto',
         });
-
       } else {
         throw new Error('Respuesta vacía del servidor');
       }
-
     } catch (error: any) {
       let errorMessage = 'Error al generar la factura PDF. Intenta nuevamente.';
-      
+
       if (error?.status === 404) {
         errorMessage = 'No se encontró la venta solicitada.';
       } else if (error?.status === 500) {
@@ -858,7 +960,7 @@ export class DetailPaymentComponent implements OnInit {
         icon: 'error',
         title: 'Error al generar factura',
         text: errorMessage,
-        confirmButtonText: 'Entendido'
+        confirmButtonText: 'Entendido',
       });
     }
   }

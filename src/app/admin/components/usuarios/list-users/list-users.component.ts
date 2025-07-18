@@ -507,9 +507,11 @@ export class ListUsersComponent implements OnInit {
     this.userManagementService.obtenerDetalleUsuario(uid).subscribe({
       next: (usuario: UserProfile) => {
         // Formatear la información para mostrar
+        //Le quite el UID lo veo medio innecesario pero ahi lo dejo comentado
+        // <p><strong>UID:</strong> ${usuario.uid}</p>
         const info = `
           <div style="text-align: left;">
-            <p><strong>UID:</strong> ${usuario.uid}</p>
+            
             <p><strong>Email:</strong> ${usuario.email || 'No disponible'}</p>
             <p><strong>Nombre:</strong> ${usuario.displayName || 'No disponible'}</p>
             <p><strong>Email verificado:</strong> ${usuario.emailVerified ? 'Sí' : 'No'}</p>
@@ -526,7 +528,7 @@ export class ListUsersComponent implements OnInit {
           title: 'Detalles del Usuario',
           html: info,
           icon: 'info',
-          width: '600px',
+          width: '520px',
           confirmButtonText: 'Cerrar'
         });
       },
