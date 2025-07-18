@@ -51,14 +51,14 @@ export class PromocionesShowcaseComponent implements OnInit {
 
   getPromocionColor(tipo: string): string {
     switch(tipo) {
-      case 'Descuento': return '#4caf50';
+      case 'Descuento': return '#4caf70';
       case 'Cupon': return '#ff9800';
       case 'Multiplicador': return '#2196f3';
-      case 'Publicitaria': return '#e91e63';
+      case 'Publicitaria': return '#e91e32';
       default: return '#ffd700';
     }
   }
-
+  
   trackByPromocionId(index: number, promocion: Promocion): number {
     return promocion.id_promo;
   }

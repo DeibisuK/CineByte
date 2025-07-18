@@ -1,7 +1,7 @@
 /* Showcase de Promociones */
 .promociones-showcase {
   padding: 3rem 0;
-  background: linear-gradient(135deg, rgba(30, 30, 30, 0.95) 0%, rgba(20, 20, 20, 0.98) 100%);
+  background: var(--footer-esp);
   margin: 2rem 0;
   border-radius: 16px;
   overflow: hidden;
@@ -76,17 +76,17 @@
 }
 
 .promocion-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-4px);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
   border-color: var(--yellow);
 }
 
 .promocion-card.descuento {
-  border-left: 4px solid #4caf50;
+  border-left: 4px solid #4caf70;
 }
 
 .promocion-card.publicitaria {
-  border-left: 4px solid #e91e63;
+  border-left: 4px solid #e91e32;
 }
 
 .promocion-image {
@@ -102,17 +102,13 @@
   transition: transform 0.3s ease;
 }
 
-.promocion-card:hover .promocion-image img {
-  transform: scale(1.05);
-}
-
 .promocion-badge {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 0.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,7 +159,6 @@
   border-radius: 20px;
   font-weight: 700;
   font-size: 0.9rem;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
 }
 
 .dia-valido {
@@ -211,7 +206,6 @@
 .btn-promocion:hover {
   background: linear-gradient(135deg, #ffd700, #ff7700);
   transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(247, 203, 90, 0.4);
 }
 
 .ver-todas {
@@ -261,6 +255,10 @@
 .loading-spinner i {
   font-size: 2rem;
   color: var(--yellow);
+}
+
+.promocion-badge i{
+    font-size: 1rem;
 }
 
 /* Responsive */

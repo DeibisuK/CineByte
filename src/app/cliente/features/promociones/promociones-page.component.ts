@@ -12,7 +12,6 @@ import { PromocionesShowcaseComponent } from '../home/components/promociones-sho
       <div class="hero-section">
         <div class="hero-content">
           <h1 class="page-title">
-            <i class="fas fa-fire"></i>
             Promociones Especiales
           </h1>
           <p class="page-subtitle">
@@ -46,16 +45,15 @@ import { PromocionesShowcaseComponent } from '../home/components/promociones-sho
     }
     
     .hero-section {
-      background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(30, 30, 30, 0.98) 100%);
-      padding: 4rem 0 2rem;
+      background: transparent;
+      padding: 1rem 0 2rem;
       text-align: center;
-      border-bottom: 1px solid var(--dropdown-border);
     }
     
     .page-title {
       font-size: 3rem;
       font-weight: 700;
-      color: var(--yellow);
+      color: var(--text-color);
       margin-bottom: 1rem;
       display: flex;
       align-items: center;
@@ -66,12 +64,6 @@ import { PromocionesShowcaseComponent } from '../home/components/promociones-sho
     .page-title i {
       color: #ff6b35;
       animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
     }
     
     .page-subtitle {
