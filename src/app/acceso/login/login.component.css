@@ -474,7 +474,6 @@
     transform: translateX(30px);
   }
 }
-
 /* Ajustes para pantallas medianas o móviles */
 @media (max-width: 768px) {
   .modal-overlay {
@@ -486,39 +485,45 @@
   .modal-container {
     flex-direction: column; /* Poner todo en columna */
     width: 90%; /* Que ocupe casi todo el ancho */
-    max-width: none; /* Quitar límite de ancho */
+    max-width: 420px; /* Límite para que no se vea muy ancho en tablets */
     height: auto; /* Altura automática */
+    min-height: 500px; /* Para que no se vea muy aplastado */
     max-height: calc(100vh - 20px); /* Considerar el padding */
     overflow-y: auto; /* Que pueda hacer scroll si es muy alto */
     margin: 0; /* Sin márgenes raros */
   }
 
   .left-section {
-    padding: 30px 25px; /* Un padding más pequeño */
-    min-height: auto; /* Que la altura se ajuste */
+    padding: 35px 25px; /* Un poco más de espacio arriba y abajo */
+    min-height: 220px; /* Que la parte amarilla no quede muy chica */
+    flex: none; /* Para que no se comprima feo */
   }
 
   .left-section h1 {
-    font-size: 1.8rem; /* Bajar el tamaño de letra */
+    font-size: 1.9rem; /* Un poquito más grande para que se lea bien */
     margin-bottom: 15px;
+    line-height: 1.2; /* Para que las líneas no queden muy pegadas */
   }
 
   .left-section p {
     font-size: 1rem; /* Texto un poco más pequeño */
     margin-bottom: 25px;
+    line-height: 1.4; /* Para que se lea cómodo */
   }
 
   .right-section {
-    padding: 30px 25px; /* Igual que la parte izquierda */
+    padding: 35px 25px; /* Igual que la parte izquierda */
+    flex: none; /* Para que no se comprima */
   }
 
   .right-section h1 {
-    font-size: 1.6rem; /* Más pequeño para el móvil */
+    font-size: 1.7rem; /* Un poquito más grande que antes */
     margin-bottom: 25px;
   }
 
   .input-container {
     padding: 12px; /* Reducir el padding */
+    margin-bottom: 20px; /* Más espacio entre cada input */
   }
 
   .form-input {
@@ -526,48 +531,55 @@
   }
 
   .submit-btn {
-    padding: 14px; /* Botón más compacto */
+    padding: 15px; /* Un poquito más de espacio */
+    margin-bottom: 15px; /* Separar del siguiente elemento */
   }
 
   .social-btn {
-    padding: 12px 15px; /* Igual, menos padding */
+    padding: 13px 15px; /* Un poquito más de espacio */
+    margin-bottom: 12px; /* Separar los botones sociales */
   }
 }
 
 /* Ajustes para móviles más pequeños (menos de 400px) */
 @media (max-width: 400px) {
   .modal-overlay {
-    padding: 5px; /* Menos espacio porque la pantalla es chica */
+    padding: 8px; /* Un poquito más de espacio que antes */
   }
 
   .modal-container {
-    width: 90%;
-    max-height: calc(100vh - 10px);
+    width: 92%; /* Un poquito más ancho para aprovechar mejor */
+    min-height: 480px; /* Para que no se vea muy chiquito */
+    max-height: calc(100vh - 16px); /* Ajustar según el padding nuevo */
     border-radius: 15px; /* Bordes menos redondeados */
   }
 
-  .left-section,
+  .left-section {
+    padding: 30px 20px; /* Más espacio arriba y abajo */
+    min-height: 200px; /* Que la parte amarilla no quede muy chica */
+  }
+
   .right-section {
-    padding: 25px 20px; /* Reducir aún más el padding */
+    padding: 30px 20px; /* Igual que la izquierda */
   }
 
   .left-section h1 {
-    font-size: 1.6rem;
+    font-size: 1.7rem; /* Un poquito más grande que antes */
   }
 
   .right-section h1 {
-    font-size: 1.4rem;
+    font-size: 1.5rem; /* Un poquito más grande también */
   }
 
   .input-container {
-    padding: 10px;
+    padding: 11px; /* Un poquito más de espacio */
   }
 
   .close-btn {
     top: 15px; /* Bajar un poquito el botón */
     right: 15px;
-    width: 35px; /* Botón más pequeño */
-    height: 35px;
+    width: 36px; /* Un poquito más grande */
+    height: 36px;
     font-size: 18px;
   }
 }
@@ -584,14 +596,29 @@
 @media (max-width: 768px) and (orientation: landscape) {
   .modal-container {
     max-height: calc(100vh - 20px);
+    min-height: auto; /* En horizontal que se ajuste solo */
     overflow-y: auto; /* Que haga scroll si se pasa */
   }
   
   .left-section {
-    padding: 20px; /* Un poco menos de espacio */
+    padding: 25px 20px; /* Un poco más de espacio que antes */
+    min-height: 150px; /* Para que no quede muy aplastado */
   }
   
   .right-section {
-    padding: 20px; /* Igual que la izquierda */
+    padding: 25px 20px; /* Igual que la izquierda */
   }
+}
+
+/* Para que todo se calcule bien y no haya problemas raros */
+.modal-container,
+.modal-container * {
+  box-sizing: border-box;
+}
+
+/* Para que los textos largos no se corten feo */
+.left-section h1,
+.left-section p {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
