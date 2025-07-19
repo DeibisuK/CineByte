@@ -475,36 +475,123 @@
   }
 }
 
-/* Responsive */
+/* Ajustes para pantallas medianas o móviles */
 @media (max-width: 768px) {
+  .modal-overlay {
+    padding: 10px; /* Un poco de espacio para que no pegue con los bordes */
+    align-items: center; /* Centrar vertical */
+    justify-content: center; /* Centrar horizontal */
+  }
+
   .modal-container {
-    flex-direction: column;
-    height: auto;
-    max-height: 90vh;
-    overflow-y: auto;
+    flex-direction: column; /* Poner todo en columna */
+    width: 90%; /* Que ocupe casi todo el ancho */
+    max-width: none; /* Quitar límite de ancho */
+    height: auto; /* Altura automática */
+    max-height: calc(100vh - 20px); /* Considerar el padding */
+    overflow-y: auto; /* Que pueda hacer scroll si es muy alto */
+    margin: 0; /* Sin márgenes raros */
   }
 
   .left-section {
-    padding: 40px 30px;
+    padding: 30px 25px; /* Un padding más pequeño */
+    min-height: auto; /* Que la altura se ajuste */
   }
 
   .left-section h1 {
-    font-size: 2rem;
+    font-size: 1.8rem; /* Bajar el tamaño de letra */
+    margin-bottom: 15px;
+  }
+
+  .left-section p {
+    font-size: 1rem; /* Texto un poco más pequeño */
+    margin-bottom: 25px;
   }
 
   .right-section {
-    padding: 40px 30px;
+    padding: 30px 25px; /* Igual que la parte izquierda */
+  }
+
+  .right-section h1 {
+    font-size: 1.6rem; /* Más pequeño para el móvil */
+    margin-bottom: 25px;
+  }
+
+  .input-container {
+    padding: 12px; /* Reducir el padding */
+  }
+
+  .form-input {
+    font-size: 0.95rem; /* Letra más chica */
+  }
+
+  .submit-btn {
+    padding: 14px; /* Botón más compacto */
+  }
+
+  .social-btn {
+    padding: 12px 15px; /* Igual, menos padding */
   }
 }
 
-@media (max-width: 480px) {
+/* Ajustes para móviles más pequeños (menos de 400px) */
+@media (max-width: 400px) {
+  .modal-overlay {
+    padding: 5px; /* Menos espacio porque la pantalla es chica */
+  }
+
   .modal-container {
-    width: 95%;
-    margin: 20px;
+    width: 90%;
+    max-height: calc(100vh - 10px);
+    border-radius: 15px; /* Bordes menos redondeados */
   }
 
   .left-section,
   .right-section {
-    padding: 30px 20px;
+    padding: 25px 20px; /* Reducir aún más el padding */
+  }
+
+  .left-section h1 {
+    font-size: 1.6rem;
+  }
+
+  .right-section h1 {
+    font-size: 1.4rem;
+  }
+
+  .input-container {
+    padding: 10px;
+  }
+
+  .close-btn {
+    top: 15px; /* Bajar un poquito el botón */
+    right: 15px;
+    width: 35px; /* Botón más pequeño */
+    height: 35px;
+    font-size: 18px;
+  }
+}
+
+/* Centrado perfecto cuando el móvil está en vertical */
+@media (max-width: 768px) and (orientation: portrait) {
+  .modal-overlay {
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Ajustes cuando el móvil está en horizontal */
+@media (max-width: 768px) and (orientation: landscape) {
+  .modal-container {
+    max-height: calc(100vh - 20px);
+    overflow-y: auto; /* Que haga scroll si se pasa */
+  }
+  
+  .left-section {
+    padding: 20px; /* Un poco menos de espacio */
+  }
+  
+  .right-section {
+    padding: 20px; /* Igual que la izquierda */
   }
 }
