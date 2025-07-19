@@ -31,143 +31,140 @@
       </div>
     </div>
 
-  <!-- Contenido principal -->
-  <div class="detalle-main" *ngIf="pelicula as p">
-    <!-- Sección izquierda: Información de la película -->
-    <div class="detalle-info-section">
-      <div class="pelicula-poster">
-        <img [src]="p.imagen" [alt]="p.titulo" class="poster-img" />
-        <div class="pelicula-tags">
-          <span class="clasificacion-tag">+{{ p.clasificacion }}</span>
-          <span class="duracion-tag">{{ p.duracion_minutos }} min</span>
-        </div>
-      </div>
-
-      <div class="pelicula-info">
-        <h1 class="pelicula-titulo">{{ p.titulo }}</h1>
-        <p class="pelicula-descripcion">{{ p.descripcion }}</p>
-        
-        <div class="info-grid">
-          <div class="info-item">
-            <label>Género</label>
-            <span>{{ getGeneros() }}</span>
-          </div>
-          <div class="info-item">
-            <label>Estreno</label>
-            <span>{{ p.fecha_estreno | date:'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="info-item">
-            <label>Estado</label>
-            <span>{{ getEstadoLabel(p.estado) }}</span>
-          </div>
-          <div class="info-item">
-            <label>Distribuidor</label>
-            <span>{{ getDistribuidor() }}</span>
-          </div>
-          <div class="info-item">
-            <label>Actores</label>
-            <span>{{ getActores() }}</span>
-          </div>
-          <div class="info-item">
-            <label>Idiomas</label>
-            <span>{{ getIdiomas() }}</span>
+    <!-- Contenido principal -->
+    <div class="detalle-main" *ngIf="pelicula as p">
+      <!-- Sección izquierda: Información de la película -->
+      <div class="detalle-info-section">
+        <div class="pelicula-poster">
+          <img [src]="p.imagen" [alt]="p.titulo" class="poster-img" />
+          <div class="pelicula-tags">
+            <span class="clasificacion-tag">+{{ p.clasificacion }}</span>
+            <span class="duracion-tag">{{ p.duracion_minutos }} min</span>
           </div>
         </div>
 
-        <!-- Carrusel estilo Steam -->
-        <div class="media-carousel" *ngIf="mediaItems.length > 0">
-          <h3>Multimedia</h3>
-          <div class="carousel-container">
-            <button class="carousel-btn prev" (click)="navigateCarousel(-1)">
-              <i class="fa-solid fa-chevron-left"></i>
-            </button>
-            
-            <div class="carousel-viewport">
-              <div class="carousel-track" [style.transform]="'translateX(' + getCarouselOffset() + 'px)'">
-                <div class="media-item" 
-                     *ngFor="let item of mediaItems; let i = index"
-                     [class.active]="getLogicalIndex(i) === selectedMediaIndex"
-                     (click)="onMediaClick(i)">
-                  <div class="media-thumbnail" [class.is-video]="item.type === 'video'">
-                    <img [src]="item.thumbnail" [alt]="item.title" *ngIf="item.type === 'image'">
-                    <div class="video-thumbnail" *ngIf="item.type === 'video'">
-                      <img [src]="item.thumbnail" [alt]="item.title">
-                      <div class="play-overlay">
-                        <i class="fa-solid fa-play"></i>
+        <div class="pelicula-info">
+          <h1 class="pelicula-titulo">{{ p.titulo }}</h1>
+          <p class="pelicula-descripcion">{{ p.descripcion }}</p>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <label>Género</label>
+              <span>{{ getGeneros() }}</span>
+            </div>
+            <div class="info-item">
+              <label>Estreno</label>
+              <span>{{ p.fecha_estreno | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <label>Estado</label>
+              <span>{{ getEstadoLabel(p.estado) }}</span>
+            </div>
+            <div class="info-item">
+              <label>Distribuidor</label>
+              <span>{{ getDistribuidor() }}</span>
+            </div>
+            <div class="info-item">
+              <label>Actores</label>
+              <span>{{ getActores() }}</span>
+            </div>
+            <div class="info-item">
+              <label>Idiomas</label>
+              <span>{{ getIdiomas() }}</span>
+            </div>
+          </div>
+
+          <!-- Carrusel estilo Steam -->
+          <div class="media-carousel" *ngIf="mediaItems.length > 0">
+            <h3>Multimedia</h3>
+            <div class="carousel-container">
+              <button class="carousel-btn prev" (click)="navigateCarousel(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
+              </button>
+
+              <div class="carousel-viewport">
+                <div class="carousel-track" [style.transform]="'translateX(' + getCarouselOffset() + 'px)'">
+                  <div class="media-item" *ngFor="let item of mediaItems; let i = index"
+                    [class.active]="getLogicalIndex(i) === selectedMediaIndex" (click)="onMediaClick(i)">
+                    <div class="media-thumbnail" [class.is-video]="item.type === 'video'">
+                      <img [src]="item.thumbnail" [alt]="item.title" *ngIf="item.type === 'image'">
+                      <div class="video-thumbnail" *ngIf="item.type === 'video'">
+                        <img [src]="item.thumbnail" [alt]="item.title">
+                        <div class="play-overlay">
+                          <i class="fa-solid fa-play"></i>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <button class="carousel-btn next" (click)="navigateCarousel(1)">
+                <i class="fa-solid fa-chevron-right"></i>
+              </button>
             </div>
-            
-            <button class="carousel-btn next" (click)="navigateCarousel(1)">
-              <i class="fa-solid fa-chevron-right"></i>
-            </button>
-          </div>
-          
-          <!-- Vista previa del media seleccionado -->
-          <div class="media-preview" *ngIf="selectedMediaIndex >= 0">
-            <div class="preview-container" [class.is-video]="mediaItems[selectedMediaIndex].type === 'video'">
-              <img [src]="mediaItems[selectedMediaIndex].url" 
-                   [alt]="mediaItems[selectedMediaIndex].title"
-                   *ngIf="mediaItems[selectedMediaIndex].type === 'image'">
-              <iframe [src]="safeTrailerUrl" 
-                      *ngIf="mediaItems[selectedMediaIndex].type === 'video'"
-                      frameborder="0" 
-                      allowfullscreen>
-              </iframe>
+
+            <!-- Vista previa del media seleccionado -->
+            <div class="media-preview" *ngIf="selectedMediaIndex >= 0">
+              <div class="preview-container" [class.is-video]="mediaItems[selectedMediaIndex].type === 'video'">
+                <img [src]="mediaItems[selectedMediaIndex].url" [alt]="mediaItems[selectedMediaIndex].title"
+                  *ngIf="mediaItems[selectedMediaIndex].type === 'image'">
+                <iframe [src]="safeTrailerUrl" *ngIf="mediaItems[selectedMediaIndex].type === 'video'" frameborder="0"
+                  allowfullscreen>
+                </iframe>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Sección derecha: Funciones y compra -->
-    <div class="funciones-section">
-      <div class="funciones-card">
-        <h3>Funciones Disponibles</h3>
-        
-        <div *ngIf="!sedeSeleccionada" class="no-sede-message">
-          <i class="fa-solid fa-location-arrow"></i>
-          <p>Selecciona una sede para ver las funciones</p>
-        </div>
+      <!-- Sección derecha: Funciones y compra -->
+      <div class="funciones-section">
+        <div class="funciones-card">
+          <h3>Funciones Disponibles</h3>
 
-        <div *ngIf="sedeSeleccionada && funcionesPorIdioma.length === 0" class="no-funciones-message">
-          <i class="fa-solid fa-calendar-times"></i>
-          <p>No hay funciones disponibles para esta película en la sede seleccionada</p>
-        </div>
-
-        <div *ngIf="sedeSeleccionada && funcionesPorIdioma.length > 0" class="funciones-content">
-          <!-- Selector de idioma -->
-          <div class="idioma-selector">
-            <label>Idioma</label>
-            <div class="idioma-buttons">
-              <button *ngFor="let funcion of funcionesPorIdioma"
-                      [class.active]="funcion.idioma === idiomaSeleccionado"
-                      (click)="selectIdioma(funcion.idioma, funcion.trailer)">
-                {{ funcion.idioma }}
-              </button>
-            </div>
+          <div *ngIf="!sedeSeleccionada" class="no-sede-message">
+            <i class="fa-solid fa-location-arrow"></i>
+            <p>Selecciona una sede para ver las funciones</p>
           </div>
 
-          <!-- Horarios disponibles -->
-          <div class="horarios-section" *ngIf="obtenerHorariosPorIdioma().length > 0">
-            <label>Horarios</label>
-            <div class="horarios-grid">
-              <button *ngFor="let horario of obtenerHorariosPorIdioma()" 
-                      class="horario-btn"
-                      [class.selected]="horario === horarioSeleccionado"
-                      (click)="seleccionarHorario(horario)">
-                {{ obtenerHorarioConFin(horario) }}
-              </button>
+          <div *ngIf="sedeSeleccionada && funcionesPorIdioma.length === 0" class="no-funciones-message">
+            <i class="fa-solid fa-calendar-times"></i>
+            <p>No hay funciones disponibles para esta película en la sede seleccionada</p>
+          </div>
+
+          <div *ngIf="sedeSeleccionada && funcionesPorIdioma.length > 0" class="funciones-content">
+            <!-- Selector de idioma -->
+            <div class="idioma-selector">
+              <label>Idioma</label>
+              <div class="idioma-buttons">
+                <button *ngFor="let funcion of funcionesPorIdioma"
+                  [class.active]="funcion.idioma === idiomaSeleccionado"
+                  (click)="selectIdioma(funcion.idioma, funcion.trailer)">
+                  {{ funcion.idioma }}
+                </button>
+              </div>
             </div>
-          </div>            <!-- Cantidad y precio -->
+
+            <!-- Horarios disponibles -->
+            <div class="horarios-section" *ngIf="obtenerHorariosPorIdioma().length > 0">
+              <label>Horarios</label>
+              <div class="horarios-grid">
+                <button *ngFor="let horario of obtenerHorariosPorIdioma()" class="horario-btn"
+                  [class.selected]="horario === horarioSeleccionado" (click)="seleccionarHorario(horario)">
+                  {{ obtenerHorarioConFin(horario) }}
+                </button>
+              </div>
+            </div> <!-- Cantidad y precio -->
             <div class="compra-details">
               <div class="cantidad-section">
                 <label>Cantidad de boletos</label>
                 <div class="cantidad-info">
                   <small class="asientos-info">Disponibles: {{ maxAsientosDisponibles }} de {{ totalAsientos }}</small>
+                  <small class="asientos-info" *ngIf="getNombreSalaSeleccionada()">
+                    Sala: {{ getNombreSalaSeleccionada() }}
+                  </small>
+
                 </div>
                 <div class="cantidad-control">
                   <button (click)="cambiarCantidad(-1)" [disabled]="cantidad <= 1" class="cantidad-btn">
@@ -178,47 +175,46 @@
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </div>
-                <div class="validation-message" *ngIf="cantidad >= maxAsientosDisponibles && maxAsientosDisponibles > 0">
+                <div class="validation-message"
+                  *ngIf="cantidad >= maxAsientosDisponibles && maxAsientosDisponibles > 0">
                   <small class="max-tickets-warning">Máximo de boletos disponibles alcanzado</small>
                 </div>
               </div>
 
-            <div class="precio-section" *ngIf="funcionesPorIdioma.length > 0">
-              <div class="precio-item">
-                <span class="precio-label">Precio unitario:</span>
-                <span class="precio-valor">${{ obtenerPrecioPorIdioma() }}</span>
-              </div>
-              <div class="precio-item total">
-                <span class="precio-label">Total:</span>
-                <span class="precio-valor">${{ obtenerPrecioTotal() }}</span>
+              <div class="precio-section" *ngIf="funcionesPorIdioma.length > 0">
+                <div class="precio-item">
+                  <span class="precio-label">Precio unitario:</span>
+                  <span class="precio-valor">${{ obtenerPrecioPorIdioma() }}</span>
+                </div>
+                <div class="precio-item total">
+                  <span class="precio-label">Total:</span>
+                  <span class="precio-valor">${{ obtenerPrecioTotal() }}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Botón de compra -->
-          <div class="compra-section">
-            <div class="mensaje-seleccion" *ngIf="!funcionSeleccionada">
-              <small class="error-message">Seleccione una función</small>
+            <!-- Botón de compra -->
+            <div class="compra-section">
+              <div class="mensaje-seleccion" *ngIf="!funcionSeleccionada">
+                <small class="error-message">Seleccione una función</small>
+              </div>
+              <button class="btn-comprar" (click)="irASiguiente()" [disabled]="!funcionSeleccionada || cantidad <= 0"
+                [class.disabled]="!funcionSeleccionada || cantidad <= 0">
+                <i class="fa-solid fa-ticket"></i>
+                <span *ngIf="funcionSeleccionada">Comprar Boletos</span>
+                <span *ngIf="!funcionSeleccionada">Seleccione una función</span>
+              </button>
             </div>
-            <button class="btn-comprar" 
-                    (click)="irASiguiente()"
-                    [disabled]="!funcionSeleccionada || cantidad <= 0"
-                    [class.disabled]="!funcionSeleccionada || cantidad <= 0">
-              <i class="fa-solid fa-ticket"></i>
-              <span *ngIf="funcionSeleccionada">Comprar Boletos</span>
-              <span *ngIf="!funcionSeleccionada">Seleccione una función</span>
-            </button>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Películas relacionadas -->
-  <div class="peliculas-relacionadas">
-    <h2 class="section-title">PELÍCULAS EN CARTELERA</h2>
-    <app-carousel-estrenos></app-carousel-estrenos>
-  </div>
+    <!-- Películas relacionadas -->
+    <div class="peliculas-relacionadas">
+      <h2 class="section-title">PELÍCULAS EN CARTELERA</h2>
+      <app-carousel-estrenos></app-carousel-estrenos>
+    </div>
 
   </div> <!-- Cierre del contenido principal -->
 </div>

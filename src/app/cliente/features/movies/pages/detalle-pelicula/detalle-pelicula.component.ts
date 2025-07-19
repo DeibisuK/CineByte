@@ -13,7 +13,6 @@ import { SedeSalasService } from '@features/venues';
 import { VentasService } from '@features/payments/services/ventas.service';
 import Swal from 'sweetalert2';
 
-
 interface MediaItem {
   type: 'video' | 'image';
   url: string;
@@ -30,19 +29,19 @@ interface FuncionInfo {
 
 /**
  * Componente DetallePeliculaComponent
- * 
+ *
  * NUEVA ESTRUCTURA SIMPLIFICADA (2025):
  * - Cada sala pertenece a UNA SOLA sede (relación 1:1)
  * - Múltiples funciones pueden estar en la misma sala pero con diferentes horarios
  * - No hay salas compartidas entre sedes
- * 
+ *
  * FLUJO DE FUNCIONAMIENTO:
  * 1. Se obtienen las funciones de la película
- * 2. Se obtienen las salas de la sede seleccionada  
+ * 2. Se obtienen las salas de la sede seleccionada
  * 3. Se filtran las funciones que pertenezcan a salas de esa sede
  * 4. Se agrupan por idioma y se formatean los horarios
  * 5. Al seleccionar idioma+horario se consultan los asientos reales de la sala
- * 
+ *
  * VALIDACIONES MANTENIDAS:
  * - Verificación de sede seleccionada
  * - Filtrado de funciones activas
@@ -54,7 +53,7 @@ interface FuncionInfo {
   selector: 'app-detalle-pelicula',
   imports: [CommonModule, CarouselEstrenosComponent, RouterModule],
   templateUrl: './detalle-pelicula.component.html',
-  styleUrl: './detalle-pelicula.component.css'
+  styleUrl: './detalle-pelicula.component.css',
 })
 export class DetallePeliculaComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -95,7 +94,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     private router: Router,
     private authService: AuthService,
     private loginModalService: LoginModalService
-  ) { }
+  ) {}
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -111,7 +110,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
 
     // Limpiar event listener
-    window.removeEventListener('sedeSeleccionada', this.onSedeChanged.bind(this));
+    window.removeEventListener(
+      'sedeSeleccionada',
+      this.onSedeChanged.bind(this)
+    );
   }
 
   private onSedeChanged(event: any): void {
@@ -125,65 +127,70 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   private loadMovieData(id: number): void {
     this.isLoading = true;
-    
+
     // Usar forkJoin para cargar película básica y completa en paralelo
     const peliculaBasica$ = this.movieService.getPeliculaById(id);
     const peliculaCompleta$ = this.movieService.getPeliculaByIdComplete(id);
 
     forkJoin({
       basica: peliculaBasica$,
-      completa: peliculaCompleta$
-    }).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: ({ basica, completa }) => {
-        this.pelicula = basica;
-        this.peliculaCompleta = completa;
+      completa: peliculaCompleta$,
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ basica, completa }) => {
+          this.pelicula = basica;
+          this.peliculaCompleta = completa;
 
-        if (this.sedeSeleccionada) {
-          this.loadFunciones(id);
-        } else {
-          // Si no hay sede, al menos configurar el carrusel con las imágenes
-          this.setupMediaCarousel();
-          this.isLoading = false;
-        }
-      },
-      error: () => {
-        // Si falla la película completa, intentar solo la básica
-        this.movieService.getPeliculaById(id).pipe(
-          takeUntil(this.destroy$)
-        ).subscribe({
-          next: (pelicula) => {
-            this.pelicula = pelicula;
-            if (this.sedeSeleccionada) {
-              this.loadFunciones(id);
-            } else {
-              this.setupMediaCarousel();
-              this.isLoading = false;
-            }
-          },
-          error: (basicErr) => {
+          if (this.sedeSeleccionada) {
+            this.loadFunciones(id);
+          } else {
+            // Si no hay sede, al menos configurar el carrusel con las imágenes
+            this.setupMediaCarousel();
             this.isLoading = false;
-            let errorMessage = 'No se pudo cargar la información de la película';
-            if (basicErr.status === 404) {
-              errorMessage = 'La película no existe o no se encuentra disponible';
-            } else if (basicErr.status === 500) {
-              errorMessage = 'Error del servidor. Intenta nuevamente más tarde';
-            } else if (basicErr.status === 0) {
-              errorMessage = 'Error de conexión. Verifica tu conexión a internet';
-            }
-            Swal.fire({
-              icon: 'error',
-              title: 'Película no encontrada',
-              text: errorMessage,
-              confirmButtonText: 'Volver al inicio'
-            }).then(() => {
-              this.router.navigate(['/']);
-            });
           }
-        });
-      }
-    });
+        },
+        error: () => {
+          // Si falla la película completa, intentar solo la básica
+          this.movieService
+            .getPeliculaById(id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (pelicula) => {
+                this.pelicula = pelicula;
+                if (this.sedeSeleccionada) {
+                  this.loadFunciones(id);
+                } else {
+                  this.setupMediaCarousel();
+                  this.isLoading = false;
+                }
+              },
+              error: (basicErr) => {
+                this.isLoading = false;
+                let errorMessage =
+                  'No se pudo cargar la información de la película';
+                if (basicErr.status === 404) {
+                  errorMessage =
+                    'La película no existe o no se encuentra disponible';
+                } else if (basicErr.status === 500) {
+                  errorMessage =
+                    'Error del servidor. Intenta nuevamente más tarde';
+                } else if (basicErr.status === 0) {
+                  errorMessage =
+                    'Error de conexión. Verifica tu conexión a internet';
+                }
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Película no encontrada',
+                  text: errorMessage,
+                  confirmButtonText: 'Volver al inicio',
+                }).then(() => {
+                  this.router.navigate(['/']);
+                });
+              },
+            });
+        },
+      });
   }
 
   private loadFunciones(peliculaId: number): void {
@@ -198,79 +205,90 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     // Obtener funciones de la película y salas de la sede en paralelo
     forkJoin({
       funciones: this.funcionesService.getFuncionesByPeliculaId(peliculaId),
-      salassDeSede: this.sedeSalasService.getSalasBySede(this.sedeSeleccionada.id_sede)
-    }).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: ({ funciones, salassDeSede }) => {
-        // Filtrar solo funciones activas
-        const funcionesActivas = funciones.filter(f => f.estado === 'activa');
+      salassDeSede: this.sedeSalasService.getSalasBySede(
+        this.sedeSeleccionada.id_sede
+      ),
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ funciones, salassDeSede }) => {
+          // Filtrar solo funciones activas
+          const funcionesActivas = funciones.filter(
+            (f) => f.estado === 'activa'
+          );
 
-        if (funcionesActivas.length === 0) {
-          this.funcionesPorIdioma = [];
-          this.funcionesCompletas = [];
-          this.setupMediaCarousel();
-          this.isLoading = false;
-          return;
-        }
-
-        // Crear un Set con los IDs de las salas de la sede seleccionada
-        const idsContasSalaseDeSede = new Set(salassDeSede.map((sala: any) => sala.id_sala));
-
-        // Filtrar funciones que pertenecen a salas de la sede seleccionada
-        const funcionesDeLaSede = funcionesActivas.filter(funcion => 
-          idsContasSalaseDeSede.has(funcion.id_sala)
-        );
-
-        if (funcionesDeLaSede.length === 0) {
-          this.funcionesPorIdioma = [];
-          this.funcionesCompletas = [];
-          this.setupMediaCarouselWithFallback(funcionesActivas);
-          this.isLoading = false;
-          return;
-        }
-
-        // Guardar funciones completas para uso posterior
-        this.funcionesCompletas = funcionesDeLaSede;
-
-        // Agrupar por idioma las funciones de la sede
-        const funcionesPorIdiomaMap = new Map<string, any[]>();
-
-        funcionesDeLaSede.forEach((funcion: any) => {
-          const idioma = funcion.idioma || 'Español';
-          if (!funcionesPorIdiomaMap.has(idioma)) {
-            funcionesPorIdiomaMap.set(idioma, []);
+          if (funcionesActivas.length === 0) {
+            this.funcionesPorIdioma = [];
+            this.funcionesCompletas = [];
+            this.setupMediaCarousel();
+            this.isLoading = false;
+            return;
           }
-          funcionesPorIdiomaMap.get(idioma)?.push(funcion);
-        });
 
-        // Convertir a formato esperado
-        this.funcionesPorIdioma = Array.from(funcionesPorIdiomaMap.entries()).map(([idioma, funciones]) => ({
-          idioma: idioma,
-          horarios: funciones.map((f: any) => this.formatearHora(f.fecha_hora_inicio)),
-          trailer: this.convertToEmbedUrl(funciones[0].trailer_url) || this.generarTrailerGenerico(),
-          precio: funciones[0].precio || 8.50
-        }));
+          // Crear un Set con los IDs de las salas de la sede seleccionada
+          const idsContasSalaseDeSede = new Set(
+            salassDeSede.map((sala: any) => sala.id_sala)
+          );
 
-        // Configurar idioma por defecto si hay funciones disponibles
-        if (this.funcionesPorIdioma.length > 0) {
-          this.idiomaSeleccionado = this.funcionesPorIdioma[0].idioma;
-          this.updateTrailerUrl(this.funcionesPorIdioma[0].trailer);
+          // Filtrar funciones que pertenecen a salas de la sede seleccionada
+          const funcionesDeLaSede = funcionesActivas.filter((funcion) =>
+            idsContasSalaseDeSede.has(funcion.id_sala)
+          );
+
+          if (funcionesDeLaSede.length === 0) {
+            this.funcionesPorIdioma = [];
+            this.funcionesCompletas = [];
+            this.setupMediaCarouselWithFallback(funcionesActivas);
+            this.isLoading = false;
+            return;
+          }
+
+          // Guardar funciones completas para uso posterior
+          this.funcionesCompletas = funcionesDeLaSede;
+          console.log('Funciones completas:', this.funcionesCompletas);
+
+          // Agrupar por idioma las funciones de la sede
+          const funcionesPorIdiomaMap = new Map<string, any[]>();
+
+          funcionesDeLaSede.forEach((funcion: any) => {
+            const idioma = funcion.idioma || 'Español';
+            if (!funcionesPorIdiomaMap.has(idioma)) {
+              funcionesPorIdiomaMap.set(idioma, []);
+            }
+            funcionesPorIdiomaMap.get(idioma)?.push(funcion);
+          });
+
+          // Convertir a formato esperado
+          this.funcionesPorIdioma = Array.from(
+            funcionesPorIdiomaMap.entries()
+          ).map(([idioma, funciones]) => ({
+            idioma: idioma,
+            horarios: funciones.map((f: any) =>
+              this.formatearHora(f.fecha_hora_inicio)
+            ),
+            trailer:
+              this.convertToEmbedUrl(funciones[0].trailer_url) ||
+              this.generarTrailerGenerico(),
+            precio: funciones[0].precio || 8.5,
+          }));
+
+          // Configurar idioma por defecto si hay funciones disponibles
+          if (this.funcionesPorIdioma.length > 0) {
+            this.idiomaSeleccionado = this.funcionesPorIdioma[0].idioma;
+            this.updateTrailerUrl(this.funcionesPorIdioma[0].trailer);
+            this.setupMediaCarousel();
+          }
+
+          this.isLoading = false;
+        },
+        error: () => {
+          this.funcionesPorIdioma = [];
+          this.funcionesCompletas = [];
           this.setupMediaCarousel();
-        }
-        
-        this.isLoading = false;
-      },
-      error: () => {
-        this.funcionesPorIdioma = [];
-        this.funcionesCompletas = [];
-        this.setupMediaCarousel();
-        this.isLoading = false;
-      }
-    });
+          this.isLoading = false;
+        },
+      });
   }
-
-
 
   private convertToEmbedUrl(youtubeUrl: string): string {
     if (!youtubeUrl) return this.generarTrailerGenerico();
@@ -310,7 +328,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     return fecha.toLocaleTimeString('es-ES', {
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
     });
   }
 
@@ -335,7 +353,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
     // Prioridad 1: Trailer de funciones de la sede seleccionada (si hay idioma seleccionado)
     if (this.funcionesPorIdioma.length > 0) {
-      const funcionIdioma = this.funcionesPorIdioma.find(f => f.idioma === this.idiomaSeleccionado) || this.funcionesPorIdioma[0];
+      const funcionIdioma =
+        this.funcionesPorIdioma.find(
+          (f) => f.idioma === this.idiomaSeleccionado
+        ) || this.funcionesPorIdioma[0];
       if (funcionIdioma.trailer) {
         trailerUrl = funcionIdioma.trailer;
       }
@@ -344,9 +365,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     // Prioridad 2: Trailer de cualquier función de la película (si se pasó funcionesDePelicula)
     if (!trailerUrl && funcionesDePelicula && funcionesDePelicula.length > 0) {
       // Preferir función con idioma seleccionado, sino la primera con trailer
-      const funcionPreferida = funcionesDePelicula.find(f =>
-        f.idioma === this.idiomaSeleccionado && f.trailer_url
-      ) || funcionesDePelicula.find(f => f.trailer_url);
+      const funcionPreferida =
+        funcionesDePelicula.find(
+          (f) => f.idioma === this.idiomaSeleccionado && f.trailer_url
+        ) || funcionesDePelicula.find((f) => f.trailer_url);
 
       if (funcionPreferida?.trailer_url) {
         trailerUrl = this.convertToEmbedUrl(funcionPreferida.trailer_url) || '';
@@ -366,7 +388,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       type: 'video',
       url: trailerUrl,
       thumbnail: this.getVideoThumbnail(trailerUrl),
-      title: 'Tráiler'
+      title: 'Tráiler',
     });
 
     // 2. SIEMPRE agregar imágenes adicionales (independiente de funciones de sede)
@@ -376,7 +398,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
           type: 'image',
           url: img.url,
           thumbnail: img.url,
-          title: `Imagen ${index + 1}`
+          title: `Imagen ${index + 1}`,
         });
       });
     }
@@ -405,9 +427,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   }
 
   private extractYouTubeVideoId(url: string): string {
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const regExp =
+      /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
-    return (match && match[2].length === 11) ? match[2] : '';
+    return match && match[2].length === 11 ? match[2] : '';
   }
 
   private checkSedeSeleccionada(): void {
@@ -424,27 +447,52 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   }
 
   private updateTrailerUrl(trailerUrl: string): void {
-    this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(trailerUrl);
+    this.safeTrailerUrl =
+      this.sanitizer.bypassSecurityTrustResourceUrl(trailerUrl);
   }
 
   // Métodos de la UI
   cambiarCantidad(delta: number): void {
     const nuevaCantidad = this.cantidad + delta;
-    
+
     // Solo permitir cambios si hay asientos disponibles
-    if (this.maxAsientosDisponibles > 0 && nuevaCantidad >= 1 && nuevaCantidad <= this.maxAsientosDisponibles) {
+    if (
+      this.maxAsientosDisponibles > 0 &&
+      nuevaCantidad >= 1 &&
+      nuevaCantidad <= this.maxAsientosDisponibles
+    ) {
       this.cantidad = nuevaCantidad;
     }
   }
 
   // Getter para verificar si se puede aumentar la cantidad
   get puedeAumentarCantidad(): boolean {
-    return this.maxAsientosDisponibles > 0 && this.cantidad < this.maxAsientosDisponibles;
+    return (
+      this.maxAsientosDisponibles > 0 &&
+      this.cantidad < this.maxAsientosDisponibles
+    );
   }
 
   // Getter para verificar si la función está seleccionada
   get funcionSeleccionada(): boolean {
     return this.idiomaSeleccionado !== '' && this.horarioSeleccionado !== '';
+  }
+
+  getNombreSalaSeleccionada(): string {
+    if (
+      !this.idiomaSeleccionado ||
+      !this.horarioSeleccionado ||
+      !this.funcionesCompletas.length
+    ) {
+      return '';
+    }
+    const funcion = this.funcionesCompletas.find((f) => {
+      const idiomaCoincide = f.idioma === this.idiomaSeleccionado;
+      const horarioFormateado = this.formatearHora(f.fecha_hora_inicio);
+      const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
+      return idiomaCoincide && horarioCoincide;
+    });
+    return funcion?.nombre_sala || '';
   }
 
   // Método para obtener información de asientos disponibles
@@ -461,46 +509,54 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     // Obtener tanto el ID de la sala como el ID de la función
     const idSala = this.obtenerIdSalaPorIdiomaYHorario();
     const idFuncion = this.obtenerIdFuncionPorIdiomaYHorario();
-    
+
     if (!idSala || !idFuncion) {
       return;
     }
 
     // Usar el nuevo método optimizado que considera reservas específicas de la función
-    this.ventasService.getAsientosDisponiblesPorFuncion(idSala, idFuncion).subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          // Calcular asientos disponibles desde la respuesta
-          let disponibles = 0;
-          let total = 0;
-          response.data.forEach((asiento: any) => {
-            // Solo contar asientos normales (no espacios)
-            if (asiento.tipo !== 'espacio') {
-              total++;
-              // El backend ya considera las reservas de esta función específica
-              if (!asiento.ocupado) {
-                disponibles++;
+    this.ventasService
+      .getAsientosDisponiblesPorFuncion(idSala, idFuncion)
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            // Calcular asientos disponibles desde la respuesta
+            let disponibles = 0;
+            let total = 0;
+            response.data.forEach((asiento: any) => {
+              // Solo contar asientos normales (no espacios)
+              if (asiento.tipo !== 'espacio') {
+                total++;
+                // El backend ya considera las reservas de esta función específica
+                if (!asiento.ocupado) {
+                  disponibles++;
+                }
               }
+            });
+            this.totalAsientos = total;
+            this.asientosOcupados = total - disponibles;
+            this.maxAsientosDisponibles = disponibles;
+            // Ajustar la cantidad seleccionada si excede el máximo disponible
+            if (
+              this.maxAsientosDisponibles > 0 &&
+              this.cantidad > this.maxAsientosDisponibles
+            ) {
+              this.cantidad = Math.min(
+                this.cantidad,
+                this.maxAsientosDisponibles
+              );
+            } else if (this.maxAsientosDisponibles === 0) {
+              // Si no hay asientos disponibles, mantener cantidad en 1 pero deshabilitar funcionalidad
+              this.cantidad = 1;
             }
-          });
-          this.totalAsientos = total;
-          this.asientosOcupados = total - disponibles;
-          this.maxAsientosDisponibles = disponibles;
-          // Ajustar la cantidad seleccionada si excede el máximo disponible
-          if (this.maxAsientosDisponibles > 0 && this.cantidad > this.maxAsientosDisponibles) {
-            this.cantidad = Math.min(this.cantidad, this.maxAsientosDisponibles);
-          } else if (this.maxAsientosDisponibles === 0) {
-            // Si no hay asientos disponibles, mantener cantidad en 1 pero deshabilitar funcionalidad
-            this.cantidad = 1;
+          } else {
+            this.aplicarFallbackAsientos();
           }
-        } else {
+        },
+        error: () => {
           this.aplicarFallbackAsientos();
-        }
-      },
-      error: () => {
-        this.aplicarFallbackAsientos();
-      }
-    });
+        },
+      });
   }
 
   /**
@@ -511,7 +567,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     this.totalAsientos = 50;
     this.asientosOcupados = 20;
     this.maxAsientosDisponibles = 30;
-    
+
     // Ajustar cantidad si es necesario
     if (this.cantidad > this.maxAsientosDisponibles) {
       this.cantidad = Math.max(1, this.maxAsientosDisponibles);
@@ -521,7 +577,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
   // Método para seleccionar horario y actualizar asientos disponibles
   seleccionarHorario(horario: string): void {
     this.horarioSeleccionado = horario;
-    
+
     // Ahora que tenemos idioma y horario, podemos consultar asientos reales
     this.actualizarAsientosDisponibles();
   }
@@ -544,7 +600,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
       // Si el tráiler está seleccionado, actualizar la vista previa
       if (this.selectedMediaIndex === 0) {
-        this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+        this.safeTrailerUrl =
+          this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
       }
     }
   }
@@ -562,7 +619,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       Swal.fire({
         icon: 'warning',
         title: 'Selecciona un horario',
-        text: 'Por favor selecciona un horario para continuar'
+        text: 'Por favor selecciona un horario para continuar',
       });
       return;
     }
@@ -572,7 +629,7 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       Swal.fire({
         icon: 'error',
         title: 'No hay asientos disponibles',
-        text: 'Esta función está completamente llena. Por favor selecciona otra función.'
+        text: 'Esta función está completamente llena. Por favor selecciona otra función.',
       });
       return;
     }
@@ -590,8 +647,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
         precio: this.obtenerPrecioPorIdioma(),
         total: this.obtenerPrecioTotal(),
         id_sala: this.obtenerIdSalaPorIdiomaYHorario(),
-        funcion_id: this.obtenerIdFuncionPorIdiomaYHorario() // Agregar ID de función real
-      }
+        funcion_id: this.obtenerIdFuncionPorIdiomaYHorario(), // Agregar ID de función real
+      },
     });
   }
 
@@ -636,7 +693,10 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       let newPosition = this.currentMediaIndex;
 
       // Si estamos en el segundo conjunto, resetear al primer conjunto equivalente
-      if (this.currentMediaIndex >= this.originalItemsCount && this.currentMediaIndex < this.originalItemsCount * 2) {
+      if (
+        this.currentMediaIndex >= this.originalItemsCount &&
+        this.currentMediaIndex < this.originalItemsCount * 2
+      ) {
         newPosition = this.currentMediaIndex - this.originalItemsCount;
         needsReset = true;
       }
@@ -657,11 +717,16 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   private updatePreviewFromCurrentIndex(): void {
     // Obtener el elemento actual del carrusel
-    if (this.currentMediaIndex >= 0 && this.currentMediaIndex < this.mediaItems.length) {
+    if (
+      this.currentMediaIndex >= 0 &&
+      this.currentMediaIndex < this.mediaItems.length
+    ) {
       const mediaItem = this.mediaItems[this.currentMediaIndex];
 
       if (mediaItem.type === 'video') {
-        this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(mediaItem.url);
+        this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+          mediaItem.url
+        );
       }
       // Para imágenes, la vista previa se maneja en el HTML
     }
@@ -683,7 +748,9 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   getLogicalIndex(visualIndex: number): number {
     // Convertir índice visual a índice lógico
-    return this.originalItemsCount > 0 ? visualIndex % this.originalItemsCount : 0;
+    return this.originalItemsCount > 0
+      ? visualIndex % this.originalItemsCount
+      : 0;
   }
 
   onMediaClick(visualIndex: number): void {
@@ -712,7 +779,8 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
       const horaInicio = parseInt(horaStr);
       const minutoInicio = parseInt(minutoStr);
       // Calcular hora de fin
-      let minutosTotales = horaInicio * 60 + minutoInicio + this.pelicula.duracion_minutos;
+      let minutosTotales =
+        horaInicio * 60 + minutoInicio + this.pelicula.duracion_minutos;
       let horaFin = Math.floor(minutosTotales / 60);
       let minutoFin = minutosTotales % 60;
       // Manejar cambio de día (24h+)
@@ -730,12 +798,16 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   obtenerPrecioPorIdioma(): number | string {
     // Si hay idioma y horario seleccionados, buscar la función específica
-    if (this.idiomaSeleccionado && this.horarioSeleccionado && this.funcionesCompletas.length > 0) {
-      const funcionEspecifica = this.funcionesCompletas.find(funcion => {
+    if (
+      this.idiomaSeleccionado &&
+      this.horarioSeleccionado &&
+      this.funcionesCompletas.length > 0
+    ) {
+      const funcionEspecifica = this.funcionesCompletas.find((funcion) => {
         const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
         const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
         const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
-        
+
         return idiomaCoincide && horarioCoincide;
       });
 
@@ -745,7 +817,9 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     }
 
     // Fallback al método anterior
-    const funcion = this.funcionesPorIdioma.find(f => f.idioma === this.idiomaSeleccionado);
+    const funcion = this.funcionesPorIdioma.find(
+      (f) => f.idioma === this.idiomaSeleccionado
+    );
     return funcion && funcion.precio ? funcion.precio : 'N/A';
   }
 
@@ -754,118 +828,155 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
     return typeof precio === 'number' ? precio * this.cantidad : 'N/A';
   }
 
-
-
   getGeneros(): string {
     if (!this.peliculaCompleta?.generos) return 'No disponible';
-    
+
     // Si es un array de strings (formato optimizado)
-    if (Array.isArray(this.peliculaCompleta.generos) && typeof this.peliculaCompleta.generos[0] === 'string') {
+    if (
+      Array.isArray(this.peliculaCompleta.generos) &&
+      typeof this.peliculaCompleta.generos[0] === 'string'
+    ) {
       return this.peliculaCompleta.generos.join(', ');
     }
-    
+
     // Si es un array de objetos (formato tradicional)
-    if (Array.isArray(this.peliculaCompleta.generos) && typeof this.peliculaCompleta.generos[0] === 'object') {
+    if (
+      Array.isArray(this.peliculaCompleta.generos) &&
+      typeof this.peliculaCompleta.generos[0] === 'object'
+    ) {
       return this.peliculaCompleta.generos.map((g: any) => g.nombre).join(', ');
     }
-    
+
     return 'No disponible';
   }
 
   getActores(): string {
     if (!this.peliculaCompleta?.actores) return 'No disponible';
-    
+
     // Si es un array de strings (formato optimizado)
-    if (Array.isArray(this.peliculaCompleta.actores) && typeof this.peliculaCompleta.actores[0] === 'string') {
+    if (
+      Array.isArray(this.peliculaCompleta.actores) &&
+      typeof this.peliculaCompleta.actores[0] === 'string'
+    ) {
       return this.peliculaCompleta.actores.join(', ');
     }
-    
+
     // Si es un array de objetos (formato tradicional)
-    if (Array.isArray(this.peliculaCompleta.actores) && typeof this.peliculaCompleta.actores[0] === 'object') {
+    if (
+      Array.isArray(this.peliculaCompleta.actores) &&
+      typeof this.peliculaCompleta.actores[0] === 'object'
+    ) {
       return this.peliculaCompleta.actores.map((a: any) => a.nombre).join(', ');
     }
-    
+
     return 'No disponible';
   }
 
   getIdiomas(): string {
     if (!this.peliculaCompleta?.idiomas) return 'No disponible';
-    
+
     // Si es un array de strings (formato optimizado)
-    if (Array.isArray(this.peliculaCompleta.idiomas) && typeof this.peliculaCompleta.idiomas[0] === 'string') {
+    if (
+      Array.isArray(this.peliculaCompleta.idiomas) &&
+      typeof this.peliculaCompleta.idiomas[0] === 'string'
+    ) {
       return this.peliculaCompleta.idiomas.join(', ');
     }
-    
+
     // Si es un array de objetos (formato tradicional)
-    if (Array.isArray(this.peliculaCompleta.idiomas) && typeof this.peliculaCompleta.idiomas[0] === 'object') {
+    if (
+      Array.isArray(this.peliculaCompleta.idiomas) &&
+      typeof this.peliculaCompleta.idiomas[0] === 'object'
+    ) {
       return this.peliculaCompleta.idiomas.map((i: any) => i.nombre).join(', ');
     }
-    
+
     return 'No disponible';
   }
 
   getEtiquetas(): string {
     if (!this.peliculaCompleta?.etiquetas) return 'No disponible';
-    
+
     // Si es un array de strings (formato optimizado)
-    if (Array.isArray(this.peliculaCompleta.etiquetas) && typeof this.peliculaCompleta.etiquetas[0] === 'string') {
+    if (
+      Array.isArray(this.peliculaCompleta.etiquetas) &&
+      typeof this.peliculaCompleta.etiquetas[0] === 'string'
+    ) {
       return this.peliculaCompleta.etiquetas.join(', ');
     }
-    
+
     // Si es un array de objetos (formato tradicional)
-    if (Array.isArray(this.peliculaCompleta.etiquetas) && typeof this.peliculaCompleta.etiquetas[0] === 'object') {
-      return this.peliculaCompleta.etiquetas.map((e: any) => e.nombre).join(', ');
+    if (
+      Array.isArray(this.peliculaCompleta.etiquetas) &&
+      typeof this.peliculaCompleta.etiquetas[0] === 'object'
+    ) {
+      return this.peliculaCompleta.etiquetas
+        .map((e: any) => e.nombre)
+        .join(', ');
     }
-    
+
     return 'No disponible';
   }
 
   getDistribuidor(): string {
-    if (!this.peliculaCompleta?.distribuidor && !this.peliculaCompleta?.id_distribuidor) return 'No disponible';
-    
+    if (
+      !this.peliculaCompleta?.distribuidor &&
+      !this.peliculaCompleta?.id_distribuidor
+    )
+      return 'No disponible';
+
     // Prioridad 1: Campo distribuidor directo (formato optimizado)
     if (this.peliculaCompleta?.distribuidor) {
       if (typeof this.peliculaCompleta.distribuidor === 'string') {
         return this.peliculaCompleta.distribuidor;
       }
-      if (typeof this.peliculaCompleta.distribuidor === 'object' && this.peliculaCompleta.distribuidor.nombre) {
+      if (
+        typeof this.peliculaCompleta.distribuidor === 'object' &&
+        this.peliculaCompleta.distribuidor.nombre
+      ) {
         return this.peliculaCompleta.distribuidor.nombre;
       }
     }
-    
+
     // Prioridad 2: Campo id_distribuidor (formato tradicional)
     if (this.peliculaCompleta?.id_distribuidor) {
       if (typeof this.peliculaCompleta.id_distribuidor === 'string') {
         return this.peliculaCompleta.id_distribuidor;
       }
-      if (typeof this.peliculaCompleta.id_distribuidor === 'object' && this.peliculaCompleta.id_distribuidor.nombre) {
+      if (
+        typeof this.peliculaCompleta.id_distribuidor === 'object' &&
+        this.peliculaCompleta.id_distribuidor.nombre
+      ) {
         return this.peliculaCompleta.id_distribuidor.nombre;
       }
     }
-    
+
     return 'No disponible';
   }
 
   getEstadoLabel(estado: string): string {
     const estados: { [key: string]: string } = {
-      'activo': 'En cartelera',
-      'proximamente': 'Próximamente',
-      'retirada': 'Retirada'
+      activo: 'En cartelera',
+      proximamente: 'Próximamente',
+      retirada: 'Retirada',
     };
     return estados[estado] || estado;
   }
 
   // Método para obtener id_sala basado en idioma y horario seleccionados
   private obtenerIdSalaPorIdiomaYHorario(): number | null {
-    if (!this.idiomaSeleccionado || !this.horarioSeleccionado || !this.funcionesCompletas.length) {
+    if (
+      !this.idiomaSeleccionado ||
+      !this.horarioSeleccionado ||
+      !this.funcionesCompletas.length
+    ) {
       return null;
     }
 
-    const funcionEncontrada = this.funcionesCompletas.find(funcion => {
+    const funcionEncontrada = this.funcionesCompletas.find((funcion) => {
       const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
       const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
       const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
-      
       return idiomaCoincide && horarioCoincide;
     });
 
@@ -878,15 +989,19 @@ export class DetallePeliculaComponent implements OnInit, OnDestroy {
 
   // Método para obtener id_funcion basado en idioma y horario seleccionados
   private obtenerIdFuncionPorIdiomaYHorario(): number | null {
-    if (!this.idiomaSeleccionado || !this.horarioSeleccionado || !this.funcionesCompletas.length) {
+    if (
+      !this.idiomaSeleccionado ||
+      !this.horarioSeleccionado ||
+      !this.funcionesCompletas.length
+    ) {
       return null;
     }
 
-    const funcionEncontrada = this.funcionesCompletas.find(funcion => {
+    const funcionEncontrada = this.funcionesCompletas.find((funcion) => {
       const idiomaCoincide = funcion.idioma === this.idiomaSeleccionado;
       const horarioFormateado = this.formatearHora(funcion.fecha_hora_inicio);
       const horarioCoincide = horarioFormateado === this.horarioSeleccionado;
-      
+
       return idiomaCoincide && horarioCoincide;
     });
 
