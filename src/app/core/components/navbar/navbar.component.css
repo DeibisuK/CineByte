@@ -278,7 +278,7 @@ body.light-mode .usuario.active-link .material-icons {
   border-radius: 12px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   padding: 1rem 0.7rem;
-  z-index: 999;
+  z-index: 400;
   max-height: 60vh;
   overflow-y: auto;
   opacity: 0;
@@ -733,7 +733,7 @@ input:checked+.slider:before {
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   min-width: 180px;
-  z-index: 100;
+  z-index: 999;
   opacity: 0;
   visibility: hidden;
   transform: translateY(10px);

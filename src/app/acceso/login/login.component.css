@@ -4,7 +4,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  /*  Efecto para contraste con el modal */
   background: rgba(0, 0, 0, 0.747);
   display: flex;
   align-items: center;
@@ -55,7 +54,7 @@
   border: none;
   border-radius: 50%;
   font-size: 20px;
-  background: var(--bg-color);
+  background: transparent;
   color: var(--text-color);
   cursor: pointer;
   z-index: 10;
@@ -72,9 +71,7 @@
 
 .left-section {
   flex: 1;
-    background: linear-gradient(135deg, #FFD700, #FFA500);
-
-  /* Nuevo gradiente */
+  background: linear-gradient(135deg, #FFD700, #FFA500);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -477,7 +474,6 @@
 /* Ajustes para pantallas medianas o móviles */
 @media (max-width: 768px) {
   .modal-overlay {
-    padding: 10px; /* Un poco de espacio para que no pegue con los bordes */
     align-items: center; /* Centrar vertical */
     justify-content: center; /* Centrar horizontal */
   }
