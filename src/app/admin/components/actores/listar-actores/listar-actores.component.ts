@@ -112,6 +112,7 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     }
     return '';
   }
+
   cargarPaises(): Promise<void> {
     this.isLoadingPaises = true;
     return new Promise((resolve, reject) => {
