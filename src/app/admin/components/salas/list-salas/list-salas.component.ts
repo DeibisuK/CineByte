@@ -82,9 +82,8 @@ export class ListSalasComponent {
             this.cargarSalas();
           },
           error: (err) => {
-            const mensaje =
-              err.error?.error || 'No se pudo eliminar la sala.';
-            Swal.fire('Error', mensaje, 'error');
+            const mensaje = err.error?.error || 'No se pudo eliminar la sala.';
+            Swal.fire('Error', mensaje);
           },
         });
       }
