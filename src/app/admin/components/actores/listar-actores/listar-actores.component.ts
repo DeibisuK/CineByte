@@ -77,33 +77,41 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
   }
 
   cargarActores(): void {
-  this.isLoadingActores = true;
-  this.actorService
-    .getActor()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (data) => {
-        this.actores = data.map((actor) => ({
-          ...actor,
-          nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
-          // Mostrar solo año, mes y día
-          fecha_nacimiento: typeof actor.fecha_nacimiento === 'string'
-            ? actor.fecha_nacimiento.slice(0, 10)
-            : actor.fecha_nacimiento instanceof Date
-              ? actor.fecha_nacimiento.toISOString().slice(0, 10)
-              : '',
-        }));
+    this.isLoadingActores = true;
+    this.actorService
+      .getActor()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.actores = data.map((actor) => ({
+            ...actor,
+            nombrePais: this.obtenerNombrePais(actor.id_nacionalidad),
+            // Mostrar solo año, mes y día
+            fecha_nacimiento: this.extraerFecha(actor.fecha_nacimiento),
+          }));
 
-        this.actoresFiltrados = [...this.actores];
-        this.isLoadingActores = false;
-      },
-      error: () => {
-        this.alerta.error('Error', 'No se pudieron cargar los actores');
-        this.isLoadingActores = false;
-      },
-    });
-}
+          this.actoresFiltrados = [...this.actores];
+          this.isLoadingActores = false;
+        },
+        error: () => {
+          this.alerta.error('Error', 'No se pudieron cargar los actores');
+          this.isLoadingActores = false;
+        },
+      });
+  }
 
+  // Agrega este método en tu componente:
+  private extraerFecha(fecha: string | Date): string {
+    if (!fecha) return '';
+    if (typeof fecha === 'string') {
+      // Si viene como '2025-07-02T00:00' o '2025-07-02T00:00:00.000Z'
+      return fecha.split('T')[0];
+    }
+    if (fecha instanceof Date) {
+      return fecha.toISOString().split('T')[0];
+    }
+    return '';
+  }
   cargarPaises(): Promise<void> {
     this.isLoadingPaises = true;
     return new Promise((resolve, reject) => {
