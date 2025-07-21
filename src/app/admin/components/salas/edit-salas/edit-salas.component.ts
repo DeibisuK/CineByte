@@ -81,8 +81,9 @@ export class EditSalasComponent implements OnInit {
           this.alerta.success('Exito','Sala actualizada correctamente');
           this.router.navigate(['/admin/salas/list']);
         },
-        error: () => {
-          this.alerta.error('Error','Hubo un error al actualizar la sala');
+        error: (err) => {
+          const mensaje = err.error?.error || err.error?.mensaje || 'Hubo un error al actualizar la sala';
+          this.alerta.error('Error', mensaje);
         }
       });
     } else {

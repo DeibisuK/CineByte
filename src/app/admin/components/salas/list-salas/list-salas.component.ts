@@ -78,12 +78,13 @@ export class ListSalasComponent {
       if (result.isConfirmed) {
         this.salaService.deleteSala(id).subscribe({
           next: (res) => {
-            Swal.fire('Eliminado', res.mensaje, 'success');
+            const mensaje = res.message || res.mensaje || 'Sala eliminada correctamente.';
+            Swal.fire('Eliminado', mensaje, 'success');
             this.cargarSalas();
           },
           error: (err) => {
-            const mensaje = err.error?.error || 'No se pudo eliminar la sala.';
-            Swal.fire('Error', mensaje);
+            const mensaje = err.error?.error || err.error?.mensaje || 'No se pudo eliminar la sala.';
+            Swal.fire('Error', mensaje, 'error');
           },
         });
       }

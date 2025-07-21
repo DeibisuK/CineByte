@@ -258,33 +258,34 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.nacionalidadTemporal = null;
   }
 
-  deleteActor(id: number, nombre: string): void {
-    if (this.isDeleting) return; // Prevenir múltiples eliminaciones
+deleteActor(id: number, nombre: string): void {
+  if (this.isDeleting) return; // Prevenir múltiples eliminaciones
 
-    this.alerta.confirmacion(
-      '¿Estás seguro?',
-      `Esta acción eliminará al actor ${nombre} permanentemente`,
-      'Sí, eliminar',
-      'Cancelar'
-    ).then((result: { isConfirmed: boolean }) => {
-      if (result.isConfirmed) {
-        this.isDeleting = true;
-        this.actorService.deleteActor(id)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.alerta.success('Eliminado', 'El actor ha sido eliminado');
-              this.cargarActores();
-              this.isDeleting = false;
-            },
-            error: () => {
-              this.alerta.error('Error', 'No se pudo eliminar el actor');
-              this.isDeleting = false;
-            }
-          });
-      }
-    });
-  }
+  this.alerta.confirmacion(
+    '¿Estás seguro?',
+    `Esta acción eliminará al actor ${nombre} permanentemente`,
+    'Sí, eliminar',
+    'Cancelar'
+  ).then((result: { isConfirmed: boolean }) => {
+    if (result.isConfirmed) {
+      this.isDeleting = true;
+      this.actorService.deleteActor(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            this.alerta.success('Eliminado', 'El actor ha sido eliminado');
+            this.cargarActores();
+            this.isDeleting = false;
+          },
+          error: (err) => {
+            const mensaje = err?.error?.error || 'No se pudo eliminar el actor';
+            this.alerta.error('Error', mensaje);
+            this.isDeleting = false;
+          }
+        });
+    }
+  });
+}
 
   obtenerNombrePais(idPais: number | null): string {
     if (!idPais) return 'Desconocido';
