@@ -1,5 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { PaisesService } from '@features/catalog';
 import { CommonModule } from '@angular/common';
 import { DistribuidorService } from '@features/catalog';
@@ -10,7 +16,7 @@ import Swal from 'sweetalert2';
   selector: 'app-list-distribuidor',
   imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './list-distribuidor.component.html',
-  styleUrl: './list-distribuidor.component.css'
+  styleUrl: './list-distribuidor.component.css',
 })
 export class ListDistribuidorComponent implements OnInit {
   formDistribuidor: FormGroup;
@@ -34,7 +40,6 @@ export class ListDistribuidorComponent implements OnInit {
   filteredPaisesEdit: any[] = [];
   showPaisesEditDropdown: boolean = false;
 
-
   constructor(
     private fb: FormBuilder,
     private distribuidorService: DistribuidorService,
@@ -44,8 +49,15 @@ export class ListDistribuidorComponent implements OnInit {
     this.formDistribuidor = this.fb.group({
       nombre: ['', Validators.required],
       id_pais_origen: ['', Validators.required],
-      ano_fundacion: ['', [Validators.required, Validators.min(1800), Validators.max(new Date().getFullYear())]],
-      sitio_web: ['', Validators.pattern('^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]
+      ano_fundacion: [
+        '',
+        [
+          Validators.required,
+          Validators.min(1800),
+          Validators.max(new Date().getFullYear()),
+        ],
+      ],
+      sitio_web: ['', Validators.pattern('^[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$')],
     });
   }
 
@@ -62,7 +74,7 @@ export class ListDistribuidorComponent implements OnInit {
       },
       error: () => {
         this.alerta.error('Error', 'No se pudieron cargar los distribuidores');
-      }
+      },
     });
   }
 
@@ -70,13 +82,15 @@ export class ListDistribuidorComponent implements OnInit {
     this.paisService.getPais().subscribe({
       next: (data) => {
         // Ordenar alfabéticamente
-        this.paises = data.sort((a: any, b: any) => a.nombre.localeCompare(b.nombre));
+        this.paises = data.sort((a: any, b: any) =>
+          a.nombre.localeCompare(b.nombre)
+        );
         this.filteredPaises = [...this.paises];
         this.filteredPaisesEdit = [...this.paises];
       },
       error: () => {
         this.alerta.error('Error', 'No se pudieron cargar los países');
-      }
+      },
     });
   }
 
@@ -89,8 +103,14 @@ export class ListDistribuidorComponent implements OnInit {
       const distribuidorData = this.formDistribuidor.value;
 
       // Asegurar que el sitio web no empiece con http:// o https://
-      if (distribuidorData.sitio_web && !distribuidorData.sitio_web.startsWith('http')) {
-        distribuidorData.sitio_web = distribuidorData.sitio_web.replace(/^https?:\/\//, '');
+      if (
+        distribuidorData.sitio_web &&
+        !distribuidorData.sitio_web.startsWith('http')
+      ) {
+        distribuidorData.sitio_web = distribuidorData.sitio_web.replace(
+          /^https?:\/\//,
+          ''
+        );
       }
 
       this.distribuidorService.addDisitribuidor(distribuidorData).subscribe({
@@ -104,7 +124,7 @@ export class ListDistribuidorComponent implements OnInit {
         },
         error: () => {
           this.alerta.error('Error', 'No se pudo crear el distribuidor');
-        }
+        },
       });
     }
   }
@@ -116,10 +136,11 @@ export class ListDistribuidorComponent implements OnInit {
     }
 
     const filtro = this.filtroDistribuidores.toLowerCase();
-    this.distribuidoresFiltrados = this.distribuidores.filter(d =>
-      d.nombre.toLowerCase().includes(filtro) ||
-      (this.obtenerNombrePais(d.id_pais_origen)?.toLowerCase().includes(filtro)
-      ))
+    this.distribuidoresFiltrados = this.distribuidores.filter(
+      (d) =>
+        d.nombre.toLowerCase().includes(filtro) ||
+        this.obtenerNombrePais(d.id_pais_origen)?.toLowerCase().includes(filtro)
+    );
   }
 
   activarEdicion(distribuidor: any): void {
@@ -128,9 +149,11 @@ export class ListDistribuidorComponent implements OnInit {
     this.anoFundacionTemporal = distribuidor.ano_fundacion;
     this.sitioWebTemporal = distribuidor.sitio_web;
     this.paisOrigenTemporal = distribuidor.id_pais_origen;
-    
+
     // Inicializar dropdown de edición
-    const paisSeleccionado = this.paises.find(p => p.id_pais === distribuidor.id_pais_origen);
+    const paisSeleccionado = this.paises.find(
+      (p) => p.id_pais === distribuidor.id_pais_origen
+    );
     this.paisEditSearchTerm = paisSeleccionado ? paisSeleccionado.nombre : '';
     this.filteredPaisesEdit = [...this.paises];
   }
@@ -146,21 +169,26 @@ export class ListDistribuidorComponent implements OnInit {
       nombre: this.nombreTemporal,
       ano_fundacion: Number(this.anoFundacionTemporal) || 0,
       sitio_web: this.sitioWebTemporal || null,
-      id_pais_origen: Number(this.paisOrigenTemporal) || 0 // Conversión explícita a número
+      id_pais_origen: Number(this.paisOrigenTemporal) || 0, // Conversión explícita a número
     };
 
     console.log('Datos a actualizar:', datosActualizados);
 
-    this.distribuidorService.updateDistribuidor(this.distribuidorEditando, datosActualizados).subscribe({
-      next: () => {
-        this.alerta.success('Actualizado', 'Distribuidor actualizado con éxito');
-        this.cancelarEdicion();
-        this.cargarDistribuidores();
-      },
-      error: () => {
-        this.alerta.error('Error', 'No se pudo actualizar el distribuidor');
-      }
-    });
+    this.distribuidorService
+      .updateDistribuidor(this.distribuidorEditando, datosActualizados)
+      .subscribe({
+        next: () => {
+          this.alerta.success(
+            'Actualizado',
+            'Distribuidor actualizado con éxito'
+          );
+          this.cancelarEdicion();
+          this.cargarDistribuidores();
+        },
+        error: () => {
+          this.alerta.error('Error', 'No se pudo actualizar el distribuidor');
+        },
+      });
   }
 
   cancelarEdicion(): void {
@@ -174,35 +202,41 @@ export class ListDistribuidorComponent implements OnInit {
   deleteDistribuidor(id: number, nombre: string): void {
     Swal.fire({
       title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el distribuidor ' + nombre + ' permanentemente',
+      text:
+        'Esta acción eliminará el distribuidor ' + nombre + ' permanentemente',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
         this.distribuidorService.deleteDisitribuidor(id).subscribe({
-          next: () => { 
-            this.alerta.success('Eliminado', 'Distribuidor eliminado correctamente');
+          next: () => {
+            this.alerta.success(
+              'Eliminado',
+              'Distribuidor eliminado correctamente'
+            );
             this.cargarDistribuidores();
           },
-          error: () => {
-            this.alerta.error('Error', 'No se pudo eliminar el distribuidor');
-          }
+          error: (err) => {
+            const mensaje =
+              err?.error?.error || 'No se pudo eliminar el distribuidor';
+            this.alerta.error('Error', mensaje);
+          },
         });
       }
     });
   }
 
   obtenerNombrePais(idPais: number): string {
-    const pais = this.paises.find(p => p.id_pais === idPais);
+    const pais = this.paises.find((p) => p.id_pais === idPais);
     return pais ? pais.nombre : 'Desconocido';
   }
 
   // Métodos para el dropdown con buscador - Formulario
   filterPaises(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredPaises = this.paises.filter(pais =>
+    this.filteredPaises = this.paises.filter((pais) =>
       pais.nombre.toLowerCase().includes(searchTerm)
     );
   }
@@ -228,7 +262,7 @@ export class ListDistribuidorComponent implements OnInit {
   // Métodos para el dropdown con buscador - Edición
   filterPaisesEdit(event: any): void {
     const searchTerm = event.target.value.toLowerCase();
-    this.filteredPaisesEdit = this.paises.filter(pais =>
+    this.filteredPaisesEdit = this.paises.filter((pais) =>
       pais.nombre.toLowerCase().includes(searchTerm)
     );
   }
