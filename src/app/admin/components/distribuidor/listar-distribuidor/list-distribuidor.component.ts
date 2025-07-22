@@ -221,7 +221,7 @@ export class ListDistribuidorComponent implements OnInit {
           error: (err) => {
             const mensaje =
               err?.error?.error || 'No se pudo eliminar el distribuidor';
-            this.alerta.error('Error', mensaje);
+            this.alerta.warning('Advertencia', mensaje);
           },
         });
       }

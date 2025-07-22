@@ -199,9 +199,7 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.actorEditando = actor.id_actor;
     this.nombreTemporal = actor.nombre;
     this.apellidosTemporal = actor.apellidos;
-    this.fechaNacimientoTemporal = this.formatDateForInput(
-      actor.fecha_nacimiento
-    );
+    this.fechaNacimientoTemporal = actor.fecha_nacimiento.toString();
     this.nacionalidadTemporal = actor.id_nacionalidad;
 
     // Inicializar dropdown de edición
@@ -212,37 +210,7 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
     this.filteredPaisesEdit = [...this.paises];
   }
 
-  formatDateForInput(dateInput: Date | string): string {
-    if (!dateInput) {
-      return '';
-    }
 
-    let date: Date;
-    if (typeof dateInput === 'string') {
-      // Si es string ISO, verificar si contiene hora
-      if (dateInput.includes('T')) {
-        // Contiene hora, extraer fecha y hora
-        const dateTimeOnly = dateInput.split('.')[0]; // Remover milisegundos si existen
-        return dateTimeOnly;
-      } else {
-        // Solo fecha, agregar hora por defecto
-        return dateInput + 'T00:00';
-      }
-    } else {
-      date = dateInput;
-    }
-
-    if (isNaN(date.getTime())) {
-      return '';
-    }
-
-    const year = date.getFullYear();
-    const month = ('0' + (date.getMonth() + 1)).slice(-2);
-    const day = ('0' + date.getDate()).slice(-2);
-    const hours = ('0' + date.getHours()).slice(-2);
-    const minutes = ('0' + date.getMinutes()).slice(-2);
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  }
 
   guardarEdicion(): void {
     if (!this.actorEditando) {
@@ -316,9 +284,8 @@ export class ListarActoresComponent implements OnInit, OnDestroy {
                 this.isDeleting = false;
               },
               error: (err) => {
-                const mensaje =
-                  err?.error?.error || 'No se pudo eliminar el actor';
-                this.alerta.error('Error', mensaje);
+                const mensaje = err?.error?.error || 'No se pudo eliminar el actor';
+                this.alerta.warning('Advertencia', mensaje);
                 this.isDeleting = false;
               },
             });

@@ -22,14 +22,14 @@ import { AlertaService } from '@core/services';
 export class CrearFuncionesComponent implements OnInit, OnDestroy {
   private readonly DROPDOWN_DELAY = 200;
   private destroy$ = new Subject<void>();
-  
+
   funcionesForm: FormGroup;
-  
+
   // Datos originales
   peliculas: Pelicula[] = [];
   sedes: Sede[] = [];
   salas: SedeSala[] = [];
-  idiomas: Idiomas[] = []; 
+  idiomas: Idiomas[] = [];
   idiomasOriginales: Idiomas[] = []; // Para mantener los datos originales
   idiomasPelicula: number[] = []; // Array de IDs de idiomas, no objetos 
 
@@ -47,22 +47,22 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   selectedPeliculaId: number | null = null;
   selectedSedeId: number | null = null;
   selectedSalaId: number | null = null;
-  
+
   // Estados de UI
   isSubmitting = false;
   isLoadingInitialData = true;
   isLoadingSalas = false;
   isLoadingIdiomas = false;
-  
+
   // Opciones para dropdown de estado
   estadosDisponibles = [
     { value: 'activa', label: 'Activa' },
     { value: 'suspendida', label: 'Suspendida' },
     { value: 'finalizada', label: 'Finalizada' }
   ];
-  
+
   // Fecha calculada
-  fechaHoraFin: Date | null = null;
+  fechaHoraFin: string | null = null;
   constructor(
     private fb: FormBuilder,
     private funcionesService: FuncionesService,
@@ -146,7 +146,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
       id_pelicula: pelicula.id_pelicula
     });
     this.showPeliculasDropdown = false;
-    
+
     // Calcular fecha de fin si ya hay fecha de inicio
     this.calculateFechaFin();
   }
@@ -223,11 +223,11 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
 
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
-    
+
     // Optimización: solo filtrar si hay query, sino mostrar todas las salas de la sede
     if (query.trim()) {
-      this.filteredSalas = this.salas.filter(sala => 
-        sala.id_sede === this.selectedSedeId && 
+      this.filteredSalas = this.salas.filter(sala =>
+        sala.id_sede === this.selectedSedeId &&
         sala.nombre.toLowerCase().includes(query)
       );
     } else {
@@ -271,37 +271,19 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         return;
       }
 
-      // Convertir fecha_hora_inicio (string local) a Date UTC
-      const localDateString: string = this.funcionesForm.value.fecha_hora_inicio; // 'YYYY-MM-DDTHH:mm'
-      let fechaUTC: Date | null = null;
-      if (localDateString) {
-        const [date, time] = localDateString.split('T');
-        const [year, month, day] = date.split('-').map(Number);
-        const [hour, minute] = time.split(':').map(Number);
-        fechaUTC = new Date(Date.UTC(year, month - 1, day, hour, minute));
-      }
-
-      // Calcular fecha_hora_fin en UTC (sumando duración a la fecha UTC)
-      let fechaFinUTC: Date | null = null;
-      if (fechaUTC && this.selectedPeliculaId) {
-        const peliculaSeleccionada = this.peliculas.find(p => p.id_pelicula === this.selectedPeliculaId);
-        if (peliculaSeleccionada?.duracion_minutos) {
-          fechaFinUTC = new Date(fechaUTC.getTime() + peliculaSeleccionada.duracion_minutos * 60000);
-        }
-      }
-
+      // Enviar la hora local seleccionada por el usuario, sin conversión a UTC
       const formData: Funciones = {
         id_funcion: 0, // El backend lo generará
         id_pelicula: this.selectedPeliculaId!,
         id_sala: this.selectedSalaId!,
-        fecha_hora_inicio: fechaUTC!,
-        fecha_hora_fin: fechaFinUTC || this.fechaHoraFin!,
+        fecha_hora_inicio: this.funcionesForm.value.fecha_hora_inicio,
+        fecha_hora_fin: this.fechaHoraFin!,
         precio_funcion: Number(precioValue),
         id_idioma: Number(this.funcionesForm.value.id_idioma),
         trailer_url: this.funcionesForm.value.trailer_url.trim(),
         estado: this.funcionesForm.value.estado
       };
-
+      console.log('Submitting form data:', formData);
       this.funcionesService.addFuncion(formData)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
@@ -323,9 +305,9 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   }
 
   private areIdsSelected(): boolean {
-    return this.selectedPeliculaId !== null && 
-           this.selectedSedeId !== null && 
-           this.selectedSalaId !== null;
+    return this.selectedPeliculaId !== null &&
+      this.selectedSedeId !== null &&
+      this.selectedSalaId !== null;
   }
 
   areFormReady(): boolean {
@@ -336,11 +318,22 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   private calculateFechaFin(): void {
     const fechaInicio = this.funcionesForm.get('fecha_hora_inicio')?.value;
     const peliculaSeleccionada = this.peliculas.find(p => p.id_pelicula === this.selectedPeliculaId);
-    
+
     if (fechaInicio && peliculaSeleccionada?.duracion_minutos) {
-      const fechaInicioDate = new Date(fechaInicio);
-      const fechaFinDate = new Date(fechaInicioDate.getTime() + (peliculaSeleccionada.duracion_minutos * 60000));
-      this.fechaHoraFin = fechaFinDate;
+      // Parsear fechaInicio manualmente
+      const [datePart, timePart] = fechaInicio.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hour, minute] = timePart.split(':').map(Number);
+
+      // Sumar la duración en minutos
+      const inicioDate = new Date(year, month - 1, day, hour, minute);
+      const finDate = new Date(inicioDate.getTime() + peliculaSeleccionada.duracion_minutos * 60000);
+
+      // Construir string local
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const finLocal = `${finDate.getFullYear()}-${pad(finDate.getMonth() + 1)}-${pad(finDate.getDate())}T${pad(finDate.getHours())}:${pad(finDate.getMinutes())}`;
+      console.log('Fecha de fin calculada:', finLocal);
+      this.fechaHoraFin = finLocal;
     } else {
       this.fechaHoraFin = null;
     }
@@ -358,7 +351,7 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
     this.filteredSalas = [];
     this.idiomas = [...this.idiomasOriginales]; // Restaurar idiomas originales
     this.isSubmitting = false;
-    
+
     // Cerrar todos los dropdowns
     this.showPeliculasDropdown = false;
     this.showSedesDropdown = false;
@@ -373,18 +366,18 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
         next: (idiomasPelicula) => {
           // La API retorna un array de números directamente [10, 11]
           this.idiomasPelicula = idiomasPelicula;
-          
+
           // Filtrar idiomas disponibles para esta película
-          this.idiomas = this.idiomasOriginales.filter(idioma => 
+          this.idiomas = this.idiomasOriginales.filter(idioma =>
             idiomasPelicula.includes(idioma.id_idioma)
           );
-          
+
           // Reset del idioma seleccionado si no está disponible para esta película
           const currentIdiomaId = this.funcionesForm.get('id_idioma')?.value;
           if (currentIdiomaId && !idiomasPelicula.includes(Number(currentIdiomaId))) {
             this.funcionesForm.patchValue({ id_idioma: '' });
           }
-          
+
           this.isLoadingIdiomas = false;
         },
         error: (error) => {
@@ -396,13 +389,13 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
   }
 
   // Validador personalizado para fechas futuras
-  private fechaFuturaValidator(control: any): {[key: string]: any} | null {
+  private fechaFuturaValidator(control: any): { [key: string]: any } | null {
     if (!control.value) return null;
-    
+
     const fechaSeleccionada = new Date(control.value);
     const fechaActual = new Date();
     fechaActual.setHours(0, 0, 0, 0); // Ignorar la hora para la comparación
-    
+
     return fechaSeleccionada >= fechaActual ? null : { fechaPasada: true };
   }
 
@@ -431,14 +424,5 @@ export class CrearFuncionesComponent implements OnInit, OnDestroy {
       if (field.errors['fechaPasada']) return 'La fecha debe ser futura';
     }
     return '';
-  }
-
-  // Método opcional: Verificar conflictos de horarios (implementar según necesidad)
-  private checkHorarioConflicts(): void {
-    if (this.selectedSalaId && this.funcionesForm.get('fecha_hora_inicio')?.value && this.fechaHoraFin) {
-      // Aquí puedes implementar una validación para verificar si ya existe una función
-      // en esa sala durante ese horario
-      // this.funcionesService.checkConflicts(salaId, fechaInicio, fechaFin).subscribe(...)
-    }
   }
 }

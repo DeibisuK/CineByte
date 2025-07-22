@@ -22,16 +22,16 @@ import { AlertaService } from '@core/services';
 })
 export class EditarFuncionesComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   funcionesForm: FormGroup;
   funcionId: number = 0;
   funcionOriginal: Funciones | null = null;
-  
+
   // Datos originales
   peliculas: Pelicula[] = [];
   sedes: Sede[] = [];
   salas: SedeSala[] = [];
-  idiomas: Idiomas[] = []; 
+  idiomas: Idiomas[] = [];
   idiomasOriginales: Idiomas[] = [];
   idiomasPelicula: number[] = [];
 
@@ -49,14 +49,14 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   selectedPeliculaId: number | null = null;
   selectedSedeId: number | null = null;
   selectedSalaId: number | null = null;
-  
+
   // Estados de UI
   isSubmitting = false;
   isLoadingInitialData = true;
   isLoadingSalas = false;
   isLoadingIdiomas = false;
   isLoadingFunction = true;
-  
+
   // Opciones para dropdown de estado
   estadosDisponibles = [
     { value: 'activa', label: 'Activa' },
@@ -64,7 +64,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
     { value: 'cancelada', label: 'Cancelada' }
   ];
   // Fecha calculada
-  fechaHoraFin: Date | null = null;
+  fechaHoraFin: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -134,10 +134,10 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
         this.sedes = this.filteredSedes = sedes;
         this.idiomas = this.idiomasOriginales = idiomas;
         this.isLoadingInitialData = false;
-        
+
         // Ahora que los datos iniciales están cargados, cargar la función a editar
         this.loadFuncionToEdit();
-        
+
         // Si ya tenemos una función cargada, actualizar el campo de búsqueda de película
         this.updatePeliculaSearchField();
       },
@@ -165,10 +165,10 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private populateForm(funcion: Funciones): void {    
+  private populateForm(funcion: Funciones): void {
     // Buscar la película correspondiente
     const pelicula = this.peliculas.find(p => p.id_pelicula === funcion.id_pelicula);
-    
+
     if (pelicula) {
       this.selectPelicula(pelicula);
     } else {
@@ -178,7 +178,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
         id_pelicula: funcion.id_pelicula
       });
     }
-    
+
     // Para encontrar la sede, usar el servicio que me dice a qué sedes pertenece la sala
     this.sedesSalasService.getSedesBySala(funcion.id_sala)
       .pipe(takeUntil(this.destroy$))
@@ -189,7 +189,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
             const sede = this.sedes.find(s => s.id_sede === sedeId);
             if (sede) {
               this.selectSede(sede);
-              
+
               // Después de cargar las salas, seleccionar la sala actual
               this.loadSalasBySede(sedeId).then(() => {
                 const salaActual = this.salas.find(s => s.id_sala === funcion.id_sala);
@@ -206,16 +206,16 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
       });
 
     // Formatear fechas para el input datetime-local
-    const fechaInicio = new Date(funcion.fecha_hora_inicio);
-    const fechaInicioStr = this.formatDateTimeLocal(fechaInicio);
+    //  const fechaInicio = new Date(funcion.fecha_hora_inicio);
+    //  const fechaInicioStr = this.formatDateTimeLocal(fechaInicio);
 
     // Buscar la película para el título
     const peliculaEncontrada = this.peliculas.find(p => p.id_pelicula === funcion.id_pelicula);
-    
+
     // Poblar el formulario
     this.funcionesForm.patchValue({
       pelicula_search: peliculaEncontrada?.titulo || `Película ID: ${funcion.id_pelicula}`,
-      fecha_hora_inicio: fechaInicioStr,
+      fecha_hora_inicio: funcion.fecha_hora_inicio, //fechaInicioStr,
       precio: funcion.precio_funcion,
       id_idioma: funcion.id_idioma,
       trailer_url: funcion.trailer_url,
@@ -226,16 +226,10 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
 
     this.selectedPeliculaId = funcion.id_pelicula;
     this.selectedSalaId = funcion.id_sala;
-    this.fechaHoraFin = new Date(funcion.fecha_hora_fin);
-    
+    this.fechaHoraFin = (funcion.fecha_hora_fin);
+
     // Actualizar el campo de búsqueda de película si los datos están disponibles
     this.updatePeliculaSearchField();
-  }
-
-  private formatDateTimeLocal(date: Date): string {
-    // Ajustar a zona horaria local
-    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-    return localDate.toISOString().slice(0, 16);
   }
 
   // Event handlers para películas
@@ -314,7 +308,7 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
           next: (salas) => {
             this.salas = this.filteredSalas = salas;
             this.isLoadingSalas = false;
-            
+
             // Si estamos editando, seleccionar la sala actual
             if (this.funcionOriginal) {
               const salaActual = salas.find(s => s.id_sala === this.funcionOriginal!.id_sala);
@@ -340,10 +334,10 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
 
     const target = event.target as HTMLInputElement;
     const query = target.value.toLowerCase();
-    
+
     if (query.trim()) {
-      this.filteredSalas = this.salas.filter(sala => 
-        sala.id_sede === this.selectedSedeId && 
+      this.filteredSalas = this.salas.filter(sala =>
+        sala.id_sede === this.selectedSedeId &&
         sala.nombre.toLowerCase().includes(query)
       );
     } else {
@@ -376,20 +370,21 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.funcionesForm.valid && this.areIdsSelected() && this.fechaHoraFin) {
       this.isSubmitting = true;
-      
+
       const precioValue = this.funcionesForm.value.precio;
       if (!precioValue || isNaN(Number(precioValue)) || Number(precioValue) <= 0) {
         this.alerta.error('Error', 'El precio debe ser un número válido mayor a 0.');
         this.isSubmitting = false;
         return;
       }
-      
+
+      // Enviar la hora local seleccionada por el usuario, sin conversión a UTC
       const formData: Funciones = {
         id_funcion: this.funcionId,
         id_pelicula: this.selectedPeliculaId!,
         id_sala: this.selectedSalaId!,
-        fecha_hora_inicio: new Date(this.funcionesForm.value.fecha_hora_inicio),
-        fecha_hora_fin: this.fechaHoraFin,
+        fecha_hora_inicio: this.funcionesForm.value.fecha_hora_inicio,
+        fecha_hora_fin: this.fechaHoraFin!,
         precio_funcion: Number(precioValue),
         id_idioma: Number(this.funcionesForm.value.id_idioma),
         trailer_url: this.funcionesForm.value.trailer_url.trim(),
@@ -416,9 +411,9 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   }
 
   private areIdsSelected(): boolean {
-    return this.selectedPeliculaId !== null && 
-           this.selectedSedeId !== null && 
-           this.selectedSalaId !== null;
+    return this.selectedPeliculaId !== null &&
+      this.selectedSedeId !== null &&
+      this.selectedSalaId !== null;
   }
 
   areFormReady(): boolean {
@@ -428,11 +423,21 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
   private calculateFechaFin(): void {
     const fechaInicio = this.funcionesForm.get('fecha_hora_inicio')?.value;
     const peliculaSeleccionada = this.peliculas.find(p => p.id_pelicula === this.selectedPeliculaId);
-    
+
     if (fechaInicio && peliculaSeleccionada?.duracion_minutos) {
-      const fechaInicioDate = new Date(fechaInicio);
-      const fechaFinDate = new Date(fechaInicioDate.getTime() + (peliculaSeleccionada.duracion_minutos * 60000));
-      this.fechaHoraFin = fechaFinDate;
+      // Parsear fechaInicio manualmente
+      const [datePart, timePart] = fechaInicio.split('T');
+      const [year, month, day] = datePart.split('-').map(Number);
+      const [hour, minute] = timePart.split(':').map(Number);
+
+      // Sumar la duración en minutos
+      const inicioDate = new Date(year, month - 1, day, hour, minute);
+      const finDate = new Date(inicioDate.getTime() + peliculaSeleccionada.duracion_minutos * 60000);
+
+      // Construir string local
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const finLocal = `${finDate.getFullYear()}-${pad(finDate.getMonth() + 1)}-${pad(finDate.getDate())}T${pad(finDate.getHours())}:${pad(finDate.getMinutes())}`;
+      this.fechaHoraFin = finLocal;
     } else {
       this.fechaHoraFin = null;
     }
@@ -449,15 +454,15 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (idiomasPelicula) => {
           this.idiomasPelicula = idiomasPelicula;
-          this.idiomas = this.idiomasOriginales.filter(idioma => 
+          this.idiomas = this.idiomasOriginales.filter(idioma =>
             idiomasPelicula.includes(idioma.id_idioma)
           );
-          
+
           const currentIdiomaId = this.funcionesForm.get('id_idioma')?.value;
           if (currentIdiomaId && !idiomasPelicula.includes(Number(currentIdiomaId))) {
             this.funcionesForm.patchValue({ id_idioma: '' });
           }
-          
+
           this.isLoadingIdiomas = false;
         },
         error: () => {
@@ -467,13 +472,13 @@ export class EditarFuncionesComponent implements OnInit, OnDestroy {
       });
   }
 
-  private fechaFuturaValidator(control: any): {[key: string]: any} | null {
+  private fechaFuturaValidator(control: any): { [key: string]: any } | null {
     if (!control.value) return null;
-    
+
     const fechaSeleccionada = new Date(control.value);
     const fechaActual = new Date();
     fechaActual.setHours(0, 0, 0, 0);
-    
+
     return fechaSeleccionada >= fechaActual ? null : { fechaPasada: true };
   }
 

@@ -133,7 +133,7 @@
 
               <td>
                 <span *ngIf="actorEditando !== actor.id_actor">
-                  {{formatDateForInput(actor.fecha_nacimiento)}}
+                  {{(actor.fecha_nacimiento)}}
                 </span>
                 <input *ngIf="actorEditando === actor.id_actor" type="date" [(ngModel)]="fechaNacimientoTemporal" class="edit-input" required>
               </td>

@@ -73,20 +73,24 @@ export class ListarFuncionesComponent implements OnInit {
     this.filteredFunciones = [...this.funciones];
   }
 
-  formatDate(date: Date): string {
-    return new Date(date).toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+
+  formatDateString(dateStr: string): string {
+    // dateStr: 'YYYY-MM-DDTHH:mm'
+    if (!dateStr) return '';
+    const [datePart] = dateStr.split('T');
+    const [year, month, day] = datePart.split('-');
+    return `${day}/${month}/${year}`;
   }
 
-  formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString('es-ES', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+  formatTimeString(dateStr: string): string {
+    // dateStr: 'YYYY-MM-DDTHH:mm' o 'YYYY-MM-DDTHH:mm:ss.000Z'
+    if (!dateStr) return '';
+    const [, timePartRaw] = dateStr.split('T');
+    if (!timePartRaw) return '';
+    // Eliminar sufijos como .000Z y segundos
+    // Ejemplo: '02:27:00.000Z' -> '02:27'
+    const timeMatch = timePartRaw.match(/^(\d{2}:\d{2})/);
+    return timeMatch ? timeMatch[1] : timePartRaw;
   }
 
   formatDateForFilter(date: Date): string {
