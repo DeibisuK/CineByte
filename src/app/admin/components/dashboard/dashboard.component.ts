@@ -144,6 +144,8 @@ export class DashboardComponent implements OnInit {
     const endDate = today.toISOString().slice(0, 10); // 'YYYY-MM-DD'
     const startDate = new Date(today.setDate(today.getDate() - 6)).toISOString().slice(0, 10)
 
+    console.log(endDate, startDate);
+
     return new Promise(async (resolve, reject) => {
       const user = await this.auth.getCurrentUID();
       if (!user) throw new Error('Usuario no autenticado');
@@ -170,7 +172,7 @@ export class DashboardComponent implements OnInit {
           this.dashboardData.boletosVendidos = results.boletos?.boletosVendidos?.obtener_total_boletos_vendidos;
           this.dashboardData.estadisticasGenerales.total_funciones = results.funcionesActivas.filter(funcion => funcion.estado === 'activa').length;
           this.dashboardData.estadisticasGenerales.capacidad_total = results.todosLosAsientos.total
-
+          console.log(this.dashboardData);
           const ventasRecientes = (results.ventasPorDia || []).slice(-7);
           this.weeklyData = ventasRecientes.map((venta: any, index: number) => ({
             label: venta.fecha ? this.getDayName(venta.fecha) : `Día ${index + 1}`,

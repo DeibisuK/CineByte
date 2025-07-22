@@ -514,6 +514,7 @@ export class ListUsersComponent implements OnInit {
             
             <p><strong>Email:</strong> ${usuario.email || 'No disponible'}</p>
             <p><strong>Nombre:</strong> ${usuario.displayName || 'No disponible'}</p>
+            <p><strong>UID:</strong> ${usuario.uid}</p>
             <p><strong>Email verificado:</strong> ${usuario.emailVerified ? 'Sí' : 'No'}</p>
             <p><strong>Estado:</strong> ${usuario.disabled ? 'Deshabilitado' : 'Activo'}</p>
             <p><strong>Rol:</strong> ${usuario.customClaims?.role || 'user'}</p>
